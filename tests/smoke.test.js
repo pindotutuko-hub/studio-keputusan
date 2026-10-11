@@ -38,5 +38,10 @@ setTimeout(() => {
   step('sy-in'); ['dl_med', 'dl_agr'].forEach(k => { const c = d.querySelector('#sy_' + k); c.checked = true; c.dispatchEvent(new w.Event('change', { bubbles: true })); }); step('sy-res');
   const sy = w.__syCalc(); near(sy.corr[0][1].r, 0.73, 0.01);
   step('rp'); click('#bRpBuild'); assert(d.querySelectorAll('#reportOut .rpsec').length >= 10);
+  // v1.6: Javanese House Depth (house A: TD 16) and OTTV vs SNI 6389:2020 worked examples
+  step('jh-in'); click('#bJhSample'); step('jh-res'); const jh = w.__jhCalc(); assert.strictEqual(jh.H[0].TD, 16); near(jh.H[0].DR.FR, 0.125, 1e-12); near(jh.M.BDR.K, 4 / 34, 1e-12); near(jh.dev(jh.H[0]).TD, 34 / 16, 1e-12);
+  step('ot-in'); click('#bOtSample'); step('ot-fac'); step('ot-res'); const ot = w.__otCalc(); near(ot.OTTV, 47.63, 0.02); near(ot.A, 3606.72, 0.01); assert.strictEqual(ot.ok, false);
+  [40.46, 53.49, 37.15, 60.72].forEach((v, i) => near(ot.rows[i].OTTV, v, 0.02)); near(ot.rows[0].terms[0].q, 2.24, 0.02); near(ot.rows[0].rg, 23.37, 0.02);
+  near(w.__otSC('horizontal_projection', 'BD', 0.5, NaN, 0).sc, 0.698, 5e-4); near(w.__otSC('horizontal_projection', 'TGR', 0.4, NaN, 30).sc, 0.669, 5e-4); near(w.__otFenU(3, 8, 1, 1, 0.05).U, 4.75, 1e-9);
   assert.deepStrictEqual(errs, []); console.log('All module checks passed'); process.exit(0);
 }, 300);
