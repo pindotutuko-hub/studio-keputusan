@@ -48,5 +48,16 @@ setTimeout(() => {
   step('sx-in'); click('[data-sxmode="vga"]'); click('#bSxSample'); step('sx-res'); const vg = w.__sxVgaCalc(); assert.strictEqual(vg.n, 93); near(vg.rows[0].int, 8.847501, 1e-5); near(vg.rows[0].clus, 0.986122, 1e-5); near(vg.rows[0].MD, 1.456522, 1e-5);
   const dd = w.__sxDedupe([{ x1: 0, y1: 0, x2: 1, y2: 1 }, { x1: 1, y1: 1, x2: 0, y2: 0 }, { x1: 2, y1: 2, x2: 2, y2: 2 }]); assert.strictEqual(dd.removed, 1); assert.strictEqual(dd.zero, 1);
   step('about'); assert(d.querySelector('#aboutBox').textContent.includes('Pindo Tutuko'));
+  // v1.6: Statistics / PLS-SEM / CB-SEM on the sample dataset (verified vs SciPy, statsmodels, pingouin, factor_analyzer, NumPy PLS, SciPy ML)
+  step('ss-data'); click('#ssData .dsSample'); const D = w.__dsData(); assert.strictEqual(D.n, 150); const col = n => D.cols.find(c => c.name === n).vals;
+  const S = w.__st; near(S.stShapiro(col('KH1')).W, 0.906403257, 1e-8); near(S.stShapiro(col('KH1')).p, 3.0906e-8, 1e-11);
+  const X = col('KH1').map((v, i) => [1, v, col('KP1')[i], col('Lama_tinggal')[i]]); const ols = S.stOLS(col('NT1'), X); near(ols.b[0], 1.7060971254, 1e-8); near(ols.b[1], 0.2068338840, 1e-8);
+  const g = col('Jenis_kelamin'), kp = col('KP1'); near(S.stTInd(kp.filter((_, i) => g[i] === 'L'), kp.filter((_, i) => g[i] === 'P')).welch.p, 0.62687605, 1e-7);
+  near(S.stAlpha(col('KH1').map((v, i) => [v, col('KH2')[i], col('KH3')[i], col('KH4')[i]])).alpha, 0.80911406, 1e-7);
+  step('ss-an'); ['desc', 'freq', 'corr', 'reg', 'ttest', 'anova', 'nonpar', 'xtab', 'alpha', 'efa'].forEach(a => { click(`[data-ssan="${a}"]`); assert(d.querySelector('#ssOut .spss'), 'no output for ' + a); });
+  step('pl-model'); click('[data-semsample="pl"]'); step('pl-res'); const pl = w.__plCalc(); near(pl.r.coef[1][2], 0.40216136, 1e-6); near(pl.r.R2[1], 0.31002168, 1e-6); near(pl.r.rel[0].rhoA, 0.85715508, 1e-6); near(pl.r.htmt[1][0], 0.63772421, 1e-6);
+  const bt = w.__plsBoot(pl.M, pl.sp.blocks, pl.sp.P, pl.sp.modes, 500, 1); near(bt.res[1].sd, 0.08819792, 1e-6);
+  step('cs-model'); click('[data-semsample="cs"]'); step('cs-res'); const cs = w.__csCalc(); near(cs.f.chi, 52.690807, 1e-4); near(cs.f.cfi, 0.964829, 1e-5); near(cs.f.rmsea, 0.065875, 1e-5); near(cs.f.rLo, 0.031071, 1e-5); near(cs.f.srmr, 0.052503, 1e-5); near(cs.f.gfi, 0.931324, 1e-5);
+  step('jh-res'); click('#bJhToData'); const dj = w.__dsData(); assert(dj.n >= 3 && dj.cols.find(c => c.name === 'TD').num, 'house table to dataset');
   assert.deepStrictEqual(errs, []); console.log('All module checks passed'); process.exit(0);
 }, 300);

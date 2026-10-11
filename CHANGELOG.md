@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.6.0 — 2026-10-11
+- Rumpun baru **Statistik & Pemodelan Kuantitatif** dengan **dataset bersama** (tempel dari Excel/CSV, data view & variable view):
+  - **Statistik setara SPSS/Stata**: deskriptif (skewness/kurtosis + SE), frekuensi, Shapiro–Wilk (Royston), korelasi Pearson/Spearman, regresi OLS (dummy otomatis, beta baku, VIF, Durbin–Watson, SE robust HC1), uji t (independen + Levene + Welch, berpasangan, satu sampel), ANOVA satu arah (+ Levene, Welch, Bonferroni, η²), Mann–Whitney, Wilcoxon, Kruskal–Wallis, crosstab χ² (+ LR, Cramér's V), Cronbach's α (item-total), analisis faktor (KMO, MSA, Bartlett, PCA + varimax Kaiser); log hasil masuk Laporan.
+  - **PLS-SEM**: algoritma PLS skema path weighting, mode A/B, outer loading/weight/VIF, α, ρA, ρC, AVE, HTMT, Fornell–Larcker, cross loading, R², R² adj, f², VIF inner, efek tidak langsung/total, bootstrapping (seed, t, p, IK persentil).
+  - **CB-SEM/CFA**: Maximum Likelihood (Wishart, RAM, Fisher scoring), estimasi baku, S.E./C.R./P, χ², CMIN/DF, CFI, TLI, NFI, RMSEA + IK 90% + PCLOSE, SRMR, GFI, AGFI, AIC, CR/AVE, SMC.
+  - Angka diverifikasi terhadap SciPy, statsmodels, pingouin, factor_analyzer, implementasi NumPy PLS (konvensi SEMinR/SmartPLS), SciPy (ML), dan semopy.
+- **Javanese House Depth** (Tutuko, 2014): depth dari titik akses, Total Depth, DR ruang tamu/keluarga/dapur, pembanding Basic Depth Ratio (TD 34), banyak rumah, kirim tabel ke dataset statistik.
+- **OTTV · RTTV SNI 6389:2020** (dari EnvelopeSim): rakitan berlapis (Tabel 4–7, 9), WWR, SC efektif peneduh (Lampiran A), SF 54 kota (Tabel 8), U fenestrasi (Lampiran C), simulasi orientasi, rekomendasi butir 5.1; mereproduksi contoh Lampiran D.
+- **Space Syntax**: analisis segmen angular (radius metrik, choice dengan ties eksak), VGA (grid visibilitas, clustering), pembersihan segmen duplikat DXF, ringkasan statistik per metrik.
+- Menu **Tentang** di kepala halaman.
+
 ## 1.5.1 — 2026-10-11
 - macOS: aplikasi kini ditandatangani **ad-hoc** saat build (hook `build/adhoc-sign.js`) dan diverifikasi di CI. Sebelumnya aplikasi Mac tidak bertanda tangan sehingga macOS terbaru dapat menolaknya dengan pesan "Malware Blocked". Notarisasi resmi Apple tetap memerlukan Apple Developer ID.
 
