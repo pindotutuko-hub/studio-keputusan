@@ -1,8 +1,8 @@
 {
   "name": "studio-keputusan",
   "productName": "Studio Keputusan",
-  "version": "1.2.0",
-  "description": "Studio analisis strategis & keputusan lintas rumpun ilmu: 15 metode (Delphi, ISM–MICMAC, AHP, SWOT, PESTEL, Porter, CBA, CPM/PERT, BSC, SNA, analisis kualitatif, Space Syntax, Site Analysis, Behavioral Mapping, POE)",
+  "version": "1.3.0",
+  "description": "Studio analisis strategis & keputusan lintas rumpun ilmu: 15 metode, sintesis & komparasi antarmetode, laporan gabungan, Space Syntax peta axial",
   "author": "Pindo Tutuko",
   "license": "MIT",
   "main": "main.js",
@@ -10,11 +10,13 @@
     "start": "electron .",
     "dist:win": "electron-builder --win",
     "dist:mac": "electron-builder --mac",
-    "dist:linux": "electron-builder --linux"
+    "dist:linux": "electron-builder --linux",
+    "test": "node tests/smoke.test.js"
   },
   "devDependencies": {
     "electron": "31.7.7",
-    "electron-builder": "24.13.3"
+    "electron-builder": "24.13.3",
+    "jsdom": "^24.1.3"
   },
   "build": {
     "appId": "id.ac.unmer.studiokeputusan",

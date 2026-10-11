@@ -11,6 +11,14 @@ Aplikasi analisis strategis dan pengambilan keputusan lintas rumpun ilmu, untuk 
 
 Dikembangkan versi lain oleh **Pindo Tutuko**. Modul ISM merujuk pada Ahmad, N., & Qahmash, A. (2021). SmartISM: Implementation and Assessment of Interpretive Structural Modeling. *Sustainability*, 13(16), 8801. https://doi.org/10.3390/su13168801 — rujukan metode lain tampil di aplikasi.
 
+## Lintas metode
+- **Sintesis & komparasi**: gabungkan ukuran beberapa metode untuk butir yang sama (normalisasi min–maks, bobot), peringkat gabungan, dan korelasi peringkat Spearman antarmetode.
+- **Laporan gabungan**: tabel, diagram, dan rujukan semua metode dalam satu dokumen; salin ke Word atau simpan PDF (desktop).
+- **Kirim antarmodul**: hasil setiap metode bisa dikirim menjadi butir Delphi, elemen ISM, atau kriteria/alternatif AHP.
+
+## Space Syntax
+Mode graf ruang convex dan **peta axial** (gambar garis di atas denah/peta, atau impor DXF/GeoJSON). Ukuran: Connectivity, Mean depth, Integration [HH] global dan R3, Choice, NACH/NAIN (versi topologis), Control, intelligibility, synergy. Peta gradasi warna; ekspor CSV dan GeoJSON. Selaras dengan roadmap [space-syntax-analyzer](https://github.com/pindotutuko-hub/space-syntax-analyzer).
+
 ## Unduh installer
 Buka tab **Actions → Build installers → Run workflow**. Setelah selesai (±10 menit), unduh artifact `Studio-Keputusan-Windows` (.exe) atau `Studio-Keputusan-macOS` (.dmg). Setiap pembaruan di cabang `main` juga otomatis menerbitkan installer di halaman **Releases** (versi mengikuti `package.json`).
 

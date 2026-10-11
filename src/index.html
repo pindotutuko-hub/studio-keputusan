@@ -307,6 +307,21 @@ select{border:1px solid var(--line);background:var(--paper);border-radius:7px;pa
 .dcell.wide{width:64px}
 table.mx.heat td{min-width:64px}
 @media (max-width:820px){.qu{grid-template-columns:1fr}}
+tr.dim{opacity:.5}
+.zbar{height:4px;background:var(--paper);border-radius:2px;margin-top:3px;min-width:50px}.zbar i{display:block;height:100%;background:var(--petrol);border-radius:2px}
+.sendbar{border-style:dashed;background:transparent}
+.rpsel{display:flex;flex-wrap:wrap;gap:8px 18px}
+.report{background:var(--sheet);border:1px solid var(--line);border-radius:10px;padding:clamp(16px,3vw,32px);display:flex;flex-direction:column;gap:22px;min-width:0}
+.report:empty{display:none}
+.rphead{border-bottom:2px solid var(--petrol);padding-bottom:12px}.rphead h2{font:700 24px var(--f-display);margin:0 0 6px}.rphead p{margin:2px 0;color:var(--muted);font-size:13px}
+.rpsec{display:flex;flex-direction:column;gap:14px;min-width:0}.rpsec>h2{font:700 20px var(--f-display);color:var(--petrol);border-bottom:1px solid var(--line);padding-bottom:6px;margin:0}
+.rpsec h3{font:600 16px var(--f-display);margin:6px 0 0}
+.rpref{font-size:12px;color:var(--muted);border-top:1px dashed var(--line);padding-top:8px}
+.axwrap{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-top:10px;background:var(--sheet)}
+.axcanvas{display:block;touch-action:none;cursor:crosshair;user-select:none}
+.axl{cursor:pointer}
+.axtools{gap:8px}
+label.btn{display:inline-flex;align-items:center;cursor:pointer}
 .desk-only{display:none}
 .is-desktop .desk-only{display:inline-flex}
 @media (max-width:820px){
@@ -322,7 +337,7 @@ table.mx.heat td{min-width:64px}
 }
 @media (max-height:640px) and (min-width:821px){.credit{position:static;width:auto;border-right:0}.rail{padding-bottom:18px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
-@media print{.top,.rail,.btn,.banner{display:none!important}.shell{display:block}section{display:flex!important}}
+@media print{.top,.rail,.btn,.banner,.credit,.toast,.sendbar{display:none!important}.shell{display:block}main{padding:0}body.printing-report #rpIn>:not(#reportOut){display:none!important}body.printing-report .report{border:0;padding:0}.rpsec{break-before:page}.card,.kpis div{break-inside:avoid}}
 </style>
 
 <header class="top">
@@ -330,7 +345,7 @@ table.mx.heat td{min-width:64px}
     <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="10" y="2" width="8" height="6" rx="1.5" fill="var(--petrol)"/><rect x="3" y="12" width="8" height="6" rx="1.5" fill="var(--petrol)" opacity=".7"/><rect x="17" y="12" width="8" height="6" rx="1.5" fill="var(--petrol)" opacity=".7"/><rect x="10" y="21" width="8" height="5" rx="1.5" fill="var(--ochre)"/><path d="M14 21l-6-3M14 21l6-3M7 12l6-4M21 12l-6-4" stroke="var(--muted)" stroke-width="1.2" fill="none"/></svg>
     <span>Studio Keputusan<br><small>Analisis strategis &amp; keputusan lintas rumpun ilmu</small></span>
   </div>
-  <div class="modpick"><button class="btn" data-modgo="home">☰ Semua metode</button><select id="modSel" aria-label="Metode aktif"></select></div>
+  <div class="modpick"><button class="btn" data-modgo="home">☰ Semua metode</button><button class="btn" data-modgo="report">Laporan</button><select id="modSel" aria-label="Metode aktif"></select></div>
   <input id="title" aria-label="Judul proyek" value="">
   <div class="actions">
     <button class="btn" id="bNew">Proyek baru</button>
@@ -407,7 +422,7 @@ table.mx.heat td{min-width:64px}
       <button data-step="ql-res"><span class="n">3</span><span class="t">Result</span><span class="s">(Frekuensi, tema, kutipan)</span></button>
     </div>
     <div class="grp" data-mod="syntax">
-      <button data-step="sx-in"><span class="n">1</span><span class="t">Spaces</span><span class="s">(Ruang & hubungan)</span></button>
+      <button data-step="sx-in"><span class="n">1</span><span class="t">Spaces / axial</span><span class="s">(Ruang atau garis axial)</span></button>
       <div class="sep"></div>
       <button data-step="sx-res"><span class="n">2</span><span class="t">Measures</span><span class="s">(Integrasi & graf justifikasi)</span></button>
     </div>
@@ -426,6 +441,14 @@ table.mx.heat td{min-width:64px}
       <button data-step="poe-in"><span class="n">1</span><span class="t">Criteria</span><span class="s">(Kriteria & nilai)</span></button>
       <div class="sep"></div>
       <button data-step="poe-res"><span class="n">2</span><span class="t">IPA</span><span class="s">(Kuadran & prioritas)</span></button>
+    </div>
+    <div class="grp" data-mod="synth">
+      <button data-step="sy-in"><span class="n">1</span><span class="t">Measures</span><span class="s">(Pilih ukuran &amp; bobot)</span></button>
+      <div class="sep"></div>
+      <button data-step="sy-res"><span class="n">2</span><span class="t">Synthesis</span><span class="s">(Peringkat gabungan &amp; kesepakatan)</span></button>
+    </div>
+    <div class="grp" data-mod="report">
+      <button data-step="rp"><span class="n">≡</span><span class="t">Combined report</span><span class="s">(Laporan gabungan)</span></button>
     </div>
   </nav>
 
@@ -555,6 +578,7 @@ table.mx.heat td{min-width:64px}
           </div>
         </div>
       </div>
+      <div id="ismSend"></div>
       <div class="row"><button class="btn" data-go="model">← Model ISM</button></div>
     </section>
 
@@ -571,6 +595,9 @@ table.mx.heat td{min-width:64px}
           <div><b>Delphi → AHP</b><span>Kriteria hasil konsensus pakar langsung dibobot dan dipakai memeringkat alternatif.</span><button class="btn small" data-modgo="delphi">Mulai dari Delphi</button></div>
           <div><b>ISM → AHP</b><span>Elemen ISM dipakai sebagai kriteria AHP untuk membandingkan struktur pengaruh dengan bobot kepentingan.</span><button class="btn small" data-modgo="ism">Mulai dari ISM</button></div>
           <div><b>PESTEL → SWOT</b><span>Faktor makro menjadi peluang dan ancaman pada matriks EFAS.</span><button class="btn small" data-modgo="pestel">Mulai dari PESTEL</button></div>
+          <div><b>Kualitatif → Delphi → ISM</b><span>Kode temuan FGD/wawancara divalidasi pakar, lalu disusun hierarkinya.</span><button class="btn small" data-modgo="qual">Mulai dari kualitatif</button></div>
+          <div><b>Site Analysis → SWOT</b><span>Potensi tapak menjadi kekuatan, kendala menjadi kelemahan.</span><button class="btn small" data-modgo="site">Mulai dari tapak</button></div>
+          <div><b>Delphi + ISM + AHP → Sintesis</b><span>Bandingkan median pakar, daya dorong, dan bobot untuk satu keputusan.</span><button class="btn small" data-modgo="synth">Buka sintesis</button></div>
           <div><b>SWOT → AHP (A'WOT)</b><span>Kelompok S, W, O, T dibobot dengan AHP untuk menajamkan prioritas strategi.</span><button class="btn small" data-modgo="swot">Mulai dari SWOT</button></div>
         </div>
       </div>
@@ -701,6 +728,7 @@ table.mx.heat td{min-width:64px}
         <p class="note">Tulis rumusan strategi di setiap sel. Sel yang disorot sesuai posisi kuadran.</p>
         <div class="tows" id="tows"></div>
       </div>
+      <div id="swSend"></div>
       <div class="row"><button class="btn" data-go="swot-in">← Faktor SWOT</button></div>
     </section>
     <section data-sec="pe-in" hidden><div id="peIn" class="modbox"></div></section>
@@ -727,6 +755,9 @@ table.mx.heat td{min-width:64px}
     <section data-sec="bm-res" hidden><div id="bmRes" class="modbox"></div></section>
     <section data-sec="poe-in" hidden><div id="poeIn" class="modbox"></div></section>
     <section data-sec="poe-res" hidden><div id="poeRes" class="modbox"></div></section>
+    <section data-sec="sy-in" hidden><div id="syIn" class="modbox"></div></section>
+    <section data-sec="sy-res" hidden><div id="syRes" class="modbox"></div></section>
+    <section data-sec="rp" hidden><div id="rpIn" class="modbox"></div></section>
   </main>
 </div>
 
@@ -818,7 +849,7 @@ function compute(){
 window.__ismCompute=compute; // exposed for testing
 
 /* ---------- navigation ---------- */
-const MODS={sna:["sn-in","sn-res"],qual:["ql-in","ql-code","ql-res"],syntax:["sx-in","sx-res"],site:["st-in","st-res"],behav:["bm-in","bm-obs","bm-res"],poe:["poe-in","poe-res"],pestel:["pe-in","pe-res"],porter:["po-in","po-res"],cba:["cb-in","cb-res"],cpm:["cp-in","cp-res"],bsc:["bs-in","bs-res"],home:["home"],ism:["el","ssim","rm","lp","model","micmac"],ahp:["ahp-crit","ahp-cmp","ahp-res"],swot:["swot-in","swot-res"],delphi:["dl-setup","dl-rate","dl-res"]};
+const MODS={synth:["sy-in","sy-res"],report:["rp"],sna:["sn-in","sn-res"],qual:["ql-in","ql-code","ql-res"],syntax:["sx-in","sx-res"],site:["st-in","st-res"],behav:["bm-in","bm-obs","bm-res"],poe:["poe-in","poe-res"],pestel:["pe-in","pe-res"],porter:["po-in","po-res"],cba:["cb-in","cb-res"],cpm:["cp-in","cp-res"],bsc:["bs-in","bs-res"],home:["home"],ism:["el","ssim","rm","lp","model","micmac"],ahp:["ahp-crit","ahp-cmp","ahp-res"],swot:["swot-in","swot-res"],delphi:["dl-setup","dl-rate","dl-res"]};
 const STEPS=Object.values(MODS).flat();
 const modOf=st=>Object.keys(MODS).find(m=>MODS[m].includes(st));
 const CREDIT={
@@ -833,10 +864,12 @@ const CREDIT={
   bsc:`<p>Kaplan, R. S., &amp; Norton, D. P. (1992). The balanced scorecard: Measures that drive performance. <i>Harvard Business Review</i>, 70(1), 71–79.</p>`,
   sna:`<p>Wasserman, S., &amp; Faust, K. (1994). <i>Social Network Analysis: Methods and Applications</i>. Cambridge University Press.</p><p>Freeman, L. C. (1978). Centrality in social networks: Conceptual clarification. <i>Social Networks</i>, 1(3), 215–239.</p>`,
   qual:`<p>Braun, V., &amp; Clarke, V. (2006). Using thematic analysis in psychology. <i>Qualitative Research in Psychology</i>, 3(2), 77–101.</p><p>Fairclough, N. (1995). <i>Critical Discourse Analysis: The Critical Study of Language</i>. Longman.</p>`,
-  syntax:`<p>Hillier, B., &amp; Hanson, J. (1984). <i>The Social Logic of Space</i>. Cambridge University Press.</p>`,
+  syntax:`<p>Hillier, B., &amp; Hanson, J. (1984). <i>The Social Logic of Space</i>. Cambridge University Press.</p><p>Hillier, B., Yang, T., &amp; Turner, A. (2012). Normalising least angle choice in Depthmap and how it opens up new perspectives on the global and local analysis of city space. <i>Journal of Space Syntax</i>, 3(2), 155–193.</p>`,
   site:`<p>White, E. T. (1983). <i>Site Analysis: Diagramming Information for Architectural Design</i>. Architectural Media.</p>`,
   behav:`<p>Ittelson, W. H., Rivlin, L. G., &amp; Proshansky, H. M. (1970). The use of behavioral maps in environmental psychology. Dalam H. M. Proshansky, W. H. Ittelson, &amp; L. G. Rivlin (Eds.), <i>Environmental Psychology: Man and His Physical Setting</i>. Holt, Rinehart &amp; Winston.</p>`,
   poe:`<p>Preiser, W. F. E., Rabinowitz, H. Z., &amp; White, E. T. (1988). <i>Post-Occupancy Evaluation</i>. Van Nostrand Reinhold.</p><p>Martilla, J. A., &amp; James, J. C. (1977). Importance-performance analysis. <i>Journal of Marketing</i>, 41(1), 77–79.</p>`,
+  synth:`<p>Spearman, C. (1904). The proof and measurement of association between two things. <i>American Journal of Psychology</i>, 15(1), 72–101.</p>`,
+  report:`<p>Laporan memuat rujukan setiap metode yang disertakan.</p>`,
   delphi:`<p>Dalkey, N., &amp; Helmer, O. (1963). An experimental application of the Delphi method to the use of experts. <i>Management Science</i>, 9(3), 458–467.</p><p>von der Gracht, H. A. (2012). Consensus measurement in Delphi studies. <i>Technological Forecasting and Social Change</i>, 79(8), 1525–1536.</p>`};
 function go(step){
   if(!STEPS.includes(step))step="home"; S.step=step; const mod=modOf(step); S.last=S.last||{}; S.last[mod]=step; persist();
@@ -1061,7 +1094,7 @@ function renderMic(){ $("#micWrap").innerHTML=buildMicSVG(); if(R.n<2){$("#micTb
   let t=`<thead><tr><th>Elemen</th><th>Driving (daya dorong)</th><th>Dependence (ketergantungan)</th><th>Kuadran</th><th>Level</th></tr></thead><tbody>`;
   for(let i=0;i<R.n;i++){const q=quad(i); t+=`<tr><td><b>E${i+1}</b> ${esc(R.E[i].name)}</td><td class="m">${R.drv[i]}</td><td class="m">${R.dep[i]}</td><td>${q} · ${QN[q]}</td><td class="m">${roman(R.level[i])}</td></tr>`;}
   $("#micTbl").innerHTML=t+"</tbody>";
-  $("#micNote").textContent=`n = ${R.n}, garis tengah = ${R.n/2}. Nilai tepat di garis tengah dihitung sebagai rendah.`;}
+  $("#micNote").textContent=`n = ${R.n}, garis tengah = ${R.n/2}. Nilai tepat di garis tengah dihitung sebagai rendah.`; $("#ismSend").innerHTML=sendBar("ism");}
 
 /* ---------- copy / export ---------- */
 function tsvMatrix(M,order,withSums){const {E}=R; order=order||[...Array(R.n).keys()];
@@ -1097,10 +1130,10 @@ if(desktop){
   $("#bOpen").onclick=()=>$("#fileIn").click();
 }
 $("#fileIn").onchange=e=>{const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>importText(r.result); r.readAsText(f); e.target.value="";};
-function exportObj(){return {app:"Studio Keputusan",version:2,title:S.title,ahp:AH,swot:SW,delphi:DL,pestel:PE,porter:PO,cba:CB,cpm:CP,bsc:BS,sna:SN,qual:QL,syntax:SX,site:ST,behav:BM,poe:POE,elements:namedEls().map(e=>e.name),ssim:(()=>{const E=namedEls(),o=[];for(let i=0;i<E.length;i++){const row=[];for(let j=i+1;j<E.length;j++)row.push(getRel(E[i].id,E[j].id)||"");o.push(row);}return o;})()};}
+function exportObj(){return {app:"Studio Keputusan",version:2,title:S.title,ahp:AH,swot:SW,delphi:DL,pestel:PE,porter:PO,cba:CB,cpm:CP,bsc:BS,sna:SN,qual:QL,syntax:SX,site:ST,behav:BM,poe:POE,synth:SY,elements:namedEls().map(e=>e.name),ssim:(()=>{const E=namedEls(),o=[];for(let i=0;i<E.length;i++){const row=[];for(let j=i+1;j<E.length;j++)row.push(getRel(E[i].id,E[j].id)||"");o.push(row);}return o;})()};}
 $("#bCopyJson").onclick=()=>copyText(JSON.stringify(exportObj(),null,2),"Data proyek disalin (JSON)");
 function importText(t){try{const o=JSON.parse(t); if(!Array.isArray(o.elements))throw 0;
-    if(o.ahp&&Array.isArray(o.ahp.crit)){AH=o.ahp; AH.sample=false; persistA();} if(o.swot&&o.swot.S){SW=o.swot; SW.sample=false; persistW();} if(o.delphi&&Array.isArray(o.delphi.rounds)){DL=o.delphi; DL.sample=false; persistD();} if(o.pestel&&o.pestel.rows){PE=o.pestel;PE.sample=false;persistPE();} if(o.porter&&o.porter.f){PO=o.porter;PO.sample=false;persistPO();} if(o.cba&&o.cba.rows){CB=o.cba;CB.sample=false;persistCB();} if(o.cpm&&o.cpm.acts){CP=o.cpm;CP.sample=false;persistCP();} if(o.bsc&&o.bsc.k){BS=o.bsc;BS.sample=false;persistBS();} if(o.sna&&o.sna.actors){SN=o.sna;SN.sample=false;persistSN();} if(o.qual&&o.qual.docs){QL=o.qual;QL.sample=false;persistQL();} if(o.syntax&&o.syntax.spaces){SX=o.syntax;SX.sample=false;persistSX();} if(o.site&&o.site.a){ST=o.site;ST.sample=false;persistST();} if(o.behav&&o.behav.zones){BM=o.behav;BM.sample=false;persistBM();} if(o.poe&&o.poe.c){POE=o.poe;POE.sample=false;persistPOE();}
+    if(o.ahp&&Array.isArray(o.ahp.crit)){AH=o.ahp; AH.sample=false; persistA();} if(o.swot&&o.swot.S){SW=o.swot; SW.sample=false; persistW();} if(o.delphi&&Array.isArray(o.delphi.rounds)){DL=o.delphi; DL.sample=false; persistD();} if(o.pestel&&o.pestel.rows){PE=o.pestel;PE.sample=false;persistPE();} if(o.porter&&o.porter.f){PO=o.porter;PO.sample=false;persistPO();} if(o.cba&&o.cba.rows){CB=o.cba;CB.sample=false;persistCB();} if(o.cpm&&o.cpm.acts){CP=o.cpm;CP.sample=false;persistCP();} if(o.bsc&&o.bsc.k){BS=o.bsc;BS.sample=false;persistBS();} if(o.sna&&o.sna.actors){SN=o.sna;SN.sample=false;persistSN();} if(o.qual&&o.qual.docs){QL=o.qual;QL.sample=false;persistQL();} if(o.syntax&&o.syntax.spaces){SX=o.syntax;SX.sample=false;persistSX();} if(o.site&&o.site.a){ST=o.site;ST.sample=false;persistST();} if(o.behav&&o.behav.zones){BM=o.behav;BM.sample=false;persistBM();} if(o.poe&&o.poe.c){POE=o.poe;POE.sample=false;persistPOE();} if(o.synth&&o.synth.sel){SY=o.synth;persistSY();}
     const els=o.elements.map(n=>({id:newId(),name:String(n)})); const rel={};
     (o.ssim||[]).forEach((row,i)=>row.forEach((v,k)=>{const j=i+1+k; v=String(v||"").toUpperCase(); if(els[i]&&els[j]&&"VAXO".includes(v)&&v)rel[els[i].id+">"+els[j].id]=v;}));
     S={title:o.title||"Proyek analisis",elements:els,rel,sample:false,step:"home"}; persist(); syncAll(); go("home"); toast("Proyek dibuka");
@@ -1110,7 +1143,7 @@ document.addEventListener("paste",e=>{if(e.target.closest("input,textarea"))retu
 
 let newArmed=0;
 $("#bNew").onclick=e=>{const b=e.currentTarget; if(Date.now()-newArmed>3000){newArmed=Date.now(); b.textContent="Klik lagi: kosongkan semua metode?"; setTimeout(()=>b.textContent="Proyek baru",3000); return;}
-  newArmed=0; b.textContent="Proyek baru"; S=blank(); AH=ahpBlank(); SW=swBlank(); DL=dlBlank(); PE=peBlank(); PO=poBlank(); CB=cbBlank(); CP=cpBlank(); BS=bsBlank(); SN=snBlank(); QL=qlBlank(); SX=sxBlank(); ST=stBlank(); BM=bmBlank(); POE=poeBlank(); persistSN(); persistQL(); persistSX(); persistST(); persistBM(); persistPOE(); persist(); persistA(); persistW(); persistD(); persistPE(); persistPO(); persistCB(); persistCP(); persistBS(); syncAll(); go("home"); const f=$("#elist input"); f&&f.focus();};
+  newArmed=0; b.textContent="Proyek baru"; S=blank(); AH=ahpBlank(); SW=swBlank(); DL=dlBlank(); PE=peBlank(); PO=poBlank(); CB=cbBlank(); CP=cpBlank(); BS=bsBlank(); SN=snBlank(); QL=qlBlank(); SX=sxBlank(); ST=stBlank(); BM=bmBlank(); POE=poeBlank(); SY={sel:{}}; persistSY(); persistSN(); persistQL(); persistSX(); persistST(); persistBM(); persistPOE(); persist(); persistA(); persistW(); persistD(); persistPE(); persistPO(); persistCB(); persistCP(); persistBS(); syncAll(); go("home"); const f=$("#elist input"); f&&f.focus();};
 $("#bSample").onclick=()=>{ if(namedEls().length&&!S.sample&&!confirmArm($("#bSample"),"Klik lagi: ganti isian dengan contoh?","Muat contoh penelitian"))return; S=sample(); persist(); syncAll(); go("el"); toast("Contoh dimuat. Lihat hasilnya di langkah 3–6.");};
 let armT={}; function confirmArm(b,msg,orig){const k=b.id; if(armT[k]&&Date.now()-armT[k]<3000){armT[k]=0; b.textContent=orig; return true;} armT[k]=Date.now(); b.textContent=msg; setTimeout(()=>{b.textContent=orig;},3000); return false;}
 $("#bClearSample").onclick=()=>{S=blank(); persist(); syncAll(); go("el"); const f=$("#elist input"); f&&f.focus();};
@@ -1133,7 +1166,7 @@ function updateStatus(){const n=namedEls().length, {tot,f}=ssimStats();
     HS.delphi=ni?`${ni} butir · ${DL.experts.length} pakar · ${DL.rounds.length} putaran`:"Belum diisi";}
 }
 function render(){R=compute(); const st=S.step;
-  ({el:renderElements,ssim:renderSSIM,rm:renderRM,lp:renderLP,model:renderModel,micmac:renderMic,"ahp-crit":renderAhpCrit,"ahp-cmp":renderAhpCmp,"ahp-res":renderAhpRes,"swot-in":renderSwotIn,"swot-res":renderSwotRes,"dl-setup":renderDlSetup,"dl-rate":renderDlRate,"dl-res":renderDlRes,home:renderHome,"pe-in":renderPeIn,"pe-res":renderPeRes,"po-in":renderPoIn,"po-res":renderPoRes,"cb-in":renderCbIn,"cb-res":renderCbRes,"cp-in":renderCpIn,"cp-res":renderCpRes,"bs-in":renderBsIn,"bs-res":renderBsRes,"sn-in":renderSnIn,"sn-res":renderSnRes,"ql-in":renderQlIn,"ql-code":renderQlCode,"ql-res":renderQlRes,"sx-in":renderSxIn,"sx-res":renderSxRes,"st-in":renderStIn,"st-res":renderStRes,"bm-in":renderBmIn,"bm-obs":renderBmObs,"bm-res":renderBmRes,"poe-in":renderPoeIn,"poe-res":renderPoeRes}[st]||(()=>{}))(); updateStatus();}
+  ({el:renderElements,ssim:renderSSIM,rm:renderRM,lp:renderLP,model:renderModel,micmac:renderMic,"ahp-crit":renderAhpCrit,"ahp-cmp":renderAhpCmp,"ahp-res":renderAhpRes,"swot-in":renderSwotIn,"swot-res":renderSwotRes,"dl-setup":renderDlSetup,"dl-rate":renderDlRate,"dl-res":renderDlRes,home:renderHome,"pe-in":renderPeIn,"pe-res":renderPeRes,"po-in":renderPoIn,"po-res":renderPoRes,"cb-in":renderCbIn,"cb-res":renderCbRes,"cp-in":renderCpIn,"cp-res":renderCpRes,"bs-in":renderBsIn,"bs-res":renderBsRes,"sy-in":renderSyIn,"sy-res":renderSyRes,rp:renderRp,"sn-in":renderSnIn,"sn-res":renderSnRes,"ql-in":renderQlIn,"ql-code":renderQlCode,"ql-res":renderQlRes,"sx-in":renderSxIn,"sx-res":renderSxRes,"st-in":renderStIn,"st-res":renderStRes,"bm-in":renderBmIn,"bm-obs":renderBmObs,"bm-res":renderBmRes,"poe-in":renderPoeIn,"poe-res":renderPoeRes}[st]||(()=>{}))(); updateStatus();}
 function syncAll(){$("#title").value=S.title||""; $("#sampleBanner").hidden=!S.sample;}
 let tt; function toast(m){const t=$("#toast"); t.textContent=m; t.hidden=false; clearTimeout(tt); tt=setTimeout(()=>t.hidden=true,2600);}
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>render());}catch(e){}
@@ -1263,7 +1296,7 @@ function renderAhpRes(){const o=ahpResult(), box=$("#ahpOut");
       ${o.Al.map((a,i)=>`<tr class="${ord[0]===i?"hit":""}"><td><b>A${i+1}</b> ${esc(a.name)}</td>${o.local.map(r=>`<td class="m">${fmt(r.w[i])}</td>`).join("")}<td class="m"><b>${fmt(o.global[i])}</b></td><td class="m">${ord.indexOf(i)+1}</td></tr>`).join("")}
       <tr><td class="note">CR matriks</td>${o.local.map(r=>`<td class="m ${r.CR>0.1?"warn":""}">${fmt(r.CR)}</td>`).join("")}<td></td><td></td></tr></tbody></table></div></div>`;
   }else h+=`<div class="card"><p class="note">Tambahkan minimal dua alternatif bila ingin memperingkat pilihan berdasarkan bobot kriteria ini.</p></div>`;
-  box.innerHTML=h;}
+  box.innerHTML=h+sendBar("ahp");}
 
 /* =====================================================================
    SWOT
@@ -1366,7 +1399,8 @@ function renderSwotRes(){const c=swCalc();
   const lst=q=>c.rows[q].length?c.rows[q].map((r,i)=>`${q}${i+1} ${esc(r.name)}`).join("<br>"):`<span class="muted">belum diisi</span>`;
   $("#tows").innerHTML=`<div class="tw corner"></div><div class="tw hd"><b>Strengths (Kekuatan)</b><div class="note">${lst("S")}</div></div><div class="tw hd"><b>Weaknesses (Kelemahan)</b><div class="note">${lst("W")}</div></div>
     <div class="tw hd"><b>Opportunities (Peluang)</b><div class="note">${lst("O")}</div></div>${cells.slice(0,2).map(cl=>towsCell(cl,q.cell)).join("")}
-    <div class="tw hd"><b>Threats (Ancaman)</b><div class="note">${lst("T")}</div></div>${cells.slice(2).map(cl=>towsCell(cl,q.cell)).join("")}`;}
+    <div class="tw hd"><b>Threats (Ancaman)</b><div class="note">${lst("T")}</div></div>${cells.slice(2).map(cl=>towsCell(cl,q.cell)).join("")}`;
+  $("#swSend").innerHTML=sendBar("swot");}
 const towsCell=([k,t,h],hl)=>`<div class="tw ${k===hl?"hl":""}"><label for="tows-${k}"><b>${t}</b><span class="note"> · ${h}</span></label><textarea id="tows-${k}" data-tows="${k}" placeholder="Tulis strategi ${k}…">${esc(SW.tows[k]||"")}</textarea></div>`;
 $("#tows").addEventListener("input",e=>{const k=e.target.dataset.tows; if(!k)return; SW.tows[k]=e.target.value; swEdited(); persistW();});
 $("#bCopySvgSwot").onclick=()=>copyText(buildSwotSVG(swCalc()).replace('width="100%"','width="420" height="420"'),"SVG diagram SWOT disalin");
@@ -1535,7 +1569,7 @@ function renderPeRes(){const L=peAll().sort((a,b)=>b.sc-a.sc), box=$("#peRes");
    <div class="pm"><div class="pmy">Dampak →</div><div class="pmg">${[5,4,3,2,1].map(i=>[1,2,3,4,5].map(l=>{const c=cell(i,l), sc=i*l; return `<div class="pmc ${sc>=15?"hi":sc>=8?"md":"lo"}" title="Dampak ${i} × kemungkinan ${l} = ${sc}">${c.map(r=>`<span class="${r.nat==="O"?"po":"pt"}" title="${esc(r.name)}">${r.k==="N"?"E₂":r.k==="E"?"E₁":r.k}</span>`).join("")}</div>`;}).join("")).join("")}</div><div class="pmx">Kemungkinan terjadi →</div></div>
    <p class="note"><span class="po sw">P</span> peluang &nbsp; <span class="pt sw">P</span> ancaman. Huruf = dimensi (E₁ ekonomi, E₂ lingkungan).</p></div></div>
   <div class="card"><h2>Gunakan hasil</h2><p class="note">Kirim faktor ke matriks SWOT: peluang menjadi <b>O</b>, ancaman menjadi <b>T</b>. Dampak dipakai sebagai rating awal (dibatasi 1–4); bobot diisi di SWOT.</p><button class="btn primary" id="bPeToSwot">Kirim ke SWOT (O &amp; T) →</button></div>
-  ${navRow(["pe-in","Faktor PESTEL"],null)}`;}
+  ${sendBar("pestel")}${navRow(["pe-in","Faktor PESTEL"],null)}`;}
 $("#peRes").addEventListener("click",e=>{ if(!e.target.closest("#bPeToSwot"))return; const L=peAll(); if(!L.length)return toast("Belum ada faktor PESTEL");
   const add=(q,r)=>{SW[q]=SW[q].filter(x=>x.name.trim()); if(!SW[q].some(x=>x.name.trim().toLowerCase()===r.name.trim().toLowerCase())) SW[q].push(swRow(r.name,"",Math.min(4,Math.max(1,+r.imp||0))||0));};
   L.forEach(r=>add(r.nat==="O"?"O":"T",r)); swEdited(); persistW(); toast(L.length+" faktor dikirim ke SWOT"); go("swot-in");});
@@ -1580,7 +1614,7 @@ function renderPoRes(){const F=poCalc(), box=$("#poRes"); const ok=F.filter(f=>N
    <tr class="hit"><td><b>Rata-rata intensitas</b></td><td></td><td class="m"><b>${fmt(avg,2)}</b></td><td><span class="badge ${c}">${t}</span></td></tr></tbody></table>
    <p class="big">${!Number.isFinite(avg)?"Belum ada penilaian":avg>3.5?"Daya tarik industri rendah":avg>=2.5?"Daya tarik industri sedang":"Daya tarik industri tinggi"}</p>
    <p class="note">Kekuatan terkuat menunjukkan sumber tekanan utama yang perlu dijawab strategi bersaing.</p></div></div>
-  ${navRow(["po-in","Indikator"],null)}`;}
+  ${sendBar("porter")}${navRow(["po-in","Indikator"],null)}`;}
 
 /* ---------------- CBA ---------------- */
 const CB_KEY="sk-cba-v1";
@@ -1734,7 +1768,7 @@ function renderBsRes(){const r=bsCalc(), box=$("#bsRes"); const [c,t]=bsLvl(r.to
   <div class="card"><div class="row"><h2>Rincian IKU</h2><span class="spacer"></span><span class="badge ${c}">${t}</span><button class="btn small" data-copyx="bsc">Salin untuk Excel</button></div>
   <div class="scroll" style="margin-top:10px;border:0"><table class="plain"><thead><tr><th>Perspektif / IKU</th><th>Bobot</th><th>Target</th><th>Realisasi</th><th>Arah</th><th>Capaian</th><th>Status</th></tr></thead><tbody>
   ${r.P.map(p=>`<tr><td colspan="7" class="grp">${esc(p.en)} (${esc(p.id)}) · skor ${pct(p.sc)}</td></tr>${p.rows.map(x=>{const [cc,tt]=bsLvl(x.a); return `<tr><td>${esc(x.name)}</td><td class="m">${x.w||"–"}</td><td class="m">${rp(num(x.target))}</td><td class="m">${rp(num(x.real))}</td><td>${x.pol==="up"?"↑ tinggi":"↓ rendah"}</td><td class="m">${pct(x.a)}${Number.isFinite(x.a)&&x.ac<x.a?` <small class="note">(dihitung ${pct(x.ac)})</small>`:""}</td><td><span class="badge ${cc}">${tt}</span></td></tr>`;}).join("")}`).join("")}</tbody></table></div></div>
-  ${navRow(["bs-in","Perspektif & IKU"],null)}`;}
+  ${sendBar("bsc")}${navRow(["bs-in","Perspektif & IKU"],null)}`;}
 
 /* ---------------- TSV & status for batch A ---------------- */
 Object.assign(TSVX,{
@@ -1841,7 +1875,7 @@ function renderSnRes(){const r=snCalc(), box=$("#snRes"); const top=(arr)=>{let 
   <div class="scroll" style="margin-top:10px;border:0"><table class="plain"><thead><tr><th>Aktor</th><th>Kelompok</th>${r.dir?"<th>Out-degree</th><th>In-degree</th>":"<th>Degree (Derajat)</th>"}<th>Degree ternormalisasi</th><th>Closeness (Kedekatan)</th><th>Betweenness (Keperantaraan)</th></tr></thead><tbody>
   ${r.A.map((a,i)=>`<tr><td><b>A${i+1}</b> ${esc(a.name)}</td><td>${esc(a.group||"–")}</td>${r.dir?`<td class="m">${r.outd[i]}</td><td class="m">${r.ind[i]}</td>`:`<td class="m">${r.deg[i]}</td>`}<td class="m">${fmt(r.n>1?(r.dir?r.deg[i]/(2*(r.n-1)):r.deg[i]/(r.n-1)):0,3)}</td><td class="m">${fmt(r.closeness[i],3)}</td><td class="m">${fmt(r.btw[i],3)}</td></tr>`).join("")}</tbody></table></div>
   <p class="note">Closeness memakai koreksi Wasserman–Faust untuk jaringan tak terhubung; betweenness dinormalisasi (algoritma Brandes).</p></div>
-  ${navRow(["sn-in","Aktor & hubungan"],null)}`;}
+  ${sendBar("sna")}${navRow(["sn-in","Aktor & hubungan"],null)}`;}
 $("#snRes").addEventListener("click",e=>{if(e.target.closest("#bCopySvgSn"))copyText(snSVG(snCalc()).replace('width="100%"','width="640" height="468"'),"SVG graf disalin");});
 
 /* ---------------- QUALITATIVE CODING (CDA · Ethnography · FGD) ---------------- */
@@ -1900,26 +1934,67 @@ function renderQlRes(){const r=qlCalc(), box=$("#qlRes"), tot=r.freq.reduce((a,b
    <div class="scroll" style="margin-top:8px"><table class="mx"><thead><tr><th class="rn">Kode</th>${r.C.map((_,j)=>`<th>K${j+1}</th>`).join("")}</tr></thead><tbody>${r.C.map((c,i)=>`<tr><th class="rn" title="${esc(c.name)}"><b>K${i+1}</b>${esc(c.name)}</th>${r.C.map((_,j)=>i===j?`<td class="diag"></td>`:`<td class="${r.co[i][j]?"tr":"zero"}">${r.co[i][j]}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>
   ${Object.keys(r.spk).length?`<div class="card"><h2>Kode per penutur</h2><div class="scroll" style="margin-top:8px;border:0"><table class="plain"><thead><tr><th>Penutur</th>${r.C.map((c,j)=>`<th title="${esc(c.name)}">K${j+1}</th>`).join("")}</tr></thead><tbody>${Object.entries(r.spk).map(([s,a])=>`<tr><td><b>${esc(s)}</b></td>${a.map(v=>`<td class="m">${v||""}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>`:""}
   <div class="card"><h2>Excerpts (Kutipan per kode)</h2>${r.C.map((c,i)=>r.quotes[i].length?`<details class="qx"><summary><b>${esc(c.name)}</b> <span class="note">· ${esc(c.theme||"")} · ${r.quotes[i].length} kutipan</span></summary>${r.quotes[i].map(q=>`<blockquote>${esc(q.text)}<cite>${esc(q.doc)}</cite></blockquote>`).join("")}</details>`:"").join("")}</div>
-  ${navRow(["ql-code","Pengodean"],null)}`;}
+  ${sendBar("qual")}${navRow(["ql-code","Pengodean"],null)}`;}
 
-/* ---------------- SPACE SYNTAX ---------------- */
-const SX_KEY="sk-syntax-v1";
-const sxBlank=()=>({spaces:[...Array(5)].map(()=>({id:newId(),name:""})),links:{},root:null,sample:false});
-function sxSample(){const n=["Luar (carrier)","Teras","Ruang tamu","Ruang keluarga","Dapur","Kamar tidur 1","Kamar tidur 2","Kamar mandi","Garasi"]; const S=n.map(x=>({id:newId(),name:x})), L={};
-  [[0,1],[0,8],[1,2],[2,3],[3,4],[3,5],[3,6],[3,7],[4,8],[4,7]].forEach(([i,j])=>L[pairKey(S[i].id,S[j].id,false)]=1); return {spaces:S,links:L,root:S[0].id,sample:true};}
-let SX=mkStore(SX_KEY,sxBlank); const persistSX=()=>saveK(SX_KEY,SX);
+/* ---------------- SPACE SYNTAX (convex graph + axial map) ---------------- */
+const SX_KEY="sk-syntax-v2";
+const sxBlank=()=>({mode:"convex",spaces:[...Array(5)].map(()=>({id:newId(),name:""})),links:{},root:null,lines:[],view:{minx:0,miny:0,maxx:1000,maxy:700},metric:"int",tool:"draw",sample:false});
+function sxSampleConvex(){const n=["Luar (carrier)","Teras","Ruang tamu","Ruang keluarga","Dapur","Kamar tidur 1","Kamar tidur 2","Kamar mandi","Garasi"]; const S=n.map(x=>({id:newId(),name:x})), L={};
+  [[0,1],[0,8],[1,2],[2,3],[3,4],[3,5],[3,6],[3,7],[4,8],[4,7]].forEach(([i,j])=>L[pairKey(S[i].id,S[j].id,false)]=1); return {...sxBlank(),mode:"convex",spaces:S,links:L,root:S[0].id,sample:true};}
+function sxSampleAxial(){const raw=[[40,350,960,350],[100,560,620,560],[300,150,920,150],[150,60,150,640],[400,320,400,600],[560,60,560,380],[820,90,820,640],[250,170,250,330],[120,250,600,250],[620,560,880,420],[60,470,300,470],[700,350,700,620],[480,620,940,620]];
+  return {...sxBlank(),mode:"axial",lines:raw.map(([x1,y1,x2,y2])=>({id:newId(),x1,y1,x2,y2})),view:{minx:0,miny:0,maxx:1000,maxy:700},sample:true};}
+let SX=(()=>{let o=loadK(SX_KEY); if(!o){const old=loadK("sk-syntax-v1"); if(old&&!old.sample&&old.spaces)o={...sxBlank(),...old,mode:"convex"};} if(!o||o.sample)o=sxBlank(); return o;})();
+let SXBG=null, SXBGop=0.45, SXSEL=null;
+const persistSX=()=>saveK(SX_KEY,SX);
 const sxSp=()=>SX.spaces.filter(s=>s.name.trim());
 const sxGet=(a,b)=>!!SX.links[pairKey(a,b,false)], sxSet=(a,b,v)=>{const k=pairKey(a,b,false); if(v)SX.links[k]=1; else delete SX.links[k];};
 const dval=k=>k>2?2*(k*(Math.log2((k+2)/3)-1)+1)/((k-1)*(k-2)):NaN;
-function sxCalc(){const S=sxSp(), k=S.length, adj=S.map((a,i)=>S.map((b,j)=>j).filter(j=>j!==i&&sxGet(a.id,S[j].id)));
-  const dist=S.map((_,i)=>bfs(adj,i)), D=dval(k);
-  const rows=S.map((s,i)=>{const d=dist[i], reach=d.every(x=>x<Infinity), TD=d.reduce((a,b)=>a+(b<Infinity?b:0),0), MD=k>1?TD/(k-1):NaN, RA=k>2?2*(MD-1)/(k-2):NaN, RRA=RA/D;
-    const ctrl=adj[i].reduce((a,j)=>a+1/adj[j].length,0); return {s,i,conn:adj[i].length,TD,MD,RA,RRA,int:RRA>0?1/RRA:NaN,ctrl,reach};});
-  const ri=Math.max(0,S.findIndex(s=>s.id===SX.root)); const rd=k?dist[ri]:[];
+/* geometry: axial intersection graph */
+function segInter(a,b,tol){const o=(p,q,r)=>(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]);
+  const p1=[a.x1,a.y1],p2=[a.x2,a.y2],p3=[b.x1,b.y1],p4=[b.x2,b.y2];
+  const d1=o(p3,p4,p1),d2=o(p3,p4,p2),d3=o(p1,p2,p3),d4=o(p1,p2,p4);
+  if(((d1>0&&d2<0)||(d1<0&&d2>0))&&((d3>0&&d4<0)||(d3<0&&d4>0)))return true;
+  const ds=(p,s1,s2)=>{const vx=s2[0]-s1[0],vy=s2[1]-s1[1],L=vx*vx+vy*vy; let t=L?((p[0]-s1[0])*vx+(p[1]-s1[1])*vy)/L:0; t=Math.max(0,Math.min(1,t)); return Math.hypot(p[0]-(s1[0]+t*vx),p[1]-(s1[1]+t*vy));};
+  return Math.min(ds(p1,p3,p4),ds(p2,p3,p4),ds(p3,p1,p2),ds(p4,p1,p2))<=tol;}
+const sxTol=()=>{const v=SX.view; return Math.hypot(v.maxx-v.minx,v.maxy-v.miny)*0.004;};
+function sxGraph(){ if(SX.mode==="axial"){const L=SX.lines, tol=sxTol(); const adj=L.map(()=>[]); for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++) if(segInter(L[i],L[j],tol)){adj[i].push(j); adj[j].push(i);} return {names:L.map((_,i)=>"L"+(i+1)),adj};}
+  const S=sxSp(); return {names:S.map(s=>s.name),adj:S.map((a,i)=>S.map((_,j)=>j).filter(j=>j!==i&&sxGet(a.id,S[j].id)))};}
+function r2(x,y){const n=x.length; if(n<3)return NaN; const mx=x.reduce((a,b)=>a+b,0)/n,my=y.reduce((a,b)=>a+b,0)/n; let sxy=0,sxx=0,syy=0; for(let i=0;i<n;i++){sxy+=(x[i]-mx)*(y[i]-my); sxx+=(x[i]-mx)**2; syy+=(y[i]-my)**2;} return sxx&&syy?(sxy*sxy)/(sxx*syy):NaN;}
+function sxCalc(){const g=sxGraph(), adj=g.adj, k=adj.length, dist=adj.map((_,i)=>bfs(adj,i)), Dk=dval(k);
+  // choice (Brandes, each unordered pair once)
+  const ch=Array(k).fill(0);
+  for(let s=0;s<k;s++){const St=[],P=adj.map(()=>[]),sig=Array(k).fill(0),d=Array(k).fill(-1); sig[s]=1; d[s]=0; const q=[s];
+    while(q.length){const v=q.shift(); St.push(v); for(const w of adj[v]){ if(d[w]<0){d[w]=d[v]+1;q.push(w);} if(d[w]===d[v]+1){sig[w]+=sig[v];P[w].push(v);} }}
+    const del=Array(k).fill(0); while(St.length){const w=St.pop(); for(const v of P[w])del[v]+=sig[v]/sig[w]*(1+del[w]); if(w!==s)ch[w]+=del[w];}}
+  const rows=adj.map((nb,i)=>{const d=dist[i], reachN=d.filter(x=>x<Infinity).length, TD=d.reduce((a,b)=>a+(b<Infinity?b:0),0);
+    const MD=reachN>1?TD/(reachN-1):NaN, RA=reachN>2?2*(MD-1)/(reachN-2):NaN, RRA=RA/dval(reachN), int=RRA>0?1/RRA:NaN;
+    const in3=d.filter(x=>x<=3), k3=in3.length, TD3=in3.reduce((a,b)=>a+b,0), MD3=k3>1?TD3/(k3-1):NaN, RA3=k3>2?2*(MD3-1)/(k3-2):NaN, RRA3=RA3/dval(k3), int3=RRA3>0?1/RRA3:NaN;
+    const C=ch[i]/2; return {i,name:g.names[i],conn:nb.length,TD,MD,RA,RRA,int,int3,choice:C,nach:TD>0?Math.log(C+1)/Math.log(TD+3):NaN,nain:TD>0?Math.pow(reachN,1.2)/TD:NaN,ctrl:nb.reduce((a,j)=>a+1/adj[j].length,0),reach:reachN===k};});
+  const ok=rows.filter(r=>Number.isFinite(r.int)&&Number.isFinite(r.int3));
+  const intel=r2(ok.map(r=>r.conn),ok.map(r=>r.int)), syn=r2(ok.map(r=>r.int3),ok.map(r=>r.int));
+  const ri=SX.mode==="convex"?Math.max(0,sxSp().findIndex(s=>s.id===SX.root)):0, rd=k?dist[ri]:[];
   const ints=rows.map(r=>r.int).filter(Number.isFinite), meanInt=ints.length?ints.reduce((a,b)=>a+b,0)/ints.length:NaN;
-  const sorted=[...rows].filter(r=>Number.isFinite(r.int)).sort((a,b)=>b.int-a.int), core=new Set(sorted.slice(0,Math.max(1,Math.round(k*0.25))).map(r=>r.i));
-  const edges=adj.reduce((a,x)=>a+x.length,0)/2, rings=Math.max(0,edges-k+ (rows.every(r=>r.reach)?1:0));
-  return {S,k,adj,rows,D,ri,rd,meanInt,core,edges,rings,connected:rows.every(r=>r.reach)};}
+  const core=new Set([...rows].filter(r=>Number.isFinite(r.int)).sort((a,b)=>b.int-a.int).slice(0,Math.max(1,Math.round(k*(SX.mode==="axial"?0.10:0.25)))).map(r=>r.i));
+  const edges=adj.reduce((a,x)=>a+x.length,0)/2;
+  return {g,k,adj,rows,D:Dk,ri,rd,meanInt,core,edges,rings:Math.max(0,edges-k+1),connected:rows.every(r=>r.reach),intel,syn,S:sxSp()};}
+const SXM={int:"Integration [HH] global",int3:"Integration [HH] R3",conn:"Connectivity",choice:"Choice",nach:"NACH (topologis)",nain:"NAIN (topologis)",MD:"Mean depth",ctrl:"Control"};
+function spectral(t){t=Math.max(0,Math.min(1,t)); const st=[[0,[46,73,180]],[0.25,[45,170,210]],[0.5,[70,180,90]],[0.75,[240,200,40]],[1,[215,40,40]]]; let i=0; while(i<st.length-2&&t>st[i+1][0])i++; const [a,ca]=st[i],[b,cb]=st[i+1], u=(t-a)/(b-a); return `rgb(${ca.map((c,j)=>Math.round(c+(cb[j]-c)*u)).join(",")})`;}
+function sxFit(){const L=SX.lines; if(!L.length){SX.view={minx:0,miny:0,maxx:1000,maxy:700};return;} let a=Infinity,b=Infinity,c=-Infinity,d=-Infinity; L.forEach(l=>{a=Math.min(a,l.x1,l.x2);b=Math.min(b,l.y1,l.y2);c=Math.max(c,l.x1,l.x2);d=Math.max(d,l.y1,l.y2);}); const pw=(c-a)||1,ph=(d-b)||1,m=0.06*Math.max(pw,ph); SX.view={minx:a-m,miny:b-m,maxx:c+m,maxy:d+m};}
+function sxXf(){const v=SX.view, W=1000, H=700, s=Math.min(W/(v.maxx-v.minx),H/(v.maxy-v.miny)), ox=(W-(v.maxx-v.minx)*s)/2, oy=(H-(v.maxy-v.miny)*s)/2;
+  return {s,W,H,X:x=>ox+(x-v.minx)*s,Y:y=>H-oy-(y-v.miny)*s,iX:px=>v.minx+(px-ox)/s,iY:py=>v.miny+(H-oy-py)/s};}
+function sxAxialSVG(r,colorBy,interactive){const t=sxXf(), L=SX.lines, c={line:css("--ink"),sheet:css("--sheet"),muted:css("--muted"),och:css("--ochre"),grid:css("--line")};
+  const vals=colorBy&&r?r.rows.map(x=>x[colorBy]):null, fin=vals?vals.filter(Number.isFinite):[], lo=fin.length?Math.min(...fin):0, hi=fin.length?Math.max(...fin):1;
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${t.W} ${t.H}" width="100%" class="${interactive?"axcanvas":""}" font-family="Atkinson Hyperlegible, Segoe UI, sans-serif" ${interactive?'id="axSvg"':""}><rect width="100%" height="100%" fill="${c.sheet}"/>`;
+  if(interactive&&SXBG)s+=`<image href="${SXBG}" x="0" y="0" width="${t.W}" height="${t.H}" preserveAspectRatio="xMidYMid meet" opacity="${SXBGop}"/>`;
+  if(interactive&&!SXBG)for(let gx=0;gx<=t.W;gx+=50)s+=`<line x1="${gx}" y1="0" x2="${gx}" y2="${t.H}" stroke="${c.grid}" stroke-width=".5" opacity=".6"/>`;
+  if(interactive&&!SXBG)for(let gy=0;gy<=t.H;gy+=50)s+=`<line x1="0" y1="${gy}" x2="${t.W}" y2="${gy}" stroke="${c.grid}" stroke-width=".5" opacity=".6"/>`;
+  const order=L.map((_,i)=>i); if(vals)order.sort((a,b)=>(vals[a]||0)-(vals[b]||0));
+  order.forEach(i=>{const l=L[i], v=vals?vals[i]:null, col=vals?(Number.isFinite(v)?spectral(hi>lo?(v-lo)/(hi-lo):0.5):c.muted):(SXSEL===l.id?c.och:c.line);
+    s+=`<line x1="${t.X(l.x1)}" y1="${t.Y(l.y1)}" x2="${t.X(l.x2)}" y2="${t.Y(l.y2)}" stroke="${col}" stroke-width="${vals?4:SXSEL===l.id?5:3}" stroke-linecap="round" ${interactive?`data-line="${l.id}" class="axl"`:""}><title>L${i+1}${vals?` · ${SXM[colorBy]}: ${fmt(v,3)}`:""}</title></line>`;
+    if(!vals||L.length<=40){const mx=(t.X(l.x1)+t.X(l.x2))/2, my=(t.Y(l.y1)+t.Y(l.y2))/2; s+=`<text x="${mx+4}" y="${my-5}" font-size="${interactive?12:17}" fill="${c.muted}" font-family="JetBrains Mono, monospace" paint-order="stroke" stroke="${c.sheet}" stroke-width="3" pointer-events="none">${i+1}</text>`;}});
+  if(interactive)s+=`<line id="axPreview" x1="0" y1="0" x2="0" y2="0" stroke="${c.och}" stroke-width="3" stroke-dasharray="6 4" visibility="hidden" pointer-events="none"/>`;
+  if(vals){const lx=t.W-330,ly=t.H-52; for(let q=0;q<20;q++)s+=`<rect x="${lx+q*15}" y="${ly}" width="15" height="16" fill="${spectral(q/19)}"/>`; s+=`<text x="${lx}" y="${ly+36}" font-size="19" fill="${c.line}" font-family="JetBrains Mono, monospace" paint-order="stroke" stroke="${c.sheet}" stroke-width="3">${fmt(lo,2)}</text><text x="${lx+300}" y="${ly+36}" text-anchor="end" font-size="19" fill="${c.line}" font-family="JetBrains Mono, monospace" paint-order="stroke" stroke="${c.sheet}" stroke-width="3">${fmt(hi,2)}</text><text x="${lx}" y="${ly-8}" font-size="19" font-weight="700" fill="${c.line}" paint-order="stroke" stroke="${c.sheet}" stroke-width="3">${esc(SXM[colorBy])}</text>`;}
+  return s+"</svg>";}
 function sxJGraph(r){ if(r.k<2)return `<p class="note" style="padding:16px">Isi minimal dua ruang.</p>`;
   const lv={}; r.rd.forEach((d,i)=>{const L=d<Infinity?d:-1; (lv[L]=lv[L]||[]).push(i);}); const keys=Object.keys(lv).map(Number).filter(x=>x>=0).sort((a,b)=>a-b);
   const W=Math.max(420,Math.max(...keys.map(L=>lv[L].length))*120+60), gy=86, H=keys.length*gy+50, pos={};
@@ -1928,33 +2003,106 @@ function sxJGraph(r){ if(r.k<2)return `<p class="note" style="padding:16px">Isi 
   let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="Atkinson Hyperlegible, Segoe UI, sans-serif"><rect width="100%" height="100%" fill="${c.sheet}"/>`;
   keys.forEach((L,li)=>s+=`<text x="8" y="${H-26-li*gy}" font-size="11" fill="${c.muted}" font-family="JetBrains Mono, monospace">d=${L}</text><line x1="40" x2="${W-8}" y1="${H-30-li*gy}" y2="${H-30-li*gy}" stroke="${c.line}" stroke-dasharray="2 6"/>`);
   r.adj.forEach((L,i)=>L.forEach(j=>{if(j<i||!pos[i]||!pos[j])return; s+=`<line x1="${pos[i].x}" y1="${pos[i].y}" x2="${pos[j].x}" y2="${pos[j].y}" stroke="${c.pet}" stroke-width="1.6"/>`;}));
-  Object.entries(pos).forEach(([i,p])=>{i=+i; const root=i===r.ri, core=r.core.has(i); s+=`<circle cx="${p.x}" cy="${p.y}" r="${root?13:11}" fill="${core?c.och2:c.soft}" stroke="${core?c.och:c.pet}" stroke-width="${root?3:1.6}"/>${root?`<line x1="${p.x-6}" y1="${p.y-6}" x2="${p.x+6}" y2="${p.y+6}" stroke="${c.pet}" stroke-width="2"/><line x1="${p.x+6}" y1="${p.y-6}" x2="${p.x-6}" y2="${p.y+6}" stroke="${c.pet}" stroke-width="2"/>`:`<text x="${p.x}" y="${p.y+4}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${c.ink}" font-family="JetBrains Mono, monospace">${i+1}</text>`}<text x="${p.x}" y="${p.y+26}" text-anchor="middle" font-size="11" fill="${c.ink}" paint-order="stroke" stroke="${c.sheet}" stroke-width="3">${esc(r.S[i].name.slice(0,18))}</text>`;});
+  Object.entries(pos).forEach(([i,p])=>{i=+i; const root=i===r.ri, core=r.core.has(i); s+=`<circle cx="${p.x}" cy="${p.y}" r="${root?13:11}" fill="${core?c.och2:c.soft}" stroke="${core?c.och:c.pet}" stroke-width="${root?3:1.6}"/>${root?`<line x1="${p.x-6}" y1="${p.y-6}" x2="${p.x+6}" y2="${p.y+6}" stroke="${c.pet}" stroke-width="2"/><line x1="${p.x+6}" y1="${p.y-6}" x2="${p.x-6}" y2="${p.y+6}" stroke="${c.pet}" stroke-width="2"/>`:`<text x="${p.x}" y="${p.y+4}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${c.ink}" font-family="JetBrains Mono, monospace">${i+1}</text>`}<text x="${p.x}" y="${p.y+26}" text-anchor="middle" font-size="11" fill="${c.ink}" paint-order="stroke" stroke="${c.sheet}" stroke-width="3">${esc(r.g.names[i].slice(0,18))}</text>`;});
   return s+"</svg>";}
-function renderSxIn(){const box=$("#sxIn"), S=sxSp(); keepFocus(box,()=>{box.innerHTML=`<h1>Space Syntax (Sintaksis Ruang)</h1>
-  <p class="lede">Daftar ruang (convex space) dan hubungan permeabilitas di antaranya (ada pintu/bukaan yang bisa dilalui). Pilih ruang akar, biasanya ruang luar (carrier), untuk graf justifikasi.</p>
-  ${banner(SX.sample,"denah rumah tinggal satu lantai")}
-  <div class="grid2"><div class="card"><h2>Spaces (Ruang)</h2><div class="elist" id="sxList" style="margin-top:10px"></div><button class="btn small" id="bSxAdd" style="margin-top:10px">+ Tambah ruang</button></div>
+function sxScatter(r){const P=r.rows.filter(x=>Number.isFinite(x.int)); if(P.length<3)return ""; const W=360,H=260,m={l:44,r:12,t:12,b:36}, xs=P.map(p=>p.conn), ys=P.map(p=>p.int), x0=0,x1=Math.max(...xs)+1, y0=Math.min(...ys)*0.9, y1=Math.max(...ys)*1.05, X=v=>m.l+(W-m.l-m.r)*(v-x0)/(x1-x0), Y=v=>m.t+(H-m.t-m.b)*(1-(v-y0)/(y1-y0));
+  const n=P.length, mx=xs.reduce((a,b)=>a+b,0)/n, my=ys.reduce((a,b)=>a+b,0)/n, b=xs.reduce((s,x,i)=>s+(x-mx)*(ys[i]-my),0)/(xs.reduce((s,x)=>s+(x-mx)**2,0)||1), a=my-b*mx;
+  const c={ink:css("--ink"),muted:css("--muted"),line:css("--line"),sheet:css("--sheet"),pet:css("--petrol"),och:css("--ochre")};
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px" font-family="Atkinson Hyperlegible, Segoe UI, sans-serif"><rect width="100%" height="100%" fill="${c.sheet}"/><rect x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}" fill="none" stroke="${c.line}"/>`;
+  [x0,(x0+x1)/2,x1].forEach(v=>s+=`<text x="${X(v)}" y="${H-m.b+14}" text-anchor="middle" font-size="10" fill="${c.muted}" font-family="JetBrains Mono, monospace">${fmt(v,0)}</text>`);
+  [y0,(y0+y1)/2,y1].forEach(v=>s+=`<text x="${m.l-5}" y="${Y(v)+3}" text-anchor="end" font-size="10" fill="${c.muted}" font-family="JetBrains Mono, monospace">${fmt(v,2)}</text>`);
+  s+=`<line x1="${X(x0)}" y1="${Y(a+b*x0)}" x2="${X(x1)}" y2="${Y(a+b*x1)}" stroke="${c.och}" stroke-width="1.6"/>`; P.forEach(p=>s+=`<circle cx="${X(p.conn)}" cy="${Y(p.int)}" r="3.5" fill="${c.pet}" fill-opacity=".8"/>`);
+  return s+`<text x="${(W+m.l)/2}" y="${H-4}" text-anchor="middle" font-size="11" font-weight="700" fill="${c.ink}">Connectivity</text><text transform="translate(12 ${(H-m.b)/2}) rotate(-90)" text-anchor="middle" font-size="11" font-weight="700" fill="${c.ink}">Integration HH</text></svg>`;}
+/* ---- import parsers ---- */
+function parseGeoJSON(txt){const o=JSON.parse(txt), out=[]; const feats=o.type==="FeatureCollection"?o.features:o.type==="Feature"?[o]:[{geometry:o}];
+  const addLS=cs=>{for(let i=0;i+1<cs.length;i++)out.push({x1:+cs[i][0],y1:+cs[i][1],x2:+cs[i+1][0],y2:+cs[i+1][1]});};
+  feats.forEach(f=>{const g=f&&f.geometry; if(!g)return; if(g.type==="LineString")addLS(g.coordinates); else if(g.type==="MultiLineString")g.coordinates.forEach(addLS);}); return out;}
+function parseDXF(txt){const L=txt.replace(/\r/g,"").split("\n"), out=[]; let i=0, inEnt=false;
+  while(i<L.length-1){const code=L[i].trim(), val=L[i+1].trim();
+    if(code==="2"&&val==="ENTITIES")inEnt=true; if(code==="0"&&val==="ENDSEC")inEnt=false;
+    if(inEnt&&code==="0"&&(val==="LINE"||val==="LWPOLYLINE")){const type=val; i+=2; const g={}, pts=[]; let cx=null;
+      while(i<L.length-1&&L[i].trim()!=="0"){const c=L[i].trim(), v=parseFloat(L[i+1]); if(type==="LINE"){g[c]=v;} else {if(c==="10"){cx=v;} else if(c==="20"&&cx!==null){pts.push([cx,v]); cx=null;} else if(c==="70")g.flag=v;} i+=2;}
+      if(type==="LINE"&&[g["10"],g["20"],g["11"],g["21"]].every(Number.isFinite))out.push({x1:g["10"],y1:g["20"],x2:g["11"],y2:g["21"]});
+      if(type==="LWPOLYLINE"){for(let k=0;k+1<pts.length;k++)out.push({x1:pts[k][0],y1:pts[k][1],x2:pts[k+1][0],y2:pts[k+1][1]}); if((g.flag&1)&&pts.length>2)out.push({x1:pts[pts.length-1][0],y1:pts[pts.length-1][1],x2:pts[0][0],y2:pts[0][1]});}
+      continue;}
+    i+=2;}
+  return out;}
+/* ---- UI ---- */
+window.__parseDXF=parseDXF; window.__parseGeoJSON=parseGeoJSON;
+function renderSxIn(){const box=$("#sxIn"), S=sxSp(), ax=SX.mode==="axial";
+  keepFocus(box,()=>{box.innerHTML=`<h1>Space Syntax (Sintaksis Ruang)</h1>
+  <p class="lede">${ax?"Gambar garis axial (garis pandang/gerak terpanjang yang menembus ruang terbuka) di atas denah atau peta, atau impor dari DXF/GeoJSON. Garis yang berpotongan atau bersentuhan dianggap terhubung.":"Daftar ruang (convex space) dan hubungan permeabilitas di antaranya. Pilih ruang akar, biasanya ruang luar (carrier), untuk graf justifikasi."}</p>
+  <div class="tabsx"><button class="tabx ${ax?"":"on"}" data-sxmode="convex">Graf ruang (convex space)</button><button class="tabx ${ax?"on":""}" data-sxmode="axial">Peta axial (garis)</button></div>
+  ${banner(SX.sample,ax?"jaringan jalan kampung, 13 garis axial":"denah rumah tinggal satu lantai")}
+  ${ax?`<div class="card"><div class="row axtools">
+     <span class="rate"><button data-sxtool="draw" class="${SX.tool==="draw"?"on":""}" style="width:auto;padding:0 10px">✎ Gambar</button><button data-sxtool="select" class="${SX.tool==="select"?"on":""}" style="width:auto;padding:0 10px">⌖ Pilih</button></span>
+     <button class="btn small" id="bAxDel" ${SXSEL?"":"disabled"}>Hapus garis terpilih</button><button class="btn small" id="bAxUndo">Batalkan garis terakhir</button><button class="btn small" id="bAxFit">Paskan tampilan</button><button class="btn small" id="bAxClear">Hapus semua</button>
+     <span class="spacer"></span><span class="note">${SX.lines.length} garis</span></div>
+    <div class="axwrap">${sxAxialSVG(null,null,true)}</div>
+    <div class="row" style="margin-top:10px"><label class="btn small">Latar denah/peta (gambar)…<input type="file" id="axBg" accept="image/*" hidden></label>${SXBG?`<label class="row note" style="gap:6px">Transparansi <input type="range" id="axBgOp" min="0.1" max="1" step="0.05" value="${SXBGop}"></label><button class="btn small" id="bAxBgOff">Lepas latar</button>`:""}
+     <label class="btn small">Impor DXF / GeoJSON…<input type="file" id="axImp" accept=".dxf,.geojson,.json" hidden></label><span class="note">Tarik untuk menggambar garis; ujung garis menempel otomatis ke ujung garis lain yang dekat. Gambar latar tidak disimpan.</span></div></div>`
+  :`<div class="grid2"><div class="card"><h2>Spaces (Ruang)</h2><div class="elist" id="sxList" style="margin-top:10px"></div><button class="btn small" id="bSxAdd" style="margin-top:10px">+ Tambah ruang</button></div>
   <div class="card"><h2>Root (Ruang akar)</h2><select id="sxRoot" style="margin-top:8px;width:100%">${S.map(s=>`<option value="${s.id}" ${s.id===SX.root?"selected":""}>${esc(s.name)}</option>`).join("")}</select><p class="note">Kedalaman pada graf justifikasi dihitung dari ruang ini.</p></div></div>
-  <div class="card"><h2>Permeability matrix (Matriks hubungan ruang)</h2><p class="note">Klik atau sapukan pada sel untuk menandai ruang yang terhubung langsung.</p><div class="scroll"><table class="mx" id="sxMx"></table></div></div>
-  <div class="row"><button class="btn" id="bSxSample">Muat contoh penelitian</button><span class="spacer"></span><button class="btn primary" data-go="sx-res">Lihat hasil →</button></div>`;});
-  listEditor($("#sxList"),SX.spaces,["Luar (carrier)","Teras","Ruang tamu","Ruang keluarga","Dapur"],re=>{SX.sample=false; persistSX(); if(re)renderSxIn(); else sxMxOnly(); updateStatus();},"R"); sxMxOnly();}
+  <div class="card"><h2>Permeability matrix (Matriks hubungan ruang)</h2><p class="note">Klik atau sapukan pada sel untuk menandai ruang yang terhubung langsung.</p><div class="scroll"><table class="mx" id="sxMx"></table></div></div>`}
+  <div class="row"><button class="btn" id="bSxSample">Muat contoh ${ax?"peta axial":"denah"}</button><span class="spacer"></span><button class="btn primary" data-go="sx-res">Hitung ukuran sintaksis →</button></div>`;});
+  if(!ax){listEditor($("#sxList"),SX.spaces,["Luar (carrier)","Teras","Ruang tamu","Ruang keluarga","Dapur"],re=>{SX.sample=false; persistSX(); if(re)renderSxIn(); else sxMxOnly(); updateStatus();},"R"); sxMxOnly();}
+  else bindAxial();}
 function sxMxOnly(){binMatrix($("#sxMx"),sxSp(),"R",sxGet,(a,b,v)=>{sxSet(a,b,v); SX.sample=false;},false,()=>{persistSX(); updateStatus(); sxMxOnly();});}
-$("#sxIn").addEventListener("change",e=>{if(e.target.id==="sxRoot"){SX.root=e.target.value; persistSX();}});
-$("#sxIn").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return;
-  if(b.id==="bSxAdd"){SX.spaces.push({id:newId(),name:""}); persistSX(); renderSxIn();}
-  else if(b.id==="bSxSample"){ if(!SX.sample&&sxSp().length&&!confirmArm(b,"Klik lagi: ganti isian dengan contoh?","Muat contoh penelitian"))return; SX=sxSample(); persistSX(); renderSxIn(); updateStatus(); toast("Contoh denah dimuat");}});
-function renderSxRes(){const r=sxCalc(), box=$("#sxRes");
+function bindAxial(){const svg=$("#axSvg"); if(!svg)return; let start=null;
+  const pt=e=>{const r=svg.getBoundingClientRect(), t=sxXf(); const px=(e.clientX-r.left)/r.width*t.W, py=(e.clientY-r.top)/r.height*t.H; return {px,py,x:t.iX(px),y:t.iY(py)};};
+  const snap=p=>{const t=sxXf(); let best=null,bd=12; SX.lines.forEach(l=>[[l.x1,l.y1],[l.x2,l.y2]].forEach(([x,y])=>{const d=Math.hypot(t.X(x)-p.px,t.Y(y)-p.py); if(d<bd){bd=d;best={x,y};}})); return best?{...p,x:best.x,y:best.y,px:t.X(best.x),py:t.Y(best.y)}:p;};
+  svg.addEventListener("pointerdown",e=>{ if(SX.tool==="select"){const l=e.target.closest(".axl"); SXSEL=l?l.dataset.line:null; renderSxIn(); return;}
+    e.preventDefault(); start=snap(pt(e)); svg.setPointerCapture&&e.pointerId!==undefined&&svg.setPointerCapture(e.pointerId); const pv=$("#axPreview"); pv.setAttribute("x1",start.px); pv.setAttribute("y1",start.py); pv.setAttribute("x2",start.px); pv.setAttribute("y2",start.py); pv.setAttribute("visibility","visible");});
+  svg.addEventListener("pointermove",e=>{ if(!start)return; const p=snap(pt(e)), pv=$("#axPreview"); pv.setAttribute("x2",p.px); pv.setAttribute("y2",p.py);});
+  svg.addEventListener("pointerup",e=>{ if(!start)return; const p=snap(pt(e)), s0=start; start=null; if(Math.hypot(p.px-s0.px,p.py-s0.py)<8){$("#axPreview").setAttribute("visibility","hidden"); return;}
+    SX.lines.push({id:newId(),x1:s0.x,y1:s0.y,x2:p.x,y2:p.y}); SX.sample=false; persistSX(); renderSxIn(); updateStatus();});}
+$("#sxIn").addEventListener("change",e=>{const t=e.target;
+  if(t.id==="sxRoot"){SX.root=t.value; persistSX();}
+  else if(t.id==="axBg"&&t.files[0]){const f=t.files[0], r=new FileReader(); r.onload=()=>{SXBG=r.result; renderSxIn(); toast("Gambar latar dipasang. Gambar garis di atasnya.");}; r.readAsDataURL(f);}
+  else if(t.id==="axImp"&&t.files[0]){const f=t.files[0], r=new FileReader(); r.onload=()=>{try{const L=/\.dxf$/i.test(f.name)?parseDXF(r.result):parseGeoJSON(r.result); if(!L.length)throw new Error("kosong");
+      SX.lines=L.filter(l=>[l.x1,l.y1,l.x2,l.y2].every(Number.isFinite)&&(l.x1!==l.x2||l.y1!==l.y2)).map(l=>({id:newId(),...l})); SXBG=null; sxFit(); SX.sample=false; persistSX(); renderSxIn(); updateStatus(); toast(`${SX.lines.length} garis diimpor dari ${f.name}`);}
+    catch(err){toast("Berkas tidak terbaca. Gunakan DXF berisi LINE/LWPOLYLINE atau GeoJSON berisi LineString.");}}; r.readAsText(f);} t.value&&(t.value="");});
+$("#sxIn").addEventListener("input",e=>{if(e.target.id==="axBgOp"){SXBGop=+e.target.value; const im=$("#axSvg image"); if(im)im.setAttribute("opacity",SXBGop);}});
+$("#sxIn").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b||b.classList.contains("bcell"))return;
+  if(b.dataset.sxmode){SX.mode=b.dataset.sxmode; persistSX(); renderSxIn(); updateStatus(); return;}
+  if(b.dataset.sxtool){SX.tool=b.dataset.sxtool; persistSX(); renderSxIn(); return;}
+  if(b.id==="bAxDel"&&SXSEL){SX.lines=SX.lines.filter(l=>l.id!==SXSEL); SXSEL=null;}
+  else if(b.id==="bAxUndo"){SX.lines.pop();}
+  else if(b.id==="bAxFit"){sxFit(); persistSX(); renderSxIn(); return;}
+  else if(b.id==="bAxClear"){ if(!confirmArm(b,"Klik lagi: hapus semua garis?","Hapus semua"))return; SX.lines=[]; SXSEL=null;}
+  else if(b.id==="bAxBgOff"){SXBG=null; renderSxIn(); return;}
+  else if(b.id==="bSxAdd"){SX.spaces.push({id:newId(),name:""});}
+  else if(b.id==="bSxSample"){const ax=SX.mode==="axial", has=ax?SX.lines.length:sxSp().length; if(!SX.sample&&has&&!confirmArm(b,"Klik lagi: ganti isian dengan contoh?",b.textContent))return; const keepOther=ax?{spaces:SX.spaces,links:SX.links,root:SX.root}:{lines:SX.lines,view:SX.view}; SX={...(ax?sxSampleAxial():sxSampleConvex()),...keepOther}; SXBG=null; persistSX(); renderSxIn(); updateStatus(); toast("Contoh dimuat"); return;}
+  else return; SX.sample=false; persistSX(); renderSxIn(); updateStatus();});
+document.addEventListener("keydown",e=>{ if((e.key==="Delete"||e.key==="Backspace")&&SXSEL&&S.step==="sx-in"&&!e.target.closest("input,textarea")){SX.lines=SX.lines.filter(l=>l.id!==SXSEL); SXSEL=null; persistSX(); renderSxIn(); updateStatus();}});
+function sxCSV(){const r=sxCalc(); return [["Nama","Connectivity","Total depth","Mean depth","RA","RRA","Integration HH","Integration HH R3","Choice","NACH (topologis)","NAIN (topologis)","Control"],...r.rows.map(x=>[x.name,x.conn,x.TD,fmt(x.MD,4),fmt(x.RA,4),fmt(x.RRA,4),fmt(x.int,4),fmt(x.int3,4),fmt(x.choice,2),fmt(x.nach,4),fmt(x.nain,4),fmt(x.ctrl,4)])].map(a=>a.join(SX.csvSep||"\t")).join("\n");}
+function sxGeoJSON(){const r=sxCalc(); const pr=x=>({id:x.name,connectivity:x.conn,total_depth:x.TD,mean_depth:+x.MD.toFixed(6),integration_hh:+(x.int||0).toFixed(6),integration_hh_r3:+(x.int3||0).toFixed(6),choice:+x.choice.toFixed(3),nach:+(x.nach||0).toFixed(6),nain:+(x.nain||0).toFixed(6),control:+x.ctrl.toFixed(6)});
+  return JSON.stringify({type:"FeatureCollection",features:SX.lines.map((l,i)=>({type:"Feature",properties:pr(r.rows[i]),geometry:{type:"LineString",coordinates:[[l.x1,l.y1],[l.x2,l.y2]]}}))},null,1);}
+function renderSxRes(){const r=sxCalc(), box=$("#sxRes"), ax=SX.mode==="axial"; const met=SX.metric in SXM?SX.metric:"int";
+  const topBy=(f,dir)=>{const v=r.rows.filter(x=>Number.isFinite(x[f])); if(!v.length)return null; return v.sort((a,b)=>dir*(b[f]-a[f]))[0];};
+  const hi=topBy("int",1), lo=topBy("int",-1), chMax=topBy("choice",1);
   box.innerHTML=`<h1>Syntactic measures (Ukuran sintaksis)</h1>
-  ${!r.connected&&r.k?`<div class="banner"><span>Ada ruang yang tidak terhubung ke ruang lain. Ukuran integrasi hanya menghitung ruang yang terjangkau.</span></div>`:""}
-  <div class="kpis"><div><span>Jumlah ruang (k)</span><b>${r.k}</b></div><div><span>Integrasi rata-rata</span><b>${fmt(r.meanInt,3)}</b></div><div><span>Hubungan / cincin sirkulasi</span><b>${r.edges} / ${r.rings}</b></div><div><span>Nilai D (Hillier &amp; Hanson)</span><b>${fmt(r.D,3)}</b></div></div>
-  <div class="grid2"><div class="card"><div class="row"><h2>Justified graph (Graf justifikasi)</h2><span class="spacer"></span><button class="btn small" id="bCopySvgSx">Salin SVG</button></div><div class="svgwrap" style="margin-top:10px">${sxJGraph(r)}</div><p class="note">Akar ditandai ×. Lingkaran jingga = inti integrasi (25% ruang paling terintegrasi).</p></div>
-  <div class="card"><h2>Bacaan</h2>${r.k>=3?`<p>Ruang paling terintegrasi: <b>${esc(r.S[[...r.rows].sort((a,b)=>(b.int||0)-(a.int||0))[0].i].name)}</b>. Ruang paling terpisah (dalam): <b>${esc(r.S[[...r.rows].sort((a,b)=>(a.int||1e9)-(b.int||1e9))[0].i].name)}</b>.</p><p class="note">Ruang dengan integrasi tinggi cenderung menjadi pusat pergerakan dan pertemuan; ruang dengan kedalaman tinggi cenderung privat. Control value &gt; 1 menunjukkan ruang yang mengendalikan akses ke ruang tetangganya.</p>`:`<p class="note">Isi minimal tiga ruang.</p>`}</div></div>
-  <div class="card"><div class="row"><h2>Tabel ukuran</h2><span class="spacer"></span><button class="btn small" data-copyx="syntax">Salin untuk Excel</button></div>
-  <div class="scroll" style="margin-top:10px;border:0"><table class="plain"><thead><tr><th>Ruang</th><th>Konektivitas</th><th>Kedalaman dari akar</th><th>Total depth</th><th>Mean depth</th><th>RA</th><th>RRA</th><th>Integrasi (1/RRA)</th><th>Control</th></tr></thead><tbody>
-  ${r.rows.map(x=>`<tr class="${r.core.has(x.i)?"hit":""}"><td><b>R${x.i+1}</b> ${esc(x.s.name)}</td><td class="m">${x.conn}</td><td class="m">${r.rd[x.i]<Infinity?r.rd[x.i]:"–"}</td><td class="m">${x.TD}</td><td class="m">${fmt(x.MD,3)}</td><td class="m">${fmt(x.RA,3)}</td><td class="m">${fmt(x.RRA,3)}</td><td class="m"><b>${fmt(x.int,3)}</b></td><td class="m">${fmt(x.ctrl,3)}</td></tr>`).join("")}</tbody></table></div>
-  <p class="note">MD = TD / (k − 1); RA = 2(MD − 1) / (k − 2); RRA = RA / D<sub>k</sub>; control = Σ 1/konektivitas tetangga.</p></div>
-  ${navRow(["sx-in","Ruang & hubungan"],null)}`;}
-$("#sxRes").addEventListener("click",e=>{if(e.target.closest("#bCopySvgSx"))copyText(sxJGraph(sxCalc()),"SVG graf justifikasi disalin");});
+  <p class="lede">${ax?"Analisis peta axial: setiap garis adalah simpul; garis yang berpotongan saling terhubung (kedalaman topologis = 1).":"Analisis graf ruang convex."}</p>
+  ${!r.connected&&r.k?`<div class="banner"><span>Ada ${ax?"garis":"ruang"} yang tidak terhubung ke sistem utama. Ukuran dihitung pada bagian yang terjangkau dari setiap simpul.</span></div>`:""}
+  <div class="kpis"><div><span>Jumlah ${ax?"garis":"ruang"} (k) / hubungan</span><b>${r.k} / ${r.edges}</b></div><div><span>Integrasi global rata-rata</span><b>${fmt(r.meanInt,3)}</b></div>
+   <div><span>Intelligibility <small>(R² connectivity vs integrasi global)</small></span><b>${fmt(r.intel,3)}</b></div><div><span>Synergy <small>(R² integrasi R3 vs global)</small></span><b>${fmt(r.syn,3)}</b></div></div>
+  <div class="grid2"><div class="card"><div class="row"><h2>${ax?"Axial map (Peta axial)":"Justified graph (Graf justifikasi)"}</h2><span class="spacer"></span>${ax?`<select id="sxMetric" aria-label="Warnai menurut">${Object.entries(SXM).map(([k,n])=>`<option value="${k}" ${k===met?"selected":""}>${n}</option>`).join("")}</select>`:""}<button class="btn small" id="bCopySvgSx">Salin SVG</button><button class="btn small desk-only" id="bPngSx">Simpan PNG…</button></div>
+    <div class="svgwrap" style="margin-top:10px">${ax?sxAxialSVG(r,met,false):sxJGraph(r)}</div><p class="note">${ax?"Gradasi biru (rendah) → merah (tinggi).":"Akar ditandai ×. Lingkaran jingga = inti integrasi (25% ruang paling terintegrasi)."}</p></div>
+  <div class="card"><h2>Bacaan</h2>${r.k>=3&&hi?`<p>${ax?"Garis":"Ruang"} paling terintegrasi: <b>${esc(hi.name)}</b> (${fmt(hi.int,3)}). Paling terpisah: <b>${esc(lo.name)}</b> (${fmt(lo.int,3)}). Choice tertinggi: <b>${esc(chMax.name)}</b> (${fmt(chMax.choice,1)}), jalur yang paling sering dilalui rute terpendek.</p>
+   <p class="note">Intelligibility tinggi (mendekati 1) berarti struktur global mudah dipahami dari pengalaman lokal. ${ax?"Inti integrasi (10% garis tertinggi) biasanya menjadi koridor aktivitas utama.":"Ruang dengan kedalaman tinggi cenderung privat; control &gt; 1 menunjukkan ruang yang mengendalikan akses ke tetangganya."}</p>`:`<p class="note">Isi minimal tiga ${ax?"garis":"ruang"}.</p>`}
+   <h3 style="margin-top:12px;font:600 14px var(--f-display)">Connectivity vs integrasi</h3>${sxScatter(r)}</div></div>
+  <div class="card"><div class="row"><h2>Tabel ukuran</h2><span class="spacer"></span><button class="btn small" data-copyx="syntax">Salin CSV</button>${ax?`<button class="btn small" id="bCopyGeo">Salin GeoJSON</button>`:""}<button class="btn small desk-only" id="bSaveCsvSx">Simpan CSV…</button>${ax?`<button class="btn small desk-only" id="bSaveGeoSx">Simpan GeoJSON…</button>`:""}</div>
+  <div class="scroll" style="margin-top:10px;border:0"><table class="plain"><thead><tr><th>${ax?"Garis":"Ruang"}</th><th>Conn</th>${ax?"":"<th>Depth dari akar</th>"}<th>TD</th><th>MD</th><th>RRA</th><th>Int HH</th><th>Int R3</th><th>Choice</th><th>NACH</th><th>NAIN</th><th>Control</th></tr></thead><tbody>
+  ${r.rows.map(x=>`<tr class="${r.core.has(x.i)?"hit":""}"><td><b>${ax?"":"R"+(x.i+1)+" "}</b>${esc(x.name)}</td><td class="m">${x.conn}</td>${ax?"":`<td class="m">${r.rd[x.i]<Infinity?r.rd[x.i]:"–"}</td>`}<td class="m">${x.TD}</td><td class="m">${fmt(x.MD,3)}</td><td class="m">${fmt(x.RRA,3)}</td><td class="m"><b>${fmt(x.int,3)}</b></td><td class="m">${fmt(x.int3,3)}</td><td class="m">${fmt(x.choice,1)}</td><td class="m">${fmt(x.nach,3)}</td><td class="m">${fmt(x.nain,3)}</td><td class="m">${fmt(x.ctrl,3)}</td></tr>`).join("")}</tbody></table></div>
+  <p class="note">MD = TD/(k−1); RA = 2(MD−1)/(k−2); RRA = RA/D<sub>k</sub>; Integration HH = 1/RRA (Hillier &amp; Hanson). R3 = dihitung dalam radius 3 langkah. Choice = jumlah rute terpendek yang melewati simpul (tiap pasangan dihitung sekali, rute bercabang dibagi rata). NACH = log(CH+1)/log(TD+3); NAIN = NC<sup>1,2</sup>/TD (Hillier, Yang &amp; Turner, 2012), di sini dihitung pada graf topologis, bukan segmen sudut.</p></div>
+  ${sendBar("syntax")}${navRow(["sx-in",ax?"Peta axial":"Ruang & hubungan"],null)}`;}
+$("#sxRes").addEventListener("change",e=>{if(e.target.id==="sxMetric"){SX.metric=e.target.value; persistSX(); renderSxRes();}});
+$("#sxRes").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return; const r=()=>sxCalc(); const svg=()=>SX.mode==="axial"?sxAxialSVG(r(),SX.metric in SXM?SX.metric:"int",false):sxJGraph(r());
+  if(b.id==="bCopySvgSx")copyText(svg(),"SVG disalin");
+  else if(b.id==="bCopyGeo")copyText(sxGeoJSON(),"GeoJSON disalin. Tempel ke berkas .geojson untuk dibuka di QGIS.");
+  else if(desktop&&b.id==="bPngSx")svgToPng(svg().replace('width="100%"','width="1000" height="700"'),d=>desktop.save({name:fname()+"-space-syntax.png",data:d.split(",")[1],encoding:"base64",kind:"png"}).then(x=>x&&toast("Gambar disimpan")));
+  else if(desktop&&b.id==="bSaveCsvSx"){SX.csvSep=";"; const t=sxCSV(); SX.csvSep="\t"; desktop.save({name:fname()+"-space-syntax.csv",data:t,encoding:"utf8",kind:"csv"}).then(x=>x&&toast("CSV disimpan"));}
+  else if(desktop&&b.id==="bSaveGeoSx")desktop.save({name:fname()+"-axial.geojson",data:sxGeoJSON(),encoding:"utf8",kind:"geojson"}).then(x=>x&&toast("GeoJSON disimpan"));});
 
 /* ---------------- SITE ANALYSIS ---------------- */
 const ST_KEY="sk-site-v1";
@@ -1985,7 +2133,7 @@ function renderStRes(){const r=stCalc(), box=$("#stRes"); const m2=v=>Number.isF
   <div class="grid2"><div class="card"><h2>Potensi (${r.P.length})</h2>${r.P.map(x=>`<div class="stsum"><b>${esc(x.n)}</b><span>${esc(x.note)}</span><em>→ ${esc(x.imp||"–")}</em></div>`).join("")||`<p class="note">Belum ada.</p>`}</div>
   <div class="card"><h2>Kendala (${r.K.length})</h2>${r.K.map(x=>`<div class="stsum"><b>${esc(x.n)}</b><span>${esc(x.note)}</span><em>→ ${esc(x.imp||"–")}</em></div>`).join("")||`<p class="note">Belum ada.</p>`}</div></div>
   <div class="card"><div class="row"><h2>Kesesuaian per aspek</h2><span class="spacer"></span><button class="btn small" data-copyx="site">Salin untuk Excel</button></div>${bars(r.L.filter(x=>+x.r).map(x=>({label:x.n,value:+x.r,sub:x.r+" / 5"})))}</div>
-  ${navRow(["st-in","Aspek tapak"],null)}`;}
+  ${sendBar("site")}${navRow(["st-in","Aspek tapak"],null)}`;}
 
 /* ---------------- BEHAVIORAL MAPPING ---------------- */
 const BM_KEY="sk-behav-v1";
@@ -2084,19 +2232,146 @@ function renderPoeRes(){const r=poeCalc(), box=$("#poeRes"); const pr=[...r.L].s
   <div class="grid2"><div class="card"><h2>Importance-Performance Analysis (IPA)</h2>${poeSVG(r)}</div>
   <div class="card"><div class="row"><h2>Prioritas perbaikan</h2><span class="spacer"></span><button class="btn small" data-copyx="poe">Salin untuk Excel</button></div><table class="plain" style="margin-top:8px"><thead><tr><th>#</th><th>Kriteria</th><th>Gap</th><th>Kuadran</th></tr></thead><tbody>
   ${pr.map(x=>`<tr><td class="m">${r.L.indexOf(x)+1}</td><td>${esc(x.name)}<div class="note">${POEC.find(c=>c[0]===x.cat)[1]} · K ${fmt(x.i,2)} / P ${fmt(x.p,2)}</div></td><td class="m ${x.gap<0?"warn":""}">${fmt(x.gap,2)}</td><td><span class="badge ${IPAQ[x.q][2]}">${x.q} · ${IPAQ[x.q][1]}</span></td></tr>`).join("")}</tbody></table></div></div>
-  ${navRow(["poe-in","Kriteria & nilai"],null)}`;}
+  ${sendBar("poe")}${navRow(["poe-in","Kriteria & nilai"],null)}`;}
 
 /* ---------------- TSV & status for batch B ---------------- */
 Object.assign(TSVX,{
   sna:()=>{const r=snCalc(); return [["Aktor","Kelompok","Degree","Closeness","Betweenness"],...r.A.map((a,i)=>[a.name,a.group,r.deg[i],fmt(r.closeness[i],4),fmt(r.btw[i],4)]),[],["Density",fmt(r.density,4)],["Komponen",r.comp.length],["Diameter",r.diam]].map(x=>x.join("\t")).join("\n");},
   qual:()=>{const r=qlCalc(); return [["Kode","Tema","Frekuensi",...r.docs.map(d=>d.name)],...r.C.map((c,i)=>[c.name,c.theme,r.freq[i],...r.byDoc[i]])].map(x=>x.join("\t")).join("\n");},
-  syntax:()=>{const r=sxCalc(); return [["Ruang","Konektivitas","Kedalaman dari akar","Total depth","Mean depth","RA","RRA","Integrasi","Control"],...r.rows.map(x=>[x.s.name,x.conn,r.rd[x.i]<Infinity?r.rd[x.i]:"",x.TD,fmt(x.MD,4),fmt(x.RA,4),fmt(x.RRA,4),fmt(x.int,4),fmt(x.ctrl,4)])].map(x=>x.join("\t")).join("\n");},
+  syntax:()=>sxCSV(),
   site:()=>{const r=stCalc(); return [["Aspek","Potensi/Kendala","Kesesuaian","Kondisi","Implikasi desain"],...r.L.map(x=>[x.n,x.pk==="P"?"Potensi":x.pk==="K"?"Kendala":"",x.r||"",x.note,x.imp])].map(x=>x.map(v=>String(v).replace(/\t|\n/g," ")).join("\t")).join("\n");},
   behav:()=>{const r=bmCalc(); return [["Zona",...r.A.map(a=>a.name),"Total","Kepadatan /100 m²"],...r.Z.map((z,i)=>[z.name,...r.za[i],r.zTot[i],Number.isFinite(r.dens[i])?fmt(r.dens[i],2):""]),[],["Waktu",...r.Z.map(z=>z.name)],...r.T.map((t,k)=>[t.name,...r.zt.map(row=>row[k])])].map(x=>x.join("\t")).join("\n");},
   poe:()=>{const r=poeCalc(); return [["Kelompok","Kriteria","Kepentingan","Kinerja","Gap","Kuadran IPA"],...r.L.map(x=>[POEC.find(c=>c[0]===x.cat)[1],x.name,fmt(x.i,2),fmt(x.p,2),fmt(x.gap,2),x.q+" "+IPAQ[x.q][1]])].map(x=>x.join("\t")).join("\n");}
 });
-function statusB(){const sa=snActors().length; HS.sna=sa?`${sa} aktor · ${Object.keys(SN.ties).length} hubungan`:""; const qc=Object.keys(QL.seg).length; HS.qual=QL.docs.some(d=>d.text.trim())?`${QL.docs.length} sumber · ${qc} unit berkode`:""; HS.syntax=sxSp().length?`${sxSp().length} ruang`:""; const sr=STA.filter(([k])=>ST.a[k].note.trim()).length; HS.site=sr?`${sr}/10 aspek`:""; HS.behav=Object.keys(BM.obs).length?`${bmZ().length} zona · ${bmT().length} waktu`:""; HS.poe=POE.c.filter(x=>x.name.trim()).length?`${POE.c.filter(x=>x.name.trim()).length} kriteria`:"";}
+function statusB(){const sa=snActors().length; HS.sna=sa?`${sa} aktor · ${Object.keys(SN.ties).length} hubungan`:""; const qc=Object.keys(QL.seg).length; HS.qual=QL.docs.some(d=>d.text.trim())?`${QL.docs.length} sumber · ${qc} unit berkode`:""; HS.syntax=SX.mode==="axial"?(SX.lines.length?`${SX.lines.length} garis axial`:""):(sxSp().length?`${sxSp().length} ruang`:""); const sr=STA.filter(([k])=>ST.a[k].note.trim()).length; HS.site=sr?`${sr}/10 aspek`:""; HS.behav=Object.keys(BM.obs).length?`${bmZ().length} zona · ${bmT().length} waktu`:""; HS.poe=POE.c.filter(x=>x.name.trim()).length?`${POE.c.filter(x=>x.name.trim()).length} kriteria`:"";}
 window.__snCalc=snCalc; window.__sxCalc=sxCalc; window.__qlCalc=qlCalc; window.__bmCalc=bmCalc; window.__poeCalc=poeCalc; window.__stCalc=stCalc;
+
+/* =====================================================================
+   BATCH C — cross-module transfer, synthesis & report
+   ===================================================================== */
+/* ---------- generic "send to" ---------- */
+const normName=s=>String(s||"").trim().toLowerCase().replace(/\s+/g," ");
+function appendNames(list,names,mk){const have=new Set(list.filter(x=>x.name.trim()).map(x=>normName(x.name))); const kept=list.filter(x=>x.name.trim()); let n=0; names.forEach(nm=>{if(nm&&!have.has(normName(nm))){kept.push(mk(nm)); have.add(normName(nm)); n++;}}); return {list:kept,n};}
+const TARGETS={
+  delphi:{label:"Butir Delphi",go:"dl-setup",add:N=>{const before=new Set(DL.items.map(x=>x.id)); const r=appendNames(DL.items,N,n=>({id:newId(),name:n})); DL.items=r.list; const last=DL.rounds[DL.rounds.length-1]; if(last&&last.items) DL.items.forEach(x=>{if(!before.has(x.id)&&!last.items.includes(x.id))last.items.push(x.id);}); dlEdited(); persistD(); return r.n;}},
+  ism:{label:"Elemen ISM",go:"el",add:N=>{const r=appendNames(S.elements,N,n=>({id:newId(),name:n})); S.elements=r.list; markEdited(); persist(); return r.n;}},
+  ahpc:{label:"Kriteria AHP",go:"ahp-crit",add:N=>{const r=appendNames(AH.crit,N,n=>({id:newId(),name:n})); AH.crit=r.list; ahpEdited(); persistA(); return r.n;}},
+  ahpa:{label:"Alternatif AHP",go:"ahp-crit",add:N=>{const r=appendNames(AH.alts,N,n=>({id:newId(),name:n})); AH.alts=r.list; ahpEdited(); persistA(); return r.n;}}
+};
+const SOURCES={
+  pestel:{t:["delphi","ism","ahpc"],names:()=>peAll().sort((a,b)=>b.sc-a.sc).map(r=>r.name)},
+  qual:{t:["delphi","ism","ahpc"],names:()=>qlCodes().map(c=>c.name),hint:"Kode hasil analisis kualitatif sering divalidasi lebih lanjut dengan Delphi."},
+  sna:{t:["ism","ahpa"],names:()=>snActors().map(a=>a.name),hint:"Aktor dapat dianalisis hubungan pengaruhnya dengan ISM."},
+  poe:{t:["delphi","ahpc","ism"],names:()=>poeCalc().L.sort((a,b)=>a.gap-b.gap).map(x=>x.name)},
+  bsc:{t:["ahpc","ism"],names:()=>BSP.flatMap(([k])=>BS.k[k].filter(x=>x.name.trim()).map(x=>x.name))},
+  swot:{t:["delphi","ism","ahpc"],names:()=>"SWOT".split("").flatMap(q=>swNamed(q).map(r=>r.name))},
+  porter:{t:["delphi","ism","ahpc"],names:()=>POF.flatMap(([k])=>PO.f[k].filter(x=>x.name.trim()).map(x=>x.name))},
+  site:{t:["ahpc","delphi"],names:()=>STA.filter(([k])=>ST.a[k].pk||+ST.a[k].r).map(([,n])=>n)},
+  syntax:{t:["ahpa"],names:()=>sxSp().map(s=>s.name)},
+  ism:{t:["ahpc","delphi"],names:()=>namedEls().map(e=>e.name)},
+  ahp:{t:["ism","delphi"],names:()=>named(AH.crit).map(c=>c.name)}
+};
+function sendBar(src){const S0=SOURCES[src]; if(!S0)return ""; const n=S0.names().length;
+  return `<div class="card sendbar"><div class="row"><h2>Gunakan di metode lain</h2><span class="note">${n} butir dari metode ini</span></div>${S0.hint?`<p class="note">${S0.hint}</p>`:""}
+   <div class="row">${S0.t.map(t=>`<button class="btn" data-send="${t}" data-src="${src}">Kirim ke ${TARGETS[t].label} →</button>`).join("")}${src==="site"?`<button class="btn" data-sitesw="1">Kirim ke SWOT (potensi → S, kendala → W) →</button>`:""}</div></div>`;}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-send]"); if(b){const N=SOURCES[b.dataset.src].names(); if(!N.length)return toast("Belum ada butir untuk dikirim"); const T=TARGETS[b.dataset.send]; const n=T.add(N); toast(n?`${n} butir ditambahkan ke ${T.label}`:`Semua butir sudah ada di ${T.label}`); go(T.go); return;}
+  if(e.target.closest("[data-sitesw]")){const r=stCalc(); if(!r.P.length&&!r.K.length)return toast("Tandai aspek sebagai potensi atau kendala terlebih dahulu");
+    const add=(q,x)=>{SW[q]=SW[q].filter(y=>y.name.trim()); const nm=x.n+(x.note?": "+x.note:""); if(!SW[q].some(y=>normName(y.name)===normName(nm))) SW[q].push(swRow(nm,"",Math.min(4,+x.r||0)));};
+    r.P.forEach(x=>add("S",x)); r.K.forEach(x=>add("W",x)); swEdited(); persistW(); toast(`${r.P.length} potensi dan ${r.K.length} kendala dikirim ke SWOT`); go("swot-in");}});
+
+/* ---------- SYNTHESIS & COMPARISON ---------- */
+const SY_KEY="sk-synth-v1";
+let SY=loadK(SY_KEY)||{sel:{}}; const persistSY=()=>saveK(SY_KEY,SY);
+function latestDelphi(){const m=new Map(); DL.rounds.forEach((_,k)=>dlStats(k).forEach(s=>{ if(s.n) m.set(normName(s.it.name),{name:s.it.name,med:s.med,agr:s.agr}); })); return m;}
+const METRICS=[
+ {k:"dl_med",m:"delphi",n:"Delphi · median penilaian pakar",dir:"up",get:()=>[...latestDelphi().values()].map(x=>[x.name,x.med])},
+ {k:"dl_agr",m:"delphi",n:"Delphi · % persetujuan pakar",dir:"up",get:()=>[...latestDelphi().values()].map(x=>[x.name,x.agr])},
+ {k:"ism_drv",m:"ism",n:"ISM · driving power (daya dorong)",dir:"up",get:()=>{const r=compute(); return r.n>=2?r.E.map((e,i)=>[e.name,r.drv[i]]):[];}},
+ {k:"ism_lvl",m:"ism",n:"ISM · level hierarki (level lebih dasar = lebih mendasar)",dir:"up",get:()=>{const r=compute(); return r.n>=2?r.E.map((e,i)=>[e.name,r.level[i]]):[];}},
+ {k:"ahp_w",m:"ahp",n:"AHP · bobot kriteria",dir:"up",get:()=>{const o=ahpResult(); return o.C.length>=2?o.C.map((c,i)=>[c.name,o.rc.w[i]]):[];}},
+ {k:"ahp_g",m:"ahp",n:"AHP · skor global alternatif",dir:"up",get:()=>{const o=ahpResult(); return o.global?o.Al.map((a,i)=>[a.name,o.global[i]]):[];}},
+ {k:"sw_sc",m:"swot",n:"SWOT · skor faktor (bobot × rating)",dir:"up",get:()=>{const c=swCalc(); return "SWOT".split("").flatMap(q=>c.rows[q].map(r=>[r.name,r.sc]));}},
+ {k:"pe_sc",m:"pestel",n:"PESTEL · prioritas (dampak × kemungkinan)",dir:"up",get:()=>peAll().map(r=>[r.name,r.sc])},
+ {k:"poe_gap",m:"poe",n:"POE · kesenjangan kinerja (gap negatif = prioritas)",dir:"down",get:()=>poeCalc().L.map(x=>[x.name,x.gap])},
+ {k:"poe_imp",m:"poe",n:"POE · tingkat kepentingan",dir:"up",get:()=>poeCalc().L.map(x=>[x.name,x.i])},
+ {k:"bsc_ach",m:"bsc",n:"BSC · capaian IKU (rendah = prioritas)",dir:"down",get:()=>bsCalc().P.flatMap(p=>p.rows.filter(x=>Number.isFinite(x.a)).map(x=>[x.name,x.a]))},
+ {k:"sna_btw",m:"sna",n:"SNA · keperantaraan (betweenness)",dir:"up",get:()=>{const r=snCalc(); return r.n>=2?r.A.map((a,i)=>[a.name,r.btw[i]]):[];}},
+ {k:"sna_deg",m:"sna",n:"SNA · derajat (degree)",dir:"up",get:()=>{const r=snCalc(); return r.n>=2?r.A.map((a,i)=>[a.name,r.deg[i]]):[];}},
+ {k:"sx_int",m:"syntax",n:"Space Syntax · integrasi",dir:"up",get:()=>{const r=sxCalc(); return r.k>=3?r.rows.filter(x=>Number.isFinite(x.int)).map(x=>[x.name,x.int]):[];}},
+ {k:"ql_freq",m:"qual",n:"Kualitatif · frekuensi kode",dir:"up",get:()=>{const r=qlCalc(); return r.C.map((c,i)=>[c.name,r.freq[i]]);}}
+];
+// ISM level: higher level number = more basic driver; "up" therefore favours basic drivers.
+function syCfg(k){const m=METRICS.find(x=>x.k===k); return SY.sel[k]||(SY.sel[k]={on:false,w:1,dir:m.dir});}
+function rankOf(vals,dir){const idx=vals.map((v,i)=>[v,i]).sort((a,b)=>dir==="up"?b[0]-a[0]:a[0]-b[0]); const r=Array(vals.length); let i=0; while(i<idx.length){let j=i; while(j+1<idx.length&&idx[j+1][0]===idx[i][0])j++; const avg=(i+j)/2+1; for(let t=i;t<=j;t++)r[idx[t][1]]=avg; i=j+1;} return r;}
+function pearson(a,b){const n=a.length; if(n<3)return NaN; const ma=a.reduce((s,x)=>s+x,0)/n, mb=b.reduce((s,x)=>s+x,0)/n; let num=0,da=0,db=0; for(let i=0;i<n;i++){num+=(a[i]-ma)*(b[i]-mb); da+=(a[i]-ma)**2; db+=(b[i]-mb)**2;} return da&&db?num/Math.sqrt(da*db):NaN;}
+function syCalc(){const act=METRICS.filter(m=>syCfg(m.k).on).map(m=>({...m,cfg:syCfg(m.k),data:new Map(m.get().filter(([n,v])=>n&&Number.isFinite(v)).map(([n,v])=>[normName(n),{name:n,v}]))})).filter(m=>m.data.size);
+  const keys=new Map(); act.forEach(m=>m.data.forEach((d,k)=>{if(!keys.has(k))keys.set(k,d.name);}));
+  act.forEach(m=>{const vs=[...m.data.values()].map(d=>d.v), lo=Math.min(...vs), hi=Math.max(...vs); m.data.forEach(d=>{const z=hi>lo?(d.v-lo)/(hi-lo):1; d.z=m.cfg.dir==="up"?z:1-z;});});
+  const rows=[...keys].map(([k,name])=>{let sw=0,s=0,cnt=0; const cells=act.map(m=>{const d=m.data.get(k); if(d){const w=Math.max(0,num(m.cfg.w)); s+=d.z*w; sw+=w; cnt++;} return d||null;}); return {k,name,cells,cnt,score:sw?s/sw:NaN};});
+  rows.sort((a,b)=>(b.cnt-a.cnt)||((b.score||0)-(a.score||0)));
+  const scored=rows.filter(r=>Number.isFinite(r.score)); const rk=rankOf(scored.map(r=>r.score),"up"); scored.forEach((r,i)=>r.rank=rk[i]);
+  rows.sort((a,b)=>(a.rank||1e9)-(b.rank||1e9));
+  const corr=act.map(a=>act.map(b=>{const common=[...a.data.keys()].filter(k=>b.data.has(k)); if(a===b)return {r:1,n:common.length}; const ra=rankOf(common.map(k=>a.data.get(k).v),a.cfg.dir), rb=rankOf(common.map(k=>b.data.get(k).v),b.cfg.dir); return {r:pearson(ra,rb),n:common.length};}));
+  return {act,rows,corr};}
+function renderSyIn(){const box=$("#syIn");
+  const groups=[...new Set(METRICS.map(m=>m.m))];
+  box.innerHTML=`<h1>Synthesis &amp; comparison (Sintesis &amp; komparasi)</h1>
+  <p class="lede">Gabungkan hasil beberapa metode untuk butir yang sama, misalnya faktor yang dinilai pakar Delphi, disusun hierarkinya dengan ISM, dan dibobot dengan AHP. Nama butir yang sama dicocokkan otomatis, tidak peka huruf besar-kecil. Setiap ukuran dinormalisasi 0–1, lalu digabung dengan bobot yang Anda tentukan.</p>
+  <div class="card"><div class="scroll" style="border:0"><table class="plain"><thead><tr><th></th><th>Ukuran</th><th>Butir tersedia</th><th>Arah</th><th>Bobot</th></tr></thead><tbody>
+  ${groups.map(g=>METRICS.filter(m=>m.m===g).map(m=>{const c=syCfg(m.k), n=m.get().filter(([nm,v])=>nm&&Number.isFinite(v)).length; return `<tr class="${n?"":"dim"}"><td><input type="checkbox" id="sy_${m.k}" data-syon="${m.k}" ${c.on?"checked":""} ${n?"":"disabled"}></td><td><label for="sy_${m.k}">${esc(m.n)}</label></td><td class="m">${n||"–"}</td>
+    <td><span class="rate"><button data-sydir="${m.k}" data-v="up" class="${c.dir==="up"?"on":""}" title="Nilai tinggi = prioritas">↑</button><button data-sydir="${m.k}" data-v="down" class="${c.dir==="down"?"on":""}" title="Nilai rendah = prioritas">↓</button></span></td>
+    <td><input data-syw="${m.k}" value="${esc(c.w)}" inputmode="decimal" class="mini" style="width:64px"></td></tr>`;}).join("")).join("")}</tbody></table></div>
+   <p class="note">Ukuran tanpa data tampil redup. Isi metode terkait lebih dulu, atau gunakan tombol “Gunakan di metode lain” di halaman hasil setiap metode agar butir yang sama mengalir antarmetode.</p></div>
+  ${navRow(null,["sy-res","Lihat sintesis"])}`;}
+$("#syIn").addEventListener("change",e=>{const t=e.target; if(t.dataset.syon){syCfg(t.dataset.syon).on=t.checked; persistSY(); updateStatus();}});
+$("#syIn").addEventListener("input",e=>{const t=e.target; if(t.dataset.syw){syCfg(t.dataset.syw).w=t.value; persistSY();}});
+$("#syIn").addEventListener("click",e=>{const b=e.target.closest("[data-sydir]"); if(!b)return; syCfg(b.dataset.sydir).dir=b.dataset.v; persistSY(); renderSyIn();});
+function renderSyRes(){const r=syCalc(), box=$("#syRes");
+  if(!r.act.length){box.innerHTML=`<h1>Sintesis keputusan</h1><div class="card"><p class="note">Pilih minimal satu ukuran yang memiliki data.</p></div>${navRow(["sy-in","Pilih ukuran"],null)}`;return;}
+  const full=r.rows.filter(x=>x.cnt===r.act.length);
+  box.innerHTML=`<h1>Decision synthesis (Sintesis keputusan)</h1><p class="lede">${r.rows.length} butir dari ${r.act.length} ukuran. ${full.length} butir memiliki nilai di semua ukuran. Skor gabungan = rata-rata tertimbang nilai ternormalisasi yang tersedia.</p>
+  <div class="grid2"><div class="card"><h2>Peringkat gabungan</h2>${bars(r.rows.filter(x=>Number.isFinite(x.score)).slice(0,12).map(x=>({label:x.name,value:x.score,sub:fmt(x.score,3)})))}${r.rows.length>12?`<p class="note">12 teratas ditampilkan; tabel lengkap di bawah.</p>`:""}</div>
+  <div class="card"><h2>Kesepakatan antarmetode</h2><p class="note">Korelasi peringkat Spearman (ρ) pada butir yang sama. ρ mendekati 1 berarti kedua metode memberi urutan yang serupa; mendekati 0 atau negatif berarti berbeda.</p>
+   ${r.act.length>1?`<div class="scroll" style="margin-top:8px"><table class="mx"><thead><tr><th class="rn">Ukuran</th>${r.act.map((_,j)=>`<th>U${j+1}</th>`).join("")}</tr></thead><tbody>${r.act.map((a,i)=>`<tr><th class="rn" title="${esc(a.n)}"><b>U${i+1}</b>${esc(a.n.split(" · ")[0])} · ${esc(a.n.split(" · ")[1]||"").slice(0,22)}</th>${r.corr[i].map((c,j)=>i===j?`<td class="diag"></td>`:`<td class="${Number.isFinite(c.r)?(c.r>=0.5?"one":c.r<0?"tr":""):"zero"}" title="n = ${c.n}">${Number.isFinite(c.r)?fmt(c.r,2):"–"}</td>`).join("")}</tr>`).join("")}</tbody></table></div><p class="note">Sel kosong (–) berarti butir yang sama kurang dari tiga.</p>`:`<p class="note">Pilih minimal dua ukuran untuk membandingkan.</p>`}</div></div>
+  <div class="card"><div class="row"><h2>Tabel sintesis</h2><span class="spacer"></span><button class="btn small" data-copyx="synth">Salin untuk Excel</button></div>
+  <div class="scroll" style="margin-top:10px;border:0"><table class="plain"><thead><tr><th>Peringkat</th><th>Butir</th>${r.act.map((a,j)=>`<th title="${esc(a.n)}">U${j+1} <small>${a.cfg.dir==="up"?"↑":"↓"} ×${esc(a.cfg.w)}</small></th>`).join("")}<th>Skor gabungan</th><th>Ukuran terisi</th></tr></thead><tbody>
+  ${r.rows.map(x=>`<tr class="${x.rank===1?"hit":""}"><td class="m">${x.rank||"–"}</td><td>${esc(x.name)}</td>${x.cells.map(c=>c?`<td class="m">${fmt(c.v,3)}<div class="zbar"><i style="width:${(c.z*100).toFixed(0)}%"></i></div></td>`:`<td class="m muted">–</td>`).join("")}<td class="m"><b>${fmt(x.score,3)}</b></td><td class="m">${x.cnt}/${r.act.length}</td></tr>`).join("")}</tbody></table></div>
+  <p class="note">${r.act.map((a,j)=>`U${j+1} = ${esc(a.n)}`).join(" · ")}. Normalisasi min–maks per ukuran; arah ↓ membalik skala sehingga nilai rendah menjadi prioritas.</p></div>
+  ${navRow(["sy-in","Pilih ukuran"],null)}`;}
+TSVX.synth=()=>{const r=syCalc(); return [["Peringkat","Butir",...r.act.map(a=>a.n),"Skor gabungan","Ukuran terisi"],...r.rows.map(x=>[x.rank||"",x.name,...x.cells.map(c=>c?fmt(c.v,4):""),fmt(x.score,4),x.cnt])].map(x=>x.join("\t")).join("\n");};
+window.__syCalc=syCalc; window.__SY=()=>SY;
+
+/* ---------- COMBINED REPORT ---------- */
+const RES={delphi:["dl-res"],ism:["lp","model","micmac"],ahp:["ahp-res"],swot:["swot-res"],pestel:["pe-res"],porter:["po-res"],cba:["cb-res"],cpm:["cp-res"],bsc:["bs-res"],sna:["sn-res"],qual:["ql-res"],syntax:["sx-res"],site:["st-res"],behav:["bm-res"],poe:["poe-res"],synth:["sy-res"]};
+const RPNAME=k=>k==="synth"?"Sintesis & komparasi":(METHODS.find(m=>m.k===k)||{n:k}).n;
+function hasData(k){statusA(); statusB(); return ({ism:()=>namedEls().length>=2,ahp:()=>named(AH.crit).length>=2,swot:()=>"SWOT".split("").some(q=>swNamed(q).length),delphi:()=>named(DL.items).length>0&&DL.rounds.some(r=>Object.keys(r.r).length),synth:()=>syCalc().act.length>0}[k]||(()=>!!HS[k]))();}
+let RP=loadK("sk-report-v1")||{sel:{}};
+function renderRp(){const box=$("#rpIn"), avail=Object.keys(RES).filter(hasData);
+  box.innerHTML=`<h1>Combined report (Laporan gabungan)</h1>
+  <p class="lede">Pilih metode yang dimasukkan. Laporan memuat tabel dan diagram hasil setiap metode, serta daftar rujukannya. ${desktop?"Simpan sebagai PDF atau salin ke Word.":"Salin ke Word atau Google Docs. Di aplikasi desktop, laporan juga bisa disimpan langsung sebagai PDF."}</p>
+  <div class="card">${avail.length?`<div class="rpsel">${avail.map(k=>`<label class="row note" style="gap:6px"><input type="checkbox" data-rp="${k}" ${RP.sel[k]===false?"":"checked"}> ${esc(RPNAME(k))}</label>`).join("")}</div>
+   <div class="row" style="margin-top:12px"><button class="btn primary" id="bRpBuild">Susun laporan</button><button class="btn" id="bRpCopy">Salin untuk Word</button><button class="btn desk-only" id="bRpPdf">Simpan PDF…</button></div>`:`<p class="note">Belum ada metode yang berisi data. Isi minimal satu metode terlebih dahulu.</p>`}</div>
+  <div id="reportOut" class="report"></div>`;
+  if(avail.length) buildReport();}
+function buildReport(){const out=$("#reportOut"); if(!out)return; const sel=Object.keys(RES).filter(k=>hasData(k)&&RP.sel[k]!==false), keepStep=S.step;
+  const parts=sel.map(k=>{const html=RES[k].map(st=>{ (({lp:renderLP,model:renderModel,micmac:renderMic,"dl-res":renderDlRes,"ahp-res":renderAhpRes,"swot-res":renderSwotRes,"pe-res":renderPeRes,"po-res":renderPoRes,"cb-res":renderCbRes,"cp-res":renderCpRes,"bs-res":renderBsRes,"sn-res":renderSnRes,"ql-res":renderQlRes,"sx-res":renderSxRes,"st-res":renderStRes,"bm-res":renderBmRes,"poe-res":renderPoeRes,"sy-res":renderSyRes})[st]||(()=>{}))();
+      const sec=document.querySelector(`section[data-sec="${st}"]`).cloneNode(true);
+      sec.querySelectorAll("button,.btn,.banner,.sendbar,select,input[type=checkbox],textarea").forEach(x=>{ if(x.tagName==="TEXTAREA"){const p=document.createElement("p"); p.textContent=x.value; x.replaceWith(p);} else x.remove();});
+      sec.querySelectorAll("label").forEach(l=>{if(!l.textContent.trim())l.remove();});
+      sec.querySelectorAll("[id]").forEach(x=>x.removeAttribute("id")); sec.querySelectorAll("h1").forEach(h=>{const h3=document.createElement("h3"); h3.innerHTML=h.innerHTML; h.replaceWith(h3);});
+      sec.querySelectorAll("details").forEach(d=>d.setAttribute("open",""));
+      return sec.innerHTML;}).join("");
+    return `<section class="rpsec"><h2>${esc(RPNAME(k))}</h2>${html}<p class="rpref">${CREDIT[k]?CREDIT[k].replace(/<\/?p>/g," "):""}</p></section>`;});
+  const d=new Date(); out.innerHTML=`<header class="rphead"><h2>${esc(S.title||"Laporan analisis")}</h2><p>Disusun dengan Studio Keputusan · ${d.toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"})} · dikembangkan versi lain oleh Pindo Tutuko</p><p>Metode: ${sel.map(RPNAME).map(esc).join(", ")}</p></header>${parts.join("")}`;
+  S.step=keepStep;}
+$("#rpIn").addEventListener("change",e=>{const k=e.target.dataset.rp; if(!k)return; RP.sel[k]=e.target.checked; saveK("sk-report-v1",RP);});
+$("#rpIn").addEventListener("click",async e=>{const b=e.target.closest("button"); if(!b)return;
+  if(b.id==="bRpBuild"){buildReport(); toast("Laporan disusun");}
+  else if(b.id==="bRpCopy"){buildReport(); const node=$("#reportOut"); let ok=false;
+    try{ if(window.ClipboardItem&&navigator.clipboard&&navigator.clipboard.write){await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([`<div style="font-family:Calibri,Arial,sans-serif">${node.innerHTML}</div>`],{type:"text/html"}),"text/plain":new Blob([node.innerText],{type:"text/plain"})})]); ok=true;} }catch(_){}
+    if(!ok){try{const rg=document.createRange(); rg.selectNodeContents(node); const sl=getSelection(); sl.removeAllRanges(); sl.addRange(rg); ok=document.execCommand("copy"); sl.removeAllRanges();}catch(_){}}
+    toast(ok?"Laporan disalin. Tempel di Word atau Google Docs (Ctrl+V / ⌘V).":"Penyalinan ditolak browser. Blok laporan lalu salin manual, atau gunakan aplikasi desktop.");}
+  else if(b.id==="bRpPdf"&&desktop&&desktop.pdf){buildReport(); document.body.classList.add("printing-report"); try{const r=await desktop.pdf({name:fname()+"-laporan.pdf"}); if(r)toast("PDF disimpan");}finally{document.body.classList.remove("printing-report");}}});
 
 /* =====================================================================
    METHOD REGISTRY & HOME (grouped by discipline)
@@ -2118,17 +2393,17 @@ const METHODS=[
  {k:"bsc",ready:true,n:"Balanced Scorecard",t:"Kinerja organisasi",d:"Capaian indikator pada perspektif keuangan, pelanggan, proses internal, dan pembelajaran.",c:["eko"]},
  {k:"sna",ready:true,n:"Social Network Analysis",t:"Jaringan aktor",d:"Sentralitas derajat, kedekatan, dan keperantaraan antar aktor, serta kepadatan jaringan.",c:["sos","pwk"]},
  {k:"qual",ready:true,n:"Analisis Kualitatif",t:"CDA · Etnografi · FGD",d:"Pengodean segmen teks, frekuensi dan ko-okurensi kode untuk wacana, catatan lapangan, dan transkrip FGD.",c:["sos"]},
- {k:"syntax",ready:true,n:"Space Syntax",t:"Konfigurasi ruang",d:"Kedalaman, integrasi, konektivitas, dan graf justifikasi dari hubungan antar ruang.",c:["ars","pwk"]},
+ {k:"syntax",ready:true,n:"Space Syntax",t:"Konfigurasi ruang",d:"Graf ruang convex atau peta axial (gambar di atas denah/peta, impor DXF/GeoJSON): integrasi global & R3, choice, NACH/NAIN, intelligibility, peta gradasi warna.",c:["ars","pwk"]},
  {k:"site",ready:true,n:"Site Analysis",t:"Analisis tapak",d:"Lembar penilaian kondisi tapak: iklim, topografi, akses, utilitas, dan pemandangan.",c:["ars"]},
  {k:"behav",ready:true,n:"Behavioral Mapping",t:"Perilaku spasial",d:"Rekap observasi aktivitas per zona dan waktu menjadi pola penggunaan ruang.",c:["ars","sos"]},
  {k:"poe",ready:true,n:"Post-Occupancy Evaluation",t:"Evaluasi pascahuni",d:"Skor kinerja bangunan menurut penghuni, kesenjangan terhadap harapan, dan prioritas perbaikan.",c:["ars"]}];
 const HS={}; let homeCat="all";
-function fillModSel(){const sel=$("#modSel"); sel.innerHTML=`<option value="home">Pilih metode…</option>`+CATS.map(c=>`<optgroup label="${esc(c.name)}">${METHODS.filter(m=>m.c[0]===c.id).map(m=>`<option value="${m.k}" ${m.ready?"":"disabled"}>${esc(m.n)}${m.ready?"":" (tahap berikutnya)"}</option>`).join("")}</optgroup>`).join("");}
+function fillModSel(){const sel=$("#modSel"); sel.innerHTML=`<option value="home">Pilih metode…</option><optgroup label="Lintas metode"><option value="synth">Sintesis &amp; komparasi</option><option value="report">Laporan gabungan</option></optgroup>`+CATS.map(c=>`<optgroup label="${esc(c.name)}">${METHODS.filter(m=>m.c[0]===c.id).map(m=>`<option value="${m.k}" ${m.ready?"":"disabled"}>${esc(m.n)}${m.ready?"":" (tahap berikutnya)"}</option>`).join("")}</optgroup>`).join("");}
 $("#modSel").onchange=e=>{const m=e.target.value; go(m==="home"?"home":((S.last&&S.last[m])||MODS[m][0]));};
-function renderHome(){updateStatus(); statusA(); statusB();
+function renderHome(){updateStatus(); statusA(); statusB(); const sa=METRICS.filter(m=>SY.sel[m.k]&&SY.sel[m.k].on).length; HS.synth=sa?sa+" ukuran dipilih":""; const nr=Object.keys(RES).filter(k=>k!=="synth"&&hasData(k)).length; HS.report=nr?nr+" metode berisi data":"Belum ada data";
   $("#homeFilter").innerHTML=[`<button class="tabx ${homeCat==="all"?"on":""}" data-hcat="all">Semua rumpun</button>`,...CATS.map(c=>`<button class="tabx ${homeCat===c.id?"on":""}" data-hcat="${c.id}">${esc(c.name)}</button>`)].join("");
   const cats=homeCat==="all"?CATS:CATS.filter(c=>c.id===homeCat);
-  $("#homeCats").innerHTML=cats.map(c=>{const list=METHODS.filter(m=>homeCat==="all"?m.c[0]===c.id:m.c.includes(c.id));
+  $("#homeCats").innerHTML=`<div class="hcat"><h2>Lintas metode <small>(Cross-method) · Bandingkan hasil dan susun keputusan</small></h2><div class="mgrid"><button class="mcard" data-modgo="synth"><span class="mk">Sintesis</span><b>Komparasi &amp; keputusan</b><span>Gabungkan ukuran dari beberapa metode untuk butir yang sama, beri bobot, dapatkan peringkat gabungan dan uji kesepakatan antarmetode (Spearman).</span><span class="mst">${esc(HS.synth||"Pilih ukuran")}</span></button><button class="mcard" data-modgo="report"><span class="mk">Laporan</span><b>Laporan gabungan</b><span>Tabel, diagram, dan rujukan semua metode yang dipakai dalam satu dokumen, siap disalin ke Word atau disimpan sebagai PDF.</span><span class="mst">${esc(HS.report||"")}</span></button></div></div>`+cats.map(c=>{const list=METHODS.filter(m=>homeCat==="all"?m.c[0]===c.id:m.c.includes(c.id));
     return `<div class="hcat"><h2>${esc(c.name)} <small>(${esc(c.en)}) · ${esc(c.desc)}</small></h2><div class="mgrid">${list.map(m=>`<button class="mcard" ${m.ready?`data-modgo="${m.k}"`:"disabled"}><span class="mk">${esc(m.n)}</span><b>${esc(m.t)}</b><span>${esc(m.d)}</span><span class="tags">${m.c.map(x=>`<i>${esc(CATS.find(y=>y.id===x).name.split(/[ ,&]/)[0])}</i>`).join("")}</span>${m.ready?`<span class="mst">${esc(HS[m.k]||"Belum diisi")}</span>`:`<span class="soon">Tahap berikutnya</span>`}</button>`).join("")}</div></div>`;}).join("");}
 $("#homeFilter").addEventListener("click",e=>{const b=e.target.closest("[data-hcat]"); if(!b)return; homeCat=b.dataset.hcat; renderHome();});
 
