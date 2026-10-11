@@ -6,6 +6,10 @@ const { execFileSync } = require('child_process');
 const path = require('path');
 exports.default = async function afterPack(context) {
   if (context.electronPlatformName !== 'darwin') return;
+  // Universal builds pack x64 and arm64 into "*-temp" folders first and merge them afterwards.
+  // Signing those intermediates makes the merge fail (their _CodeSignature differs), so only sign
+  // the final app.
+  if (/-temp$/.test(context.appOutDir)) { console.log(`  • skip ad-hoc signing of intermediate ${context.appOutDir}`); return; }
   const app = path.join(context.appOutDir, `${context.packager.appInfo.productFilename}.app`);
   console.log(`  • ad-hoc signing ${app}`);
   execFileSync('codesign', ['--force', '--deep', '--sign', '-', app], { stdio: 'inherit' });
