@@ -263,6 +263,35 @@ select{border:1px solid var(--line);background:var(--paper);border-radius:7px;pa
 .kpis span small{display:block;font-size:11px}
 .kpis b{font:700 22px var(--f-display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .kpis b.pos{color:var(--petrol)}.kpis b.neg{color:var(--ochre)}
+.snlist{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.snrow{display:grid;grid-template-columns:40px minmax(0,1.3fr) minmax(0,1fr) 30px;gap:6px;align-items:center;margin-top:6px}
+.snrow .code{font:600 13px var(--f-mono);color:var(--petrol);text-align:right}
+.snrow input{width:100%;border:1px solid var(--line);background:var(--paper);border-radius:7px;padding:7px 9px;min-width:0}
+.card .snrow:has(> :nth-child(3):last-child){grid-template-columns:40px minmax(0,1fr) 30px}
+.bcell{width:38px;height:36px;border:0;background:transparent;cursor:pointer;font:700 13px var(--f-mono);color:var(--petrol);touch-action:none;user-select:none}
+.bcell:hover{background:var(--petrol-soft)}
+.bcell.on{background:var(--petrol);color:var(--sheet)}
+.qsw{width:14px;height:14px;border-radius:4px;justify-self:end}
+.qdoc{display:flex;flex-direction:column;gap:6px;margin:10px 0;padding-bottom:10px;border-bottom:1px dashed var(--line)}
+.qdoc textarea{min-height:140px;font-size:13.5px}
+.qunits{display:flex;flex-direction:column;gap:0;padding:6px 18px}
+.qu{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:12px;padding:10px 0;border-top:1px solid var(--line);align-items:start}
+.qu:first-child{border-top:0}
+.qu.coded .qt{border-left:3px solid var(--ochre);padding-left:9px}
+.qt{font-size:14.5px;line-height:1.55}
+.qsp{color:var(--petrol);margin-right:4px}
+.qchips{display:flex;flex-wrap:wrap;gap:5px}
+.qchip{border:1.5px solid var(--qc);background:transparent;color:var(--ink);border-radius:999px;padding:2px 9px;font-size:12px;cursor:pointer}
+.qchip.on{background:var(--qc);color:var(--sheet);font-weight:700}
+.qx{border-top:1px solid var(--line);padding:8px 0}
+.qx summary{cursor:pointer}
+.qx blockquote{margin:8px 0 8px 12px;padding:6px 12px;border-left:3px solid var(--line);font-size:14px}
+.qx cite{display:block;font-size:12px;color:var(--muted);font-style:normal;margin-top:2px}
+.stsum{display:flex;flex-direction:column;gap:2px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.stsum span{color:var(--muted)}.stsum em{color:var(--petrol);font-style:normal}
+.dcell.wide{width:64px}
+table.mx.heat td{min-width:64px}
+@media (max-width:820px){.qu{grid-template-columns:1fr}}
 .desk-only{display:none}
 .is-desktop .desk-only{display:inline-flex}
 @media (max-width:820px){
@@ -270,6 +299,8 @@ select{border:1px solid var(--line);background:var(--paper);border-radius:7px;pa
   .rail{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px}
   .rail button{grid-template-columns:24px auto;flex:none}
   .rail button .s,.rail .sep{display:none}
+  .grp{flex-direction:row;flex:none}
+  .grp[data-mod="home"]{border-bottom:0;margin:0;padding:0 6px 0 0;border-right:1px solid var(--line)}
   .grid2{grid-template-columns:1fr}
   .rail{padding-bottom:8px}
   .credit{position:static;width:auto;border-right:0;padding-inline:16px}
@@ -348,6 +379,38 @@ select{border:1px solid var(--line);background:var(--paper);border-radius:7px;pa
       <button data-step="bs-in"><span class="n">1</span><span class="t">Perspectives & KPI</span><span class="s">(Perspektif & IKU)</span></button>
       <div class="sep"></div>
       <button data-step="bs-res"><span class="n">2</span><span class="t">Scorecard</span><span class="s">(Capaian kinerja)</span></button>
+    </div>
+    <div class="grp" data-mod="sna">
+      <button data-step="sn-in"><span class="n">1</span><span class="t">Actors & ties</span><span class="s">(Aktor & hubungan)</span></button>
+      <div class="sep"></div>
+      <button data-step="sn-res"><span class="n">2</span><span class="t">Centrality</span><span class="s">(Sentralitas & graf)</span></button>
+    </div>
+    <div class="grp" data-mod="qual">
+      <button data-step="ql-in"><span class="n">1</span><span class="t">Sources & codes</span><span class="s">(Sumber & buku kode)</span></button>
+      <button data-step="ql-code"><span class="n">2</span><span class="t">Coding</span><span class="s">(Pengodean unit)</span></button>
+      <div class="sep"></div>
+      <button data-step="ql-res"><span class="n">3</span><span class="t">Result</span><span class="s">(Frekuensi, tema, kutipan)</span></button>
+    </div>
+    <div class="grp" data-mod="syntax">
+      <button data-step="sx-in"><span class="n">1</span><span class="t">Spaces</span><span class="s">(Ruang & hubungan)</span></button>
+      <div class="sep"></div>
+      <button data-step="sx-res"><span class="n">2</span><span class="t">Measures</span><span class="s">(Integrasi & graf justifikasi)</span></button>
+    </div>
+    <div class="grp" data-mod="site">
+      <button data-step="st-in"><span class="n">1</span><span class="t">Site aspects</span><span class="s">(Aspek tapak & regulasi)</span></button>
+      <div class="sep"></div>
+      <button data-step="st-res"><span class="n">2</span><span class="t">Summary</span><span class="s">(Potensi, kendala, intensitas)</span></button>
+    </div>
+    <div class="grp" data-mod="behav">
+      <button data-step="bm-in"><span class="n">1</span><span class="t">Setup</span><span class="s">(Zona, aktivitas, waktu)</span></button>
+      <button data-step="bm-obs"><span class="n">2</span><span class="t">Observations</span><span class="s">(Hitungan orang)</span></button>
+      <div class="sep"></div>
+      <button data-step="bm-res"><span class="n">3</span><span class="t">Patterns</span><span class="s">(Pola penggunaan ruang)</span></button>
+    </div>
+    <div class="grp" data-mod="poe">
+      <button data-step="poe-in"><span class="n">1</span><span class="t">Criteria</span><span class="s">(Kriteria & nilai)</span></button>
+      <div class="sep"></div>
+      <button data-step="poe-res"><span class="n">2</span><span class="t">IPA</span><span class="s">(Kuadran & prioritas)</span></button>
     </div>
   </nav>
 
@@ -635,6 +698,20 @@ select{border:1px solid var(--line);background:var(--paper);border-radius:7px;pa
     <section data-sec="cp-res" hidden><div id="cpRes" class="modbox"></div></section>
     <section data-sec="bs-in" hidden><div id="bsIn" class="modbox"></div></section>
     <section data-sec="bs-res" hidden><div id="bsRes" class="modbox"></div></section>
+    <section data-sec="sn-in" hidden><div id="snIn" class="modbox"></div></section>
+    <section data-sec="sn-res" hidden><div id="snRes" class="modbox"></div></section>
+    <section data-sec="ql-in" hidden><div id="qlIn" class="modbox"></div></section>
+    <section data-sec="ql-code" hidden><div id="qlCode" class="modbox"></div></section>
+    <section data-sec="ql-res" hidden><div id="qlRes" class="modbox"></div></section>
+    <section data-sec="sx-in" hidden><div id="sxIn" class="modbox"></div></section>
+    <section data-sec="sx-res" hidden><div id="sxRes" class="modbox"></div></section>
+    <section data-sec="st-in" hidden><div id="stIn" class="modbox"></div></section>
+    <section data-sec="st-res" hidden><div id="stRes" class="modbox"></div></section>
+    <section data-sec="bm-in" hidden><div id="bmIn" class="modbox"></div></section>
+    <section data-sec="bm-obs" hidden><div id="bmObs" class="modbox"></div></section>
+    <section data-sec="bm-res" hidden><div id="bmRes" class="modbox"></div></section>
+    <section data-sec="poe-in" hidden><div id="poeIn" class="modbox"></div></section>
+    <section data-sec="poe-res" hidden><div id="poeRes" class="modbox"></div></section>
   </main>
 </div>
 
@@ -669,7 +746,7 @@ function sample(){
   put(4,5,"X");put(4,6,"V");put(5,6,"V");
   return {title:"Contoh: hambatan implementasi program",elements:els,rel:r,sample:true,step:"el"};
 }
-function blank(){return {title:"Proyek analisis baru",elements:[...Array(5)].map(()=>({id:newId(),name:""})),rel:{},sample:false,step:"el"};}
+function blank(){return {title:"Proyek analisis baru",elements:[...Array(5)].map(()=>({id:newId(),name:""})),rel:{},sample:false,step:"home"};}
 function load(){try{const t=localStorage.getItem(LS_KEY);if(t){const o=JSON.parse(t);if(o&&Array.isArray(o.elements))return o;}}catch(e){}return null;}
 let S=load(); if(!S||S.sample) S=blank();
 function persist(){try{localStorage.setItem(LS_KEY,JSON.stringify(S));}catch(e){}}
@@ -726,7 +803,7 @@ function compute(){
 window.__ismCompute=compute; // exposed for testing
 
 /* ---------- navigation ---------- */
-const MODS={pestel:["pe-in","pe-res"],porter:["po-in","po-res"],cba:["cb-in","cb-res"],cpm:["cp-in","cp-res"],bsc:["bs-in","bs-res"],home:["home"],ism:["el","ssim","rm","lp","model","micmac"],ahp:["ahp-crit","ahp-cmp","ahp-res"],swot:["swot-in","swot-res"],delphi:["dl-setup","dl-rate","dl-res"]};
+const MODS={sna:["sn-in","sn-res"],qual:["ql-in","ql-code","ql-res"],syntax:["sx-in","sx-res"],site:["st-in","st-res"],behav:["bm-in","bm-obs","bm-res"],poe:["poe-in","poe-res"],pestel:["pe-in","pe-res"],porter:["po-in","po-res"],cba:["cb-in","cb-res"],cpm:["cp-in","cp-res"],bsc:["bs-in","bs-res"],home:["home"],ism:["el","ssim","rm","lp","model","micmac"],ahp:["ahp-crit","ahp-cmp","ahp-res"],swot:["swot-in","swot-res"],delphi:["dl-setup","dl-rate","dl-res"]};
 const STEPS=Object.values(MODS).flat();
 const modOf=st=>Object.keys(MODS).find(m=>MODS[m].includes(st));
 const CREDIT={
@@ -739,6 +816,12 @@ const CREDIT={
   cba:`<p>Boardman, A. E., Greenberg, D. H., Vining, A. R., &amp; Weimer, D. L. (2018). <i>Cost-Benefit Analysis: Concepts and Practice</i> (5th ed.). Cambridge University Press.</p>`,
   cpm:`<p>Kelley, J. E., &amp; Walker, M. R. (1959). Critical-path planning and scheduling. <i>Proceedings of the Eastern Joint Computer Conference</i>, 160–173.</p><p>Malcolm, D. G., Roseboom, J. H., Clark, C. E., &amp; Fazar, W. (1959). Application of a technique for research and development program evaluation. <i>Operations Research</i>, 7(5), 646–669.</p>`,
   bsc:`<p>Kaplan, R. S., &amp; Norton, D. P. (1992). The balanced scorecard: Measures that drive performance. <i>Harvard Business Review</i>, 70(1), 71–79.</p>`,
+  sna:`<p>Wasserman, S., &amp; Faust, K. (1994). <i>Social Network Analysis: Methods and Applications</i>. Cambridge University Press.</p><p>Freeman, L. C. (1978). Centrality in social networks: Conceptual clarification. <i>Social Networks</i>, 1(3), 215–239.</p>`,
+  qual:`<p>Braun, V., &amp; Clarke, V. (2006). Using thematic analysis in psychology. <i>Qualitative Research in Psychology</i>, 3(2), 77–101.</p><p>Fairclough, N. (1995). <i>Critical Discourse Analysis: The Critical Study of Language</i>. Longman.</p>`,
+  syntax:`<p>Hillier, B., &amp; Hanson, J. (1984). <i>The Social Logic of Space</i>. Cambridge University Press.</p>`,
+  site:`<p>White, E. T. (1983). <i>Site Analysis: Diagramming Information for Architectural Design</i>. Architectural Media.</p>`,
+  behav:`<p>Ittelson, W. H., Rivlin, L. G., &amp; Proshansky, H. M. (1970). The use of behavioral maps in environmental psychology. Dalam H. M. Proshansky, W. H. Ittelson, &amp; L. G. Rivlin (Eds.), <i>Environmental Psychology: Man and His Physical Setting</i>. Holt, Rinehart &amp; Winston.</p>`,
+  poe:`<p>Preiser, W. F. E., Rabinowitz, H. Z., &amp; White, E. T. (1988). <i>Post-Occupancy Evaluation</i>. Van Nostrand Reinhold.</p><p>Martilla, J. A., &amp; James, J. C. (1977). Importance-performance analysis. <i>Journal of Marketing</i>, 41(1), 77–79.</p>`,
   delphi:`<p>Dalkey, N., &amp; Helmer, O. (1963). An experimental application of the Delphi method to the use of experts. <i>Management Science</i>, 9(3), 458–467.</p><p>von der Gracht, H. A. (2012). Consensus measurement in Delphi studies. <i>Technological Forecasting and Social Change</i>, 79(8), 1525–1536.</p>`};
 function go(step){
   if(!STEPS.includes(step))step="home"; S.step=step; const mod=modOf(step); S.last=S.last||{}; S.last[mod]=step; persist();
@@ -999,10 +1082,10 @@ if(desktop){
   $("#bOpen").onclick=()=>$("#fileIn").click();
 }
 $("#fileIn").onchange=e=>{const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>importText(r.result); r.readAsText(f); e.target.value="";};
-function exportObj(){return {app:"Studio Keputusan",version:2,title:S.title,ahp:AH,swot:SW,delphi:DL,pestel:PE,porter:PO,cba:CB,cpm:CP,bsc:BS,elements:namedEls().map(e=>e.name),ssim:(()=>{const E=namedEls(),o=[];for(let i=0;i<E.length;i++){const row=[];for(let j=i+1;j<E.length;j++)row.push(getRel(E[i].id,E[j].id)||"");o.push(row);}return o;})()};}
+function exportObj(){return {app:"Studio Keputusan",version:2,title:S.title,ahp:AH,swot:SW,delphi:DL,pestel:PE,porter:PO,cba:CB,cpm:CP,bsc:BS,sna:SN,qual:QL,syntax:SX,site:ST,behav:BM,poe:POE,elements:namedEls().map(e=>e.name),ssim:(()=>{const E=namedEls(),o=[];for(let i=0;i<E.length;i++){const row=[];for(let j=i+1;j<E.length;j++)row.push(getRel(E[i].id,E[j].id)||"");o.push(row);}return o;})()};}
 $("#bCopyJson").onclick=()=>copyText(JSON.stringify(exportObj(),null,2),"Data proyek disalin (JSON)");
 function importText(t){try{const o=JSON.parse(t); if(!Array.isArray(o.elements))throw 0;
-    if(o.ahp&&Array.isArray(o.ahp.crit)){AH=o.ahp; AH.sample=false; persistA();} if(o.swot&&o.swot.S){SW=o.swot; SW.sample=false; persistW();} if(o.delphi&&Array.isArray(o.delphi.rounds)){DL=o.delphi; DL.sample=false; persistD();} if(o.pestel&&o.pestel.rows){PE=o.pestel;PE.sample=false;persistPE();} if(o.porter&&o.porter.f){PO=o.porter;PO.sample=false;persistPO();} if(o.cba&&o.cba.rows){CB=o.cba;CB.sample=false;persistCB();} if(o.cpm&&o.cpm.acts){CP=o.cpm;CP.sample=false;persistCP();} if(o.bsc&&o.bsc.k){BS=o.bsc;BS.sample=false;persistBS();}
+    if(o.ahp&&Array.isArray(o.ahp.crit)){AH=o.ahp; AH.sample=false; persistA();} if(o.swot&&o.swot.S){SW=o.swot; SW.sample=false; persistW();} if(o.delphi&&Array.isArray(o.delphi.rounds)){DL=o.delphi; DL.sample=false; persistD();} if(o.pestel&&o.pestel.rows){PE=o.pestel;PE.sample=false;persistPE();} if(o.porter&&o.porter.f){PO=o.porter;PO.sample=false;persistPO();} if(o.cba&&o.cba.rows){CB=o.cba;CB.sample=false;persistCB();} if(o.cpm&&o.cpm.acts){CP=o.cpm;CP.sample=false;persistCP();} if(o.bsc&&o.bsc.k){BS=o.bsc;BS.sample=false;persistBS();} if(o.sna&&o.sna.actors){SN=o.sna;SN.sample=false;persistSN();} if(o.qual&&o.qual.docs){QL=o.qual;QL.sample=false;persistQL();} if(o.syntax&&o.syntax.spaces){SX=o.syntax;SX.sample=false;persistSX();} if(o.site&&o.site.a){ST=o.site;ST.sample=false;persistST();} if(o.behav&&o.behav.zones){BM=o.behav;BM.sample=false;persistBM();} if(o.poe&&o.poe.c){POE=o.poe;POE.sample=false;persistPOE();}
     const els=o.elements.map(n=>({id:newId(),name:String(n)})); const rel={};
     (o.ssim||[]).forEach((row,i)=>row.forEach((v,k)=>{const j=i+1+k; v=String(v||"").toUpperCase(); if(els[i]&&els[j]&&"VAXO".includes(v)&&v)rel[els[i].id+">"+els[j].id]=v;}));
     S={title:o.title||"Proyek analisis",elements:els,rel,sample:false,step:"home"}; persist(); syncAll(); go("home"); toast("Proyek dibuka");
@@ -1012,7 +1095,7 @@ document.addEventListener("paste",e=>{if(e.target.closest("input,textarea"))retu
 
 let newArmed=0;
 $("#bNew").onclick=e=>{const b=e.currentTarget; if(Date.now()-newArmed>3000){newArmed=Date.now(); b.textContent="Klik lagi: kosongkan semua metode?"; setTimeout(()=>b.textContent="Proyek baru",3000); return;}
-  newArmed=0; b.textContent="Proyek baru"; S=blank(); AH=ahpBlank(); SW=swBlank(); DL=dlBlank(); PE=peBlank(); PO=poBlank(); CB=cbBlank(); CP=cpBlank(); BS=bsBlank(); persist(); persistA(); persistW(); persistD(); persistPE(); persistPO(); persistCB(); persistCP(); persistBS(); syncAll(); go("home"); const f=$("#elist input"); f&&f.focus();};
+  newArmed=0; b.textContent="Proyek baru"; S=blank(); AH=ahpBlank(); SW=swBlank(); DL=dlBlank(); PE=peBlank(); PO=poBlank(); CB=cbBlank(); CP=cpBlank(); BS=bsBlank(); SN=snBlank(); QL=qlBlank(); SX=sxBlank(); ST=stBlank(); BM=bmBlank(); POE=poeBlank(); persistSN(); persistQL(); persistSX(); persistST(); persistBM(); persistPOE(); persist(); persistA(); persistW(); persistD(); persistPE(); persistPO(); persistCB(); persistCP(); persistBS(); syncAll(); go("home"); const f=$("#elist input"); f&&f.focus();};
 $("#bSample").onclick=()=>{ if(namedEls().length&&!S.sample&&!confirmArm($("#bSample"),"Klik lagi: ganti isian dengan contoh?","Muat contoh penelitian"))return; S=sample(); persist(); syncAll(); go("el"); toast("Contoh dimuat. Lihat hasilnya di langkah 3–6.");};
 let armT={}; function confirmArm(b,msg,orig){const k=b.id; if(armT[k]&&Date.now()-armT[k]<3000){armT[k]=0; b.textContent=orig; return true;} armT[k]=Date.now(); b.textContent=msg; setTimeout(()=>{b.textContent=orig;},3000); return false;}
 $("#bClearSample").onclick=()=>{S=blank(); persist(); syncAll(); go("el"); const f=$("#elist input"); f&&f.focus();};
@@ -1035,7 +1118,7 @@ function updateStatus(){const n=namedEls().length, {tot,f}=ssimStats();
     HS.delphi=ni?`${ni} butir · ${DL.experts.length} pakar · ${DL.rounds.length} putaran`:"Belum diisi";}
 }
 function render(){R=compute(); const st=S.step;
-  ({el:renderElements,ssim:renderSSIM,rm:renderRM,lp:renderLP,model:renderModel,micmac:renderMic,"ahp-crit":renderAhpCrit,"ahp-cmp":renderAhpCmp,"ahp-res":renderAhpRes,"swot-in":renderSwotIn,"swot-res":renderSwotRes,"dl-setup":renderDlSetup,"dl-rate":renderDlRate,"dl-res":renderDlRes,home:renderHome,"pe-in":renderPeIn,"pe-res":renderPeRes,"po-in":renderPoIn,"po-res":renderPoRes,"cb-in":renderCbIn,"cb-res":renderCbRes,"cp-in":renderCpIn,"cp-res":renderCpRes,"bs-in":renderBsIn,"bs-res":renderBsRes}[st]||(()=>{}))(); updateStatus();}
+  ({el:renderElements,ssim:renderSSIM,rm:renderRM,lp:renderLP,model:renderModel,micmac:renderMic,"ahp-crit":renderAhpCrit,"ahp-cmp":renderAhpCmp,"ahp-res":renderAhpRes,"swot-in":renderSwotIn,"swot-res":renderSwotRes,"dl-setup":renderDlSetup,"dl-rate":renderDlRate,"dl-res":renderDlRes,home:renderHome,"pe-in":renderPeIn,"pe-res":renderPeRes,"po-in":renderPoIn,"po-res":renderPoRes,"cb-in":renderCbIn,"cb-res":renderCbRes,"cp-in":renderCpIn,"cp-res":renderCpRes,"bs-in":renderBsIn,"bs-res":renderBsRes,"sn-in":renderSnIn,"sn-res":renderSnRes,"ql-in":renderQlIn,"ql-code":renderQlCode,"ql-res":renderQlRes,"sx-in":renderSxIn,"sx-res":renderSxRes,"st-in":renderStIn,"st-res":renderStRes,"bm-in":renderBmIn,"bm-obs":renderBmObs,"bm-res":renderBmRes,"poe-in":renderPoeIn,"poe-res":renderPoeRes}[st]||(()=>{}))(); updateStatus();}
 function syncAll(){$("#title").value=S.title||""; $("#sampleBanner").hidden=!S.sample;}
 let tt; function toast(m){const t=$("#toast"); t.textContent=m; t.hidden=false; clearTimeout(tt); tt=setTimeout(()=>t.hidden=true,2600);}
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>render());}catch(e){}
@@ -1651,6 +1734,356 @@ window.__cbCalc=cbCalc; window.__cpCalc=cpCalc; window.__bsCalc=bsCalc; window._
 window.__loadA=()=>{PE=peSample();PO=poSample();CB=cbSample();CP=cpSample();BS=bsSample();};
 
 /* =====================================================================
+   BATCH B — Social sciences & architecture
+   ===================================================================== */
+/* ---------- shared: binary matrix editor with drag-paint ---------- */
+let BIN_END=null; document.addEventListener("pointerup",()=>{ if(BIN_END){const f=BIN_END; BIN_END=null; f();} });
+function binMatrix(table,items,code,get,set,directed,onChange){
+  if(items.length<2){table.innerHTML=`<tr><td style="padding:20px;font-family:var(--f-body)">Isi minimal dua ${code==="R"?"ruang":"aktor"}.</td></tr>`;return;}
+  let h=`<thead><tr><th class="rn">${directed?"Dari \\ Ke":""}</th>${items.map((x,j)=>`<th title="${esc(x.name)}">${code}${j+1}</th>`).join("")}<th class="sum">Σ</th></tr></thead><tbody>`;
+  items.forEach((a,i)=>{let rs=0; h+=`<tr><th class="rn" title="${esc(a.name)}"><b>${code}${i+1}</b>${esc(a.name)}</th>`;
+    items.forEach((b,j)=>{ if(i===j){h+=`<td class="diag"></td>`;return;} const v=get(a.id,b.id); if(v)rs++; h+=`<td><button class="bcell ${v?"on":""}" data-i="${i}" data-j="${j}" aria-pressed="${!!v}" aria-label="${esc(a.name)} – ${esc(b.name)}">${v?"1":""}</button></td>`;});
+    h+=`<td class="sum">${rs}</td></tr>`;});
+  table.innerHTML=h+"</tbody>";
+  table._ctx={items,set,directed,onChange};
+  if(table._bound)return; table._bound=true; let paint=null;
+  const apply=btn=>{const c=table._ctx,i=+btn.dataset.i,j=+btn.dataset.j; c.set(c.items[i].id,c.items[j].id,paint); const mark=b=>{if(!b)return; b.classList.toggle("on",paint); b.textContent=paint?"1":""; b.setAttribute("aria-pressed",paint);}; mark(btn); if(!c.directed)mark(table.querySelector(`.bcell[data-i="${j}"][data-j="${i}"]`));};
+  table.addEventListener("pointerdown",e=>{const b=e.target.closest(".bcell"); if(!b)return; e.preventDefault(); paint=!b.classList.contains("on"); apply(b); if(b.releasePointerCapture&&e.pointerId!==undefined)try{b.releasePointerCapture(e.pointerId);}catch(_){} BIN_END=()=>{if(paint!==null){paint=null; table._ctx.onChange();}};});
+  table.addEventListener("pointerover",e=>{if(paint===null)return; const b=e.target.closest(".bcell"); if(b&&b.classList.contains("on")!==paint)apply(b);});
+  table.addEventListener("keydown",e=>{const b=e.target.closest(".bcell"); if(!b)return; if(e.key===" "||e.key==="Enter"||e.key==="1"||e.key==="0"){e.preventDefault(); paint=e.key==="0"?false:e.key==="1"?true:!b.classList.contains("on"); apply(b); paint=null; table._ctx.onChange();}});
+}
+const pairKey=(a,b,directed)=>directed||a<b?a+">"+b:b+">"+a;
+function bfs(adj,s){const n=adj.length,d=Array(n).fill(Infinity); d[s]=0; const q=[s]; while(q.length){const u=q.shift(); for(const v of adj[u]) if(d[v]===Infinity){d[v]=d[u]+1; q.push(v);}} return d;}
+
+/* ---------------- SOCIAL NETWORK ANALYSIS ---------------- */
+const SN_KEY="sk-sna-v1";
+const snBlank=()=>({directed:false,actors:[...Array(5)].map(()=>({id:newId(),name:"",group:""})),ties:{},sample:false});
+function snSample(){const names=[["Dinas PUPR","Pemerintah"],["Bappeda","Pemerintah"],["Kelurahan","Pemerintah"],["Pokdarwis","Komunitas"],["Karang Taruna","Komunitas"],["Universitas","Akademisi"],["Pengembang swasta","Swasta"],["LSM lingkungan","Komunitas"]];
+  const A=names.map(([n,g])=>({id:newId(),name:n,group:g})), t={}; const link=(i,j)=>t[pairKey(A[i].id,A[j].id,false)]=1;
+  [[0,1],[0,2],[1,2],[1,5],[1,6],[2,3],[2,4],[3,4],[3,5],[3,7],[5,7],[0,6],[2,7]].forEach(([i,j])=>link(i,j)); return {directed:false,actors:A,ties:t,sample:true};}
+let SN=mkStore(SN_KEY,snBlank); const persistSN=()=>saveK(SN_KEY,SN);
+const snActors=()=>SN.actors.filter(a=>a.name.trim());
+const snGet=(a,b)=>!!SN.ties[pairKey(a,b,SN.directed)];
+const snSet=(a,b,v)=>{const k=pairKey(a,b,SN.directed); if(v)SN.ties[k]=1; else delete SN.ties[k];};
+function snCalc(){const A=snActors(), n=A.length, dir=SN.directed; const out=A.map(()=>[]), inn=A.map(()=>[]), und=A.map(()=>new Set());
+  A.forEach((a,i)=>A.forEach((b,j)=>{ if(i!==j&&snGet(a.id,b.id)){ if(dir||i<j){ out[i].push(j); inn[j].push(i); if(!dir){out[j].push(i); inn[i].push(j);} } und[i].add(j); und[j].add(i);} }));
+  const m=dir?out.reduce((s,x)=>s+x.length,0):out.reduce((s,x)=>s+x.length,0)/2;
+  const density=n>1?(dir?m/(n*(n-1)):2*m/(n*(n-1))):0;
+  const dist=A.map((_,i)=>bfs(out,i));
+  const closeness=A.map((_,i)=>{const r=dist[i].filter((d,j)=>j!==i&&d<Infinity); if(!r.length)return 0; const sum=r.reduce((a,b)=>a+b,0); return (r.length/sum)*(r.length/(n-1));});
+  // Brandes betweenness (unweighted)
+  const bc=Array(n).fill(0);
+  for(let s=0;s<n;s++){const S=[],P=A.map(()=>[]),sig=Array(n).fill(0),d=Array(n).fill(-1); sig[s]=1; d[s]=0; const q=[s];
+    while(q.length){const v=q.shift(); S.push(v); for(const w of out[v]){ if(d[w]<0){d[w]=d[v]+1; q.push(w);} if(d[w]===d[v]+1){sig[w]+=sig[v]; P[w].push(v);} }}
+    const del=Array(n).fill(0); while(S.length){const w=S.pop(); for(const v of P[w]) del[v]+=sig[v]/sig[w]*(1+del[w]); if(w!==s)bc[w]+=del[w];}}
+  const norm=n>2?(dir?(n-1)*(n-2):(n-1)*(n-2)):1; const btw=bc.map(x=>dir?x/norm:x/norm); // undirected Brandes counts each pair twice → /((n-1)(n-2)) gives the standard normalized value
+  const comp=[]; const seen=Array(n).fill(false); for(let i=0;i<n;i++){ if(seen[i])continue; const c=[]; const q=[i]; seen[i]=true; while(q.length){const u=q.shift(); c.push(u); und[u].forEach(v=>{if(!seen[v]){seen[v]=true;q.push(v);}});} comp.push(c);}
+  let diam=0; dist.forEach(r=>r.forEach(d=>{if(d<Infinity&&d>diam)diam=d;}));
+  return {A,n,m,dir,out,inn,und,density,closeness,btw,comp,diam,deg:A.map((_,i)=>dir?out[i].length+inn[i].length:out[i].length),outd:out.map(x=>x.length),ind:inn.map(x=>x.length)};}
+function snLayout(r){const n=r.n, W=640, H=440; const pos=r.A.map((_,i)=>({x:W/2+Math.cos(2*Math.PI*i/n)*170,y:H/2+Math.sin(2*Math.PI*i/n)*150}));
+  const k=Math.sqrt(W*H/Math.max(n,1))*0.62; let t=60;
+  for(let it=0;it<300;it++){const disp=pos.map(()=>({x:0,y:0}));
+    for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){let dx=pos[i].x-pos[j].x, dy=pos[i].y-pos[j].y, d=Math.hypot(dx,dy)||0.01; const f=k*k/d; dx/=d; dy/=d; disp[i].x+=dx*f; disp[i].y+=dy*f; disp[j].x-=dx*f; disp[j].y-=dy*f;}
+    r.und.forEach((s,i)=>s.forEach(j=>{ if(j<=i)return; let dx=pos[i].x-pos[j].x, dy=pos[i].y-pos[j].y, d=Math.hypot(dx,dy)||0.01; const f=d*d/k; dx/=d; dy/=d; disp[i].x-=dx*f; disp[i].y-=dy*f; disp[j].x+=dx*f; disp[j].y+=dy*f;}));
+    pos.forEach((p,i)=>{p.x+=(W/2-p.x)*0.01; p.y+=(H/2-p.y)*0.01; const d=Math.hypot(disp[i].x,disp[i].y)||1; p.x+=disp[i].x/d*Math.min(d,t); p.y+=disp[i].y/d*Math.min(d,t); p.x=Math.max(60,Math.min(W-60,p.x)); p.y=Math.max(40,Math.min(H-40,p.y));}); t*=0.985;}
+  return {pos,W,H};}
+function snSVG(r){ if(r.n<2)return `<p class="note" style="padding:16px">Isi minimal dua aktor.</p>`;
+  const {pos,W,H}=snLayout(r), k={ink:css("--ink"),muted:css("--muted"),line:css("--line"),sheet:css("--sheet"),pet:css("--petrol")};
+  const groups=[...new Set(r.A.map(a=>a.group.trim()||"–"))], pal=[css("--petrol"),css("--a"),css("--x"),css("--o"),"#3f7fb5","#a8553d"]; const gc=g=>pal[groups.indexOf(g.trim()||"–")%pal.length];
+  const maxd=Math.max(1,...r.deg);
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H+28}" width="100%" style="max-width:${W}px" font-family="Atkinson Hyperlegible, Segoe UI, sans-serif"><rect width="100%" height="100%" fill="${k.sheet}"/><defs><marker id="sa" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="${k.muted}"/></marker></defs>`;
+  const rad=i=>8+14*r.deg[i]/maxd;
+  r.out.forEach((L,i)=>L.forEach(j=>{ if(!r.dir&&j<i)return; const a=pos[i],b=pos[j], d=Math.hypot(b.x-a.x,b.y-a.y)||1, ux=(b.x-a.x)/d, uy=(b.y-a.y)/d; s+=`<line x1="${a.x+ux*rad(i)}" y1="${a.y+uy*rad(i)}" x2="${b.x-ux*(rad(j)+2)}" y2="${b.y-uy*(rad(j)+2)}" stroke="${k.muted}" stroke-opacity=".55" stroke-width="1.4" ${r.dir?'marker-end="url(#sa)"':""}/>`;}));
+  r.A.forEach((a,i)=>{const p=pos[i]; s+=`<circle cx="${p.x}" cy="${p.y}" r="${rad(i)}" fill="${gc(a.group)}" stroke="${k.sheet}" stroke-width="2"/><text x="${p.x}" y="${p.y+rad(i)+13}" text-anchor="middle" font-size="12" font-weight="700" fill="${k.ink}" paint-order="stroke" stroke="${k.sheet}" stroke-width="3">${esc(a.name)}</text>`;});
+  let lx=12; groups.forEach(g=>{s+=`<circle cx="${lx+6}" cy="${H+14}" r="6" fill="${gc(g)}"/><text x="${lx+16}" y="${H+18}" font-size="11.5" fill="${k.muted}">${esc(g)}</text>`; lx+=28+g.length*6.5;});
+  return s+`</svg>`;}
+function renderSnIn(){const box=$("#snIn"); keepFocus(box,()=>{box.innerHTML=`<h1>Social Network Analysis (Analisis Jaringan Sosial)</h1>
+  <p class="lede">Tuliskan aktor (orang, lembaga, kelompok) dan kelompoknya, lalu tandai hubungan pada matriks. Klik sel untuk menandai, atau tekan dan sapukan untuk menandai banyak sel sekaligus.</p>
+  ${banner(SN.sample,"jaringan aktor revitalisasi kampung tepi sungai")}
+  <div class="card"><h2>Actors (Aktor)</h2><div class="snlist">${SN.actors.map((a,i)=>`<div class="snrow"><span class="code">A${i+1}</span><input data-fid="sn${a.id}" data-sn="${a.id}" data-f="name" value="${esc(a.name)}" placeholder="contoh: ${esc(["Dinas PUPR","Kelurahan","Pokdarwis","Universitas","Pengembang swasta"][i%5])}"><input data-fid="sg${a.id}" data-sn="${a.id}" data-f="group" value="${esc(a.group)}" placeholder="kelompok, mis. Pemerintah"><button class="icon" data-sndel="${a.id}" aria-label="Hapus">✕</button></div>`).join("")}</div>
+   <div class="row" style="margin-top:10px"><button class="btn small" id="bSnAdd">+ Tambah aktor</button><span class="spacer"></span><label class="row note" style="gap:6px"><input type="checkbox" id="snDir" ${SN.directed?"checked":""}> Hubungan berarah (A → B tidak sama dengan B → A)</label></div></div>
+  <div class="card"><h2>Tie matrix (Matriks hubungan)</h2><p class="note">${SN.directed?"Baris = pengirim, kolom = penerima.":"Hubungan tidak berarah: menandai satu sel otomatis menandai pasangannya."}</p><div class="scroll"><table class="mx" id="snMx"></table></div></div>
+  <div class="row"><button class="btn" id="bSnSample">Muat contoh penelitian</button><span class="spacer"></span><button class="btn primary" data-go="sn-res">Lihat hasil →</button></div>`;});
+  binMatrix($("#snMx"),snActors(),"A",snGet,(a,b,v)=>{snSet(a,b,v); SN.sample=false;},SN.directed,()=>{persistSN(); updateStatus(); renderSnMxOnly();});}
+function renderSnMxOnly(){binMatrix($("#snMx"),snActors(),"A",snGet,(a,b,v)=>{snSet(a,b,v); SN.sample=false;},SN.directed,()=>{persistSN(); updateStatus(); renderSnMxOnly();});}
+$("#snIn").addEventListener("input",e=>{const t=e.target; if(!t.dataset.sn)return; SN.actors.find(a=>a.id===t.dataset.sn)[t.dataset.f]=t.value; const was=SN.sample; SN.sample=false; persistSN(); if(was)renderSnIn(); else if(t.dataset.f==="name")renderSnMxOnly(); updateStatus();});
+$("#snIn").addEventListener("change",e=>{ if(e.target.id!=="snDir")return; const was=SN.directed; SN.directed=e.target.checked; const t={}; Object.keys(SN.ties).forEach(k=>{const [a,b]=k.split(">"); t[pairKey(a,b,SN.directed)]=1; if(SN.directed&&!was)t[pairKey(b,a,true)]=1;}); SN.ties=t; SN.sample=false; persistSN(); renderSnIn();});
+$("#snIn").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b||b.classList.contains("bcell"))return;
+  if(b.dataset.sndel){const id=b.dataset.sndel; SN.actors=SN.actors.filter(a=>a.id!==id); Object.keys(SN.ties).forEach(k=>{if(k.split(">").includes(id))delete SN.ties[k];});}
+  else if(b.id==="bSnAdd")SN.actors.push({id:newId(),name:"",group:""});
+  else if(b.id==="bSnSample"){ if(!SN.sample&&snActors().length&&!confirmArm(b,"Klik lagi: ganti isian dengan contoh?","Muat contoh penelitian"))return; SN=snSample(); persistSN(); renderSnIn(); updateStatus(); return toast("Contoh jaringan dimuat");}
+  else return; SN.sample=false; persistSN(); renderSnIn(); updateStatus();});
+function renderSnRes(){const r=snCalc(), box=$("#snRes"); const top=(arr)=>{let b=-1,bi=-1; arr.forEach((v,i)=>{if(v>b){b=v;bi=i;}}); return bi;};
+  box.innerHTML=`<h1>Network result (Hasil analisis jaringan)</h1>
+  <div class="kpis"><div><span>Aktor / hubungan</span><b>${r.n} / ${r.m}</b></div><div><span>Density (Kepadatan)</span><b>${fmt(r.density,3)}</b></div><div><span>Komponen terhubung</span><b>${r.comp.length}</b></div><div><span>Diameter (jarak terjauh)</span><b>${r.diam}</b></div></div>
+  <div class="grid2"><div class="card"><div class="row"><h2>Network graph (Graf jaringan)</h2><span class="spacer"></span><button class="btn small" id="bCopySvgSn">Salin SVG</button></div><div style="margin-top:10px" id="snGraph">${snSVG(r)}</div><p class="note">Ukuran simpul sebanding dengan derajat; warna menunjukkan kelompok.</p></div>
+  <div class="card"><h2>Aktor kunci</h2>${r.n>=2?`<table class="plain" style="margin-top:8px"><tbody>
+   <tr><td>Derajat tertinggi <small class="note">(paling banyak relasi)</small></td><td><b>${esc(r.A[top(r.deg)].name)}</b></td></tr>
+   <tr><td>Kedekatan tertinggi <small class="note">(paling cepat menjangkau semua)</small></td><td><b>${esc(r.A[top(r.closeness)].name)}</b></td></tr>
+   <tr><td>Keperantaraan tertinggi <small class="note">(perantara/penghubung)</small></td><td><b>${esc(r.A[top(r.btw)].name)}</b></td></tr></tbody></table>`:""}
+   <p class="note" style="margin-top:10px">Aktor dengan keperantaraan tinggi berpotensi menjadi penghubung antar kelompok dan titik rawan bila keluar dari jaringan.</p></div></div>
+  <div class="card"><div class="row"><h2>Centrality (Sentralitas)</h2><span class="spacer"></span><button class="btn small" data-copyx="sna">Salin untuk Excel</button></div>
+  <div class="scroll" style="margin-top:10px;border:0"><table class="plain"><thead><tr><th>Aktor</th><th>Kelompok</th>${r.dir?"<th>Out-degree</th><th>In-degree</th>":"<th>Degree (Derajat)</th>"}<th>Degree ternormalisasi</th><th>Closeness (Kedekatan)</th><th>Betweenness (Keperantaraan)</th></tr></thead><tbody>
+  ${r.A.map((a,i)=>`<tr><td><b>A${i+1}</b> ${esc(a.name)}</td><td>${esc(a.group||"–")}</td>${r.dir?`<td class="m">${r.outd[i]}</td><td class="m">${r.ind[i]}</td>`:`<td class="m">${r.deg[i]}</td>`}<td class="m">${fmt(r.n>1?(r.dir?r.deg[i]/(2*(r.n-1)):r.deg[i]/(r.n-1)):0,3)}</td><td class="m">${fmt(r.closeness[i],3)}</td><td class="m">${fmt(r.btw[i],3)}</td></tr>`).join("")}</tbody></table></div>
+  <p class="note">Closeness memakai koreksi Wasserman–Faust untuk jaringan tak terhubung; betweenness dinormalisasi (algoritma Brandes).</p></div>
+  ${navRow(["sn-in","Aktor & hubungan"],null)}`;}
+$("#snRes").addEventListener("click",e=>{if(e.target.closest("#bCopySvgSn"))copyText(snSVG(snCalc()).replace('width="100%"','width="640" height="468"'),"SVG graf disalin");});
+
+/* ---------------- QUALITATIVE CODING (CDA · Ethnography · FGD) ---------------- */
+const QL_KEY="sk-qual-v1";
+const qlBlank=()=>({kind:"FGD",docs:[{id:newId(),name:"",text:""}],codes:[{id:newId(),name:"",theme:""},{id:newId(),name:"",theme:""}],seg:{},cur:0,sample:false});
+function qlSample(){const c=(n,t)=>({id:newId(),name:n,theme:t}); const codes=[c("Akses air bersih","Infrastruktur dasar"),c("Banjir musiman","Kerentanan"),c("Gotong royong","Modal sosial"),c("Peran RT/RW","Kelembagaan"),c("Kekhawatiran penggusuran","Kerentanan")];
+  const d1={id:newId(),name:"FGD warga RW 05",text:"Moderator: Bagaimana kondisi lingkungan di sini setiap musim hujan?\nBu Sri: Setiap tahun air sungai naik sampai depan rumah, kadang semalam penuh.\nPak Darto: Kalau sudah banjir, kami kerja bakti membersihkan lumpur bersama, tanpa disuruh.\nBu Sri: Air bersih juga susah waktu banjir, sumur jadi keruh.\nPak Darto: Pak RT biasanya yang mengatur jadwal kerja bakti dan minta bantuan kelurahan.\nMbak Rina: Yang kami takutkan sebenarnya kalau kampung ini nanti digusur atas nama penataan."};
+  const d2={id:newId(),name:"Catatan lapangan 12 Sep",text:"Pagi hari warga mengambil air dari hidran umum karena sumur keruh setelah hujan semalam.\nPengurus RW mengumumkan kerja bakti melalui pengeras suara musala.\nBeberapa warga membicarakan rencana proyek tanggul dan khawatir rumahnya terkena."};
+  const segs=(d)=>d.text.split("\n").map(s=>s.trim()).filter(Boolean);
+  const seg={}; const tag=(d,i,ci)=>{(seg[d.id+"|"+i]=seg[d.id+"|"+i]||[]).push(codes[ci].id);};
+  tag(d1,1,1);tag(d1,2,2);tag(d1,2,1);tag(d1,3,0);tag(d1,3,1);tag(d1,4,3);tag(d1,4,2);tag(d1,5,4);
+  tag(d2,0,0);tag(d2,0,1);tag(d2,1,3);tag(d2,1,2);tag(d2,2,4);
+  return {kind:"FGD",docs:[d1,d2],codes,seg,cur:0,sample:true};}
+let QL=mkStore(QL_KEY,qlBlank); const persistQL=()=>saveK(QL_KEY,QL);
+const qlUnits=d=>d.text.split(/\n+/).map(s=>s.trim()).filter(Boolean);
+const qlSpeaker=u=>{const m=u.match(/^([A-Z][\w .'-]{0,30}):\s/); return m?m[1].trim():"";};
+const qlCodes=()=>QL.codes.filter(c=>c.name.trim());
+const QPAL=["--petrol","--a","--x","--o"];
+const qlColor=i=>`var(${QPAL[i%4]})`;
+function renderQlIn(){const box=$("#qlIn"); keepFocus(box,()=>{box.innerHTML=`<h1>Qualitative analysis (Analisis kualitatif)</h1>
+  <p class="lede">Untuk transkrip FGD/wawancara, catatan etnografi, atau teks wacana (CDA). Tempel teks: setiap baris menjadi satu unit analisis. Baris berawalan <code>Nama:</code> dikenali sebagai penutur.</p>
+  ${banner(QL.sample,"FGD dan catatan lapangan kampung tepi sungai")}
+  <div class="grid2"><div class="card"><div class="fields"><label>Jenis data<select id="qlKind">${["FGD","Wawancara","Etnografi / catatan lapangan","Analisis wacana kritis (CDA)"].map(k=>`<option ${QL.kind===k?"selected":""}>${k}</option>`).join("")}</select></label></div>
+   <h2 style="margin-top:14px">Sources (Sumber data)</h2>${QL.docs.map((d,i)=>`<div class="qdoc"><div class="row"><input data-fid="qn${d.id}" data-qd="${d.id}" data-f="name" value="${esc(d.name)}" placeholder="contoh: FGD warga RW 05" class="mini" style="flex:1"><button class="icon" data-qddel="${d.id}" aria-label="Hapus">✕</button></div><textarea data-fid="qt${d.id}" data-qd="${d.id}" data-f="text" placeholder="Tempel transkrip atau catatan di sini.&#10;Moderator: Bagaimana kondisi lingkungan di sini?&#10;Bu Sri: Setiap musim hujan air naik sampai depan rumah.">${esc(d.text)}</textarea><span class="note">${qlUnits(d).length} unit</span></div>`).join("")}
+   <button class="btn small" id="bQlAddDoc">+ Tambah sumber</button></div>
+  <div class="card"><h2>Codebook (Buku kode)</h2><p class="note">Kode adalah label makna; tema mengelompokkan kode.</p>${QL.codes.map((c,i)=>`<div class="snrow"><span class="qsw" style="background:${qlColor(i)}"></span><input data-fid="qc${c.id}" data-qc="${c.id}" data-f="name" value="${esc(c.name)}" placeholder="kode, mis. Gotong royong"><input data-fid="qh${c.id}" data-qc="${c.id}" data-f="theme" value="${esc(c.theme)}" placeholder="tema, mis. Modal sosial"><button class="icon" data-qcdel="${c.id}" aria-label="Hapus">✕</button></div>`).join("")}
+   <button class="btn small" id="bQlAddCode" style="margin-top:8px">+ Tambah kode</button></div></div>
+  <div class="row"><button class="btn" id="bQlSample">Muat contoh penelitian</button><span class="spacer"></span><button class="btn primary" data-go="ql-code">Mulai pengodean →</button></div>`;});}
+$("#qlIn").addEventListener("input",e=>{const t=e.target; if(t.dataset.qd)QL.docs.find(d=>d.id===t.dataset.qd)[t.dataset.f]=t.value; else if(t.dataset.qc)QL.codes.find(c=>c.id===t.dataset.qc)[t.dataset.f]=t.value; else return; const was=QL.sample; QL.sample=false; persistQL(); if(was)renderQlIn(); else if(t.dataset.f==="text"){const n=t.parentElement.querySelector(".note"); if(n)n.textContent=qlUnits(QL.docs.find(d=>d.id===t.dataset.qd)).length+" unit";} updateStatus();});
+$("#qlIn").addEventListener("change",e=>{if(e.target.id==="qlKind"){QL.kind=e.target.value; persistQL();}});
+$("#qlIn").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return;
+  if(b.dataset.qddel)QL.docs=QL.docs.filter(d=>d.id!==b.dataset.qddel); else if(b.dataset.qcdel){const id=b.dataset.qcdel; QL.codes=QL.codes.filter(c=>c.id!==id); Object.keys(QL.seg).forEach(k=>QL.seg[k]=QL.seg[k].filter(x=>x!==id));}
+  else if(b.id==="bQlAddDoc")QL.docs.push({id:newId(),name:"",text:""}); else if(b.id==="bQlAddCode")QL.codes.push({id:newId(),name:"",theme:""});
+  else if(b.id==="bQlSample"){ if(!QL.sample&&QL.docs.some(d=>d.text.trim())&&!confirmArm(b,"Klik lagi: ganti isian dengan contoh?","Muat contoh penelitian"))return; QL=qlSample(); persistQL(); renderQlIn(); updateStatus(); return toast("Contoh data kualitatif dimuat");}
+  else return; QL.sample=false; persistQL(); renderQlIn(); updateStatus();});
+function renderQlCode(){const box=$("#qlCode"), docs=QL.docs.filter(d=>d.text.trim()), C=qlCodes(); if(QL.cur>=docs.length)QL.cur=0; const d=docs[QL.cur];
+  box.innerHTML=`<h1>Coding (Pengodean)</h1><p class="lede">Klik label kode di setiap unit untuk menandainya. Satu unit boleh memiliki beberapa kode. Klik lagi untuk melepas.</p>
+  <div class="tabsx">${docs.map((x,i)=>`<button class="tabx ${i===QL.cur?"on":""}" data-qdoc="${i}">${esc(x.name||"Sumber "+(i+1))}</button>`).join("")}</div>
+  ${!d?`<div class="card"><p class="note">Tempel teks di langkah sebelumnya.</p></div>`:!C.length?`<div class="card"><p class="note">Isi buku kode terlebih dahulu.</p></div>`:`<div class="card qunits">${qlUnits(d).map((u,i)=>{const on=QL.seg[d.id+"|"+i]||[]; const sp=qlSpeaker(u); return `<div class="qu ${on.length?"coded":""}"><div class="qt">${sp?`<b class="qsp">${esc(sp)}</b> ${esc(u.slice(u.indexOf(":")+1).trim())}`:esc(u)}</div><div class="qchips">${C.map((c,ci)=>`<button data-qtag="${d.id}|${i}" data-code="${c.id}" class="qchip ${on.includes(c.id)?"on":""}" style="--qc:${qlColor(QL.codes.indexOf(c))}">${esc(c.name)}</button>`).join("")}</div></div>`;}).join("")}</div>`}
+  ${navRow(["ql-in","Sumber & kode"],["ql-res","Lihat hasil"])}`;}
+$("#qlCode").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return;
+  if(b.dataset.qdoc){QL.cur=+b.dataset.qdoc; persistQL(); renderQlCode(); return;}
+  if(b.dataset.qtag){const k=b.dataset.qtag, L=(QL.seg[k]=QL.seg[k]||[]), c=b.dataset.code; const i=L.indexOf(c); if(i>=0)L.splice(i,1); else L.push(c); if(!L.length)delete QL.seg[k]; QL.sample=false; persistQL();
+    b.classList.toggle("on"); b.closest(".qu").classList.toggle("coded",!!(QL.seg[k]&&QL.seg[k].length)); updateStatus();}});
+function qlCalc(){const C=qlCodes(), docs=QL.docs.filter(d=>d.text.trim()); const freq=C.map(()=>0), byDoc=C.map(()=>docs.map(()=>0)), co=C.map(()=>C.map(()=>0)), quotes=C.map(()=>[]), spk={}; let units=0, coded=0;
+  docs.forEach((d,di)=>qlUnits(d).forEach((u,i)=>{units++; const on=(QL.seg[d.id+"|"+i]||[]).map(id=>C.findIndex(c=>c.id===id)).filter(x=>x>=0); if(on.length)coded++; const sp=qlSpeaker(u);
+    on.forEach(a=>{freq[a]++; byDoc[a][di]++; quotes[a].push({doc:d.name||"Sumber "+(di+1),text:u}); if(sp){(spk[sp]=spk[sp]||C.map(()=>0))[a]++;} on.forEach(b=>{if(a!==b)co[a][b]++;});});}));
+  const themes={}; C.forEach((c,i)=>{const t=c.theme.trim()||"(tanpa tema)"; themes[t]=(themes[t]||0)+freq[i];});
+  return {C,docs,freq,byDoc,co,quotes,spk,units,coded,themes};}
+function renderQlRes(){const r=qlCalc(), box=$("#qlRes"), tot=r.freq.reduce((a,b)=>a+b,0)||1; const thm=Object.entries(r.themes).sort((a,b)=>b[1]-a[1]);
+  box.innerHTML=`<h1>Qualitative result (Hasil analisis kualitatif)</h1><p class="lede">${esc(QL.kind)} · ${r.docs.length} sumber · ${r.coded} dari ${r.units} unit dikodekan.</p>
+  <div class="grid2"><div class="card"><div class="row"><h2>Code frequency (Frekuensi kode)</h2><span class="spacer"></span><button class="btn small" data-copyx="qual">Salin untuk Excel</button></div>
+   ${bars(r.C.map((c,i)=>({label:c.name,value:r.freq[i],sub:`${r.freq[i]} · ${pct(r.freq[i]/tot)}`})).sort((a,b)=>b.value-a.value))}</div>
+  <div class="card"><h2>Themes (Tema)</h2>${bars(thm.map(([t,v])=>({label:t,value:v,sub:String(v)})))}<p class="note">Jumlah unit berkode dalam setiap tema.</p></div></div>
+  <div class="card"><h2>Co-occurrence (Ko-okurensi kode)</h2><p class="note">Berapa kali dua kode muncul pada unit yang sama, menunjukkan keterkaitan makna.</p>
+   <div class="scroll" style="margin-top:8px"><table class="mx"><thead><tr><th class="rn">Kode</th>${r.C.map((_,j)=>`<th>K${j+1}</th>`).join("")}</tr></thead><tbody>${r.C.map((c,i)=>`<tr><th class="rn" title="${esc(c.name)}"><b>K${i+1}</b>${esc(c.name)}</th>${r.C.map((_,j)=>i===j?`<td class="diag"></td>`:`<td class="${r.co[i][j]?"tr":"zero"}">${r.co[i][j]}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>
+  ${Object.keys(r.spk).length?`<div class="card"><h2>Kode per penutur</h2><div class="scroll" style="margin-top:8px;border:0"><table class="plain"><thead><tr><th>Penutur</th>${r.C.map((c,j)=>`<th title="${esc(c.name)}">K${j+1}</th>`).join("")}</tr></thead><tbody>${Object.entries(r.spk).map(([s,a])=>`<tr><td><b>${esc(s)}</b></td>${a.map(v=>`<td class="m">${v||""}</td>`).join("")}</tr>`).join("")}</tbody></table></div></div>`:""}
+  <div class="card"><h2>Excerpts (Kutipan per kode)</h2>${r.C.map((c,i)=>r.quotes[i].length?`<details class="qx"><summary><b>${esc(c.name)}</b> <span class="note">· ${esc(c.theme||"")} · ${r.quotes[i].length} kutipan</span></summary>${r.quotes[i].map(q=>`<blockquote>${esc(q.text)}<cite>${esc(q.doc)}</cite></blockquote>`).join("")}</details>`:"").join("")}</div>
+  ${navRow(["ql-code","Pengodean"],null)}`;}
+
+/* ---------------- SPACE SYNTAX ---------------- */
+const SX_KEY="sk-syntax-v1";
+const sxBlank=()=>({spaces:[...Array(5)].map(()=>({id:newId(),name:""})),links:{},root:null,sample:false});
+function sxSample(){const n=["Luar (carrier)","Teras","Ruang tamu","Ruang keluarga","Dapur","Kamar tidur 1","Kamar tidur 2","Kamar mandi","Garasi"]; const S=n.map(x=>({id:newId(),name:x})), L={};
+  [[0,1],[0,8],[1,2],[2,3],[3,4],[3,5],[3,6],[3,7],[4,8],[4,7]].forEach(([i,j])=>L[pairKey(S[i].id,S[j].id,false)]=1); return {spaces:S,links:L,root:S[0].id,sample:true};}
+let SX=mkStore(SX_KEY,sxBlank); const persistSX=()=>saveK(SX_KEY,SX);
+const sxSp=()=>SX.spaces.filter(s=>s.name.trim());
+const sxGet=(a,b)=>!!SX.links[pairKey(a,b,false)], sxSet=(a,b,v)=>{const k=pairKey(a,b,false); if(v)SX.links[k]=1; else delete SX.links[k];};
+const dval=k=>k>2?2*(k*(Math.log2((k+2)/3)-1)+1)/((k-1)*(k-2)):NaN;
+function sxCalc(){const S=sxSp(), k=S.length, adj=S.map((a,i)=>S.map((b,j)=>j).filter(j=>j!==i&&sxGet(a.id,S[j].id)));
+  const dist=S.map((_,i)=>bfs(adj,i)), D=dval(k);
+  const rows=S.map((s,i)=>{const d=dist[i], reach=d.every(x=>x<Infinity), TD=d.reduce((a,b)=>a+(b<Infinity?b:0),0), MD=k>1?TD/(k-1):NaN, RA=k>2?2*(MD-1)/(k-2):NaN, RRA=RA/D;
+    const ctrl=adj[i].reduce((a,j)=>a+1/adj[j].length,0); return {s,i,conn:adj[i].length,TD,MD,RA,RRA,int:RRA>0?1/RRA:NaN,ctrl,reach};});
+  const ri=Math.max(0,S.findIndex(s=>s.id===SX.root)); const rd=k?dist[ri]:[];
+  const ints=rows.map(r=>r.int).filter(Number.isFinite), meanInt=ints.length?ints.reduce((a,b)=>a+b,0)/ints.length:NaN;
+  const sorted=[...rows].filter(r=>Number.isFinite(r.int)).sort((a,b)=>b.int-a.int), core=new Set(sorted.slice(0,Math.max(1,Math.round(k*0.25))).map(r=>r.i));
+  const edges=adj.reduce((a,x)=>a+x.length,0)/2, rings=Math.max(0,edges-k+ (rows.every(r=>r.reach)?1:0));
+  return {S,k,adj,rows,D,ri,rd,meanInt,core,edges,rings,connected:rows.every(r=>r.reach)};}
+function sxJGraph(r){ if(r.k<2)return `<p class="note" style="padding:16px">Isi minimal dua ruang.</p>`;
+  const lv={}; r.rd.forEach((d,i)=>{const L=d<Infinity?d:-1; (lv[L]=lv[L]||[]).push(i);}); const keys=Object.keys(lv).map(Number).filter(x=>x>=0).sort((a,b)=>a-b);
+  const W=Math.max(420,Math.max(...keys.map(L=>lv[L].length))*120+60), gy=86, H=keys.length*gy+50, pos={};
+  keys.forEach((L,li)=>{const row=lv[L]; row.forEach((i,k)=>{pos[i]={x:(W/(row.length+1))*(k+1),y:H-30-li*gy};});});
+  const c={ink:css("--ink"),muted:css("--muted"),line:css("--line"),sheet:css("--sheet"),pet:css("--petrol"),och:css("--ochre"),soft:css("--petrol-soft"),och2:css("--ochre-soft")};
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" font-family="Atkinson Hyperlegible, Segoe UI, sans-serif"><rect width="100%" height="100%" fill="${c.sheet}"/>`;
+  keys.forEach((L,li)=>s+=`<text x="8" y="${H-26-li*gy}" font-size="11" fill="${c.muted}" font-family="JetBrains Mono, monospace">d=${L}</text><line x1="40" x2="${W-8}" y1="${H-30-li*gy}" y2="${H-30-li*gy}" stroke="${c.line}" stroke-dasharray="2 6"/>`);
+  r.adj.forEach((L,i)=>L.forEach(j=>{if(j<i||!pos[i]||!pos[j])return; s+=`<line x1="${pos[i].x}" y1="${pos[i].y}" x2="${pos[j].x}" y2="${pos[j].y}" stroke="${c.pet}" stroke-width="1.6"/>`;}));
+  Object.entries(pos).forEach(([i,p])=>{i=+i; const root=i===r.ri, core=r.core.has(i); s+=`<circle cx="${p.x}" cy="${p.y}" r="${root?13:11}" fill="${core?c.och2:c.soft}" stroke="${core?c.och:c.pet}" stroke-width="${root?3:1.6}"/>${root?`<line x1="${p.x-6}" y1="${p.y-6}" x2="${p.x+6}" y2="${p.y+6}" stroke="${c.pet}" stroke-width="2"/><line x1="${p.x+6}" y1="${p.y-6}" x2="${p.x-6}" y2="${p.y+6}" stroke="${c.pet}" stroke-width="2"/>`:`<text x="${p.x}" y="${p.y+4}" text-anchor="middle" font-size="10.5" font-weight="700" fill="${c.ink}" font-family="JetBrains Mono, monospace">${i+1}</text>`}<text x="${p.x}" y="${p.y+26}" text-anchor="middle" font-size="11" fill="${c.ink}" paint-order="stroke" stroke="${c.sheet}" stroke-width="3">${esc(r.S[i].name.slice(0,18))}</text>`;});
+  return s+"</svg>";}
+function renderSxIn(){const box=$("#sxIn"), S=sxSp(); keepFocus(box,()=>{box.innerHTML=`<h1>Space Syntax (Sintaksis Ruang)</h1>
+  <p class="lede">Daftar ruang (convex space) dan hubungan permeabilitas di antaranya (ada pintu/bukaan yang bisa dilalui). Pilih ruang akar, biasanya ruang luar (carrier), untuk graf justifikasi.</p>
+  ${banner(SX.sample,"denah rumah tinggal satu lantai")}
+  <div class="grid2"><div class="card"><h2>Spaces (Ruang)</h2><div class="elist" id="sxList" style="margin-top:10px"></div><button class="btn small" id="bSxAdd" style="margin-top:10px">+ Tambah ruang</button></div>
+  <div class="card"><h2>Root (Ruang akar)</h2><select id="sxRoot" style="margin-top:8px;width:100%">${S.map(s=>`<option value="${s.id}" ${s.id===SX.root?"selected":""}>${esc(s.name)}</option>`).join("")}</select><p class="note">Kedalaman pada graf justifikasi dihitung dari ruang ini.</p></div></div>
+  <div class="card"><h2>Permeability matrix (Matriks hubungan ruang)</h2><p class="note">Klik atau sapukan pada sel untuk menandai ruang yang terhubung langsung.</p><div class="scroll"><table class="mx" id="sxMx"></table></div></div>
+  <div class="row"><button class="btn" id="bSxSample">Muat contoh penelitian</button><span class="spacer"></span><button class="btn primary" data-go="sx-res">Lihat hasil →</button></div>`;});
+  listEditor($("#sxList"),SX.spaces,["Luar (carrier)","Teras","Ruang tamu","Ruang keluarga","Dapur"],re=>{SX.sample=false; persistSX(); if(re)renderSxIn(); else sxMxOnly(); updateStatus();},"R"); sxMxOnly();}
+function sxMxOnly(){binMatrix($("#sxMx"),sxSp(),"R",sxGet,(a,b,v)=>{sxSet(a,b,v); SX.sample=false;},false,()=>{persistSX(); updateStatus(); sxMxOnly();});}
+$("#sxIn").addEventListener("change",e=>{if(e.target.id==="sxRoot"){SX.root=e.target.value; persistSX();}});
+$("#sxIn").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return;
+  if(b.id==="bSxAdd"){SX.spaces.push({id:newId(),name:""}); persistSX(); renderSxIn();}
+  else if(b.id==="bSxSample"){ if(!SX.sample&&sxSp().length&&!confirmArm(b,"Klik lagi: ganti isian dengan contoh?","Muat contoh penelitian"))return; SX=sxSample(); persistSX(); renderSxIn(); updateStatus(); toast("Contoh denah dimuat");}});
+function renderSxRes(){const r=sxCalc(), box=$("#sxRes");
+  box.innerHTML=`<h1>Syntactic measures (Ukuran sintaksis)</h1>
+  ${!r.connected&&r.k?`<div class="banner"><span>Ada ruang yang tidak terhubung ke ruang lain. Ukuran integrasi hanya menghitung ruang yang terjangkau.</span></div>`:""}
+  <div class="kpis"><div><span>Jumlah ruang (k)</span><b>${r.k}</b></div><div><span>Integrasi rata-rata</span><b>${fmt(r.meanInt,3)}</b></div><div><span>Hubungan / cincin sirkulasi</span><b>${r.edges} / ${r.rings}</b></div><div><span>Nilai D (Hillier &amp; Hanson)</span><b>${fmt(r.D,3)}</b></div></div>
+  <div class="grid2"><div class="card"><div class="row"><h2>Justified graph (Graf justifikasi)</h2><span class="spacer"></span><button class="btn small" id="bCopySvgSx">Salin SVG</button></div><div class="svgwrap" style="margin-top:10px">${sxJGraph(r)}</div><p class="note">Akar ditandai ×. Lingkaran jingga = inti integrasi (25% ruang paling terintegrasi).</p></div>
+  <div class="card"><h2>Bacaan</h2>${r.k>=3?`<p>Ruang paling terintegrasi: <b>${esc(r.S[[...r.rows].sort((a,b)=>(b.int||0)-(a.int||0))[0].i].name)}</b>. Ruang paling terpisah (dalam): <b>${esc(r.S[[...r.rows].sort((a,b)=>(a.int||1e9)-(b.int||1e9))[0].i].name)}</b>.</p><p class="note">Ruang dengan integrasi tinggi cenderung menjadi pusat pergerakan dan pertemuan; ruang dengan kedalaman tinggi cenderung privat. Control value &gt; 1 menunjukkan ruang yang mengendalikan akses ke ruang tetangganya.</p>`:`<p class="note">Isi minimal tiga ruang.</p>`}</div></div>
+  <div class="card"><div class="row"><h2>Tabel ukuran</h2><span class="spacer"></span><button class="btn small" data-copyx="syntax">Salin untuk Excel</button></div>
+  <div class="scroll" style="margin-top:10px;border:0"><table class="plain"><thead><tr><th>Ruang</th><th>Konektivitas</th><th>Kedalaman dari akar</th><th>Total depth</th><th>Mean depth</th><th>RA</th><th>RRA</th><th>Integrasi (1/RRA)</th><th>Control</th></tr></thead><tbody>
+  ${r.rows.map(x=>`<tr class="${r.core.has(x.i)?"hit":""}"><td><b>R${x.i+1}</b> ${esc(x.s.name)}</td><td class="m">${x.conn}</td><td class="m">${r.rd[x.i]<Infinity?r.rd[x.i]:"–"}</td><td class="m">${x.TD}</td><td class="m">${fmt(x.MD,3)}</td><td class="m">${fmt(x.RA,3)}</td><td class="m">${fmt(x.RRA,3)}</td><td class="m"><b>${fmt(x.int,3)}</b></td><td class="m">${fmt(x.ctrl,3)}</td></tr>`).join("")}</tbody></table></div>
+  <p class="note">MD = TD / (k − 1); RA = 2(MD − 1) / (k − 2); RRA = RA / D<sub>k</sub>; control = Σ 1/konektivitas tetangga.</p></div>
+  ${navRow(["sx-in","Ruang & hubungan"],null)}`;}
+$("#sxRes").addEventListener("click",e=>{if(e.target.closest("#bCopySvgSx"))copyText(sxJGraph(sxCalc()),"SVG graf justifikasi disalin");});
+
+/* ---------------- SITE ANALYSIS ---------------- */
+const ST_KEY="sk-site-v1";
+const STA=[["clim","Iklim & lintasan matahari","Orientasi bangunan timur–barat"],["wind","Angin & ventilasi","Angin dominan dari tenggara"],["topo","Topografi & drainase","Kemiringan 8% ke arah sungai"],["veg","Vegetasi & tanah","Pohon trembesi eksisting di sisi barat"],["acc","Aksesibilitas & sirkulasi","Akses utama dari jalan kolektor"],["util","Utilitas","Jaringan PDAM dan listrik tersedia"],["noise","Kebisingan & polusi","Kebisingan lalu lintas di sisi utara"],["view","Pemandangan (view)","View ke sungai di sisi selatan"],["ctx","Konteks sosial-budaya","Dekat permukiman padat dan pasar"],["reg","Regulasi & tata ruang","Zona perdagangan dan jasa"]];
+const stBlank=()=>({name:"",area:"",kdb:"",klb:"",kdh:"",gsb:"",a:Object.fromEntries(STA.map(x=>[x[0],{note:"",pk:"",r:0,imp:""}])),sample:false});
+const stSample=()=>({sample:true,name:"Tapak pusat komunitas tepi sungai",area:"4200",kdb:"60",klb:"1.8",kdh:"20",gsb:"5",a:{clim:{note:"Sisi panjang tapak menghadap utara–selatan",pk:"P",r:4,imp:"Massa memanjang timur–barat, bukaan utara–selatan"},wind:{note:"Angin dominan dari tenggara",pk:"P",r:4,imp:"Ventilasi silang, bukaan di sisi tenggara"},topo:{note:"Kemiringan ±8% ke arah sungai",pk:"K",r:3,imp:"Penataan split level dan kolam retensi"},veg:{note:"Tiga pohon trembesi besar di sisi barat",pk:"P",r:4,imp:"Pertahankan sebagai peneduh ruang luar"},acc:{note:"Akses dari jalan kolektor di utara",pk:"P",r:4,imp:"Pintu masuk utama dan drop-off di utara"},util:{note:"PDAM dan listrik tersedia, belum ada IPAL komunal",pk:"K",r:3,imp:"Siapkan IPAL komunal"},noise:{note:"Kebisingan lalu lintas di utara pada jam sibuk",pk:"K",r:2,imp:"Zona servis dan vegetasi penyangga di utara"},view:{note:"Pemandangan sungai di selatan",pk:"P",r:5,imp:"Ruang publik dan teras menghadap sungai"},ctx:{note:"Permukiman padat dan pasar tradisional",pk:"P",r:4,imp:"Ruang serbaguna terbuka untuk warga"},reg:{note:"Sempadan sungai 15 m dari tepi",pk:"K",r:3,imp:"Area sempadan menjadi taman tepi sungai"}}});
+let ST=mkStore(ST_KEY,stBlank); const persistST=()=>saveK(ST_KEY,ST);
+function stCalc(){const A=num(ST.area); const L=STA.map(([k,n])=>({k,n,...ST.a[k]})); const rated=L.filter(x=>+x.r); const avg=rated.length?rated.reduce((s,x)=>s+(+x.r),0)/rated.length:NaN;
+  return {L,avg,P:L.filter(x=>x.pk==="P"),K:L.filter(x=>x.pk==="K"),A,fp:A*num(ST.kdb)/100,gfa:A*num(ST.klb),green:A*num(ST.kdh)/100,fl:num(ST.kdb)?num(ST.klb)/(num(ST.kdb)/100):NaN};}
+function renderStIn(){const box=$("#stIn"); keepFocus(box,()=>{box.innerHTML=`<h1>Site Analysis (Analisis Tapak)</h1>
+  <p class="lede">Catat kondisi setiap aspek tapak, tandai sebagai <b>potensi</b> atau <b>kendala</b>, beri nilai kesesuaian 1–5, dan rumuskan implikasinya terhadap desain.</p>
+  ${banner(ST.sample,"tapak pusat komunitas tepi sungai")}
+  <div class="card"><h2>Data tapak & regulasi</h2><div class="fields">
+   <label>Nama tapak<input data-fid="stn" data-st="name" value="${esc(ST.name)}" placeholder="contoh: Tapak pusat komunitas"></label><label>Luas lahan (m²)<input data-fid="sta" data-st="area" value="${esc(ST.area)}" inputmode="decimal"></label>
+   <label>KDB (%)<input data-fid="stk" data-st="kdb" value="${esc(ST.kdb)}" inputmode="decimal"></label><label>KLB<input data-fid="stl" data-st="klb" value="${esc(ST.klb)}" inputmode="decimal"></label>
+   <label>KDH (%)<input data-fid="sth" data-st="kdh" value="${esc(ST.kdh)}" inputmode="decimal"></label><label>GSB (m)<input data-fid="stg" data-st="gsb" value="${esc(ST.gsb)}" inputmode="decimal"></label></div></div>
+  ${STA.map(([k,n,ph])=>{const x=ST.a[k]; return `<div class="card strow"><div class="row"><h2>${esc(n)}</h2><span class="spacer"></span><span class="rate"><button data-stpk="${k}" data-v="P" class="${x.pk==="P"?"on":""}" style="width:auto;padding:0 10px">Potensi</button><button data-stpk="${k}" data-v="K" class="${x.pk==="K"?"on":""}" style="width:auto;padding:0 10px">Kendala</button></span>${segBtns("data-str",k,x.r,[1,2,3,4,5])}</div>
+   <div class="grid2" style="gap:10px;margin-top:8px"><textarea data-fid="stn${k}" data-sta="${k}" data-f="note" placeholder="Kondisi, mis. ${esc(ph)}" style="min-height:60px">${esc(x.note)}</textarea><textarea data-fid="sti${k}" data-sta="${k}" data-f="imp" placeholder="Implikasi desain" style="min-height:60px">${esc(x.imp)}</textarea></div></div>`;}).join("")}
+  <div class="row"><button class="btn" id="bStSample">Muat contoh penelitian</button><span class="spacer"></span><button class="btn primary" data-go="st-res">Lihat ringkasan →</button></div>`;});}
+$("#stIn").addEventListener("input",e=>{const t=e.target; if(t.dataset.st)ST[t.dataset.st]=t.value; else if(t.dataset.sta)ST.a[t.dataset.sta][t.dataset.f]=t.value; else return; const was=ST.sample; ST.sample=false; persistST(); if(was)renderStIn(); updateStatus();});
+$("#stIn").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return;
+  if(b.dataset.stpk){const x=ST.a[b.dataset.stpk]; x.pk=x.pk===b.dataset.v?"":b.dataset.v;} else if(b.dataset.str){const x=ST.a[b.dataset.str]; x.r=+x.r===+b.dataset.v?0:+b.dataset.v;}
+  else if(b.id==="bStSample"){ if(!ST.sample&&STA.some(([k])=>ST.a[k].note.trim())&&!confirmArm(b,"Klik lagi: ganti isian dengan contoh?","Muat contoh penelitian"))return; ST=stSample(); persistST(); renderStIn(); updateStatus(); return toast("Contoh analisis tapak dimuat");}
+  else return; ST.sample=false; persistST(); renderStIn(); updateStatus();});
+function renderStRes(){const r=stCalc(), box=$("#stRes"); const m2=v=>Number.isFinite(v)&&v?rp(Math.round(v))+" m²":"–";
+  box.innerHTML=`<h1>Site summary (Ringkasan analisis tapak)</h1><p class="lede">${ST.name?`<b>${esc(ST.name)}</b>. `:""}Kesesuaian rata-rata dari aspek yang dinilai, serta batas intensitas bangunan dari regulasi.</p>
+  <div class="kpis"><div><span>Kesesuaian rata-rata (1–5)</span><b>${fmt(r.avg,2)}</b></div><div><span>Luas dasar bangunan maks. (KDB)</span><b>${m2(r.fp)}</b></div><div><span>Luas lantai maks. (KLB)</span><b>${m2(r.gfa)}</b></div><div><span>Ruang hijau min. (KDH)</span><b>${m2(r.green)}</b></div><div><span>Perkiraan jumlah lantai (KLB/KDB)</span><b>${Number.isFinite(r.fl)?fmt(r.fl,1):"–"}</b></div></div>
+  <div class="grid2"><div class="card"><h2>Potensi (${r.P.length})</h2>${r.P.map(x=>`<div class="stsum"><b>${esc(x.n)}</b><span>${esc(x.note)}</span><em>→ ${esc(x.imp||"–")}</em></div>`).join("")||`<p class="note">Belum ada.</p>`}</div>
+  <div class="card"><h2>Kendala (${r.K.length})</h2>${r.K.map(x=>`<div class="stsum"><b>${esc(x.n)}</b><span>${esc(x.note)}</span><em>→ ${esc(x.imp||"–")}</em></div>`).join("")||`<p class="note">Belum ada.</p>`}</div></div>
+  <div class="card"><div class="row"><h2>Kesesuaian per aspek</h2><span class="spacer"></span><button class="btn small" data-copyx="site">Salin untuk Excel</button></div>${bars(r.L.filter(x=>+x.r).map(x=>({label:x.n,value:+x.r,sub:x.r+" / 5"})))}</div>
+  ${navRow(["st-in","Aspek tapak"],null)}`;}
+
+/* ---------------- BEHAVIORAL MAPPING ---------------- */
+const BM_KEY="sk-behav-v1";
+const bmBlank=()=>({zones:[...Array(3)].map(()=>({id:newId(),name:"",area:""})),acts:[...Array(3)].map(()=>({id:newId(),name:""})),slots:[{id:newId(),name:"07.00"},{id:newId(),name:"12.00"},{id:newId(),name:"17.00"}],obs:{},cur:0,sample:false});
+function bmSample(){const Z=[["Plaza tepi sungai",600],["Area bermain anak",250],["Selasar kios",180],["Taman duduk",320]].map(([n,a])=>({id:newId(),name:n,area:String(a)})), A=["Duduk/bersantai","Berjalan","Bermain","Berdagang/berbelanja","Berolahraga"].map(n=>({id:newId(),name:n})), T=["06.00","09.00","12.00","16.00","19.00"].map(n=>({id:newId(),name:n}));
+  const data=[[[2,8,0,1,14],[0,3,6,0,0],[1,4,0,6,0],[5,2,0,0,2]],[[4,5,0,2,1],[1,2,9,0,0],[2,6,0,12,0],[6,1,0,0,0]],[[1,3,0,1,0],[0,1,2,0,0],[3,8,0,15,0],[3,1,0,0,0]],[[10,12,0,3,3],[3,4,18,0,0],[4,10,0,14,0],[12,3,1,0,1]],[[18,15,0,4,0],[2,3,8,0,0],[5,12,0,20,0],[15,5,0,0,0]]];
+  const obs={}; T.forEach((t,ti)=>Z.forEach((z,zi)=>A.forEach((a,ai)=>{const v=data[ti][zi][ai]; if(v)obs[t.id+"|"+z.id+"|"+a.id]=v;}))); return {zones:Z,acts:A,slots:T,obs,cur:3,sample:true};}
+let BM=mkStore(BM_KEY,bmBlank); const persistBM=()=>saveK(BM_KEY,BM);
+const bmZ=()=>BM.zones.filter(z=>z.name.trim()), bmA=()=>BM.acts.filter(a=>a.name.trim()), bmT=()=>BM.slots.filter(t=>t.name.trim());
+function renderBmIn(){const box=$("#bmIn"); keepFocus(box,()=>{box.innerHTML=`<h1>Behavioral Mapping (Pemetaan perilaku)</h1>
+  <p class="lede">Tentukan zona pengamatan (dengan luas bila ada), kategori aktivitas, dan waktu pengamatan. Hitungan orang diisi pada langkah berikutnya.</p>
+  ${banner(BM.sample,"ruang publik tepi sungai, lima waktu pengamatan")}
+  <div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+   <div class="card"><h2>Zones (Zona)</h2>${BM.zones.map((z,i)=>`<div class="snrow"><span class="code">Z${i+1}</span><input data-fid="bz${z.id}" data-bmz="${z.id}" data-f="name" value="${esc(z.name)}" placeholder="contoh: ${esc(["Plaza","Area bermain","Selasar"][i%3])}"><input data-fid="ba${z.id}" data-bmz="${z.id}" data-f="area" value="${esc(z.area)}" placeholder="luas m²" inputmode="decimal" style="max-width:90px"><button class="icon" data-bmdel="zones" data-id="${z.id}" aria-label="Hapus">✕</button></div>`).join("")}<button class="btn small" data-bmadd="zones" style="margin-top:8px">+ Zona</button></div>
+   <div class="card"><h2>Activities (Aktivitas)</h2>${BM.acts.map((a,i)=>`<div class="snrow"><span class="code">K${i+1}</span><input data-fid="bk${a.id}" data-bmi="acts" data-id="${a.id}" value="${esc(a.name)}" placeholder="contoh: ${esc(["Duduk/bersantai","Berjalan","Bermain"][i%3])}"><button class="icon" data-bmdel="acts" data-id="${a.id}" aria-label="Hapus">✕</button></div>`).join("")}<button class="btn small" data-bmadd="acts" style="margin-top:8px">+ Aktivitas</button></div>
+   <div class="card"><h2>Time slots (Waktu)</h2>${BM.slots.map((t,i)=>`<div class="snrow"><span class="code">W${i+1}</span><input data-fid="bt${t.id}" data-bmi="slots" data-id="${t.id}" value="${esc(t.name)}" placeholder="mis. 16.00"><button class="icon" data-bmdel="slots" data-id="${t.id}" aria-label="Hapus">✕</button></div>`).join("")}<button class="btn small" data-bmadd="slots" style="margin-top:8px">+ Waktu</button></div></div>
+  <div class="row"><button class="btn" id="bBmSample">Muat contoh penelitian</button><span class="spacer"></span><button class="btn primary" data-go="bm-obs">Isi pengamatan →</button></div>`;});}
+$("#bmIn").addEventListener("input",e=>{const t=e.target; if(t.dataset.bmz)BM.zones.find(z=>z.id===t.dataset.bmz)[t.dataset.f]=t.value; else if(t.dataset.bmi)BM[t.dataset.bmi].find(x=>x.id===t.dataset.id).name=t.value; else return; const was=BM.sample; BM.sample=false; persistBM(); if(was)renderBmIn(); updateStatus();});
+$("#bmIn").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return;
+  if(b.dataset.bmadd)BM[b.dataset.bmadd].push(b.dataset.bmadd==="zones"?{id:newId(),name:"",area:""}:{id:newId(),name:""}); else if(b.dataset.bmdel)BM[b.dataset.bmdel]=BM[b.dataset.bmdel].filter(x=>x.id!==b.dataset.id);
+  else if(b.id==="bBmSample"){ if(!BM.sample&&Object.keys(BM.obs).length&&!confirmArm(b,"Klik lagi: ganti isian dengan contoh?","Muat contoh penelitian"))return; BM=bmSample(); persistBM(); renderBmIn(); updateStatus(); return toast("Contoh pemetaan perilaku dimuat");}
+  else return; BM.sample=false; persistBM(); renderBmIn(); updateStatus();});
+function renderBmObs(){const box=$("#bmObs"), Z=bmZ(), A=bmA(), T=bmT(); if(BM.cur>=T.length)BM.cur=0; const t=T[BM.cur];
+  box.innerHTML=`<h1>Observations (Hasil pengamatan)</h1><p class="lede">Pilih waktu, lalu isi jumlah orang per zona dan aktivitas. Angka dari spreadsheet bisa ditempel mulai dari sel yang dipilih.</p>
+  <div class="tabsx">${T.map((x,i)=>`<button class="tabx ${i===BM.cur?"on":""}" data-bmt="${i}">${esc(x.name)}</button>`).join("")}</div>
+  ${!t||!Z.length||!A.length?`<div class="card"><p class="note">Lengkapi zona, aktivitas, dan waktu di langkah sebelumnya.</p></div>`:`<div class="scroll"><table class="mx dgrid" id="bmGrid"><thead><tr><th class="rn">Zona \\ Aktivitas</th>${A.map((a,j)=>`<th title="${esc(a.name)}">${esc(a.name.slice(0,12))}</th>`).join("")}<th class="sum">Σ</th></tr></thead><tbody>
+  ${Z.map((z,i)=>`<tr><th class="rn"><b>Z${i+1}</b>${esc(z.name)}</th>${A.map((a,j)=>{const v=BM.obs[t.id+"|"+z.id+"|"+a.id]; return `<td><input class="dcell wide" data-k="${t.id}|${z.id}|${a.id}" data-row="${i}" data-col="${j}" value="${v||""}" inputmode="numeric"></td>`;}).join("")}<td class="sum">${A.reduce((s,a)=>s+(BM.obs[t.id+"|"+z.id+"|"+a.id]||0),0)}</td></tr>`).join("")}</tbody></table></div>`}
+  ${navRow(["bm-in","Zona & aktivitas"],["bm-res","Lihat hasil"])}`;}
+$("#bmObs").addEventListener("click",e=>{const b=e.target.closest("[data-bmt]"); if(!b)return; BM.cur=+b.dataset.bmt; persistBM(); renderBmObs();});
+const bmSetCell=(inp,v)=>{const n=parseInt(String(v).replace(/\D/g,""),10); if(n>0)BM.obs[inp.dataset.k]=n; else delete BM.obs[inp.dataset.k]; inp.value=n>0?n:""; BM.sample=false;};
+$("#bmObs").addEventListener("change",e=>{const inp=e.target.closest(".dcell"); if(!inp)return; bmSetCell(inp,inp.value); persistBM(); updateStatus(); const tr=inp.closest("tr"), s=[...tr.querySelectorAll(".dcell")].reduce((a,x)=>a+(+x.value||0),0); tr.querySelector("td.sum").textContent=s;});
+$("#bmObs").addEventListener("keydown",e=>{const inp=e.target.closest(".dcell"); if(!inp)return; const mv=(dr,dc)=>{const t=$(`#bmGrid .dcell[data-row="${+inp.dataset.row+dr}"][data-col="${+inp.dataset.col+dc}"]`); if(t){t.focus();t.select();}};
+  if(e.key==="Enter"||e.key==="ArrowDown"){e.preventDefault(); inp.dispatchEvent(new Event("change",{bubbles:true})); mv(1,0);} else if(e.key==="ArrowUp"){e.preventDefault(); inp.dispatchEvent(new Event("change",{bubbles:true})); mv(-1,0);}});
+$("#bmObs").addEventListener("paste",e=>{const inp=e.target.closest(".dcell"); if(!inp)return; const txt=e.clipboardData.getData("text"); if(!/[\t\n]/.test(txt))return; e.preventDefault(); let n=0;
+  txt.replace(/\r/g,"").split("\n").forEach((ln,dr)=>ln.split("\t").forEach((v,dc)=>{const t=$(`#bmGrid .dcell[data-row="${+inp.dataset.row+dr}"][data-col="${+inp.dataset.col+dc}"]`); if(t){bmSetCell(t,v.trim()); n++;}})); persistBM(); renderBmObs(); updateStatus(); toast(n+" nilai ditempel");});
+function bmCalc(){const Z=bmZ(),A=bmA(),T=bmT(), g=(t,z,a)=>BM.obs[t.id+"|"+z.id+"|"+a.id]||0;
+  const za=Z.map(z=>A.map(a=>T.reduce((s,t)=>s+g(t,z,a),0))), zt=Z.map(z=>T.map(t=>A.reduce((s,a)=>s+g(t,z,a),0)));
+  const zTot=za.map(r=>r.reduce((a,b)=>a+b,0)), aTot=A.map((_,j)=>za.reduce((s,r)=>s+r[j],0)), tTot=T.map((_,k)=>zt.reduce((s,r)=>s+r[k],0)), tot=zTot.reduce((a,b)=>a+b,0);
+  const dens=Z.map((z,i)=>num(z.area)?zTot[i]/T.length/num(z.area)*100:NaN);
+  return {Z,A,T,za,zt,zTot,aTot,tTot,tot,dens};}
+function bmLine(r){const W=520,H=220,m={l:40,r:14,t:14,b:34}, n=r.T.length; if(n<2)return ""; const mx=Math.max(1,...r.zt.flat()), sx=i=>m.l+(W-m.l-m.r)*i/(n-1), sy=v=>m.t+(H-m.t-m.b)*(1-v/mx);
+  const pal=[css("--petrol"),css("--a"),css("--x"),css("--o"),"#3f7fb5","#a8553d"], k={ink:css("--ink"),muted:css("--muted"),line:css("--line"),sheet:css("--sheet")};
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H+18*Math.ceil(r.Z.length/3)}" width="100%" font-family="Atkinson Hyperlegible, Segoe UI, sans-serif"><rect width="100%" height="100%" fill="${k.sheet}"/>`;
+  [0,mx/2,mx].forEach(v=>s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${sy(v)}" y2="${sy(v)}" stroke="${k.line}" stroke-width=".6"/><text x="${m.l-6}" y="${sy(v)+3}" text-anchor="end" font-size="10.5" fill="${k.muted}" font-family="JetBrains Mono, monospace">${Math.round(v)}</text>`);
+  r.T.forEach((t,i)=>s+=`<text x="${sx(i)}" y="${H-m.b+15}" text-anchor="middle" font-size="10.5" fill="${k.muted}" font-family="JetBrains Mono, monospace">${esc(t.name)}</text>`);
+  r.zt.forEach((row,zi)=>{s+=`<path d="${row.map((v,i)=>(i?"L":"M")+sx(i)+","+sy(v)).join("")}" fill="none" stroke="${pal[zi%pal.length]}" stroke-width="2.2"/>`; row.forEach((v,i)=>s+=`<circle cx="${sx(i)}" cy="${sy(v)}" r="3" fill="${pal[zi%pal.length]}"/>`);
+    s+=`<rect x="${12+(zi%3)*170}" y="${H+4+Math.floor(zi/3)*18}" width="10" height="10" fill="${pal[zi%pal.length]}"/><text x="${26+(zi%3)*170}" y="${H+13+Math.floor(zi/3)*18}" font-size="11" fill="${k.ink}">${esc(r.Z[zi].name.slice(0,22))}</text>`;});
+  return s+"</svg>";}
+function renderBmRes(){const r=bmCalc(), box=$("#bmRes"), mx=Math.max(1,...r.za.flat()); const peak=r.tTot.indexOf(Math.max(...r.tTot));
+  box.innerHTML=`<h1>Behavior map result (Hasil pemetaan perilaku)</h1>
+  <div class="kpis"><div><span>Total pengamatan (orang)</span><b>${rp(r.tot)}</b></div><div><span>Waktu puncak</span><b>${r.T[peak]?esc(r.T[peak].name):"–"}</b></div><div><span>Zona tersibuk</span><b style="font-size:17px">${r.Z.length?esc(r.Z[r.zTot.indexOf(Math.max(...r.zTot))].name):"–"}</b></div><div><span>Aktivitas dominan</span><b style="font-size:17px">${r.A.length?esc(r.A[r.aTot.indexOf(Math.max(...r.aTot))].name):"–"}</b></div></div>
+  <div class="card"><div class="row"><h2>Zona × aktivitas (semua waktu)</h2><span class="spacer"></span><button class="btn small" data-copyx="behav">Salin untuk Excel</button></div>
+   <div class="scroll" style="margin-top:10px"><table class="mx heat"><thead><tr><th class="rn">Zona</th>${r.A.map(a=>`<th title="${esc(a.name)}">${esc(a.name.slice(0,12))}</th>`).join("")}<th class="sum">Σ</th><th class="sum">Kepadatan</th></tr></thead><tbody>
+   ${r.Z.map((z,i)=>`<tr><th class="rn"><b>Z${i+1}</b>${esc(z.name)}</th>${r.za[i].map(v=>`<td style="background:color-mix(in srgb, var(--ochre) ${Math.round(v/mx*70)}%, transparent)">${v||""}</td>`).join("")}<td class="sum">${r.zTot[i]}</td><td class="sum">${Number.isFinite(r.dens[i])?fmt(r.dens[i],2):"–"}</td></tr>`).join("")}
+   <tr><th class="rn sum">Σ</th>${r.aTot.map(v=>`<td class="sum">${v}</td>`).join("")}<td class="sum">${r.tot}</td><td class="sum"></td></tr></tbody></table></div>
+   <p class="note">Kepadatan = rata-rata orang per waktu pengamatan per 100 m² luas zona.</p></div>
+  <div class="card"><h2>Pengguna per zona menurut waktu</h2>${bmLine(r)}</div>
+  ${navRow(["bm-obs","Pengamatan"],null)}`;}
+
+/* ---------------- POE with Importance-Performance Analysis ---------------- */
+const PO2_KEY="sk-poe-v1";
+const POEC=[["tek","Teknis"],["fun","Fungsional"],["per","Perilaku"]];
+const poeC=(cat="tek",name="",imp="",perf="")=>({id:newId(),cat,name,imp,perf});
+const poeBlank=()=>({bld:"",n:"",c:[poeC("tek"),poeC("fun"),poeC("per")],sample:false});
+const poeSample=()=>({sample:true,bld:"Gedung kuliah Fakultas Teknik",n:"84",c:[poeC("tek","Kenyamanan termal ruang kelas",4.6,2.9),poeC("tek","Pencahayaan alami",4.1,3.8),poeC("tek","Akustik ruang kelas",4.3,3.1),poeC("tek","Kualitas udara",4.4,3.4),poeC("fun","Kecukupan luas ruang kelas",4.2,3.9),poeC("fun","Kemudahan sirkulasi antarlantai",4.0,3.2),poeC("fun","Aksesibilitas difabel",4.5,2.6),poeC("fun","Ketersediaan stop kontak",3.9,2.8),poeC("per","Ruang interaksi mahasiswa",3.8,3.0),poeC("per","Rasa aman",4.3,4.0),poeC("per","Estetika interior",3.2,3.7)]});
+let POE=mkStore(PO2_KEY,poeBlank); const persistPOE=()=>saveK(PO2_KEY,POE);
+function poeCalc(){const L=POE.c.filter(x=>x.name.trim()&&num(x.imp)&&num(x.perf)).map(x=>({...x,i:num(x.imp),p:num(x.perf),gap:num(x.perf)-num(x.imp)}));
+  const mi=L.length?L.reduce((s,x)=>s+x.i,0)/L.length:NaN, mp=L.length?L.reduce((s,x)=>s+x.p,0)/L.length:NaN;
+  L.forEach(x=>{x.q=x.i>=mi?(x.p>=mp?"II":"I"):(x.p>=mp?"IV":"III");}); return {L,mi,mp,cat:POEC.map(([k,n])=>{const s=L.filter(x=>x.cat===k); return {k,n,cnt:s.length,i:s.length?s.reduce((a,x)=>a+x.i,0)/s.length:NaN,p:s.length?s.reduce((a,x)=>a+x.p,0)/s.length:NaN};})};}
+const IPAQ={I:["Concentrate here","Prioritas perbaikan","bad"],II:["Keep up the good work","Pertahankan","ok"],III:["Low priority","Prioritas rendah","todo"],IV:["Possible overkill","Berlebih","rej"]};
+function renderPoeIn(){const box=$("#poeIn"); keepFocus(box,()=>{box.innerHTML=`<h1>Post-Occupancy Evaluation (Evaluasi pascahuni)</h1>
+  <p class="lede">Isi kriteria evaluasi menurut kelompok teknis, fungsional, dan perilaku, beserta rata-rata nilai <b>kepentingan</b> dan <b>kinerja/kepuasan</b> dari responden (skala 1–5). Hasilnya dianalisis dengan Importance-Performance Analysis (IPA).</p>
+  ${banner(POE.sample,"gedung kuliah, 84 responden")}
+  <div class="card"><div class="fields"><label>Bangunan<input data-fid="poeb" data-poe="bld" value="${esc(POE.bld)}" placeholder="contoh: Gedung kuliah Fakultas Teknik"></label><label>Jumlah responden<input data-fid="poen" data-poe="n" value="${esc(POE.n)}" inputmode="numeric"></label></div></div>
+  <div class="card"><div class="scroll" style="border:0"><table class="plain cbt"><thead><tr><th>Kelompok</th><th>Kriteria</th><th>Kepentingan</th><th>Kinerja</th><th></th></tr></thead><tbody>
+  ${POE.c.map(x=>`<tr><td><select data-poec="${x.id}" data-f="cat">${POEC.map(([k,n])=>`<option value="${k}" ${x.cat===k?"selected":""}>${n}</option>`).join("")}</select></td><td><input data-fid="pn${x.id}" data-poec="${x.id}" data-f="name" value="${esc(x.name)}" placeholder="contoh: ${esc({tek:"Kenyamanan termal",fun:"Kemudahan sirkulasi",per:"Rasa aman"}[x.cat])}" style="min-width:220px"></td><td><input data-fid="pi${x.id}" data-poec="${x.id}" data-f="imp" value="${esc(x.imp)}" inputmode="decimal" style="width:70px" placeholder="1–5"></td><td><input data-fid="pp${x.id}" data-poec="${x.id}" data-f="perf" value="${esc(x.perf)}" inputmode="decimal" style="width:70px" placeholder="1–5"></td><td><button class="icon" data-poedel="${x.id}" aria-label="Hapus">✕</button></td></tr>`).join("")}</tbody></table></div>
+  <button class="btn small" id="bPoeAdd" style="margin-top:10px">+ Tambah kriteria</button></div>
+  <div class="row"><button class="btn" id="bPoeSample">Muat contoh penelitian</button><span class="spacer"></span><button class="btn primary" data-go="poe-res">Lihat hasil →</button></div>`;});}
+$("#poeIn").addEventListener("input",e=>{const t=e.target; if(t.dataset.poe)POE[t.dataset.poe]=t.value; else if(t.dataset.poec)POE.c.find(x=>x.id===t.dataset.poec)[t.dataset.f]=t.value; else return; const was=POE.sample; POE.sample=false; persistPOE(); if(was)renderPoeIn(); updateStatus();});
+$("#poeIn").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return;
+  if(b.dataset.poedel)POE.c=POE.c.filter(x=>x.id!==b.dataset.poedel); else if(b.id==="bPoeAdd")POE.c.push(poeC());
+  else if(b.id==="bPoeSample"){ if(!POE.sample&&POE.c.some(x=>x.name.trim())&&!confirmArm(b,"Klik lagi: ganti isian dengan contoh?","Muat contoh penelitian"))return; POE=poeSample(); persistPOE(); renderPoeIn(); updateStatus(); return toast("Contoh POE dimuat");}
+  else return; POE.sample=false; persistPOE(); renderPoeIn(); updateStatus();});
+function poeSVG(r){if(!r.L.length)return `<p class="note" style="padding:16px">Isi kriteria beserta nilainya.</p>`; const S0=440,m={l:48,r:14,t:14,b:42}; const lo=Math.min(1,...r.L.map(x=>Math.min(x.i,x.p))), hi=5;
+  const X=v=>m.l+(S0-m.l-m.r)*(v-lo)/(hi-lo), Y=v=>m.t+(S0-m.t-m.b)*(1-(v-lo)/(hi-lo)); const c={ink:css("--ink"),muted:css("--muted"),line:css("--line"),sheet:css("--sheet"),pet:css("--petrol"),q1:css("--q3"),q2:css("--q4"),q3:css("--q1"),q4:css("--q2")};
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${S0} ${S0}" width="100%" style="max-width:${S0}px" font-family="Atkinson Hyperlegible, Segoe UI, sans-serif"><rect width="100%" height="100%" fill="${c.sheet}"/>`;
+  s+=`<rect x="${X(lo)}" y="${Y(hi)}" width="${X(r.mp)-X(lo)}" height="${Y(r.mi)-Y(hi)}" fill="${c.q1}"/><rect x="${X(r.mp)}" y="${Y(hi)}" width="${X(hi)-X(r.mp)}" height="${Y(r.mi)-Y(hi)}" fill="${c.q2}"/><rect x="${X(lo)}" y="${Y(r.mi)}" width="${X(r.mp)-X(lo)}" height="${Y(lo)-Y(r.mi)}" fill="${c.q3}"/><rect x="${X(r.mp)}" y="${Y(r.mi)}" width="${X(hi)-X(r.mp)}" height="${Y(lo)-Y(r.mi)}" fill="${c.q4}"/>`;
+  for(let v=Math.ceil(lo);v<=5;v++)s+=`<text x="${X(v)}" y="${S0-m.b+15}" text-anchor="middle" font-size="10.5" fill="${c.muted}" font-family="JetBrains Mono, monospace">${v}</text><text x="${m.l-6}" y="${Y(v)+3}" text-anchor="end" font-size="10.5" fill="${c.muted}" font-family="JetBrains Mono, monospace">${v}</text>`;
+  s+=`<line x1="${X(r.mp)}" x2="${X(r.mp)}" y1="${Y(hi)}" y2="${Y(lo)}" stroke="${c.ink}"/><line x1="${X(lo)}" x2="${X(hi)}" y1="${Y(r.mi)}" y2="${Y(r.mi)}" stroke="${c.ink}"/>`;
+  [["I · Prioritas perbaikan",X(lo)+6,Y(hi)+14,"start"],["II · Pertahankan",X(hi)-6,Y(hi)+14,"end"],["III · Prioritas rendah",X(lo)+6,Y(lo)-6,"start"],["IV · Berlebih",X(hi)-6,Y(lo)-6,"end"]].forEach(([t,x,y,a])=>s+=`<text x="${x}" y="${y}" text-anchor="${a}" font-size="11" font-weight="700" fill="${c.muted}">${t}</text>`);
+  r.L.forEach((x,i)=>{s+=`<circle cx="${X(x.p)}" cy="${Y(x.i)}" r="5" fill="${c.pet}" stroke="${c.sheet}" stroke-width="1.5"/><text x="${X(x.p)+7}" y="${Y(x.i)-6}" font-size="11" font-weight="700" fill="${c.ink}" font-family="JetBrains Mono, monospace" paint-order="stroke" stroke="${c.sheet}" stroke-width="3">${i+1}</text>`;});
+  s+=`<text x="${(S0+m.l)/2}" y="${S0-6}" text-anchor="middle" font-size="12" font-weight="700" fill="${c.ink}">Kinerja / kepuasan</text><text transform="translate(14 ${(S0-m.b)/2}) rotate(-90)" text-anchor="middle" font-size="12" font-weight="700" fill="${c.ink}">Kepentingan</text>`; return s+"</svg>";}
+function renderPoeRes(){const r=poeCalc(), box=$("#poeRes"); const pr=[...r.L].sort((a,b)=>a.gap-b.gap);
+  box.innerHTML=`<h1>POE result (Hasil evaluasi pascahuni)</h1><p class="lede">${POE.bld?`<b>${esc(POE.bld)}</b> · `:""}${POE.n?`${esc(POE.n)} responden · `:""}Garis kuadran pada rata-rata kepentingan (${fmt(r.mi,2)}) dan rata-rata kinerja (${fmt(r.mp,2)}). Gap = kinerja − kepentingan.</p>
+  <div class="kpis">${r.cat.map(c=>`<div><span>${c.n} · ${c.cnt} kriteria</span><b>${fmt(c.p,2)} <small class="note" style="font-size:13px">kinerja</small></b><span>kepentingan ${fmt(c.i,2)} · gap ${fmt(c.p-c.i,2)}</span></div>`).join("")}</div>
+  <div class="grid2"><div class="card"><h2>Importance-Performance Analysis (IPA)</h2>${poeSVG(r)}</div>
+  <div class="card"><div class="row"><h2>Prioritas perbaikan</h2><span class="spacer"></span><button class="btn small" data-copyx="poe">Salin untuk Excel</button></div><table class="plain" style="margin-top:8px"><thead><tr><th>#</th><th>Kriteria</th><th>Gap</th><th>Kuadran</th></tr></thead><tbody>
+  ${pr.map(x=>`<tr><td class="m">${r.L.indexOf(x)+1}</td><td>${esc(x.name)}<div class="note">${POEC.find(c=>c[0]===x.cat)[1]} · K ${fmt(x.i,2)} / P ${fmt(x.p,2)}</div></td><td class="m ${x.gap<0?"warn":""}">${fmt(x.gap,2)}</td><td><span class="badge ${IPAQ[x.q][2]}">${x.q} · ${IPAQ[x.q][1]}</span></td></tr>`).join("")}</tbody></table></div></div>
+  ${navRow(["poe-in","Kriteria & nilai"],null)}`;}
+
+/* ---------------- TSV & status for batch B ---------------- */
+Object.assign(TSVX,{
+  sna:()=>{const r=snCalc(); return [["Aktor","Kelompok","Degree","Closeness","Betweenness"],...r.A.map((a,i)=>[a.name,a.group,r.deg[i],fmt(r.closeness[i],4),fmt(r.btw[i],4)]),[],["Density",fmt(r.density,4)],["Komponen",r.comp.length],["Diameter",r.diam]].map(x=>x.join("\t")).join("\n");},
+  qual:()=>{const r=qlCalc(); return [["Kode","Tema","Frekuensi",...r.docs.map(d=>d.name)],...r.C.map((c,i)=>[c.name,c.theme,r.freq[i],...r.byDoc[i]])].map(x=>x.join("\t")).join("\n");},
+  syntax:()=>{const r=sxCalc(); return [["Ruang","Konektivitas","Kedalaman dari akar","Total depth","Mean depth","RA","RRA","Integrasi","Control"],...r.rows.map(x=>[x.s.name,x.conn,r.rd[x.i]<Infinity?r.rd[x.i]:"",x.TD,fmt(x.MD,4),fmt(x.RA,4),fmt(x.RRA,4),fmt(x.int,4),fmt(x.ctrl,4)])].map(x=>x.join("\t")).join("\n");},
+  site:()=>{const r=stCalc(); return [["Aspek","Potensi/Kendala","Kesesuaian","Kondisi","Implikasi desain"],...r.L.map(x=>[x.n,x.pk==="P"?"Potensi":x.pk==="K"?"Kendala":"",x.r||"",x.note,x.imp])].map(x=>x.map(v=>String(v).replace(/\t|\n/g," ")).join("\t")).join("\n");},
+  behav:()=>{const r=bmCalc(); return [["Zona",...r.A.map(a=>a.name),"Total","Kepadatan /100 m²"],...r.Z.map((z,i)=>[z.name,...r.za[i],r.zTot[i],Number.isFinite(r.dens[i])?fmt(r.dens[i],2):""]),[],["Waktu",...r.Z.map(z=>z.name)],...r.T.map((t,k)=>[t.name,...r.zt.map(row=>row[k])])].map(x=>x.join("\t")).join("\n");},
+  poe:()=>{const r=poeCalc(); return [["Kelompok","Kriteria","Kepentingan","Kinerja","Gap","Kuadran IPA"],...r.L.map(x=>[POEC.find(c=>c[0]===x.cat)[1],x.name,fmt(x.i,2),fmt(x.p,2),fmt(x.gap,2),x.q+" "+IPAQ[x.q][1]])].map(x=>x.join("\t")).join("\n");}
+});
+function statusB(){const sa=snActors().length; HS.sna=sa?`${sa} aktor · ${Object.keys(SN.ties).length} hubungan`:""; const qc=Object.keys(QL.seg).length; HS.qual=QL.docs.some(d=>d.text.trim())?`${QL.docs.length} sumber · ${qc} unit berkode`:""; HS.syntax=sxSp().length?`${sxSp().length} ruang`:""; const sr=STA.filter(([k])=>ST.a[k].note.trim()).length; HS.site=sr?`${sr}/10 aspek`:""; HS.behav=Object.keys(BM.obs).length?`${bmZ().length} zona · ${bmT().length} waktu`:""; HS.poe=POE.c.filter(x=>x.name.trim()).length?`${POE.c.filter(x=>x.name.trim()).length} kriteria`:"";}
+window.__snCalc=snCalc; window.__sxCalc=sxCalc; window.__qlCalc=qlCalc; window.__bmCalc=bmCalc; window.__poeCalc=poeCalc; window.__stCalc=stCalc;
+
+/* =====================================================================
    METHOD REGISTRY & HOME (grouped by discipline)
    ===================================================================== */
 const CATS=[
@@ -1668,16 +2101,16 @@ const METHODS=[
  {k:"cba",ready:true,n:"Cost-Benefit Analysis",t:"Kelayakan proyek",d:"NPV, BCR, IRR, dan periode pengembalian dari arus biaya dan manfaat.",c:["eko","pwk"]},
  {k:"cpm",ready:true,n:"CPM / PERT",t:"Jalur kritis proyek",d:"Jadwal aktivitas, float, jalur kritis, dan peluang selesai tepat waktu.",c:["eko","ars"]},
  {k:"bsc",ready:true,n:"Balanced Scorecard",t:"Kinerja organisasi",d:"Capaian indikator pada perspektif keuangan, pelanggan, proses internal, dan pembelajaran.",c:["eko"]},
- {k:"sna",n:"Social Network Analysis",t:"Jaringan aktor",d:"Sentralitas derajat, kedekatan, dan keperantaraan antar aktor, serta kepadatan jaringan.",c:["sos","pwk"]},
- {k:"qual",n:"Analisis Kualitatif",t:"CDA · Etnografi · FGD",d:"Pengodean segmen teks, frekuensi dan ko-okurensi kode untuk wacana, catatan lapangan, dan transkrip FGD.",c:["sos"]},
- {k:"syntax",n:"Space Syntax",t:"Konfigurasi ruang",d:"Kedalaman, integrasi, konektivitas, dan graf justifikasi dari hubungan antar ruang.",c:["ars","pwk"]},
- {k:"site",n:"Site Analysis",t:"Analisis tapak",d:"Lembar penilaian kondisi tapak: iklim, topografi, akses, utilitas, dan pemandangan.",c:["ars"]},
- {k:"behav",n:"Behavioral Mapping",t:"Perilaku spasial",d:"Rekap observasi aktivitas per zona dan waktu menjadi pola penggunaan ruang.",c:["ars","sos"]},
- {k:"poe",n:"Post-Occupancy Evaluation",t:"Evaluasi pascahuni",d:"Skor kinerja bangunan menurut penghuni, kesenjangan terhadap harapan, dan prioritas perbaikan.",c:["ars"]}];
+ {k:"sna",ready:true,n:"Social Network Analysis",t:"Jaringan aktor",d:"Sentralitas derajat, kedekatan, dan keperantaraan antar aktor, serta kepadatan jaringan.",c:["sos","pwk"]},
+ {k:"qual",ready:true,n:"Analisis Kualitatif",t:"CDA · Etnografi · FGD",d:"Pengodean segmen teks, frekuensi dan ko-okurensi kode untuk wacana, catatan lapangan, dan transkrip FGD.",c:["sos"]},
+ {k:"syntax",ready:true,n:"Space Syntax",t:"Konfigurasi ruang",d:"Kedalaman, integrasi, konektivitas, dan graf justifikasi dari hubungan antar ruang.",c:["ars","pwk"]},
+ {k:"site",ready:true,n:"Site Analysis",t:"Analisis tapak",d:"Lembar penilaian kondisi tapak: iklim, topografi, akses, utilitas, dan pemandangan.",c:["ars"]},
+ {k:"behav",ready:true,n:"Behavioral Mapping",t:"Perilaku spasial",d:"Rekap observasi aktivitas per zona dan waktu menjadi pola penggunaan ruang.",c:["ars","sos"]},
+ {k:"poe",ready:true,n:"Post-Occupancy Evaluation",t:"Evaluasi pascahuni",d:"Skor kinerja bangunan menurut penghuni, kesenjangan terhadap harapan, dan prioritas perbaikan.",c:["ars"]}];
 const HS={}; let homeCat="all";
 function fillModSel(){const sel=$("#modSel"); sel.innerHTML=`<option value="home">Pilih metode…</option>`+CATS.map(c=>`<optgroup label="${esc(c.name)}">${METHODS.filter(m=>m.c[0]===c.id).map(m=>`<option value="${m.k}" ${m.ready?"":"disabled"}>${esc(m.n)}${m.ready?"":" (tahap berikutnya)"}</option>`).join("")}</optgroup>`).join("");}
 $("#modSel").onchange=e=>{const m=e.target.value; go(m==="home"?"home":((S.last&&S.last[m])||MODS[m][0]));};
-function renderHome(){updateStatus(); statusA();
+function renderHome(){updateStatus(); statusA(); statusB();
   $("#homeFilter").innerHTML=[`<button class="tabx ${homeCat==="all"?"on":""}" data-hcat="all">Semua rumpun</button>`,...CATS.map(c=>`<button class="tabx ${homeCat===c.id?"on":""}" data-hcat="${c.id}">${esc(c.name)}</button>`)].join("");
   const cats=homeCat==="all"?CATS:CATS.filter(c=>c.id===homeCat);
   $("#homeCats").innerHTML=cats.map(c=>{const list=METHODS.filter(m=>homeCat==="all"?m.c[0]===c.id:m.c.includes(c.id));

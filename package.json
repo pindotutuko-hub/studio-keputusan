@@ -1,8 +1,8 @@
 {
   "name": "studio-keputusan",
   "productName": "Studio Keputusan",
-  "version": "1.1.0",
-  "description": "Studio analisis strategis & keputusan: Delphi, ISM–MICMAC, AHP, SWOT, PESTEL, Porter, CBA, CPM/PERT, Balanced Scorecard",
+  "version": "1.2.0",
+  "description": "Studio analisis strategis & keputusan lintas rumpun ilmu: 15 metode (Delphi, ISM–MICMAC, AHP, SWOT, PESTEL, Porter, CBA, CPM/PERT, BSC, SNA, analisis kualitatif, Space Syntax, Site Analysis, Behavioral Mapping, POE)",
   "author": "Pindo Tutuko",
   "license": "MIT",
   "main": "main.js",

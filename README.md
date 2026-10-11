@@ -6,8 +6,8 @@ Aplikasi analisis strategis dan pengambilan keputusan lintas rumpun ilmu, untuk 
 |---|---|
 | Perencanaan Wilayah & Kota | Delphi, ISM–MICMAC, AHP, SWOT |
 | Ekonomi, Bisnis & Manajemen | PESTEL, Porter's Five Forces, Cost-Benefit Analysis, CPM/PERT, Balanced Scorecard |
-| Sosial, Humaniora & Politik | *tahap berikutnya:* Social Network Analysis, analisis kualitatif (CDA, etnografi, FGD) |
-| Arsitektur, Desain & Teknik | *tahap berikutnya:* Space Syntax, Site Analysis, Behavioral Mapping, POE |
+| Sosial, Humaniora & Politik | Social Network Analysis, analisis kualitatif (CDA, etnografi, FGD) |
+| Arsitektur, Desain & Teknik | Space Syntax, Site Analysis, Behavioral Mapping, Post-Occupancy Evaluation (IPA) |
 
 Dikembangkan versi lain oleh **Pindo Tutuko**. Modul ISM merujuk pada Ahmad, N., & Qahmash, A. (2021). SmartISM: Implementation and Assessment of Interpretive Structural Modeling. *Sustainability*, 13(16), 8801. https://doi.org/10.3390/su13168801 — rujukan metode lain tampil di aplikasi.
 
