@@ -1,11 +1,11 @@
 # Studio Keputusan
 
-Aplikasi analisis strategis dan pengambilan keputusan lintas rumpun ilmu, untuk Windows, macOS, dan browser. Setiap metode bisa dipakai sendiri atau digabung (mis. Delphi → ISM → MICMAC, Delphi → AHP, PESTEL → SWOT, SWOT → AHP/A'WOT).
+Aplikasi analisis strategis dan pengambilan keputusan lintas rumpun ilmu, untuk Windows, macOS, dan browser. Setiap metode bisa dipakai sendiri atau digabung (mis. Delphi → ISM → MICMAC, ISM–DEMATEL, AHP–TOPSIS, PESTEL → SWOT, SWOT → AHP/A'WOT).
 
 | Rumpun ilmu | Metode |
 |---|---|
-| Perencanaan Wilayah & Kota | Delphi, ISM–MICMAC, AHP, SWOT |
-| Ekonomi, Bisnis & Manajemen | PESTEL, Porter's Five Forces, Cost-Benefit Analysis, CPM/PERT, Balanced Scorecard |
+| Perencanaan Wilayah & Kota | Delphi (+ Kendall's W), ISM–MICMAC (multi-pakar), AHP, SWOT, DEMATEL |
+| Ekonomi, Bisnis & Manajemen | PESTEL, Porter's Five Forces, Cost-Benefit Analysis, CPM/PERT, Balanced Scorecard, TOPSIS |
 | Sosial, Humaniora & Politik | Social Network Analysis, analisis kualitatif (CDA, etnografi, FGD) |
 | Arsitektur, Desain & Teknik | Space Syntax, Site Analysis, Behavioral Mapping, Post-Occupancy Evaluation (IPA) |
 

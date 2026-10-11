@@ -35,9 +35,7 @@ Permintaan saya:
 
 ## Ide lanjutan (belum dikerjakan)
 - **Fuzzy ISM / Fuzzy MICMAC** (sejalan dengan SmartISM 2.0) dan **TISM** (interpretasi tautan).
-- **Fuzzy AHP**, **DEMATEL**, **TOPSIS/VIKOR** untuk perbandingan multikriteria.
-- **ISM multi-pakar**: input SSIM dari beberapa pakar lalu agregasi (modus/mayoritas) sebelum perhitungan.
+- **Fuzzy AHP**, **VIKOR**, **Fuzzy DEMATEL** (DEMATEL, TOPSIS, dan ISM multi-pakar sudah tersedia sejak v1.4.0).
 - **Space Syntax**: segment angular analysis, radius metrik, VGA berbasis grid — selaraskan dengan repo `pindotutuko-hub/space-syntax-analyzer` (Python) agar hasil bisa divalidasi silang.
-- **Delphi**: koefisien Kendall's W untuk kesepakatan antarpakar.
 - **Ekspor .xlsx** langsung (saat ini via salin ke Excel) dan ekspor Word (.docx) untuk laporan.
 - **Penandatanganan kode** installer (Windows Authenticode, Apple notarization) agar tidak muncul peringatan keamanan.

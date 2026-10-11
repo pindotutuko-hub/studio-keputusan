@@ -1,8 +1,8 @@
 {
   "name": "studio-keputusan",
   "productName": "Studio Keputusan",
-  "version": "1.3.0",
-  "description": "Studio analisis strategis & keputusan lintas rumpun ilmu: 15 metode, sintesis & komparasi antarmetode, laporan gabungan, Space Syntax peta axial",
+  "version": "1.4.0",
+  "description": "Studio analisis strategis & keputusan lintas rumpun ilmu: 17 metode (termasuk DEMATEL, TOPSIS, ISM multi-pakar), sintesis & komparasi, laporan gabungan",
   "author": "Pindo Tutuko",
   "license": "MIT",
   "main": "main.js",
