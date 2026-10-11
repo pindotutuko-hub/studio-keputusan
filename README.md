@@ -12,7 +12,7 @@ Aplikasi analisis strategis dan pengambilan keputusan lintas rumpun ilmu, untuk 
 Dikembangkan versi lain oleh **Pindo Tutuko**. Modul ISM merujuk pada Ahmad, N., & Qahmash, A. (2021). SmartISM: Implementation and Assessment of Interpretive Structural Modeling. *Sustainability*, 13(16), 8801. https://doi.org/10.3390/su13168801 — rujukan metode lain tampil di aplikasi.
 
 ## Unduh installer
-Buka tab **Actions → Build installers → Run workflow**. Setelah selesai (±10 menit), unduh artifact `Studio-Keputusan-Windows` (.exe) atau `Studio-Keputusan-macOS` (.dmg). Membuat tag `v1.1.0` juga melampirkan installer ke halaman **Releases**.
+Buka tab **Actions → Build installers → Run workflow**. Setelah selesai (±10 menit), unduh artifact `Studio-Keputusan-Windows` (.exe) atau `Studio-Keputusan-macOS` (.dmg). Setiap pembaruan di cabang `main` juga otomatis menerbitkan installer di halaman **Releases** (versi mengikuti `package.json`).
 
 macOS: aplikasi belum ditandatangani Apple — saat pertama dibuka, klik kanan → **Open**.
 
