@@ -24,7 +24,12 @@ Mode graf ruang convex dan **peta axial** (gambar garis di atas denah/peta, atau
 ## Unduh installer
 Buka tab **Actions → Build installers → Run workflow**. Setelah selesai (±10 menit), unduh artifact `Studio-Keputusan-Windows` (.exe) atau `Studio-Keputusan-macOS` (.dmg). Setiap pembaruan di cabang `main` juga otomatis menerbitkan installer di halaman **Releases** (versi mengikuti `package.json`).
 
-macOS: aplikasi belum ditandatangani Apple — saat pertama dibuka, klik kanan → **Open**.
+macOS: aplikasi ditandatangani ad-hoc tetapi belum dinotarisasi Apple. Setelah menyeret ke Applications, bila macOS menolak membukanya ("Malware Blocked" atau "damaged"), jalankan di Terminal:
+
+    xattr -cr "/Applications/Studio Keputusan.app"
+    codesign --force --deep --sign - "/Applications/Studio Keputusan.app"
+
+lalu buka kembali (atau System Settings → Privacy & Security → Open Anyway).
 
 ## Melanjutkan dengan AI lain
 Panduan untuk ChatGPT/Codex atau agen AI lain ada di [`AGENTS.md`](AGENTS.md), [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), dan prompt siap tempel di [`docs/HANDOFF-CHATGPT.md`](docs/HANDOFF-CHATGPT.md).

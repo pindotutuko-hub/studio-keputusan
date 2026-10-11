@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.5.1 — 2026-10-11
+- macOS: aplikasi kini ditandatangani **ad-hoc** saat build (hook `build/adhoc-sign.js`) dan diverifikasi di CI. Sebelumnya aplikasi Mac tidak bertanda tangan sehingga macOS terbaru dapat menolaknya dengan pesan "Malware Blocked". Notarisasi resmi Apple tetap memerlukan Apple Developer ID.
+
 ## 1.5.0 — 2026-10-11
 - Menu **Sumber & Referensi**: pernyataan keaslian, rujukan semua metode per rumpun ilmu, rujukan algoritma, lisensi komponen pihak ketiga, dan cara mensitasi aplikasi.
 - **Fuzzy MICMAC** (pendekatan singleton, komposisi max–min sampai konvergen; Ahmad, 2024 — SmartISM 2.0): kekuatan hubungan P/F/G/VG, perbandingan kuadran biasa vs fuzzy.

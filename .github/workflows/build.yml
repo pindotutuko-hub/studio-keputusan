@@ -36,6 +36,13 @@ jobs:
         if: runner.os == 'macOS'
         env: { CSC_IDENTITY_AUTO_DISCOVERY: false }
         run: npx electron-builder --mac --publish never
+      - name: Verify macOS signature
+        if: runner.os == 'macOS'
+        run: |
+          APP=$(find dist -maxdepth 2 -name "*.app" -path "*universal*" | head -1)
+          echo "Checking $APP"
+          codesign --verify --deep --strict --verbose=2 "$APP"
+          codesign -dv "$APP" 2>&1 | grep -E "Signature|Identifier|Format"
       - uses: actions/upload-artifact@v4
         with:
           name: Studio-Keputusan-${{ runner.os }}
