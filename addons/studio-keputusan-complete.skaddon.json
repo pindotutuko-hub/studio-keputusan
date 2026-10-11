@@ -1,0 +1,8 @@
+{
+  "app": "Studio Keputusan",
+  "type": "analysis-addon-pack",
+  "version": 1,
+  "name": "Studio Keputusan Complete Analysis Pack",
+  "requires": ">=2.3.0",
+  "addons": ["law", "psychology", "microclimate", "mechanical", "industrial", "civil", "electrical"]
+}

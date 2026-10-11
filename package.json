@@ -1,8 +1,8 @@
 {
   "name": "studio-keputusan",
-  "productName": "Studio Keputusan",
-  "version": "1.6.0",
-  "description": "Studio analisis strategis & keputusan lintas rumpun ilmu: 17 metode + Fuzzy MICMAC, TISM, Fuzzy AHP, VIKOR, sintesis, laporan, ekspor Excel",
+  "productName": "Studio Keputusan 2",
+  "version": "2.4.0",
+  "description": "Platform analisis dan keputusan multidisiplin dengan pusat data, model 3D, visualisasi, sintesis, dan laporan",
   "author": "Pindo Tutuko",
   "license": "UNLICENSED",
   "main": "main.js",
@@ -20,7 +20,7 @@
   },
   "build": {
     "appId": "id.ac.unmer.studiokeputusan",
-    "productName": "Studio Keputusan",
+    "productName": "Studio Keputusan 2",
     "copyright": "Pindo Tutuko",
     "files": [
       "main.js",
@@ -53,7 +53,7 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "shortcutName": "Studio Keputusan"
+    "shortcutName": "Studio Keputusan 2"
     },
     "mac": {
       "target": [

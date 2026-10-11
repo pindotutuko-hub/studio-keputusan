@@ -68,4 +68,8 @@ jobs:
             Installer otomatis dari commit ${{ github.sha }}.
             - Windows: `Studio Keputusan Setup *.exe` (installer) atau `*-win.zip` (portabel)
             - macOS: `*.dmg` (universal, Intel & Apple Silicon). Belum ditandatangani Apple: klik kanan → Open saat pertama dibuka.
-          files: out/*
+            - Panduan penggunaan versi 2.4.0 dan manifest add-on lengkap disertakan pada aset rilis.
+          files: |
+            out/*
+            docs/Panduan-Studio-Keputusan-2-v2.4.0.pdf
+            addons/studio-keputusan-complete.skaddon.json

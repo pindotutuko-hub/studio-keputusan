@@ -5,8 +5,8 @@ const fs = require('fs');
 function createWindow() {
   const win = new BrowserWindow({
     width: 1280, height: 820, minWidth: 900, minHeight: 600,
-    title: 'Studio Keputusan',
-    backgroundColor: '#eef1ee',
+    title: 'Studio Keputusan 2',
+    backgroundColor: '#f1f2f7',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true }
   });
   win.loadFile(path.join(__dirname, 'src', 'index.html'));

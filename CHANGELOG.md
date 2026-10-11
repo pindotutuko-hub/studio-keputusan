@@ -1,5 +1,46 @@
 # Changelog
 
+## 2.4.0 — 2026-10-11
+- Penyempurnaan identitas visual: menu atas memakai indigo gelap, panel langkah kiri memakai lavender–slate, dan pilihan aktif memakai aksen terakota.
+- Token warna navigasi terpisah untuk mode terang dan gelap dengan kontras teks yang lebih jelas.
+- Tombol, pemilih metode, judul proyek, panel kredit, hover, dan status aktif diselaraskan dalam satu tema warna.
+- Buku panduan versi 2.4.0 mencakup instalasi Windows/macOS, konfigurasi Basic/Tipikal/Custom/Lengkap, seluruh rumpun analisis, Data & Model Hub, lintas metode, sintesis, laporan, dan add-on.
+
+## 2.3.0 — 2026-10-11
+- Konfigurasi pembukaan pertama: pilih **Basic/Core**, **Tipikal**, **Custom**, atau **Lengkap**. Profil Tipikal menyediakan preset kota dan bangunan, manusia dan tata kelola, serta rekayasa dan operasi.
+- **Add-on Manager** untuk mengaktifkan dan menonaktifkan paket hukum, psikologi, mikroklimat, mesin, industri, sipil, dan elektro setelah aplikasi terpasang.
+- Impor/ekspor manifest paket JSON yang aman: hanya ID add-on resmi yang diterima; kode eksternal tidak dieksekusi.
+- Tautan katalog add-on menuju GitHub Releases resmi.
+- Menu dan kartu metode otomatis mengikuti add-on yang aktif tanpa menghapus data proyek.
+
+## 2.2.0 — 2026-10-11
+- Memperluas tujuh paket multidisiplin dari penyaringan dasar menjadi analisis lanjutan.
+- Hukum: kekuatan bukti dan penanda konflik norma memengaruhi prioritas telaah.
+- Psikologi: evaluasi berpasangan pre–post, perubahan rerata, dan Cohen's dz bersama Cronbach's alpha.
+- Mikroklimat: temperatur permukaan, reduksi temperatur terhadap baseline, dan selisih MRT–temperatur udara.
+- Mesin: margin termal, MTBF, MTTR, dan availability bersama FMEA dan faktor keamanan.
+- Industri: Economic Order Quantity (EOQ) bersama OEE dan antrian M/M/1.
+- Sipil: utilisasi demand/capacity struktur dan debit puncak metode rasional bersama prioritas aset.
+- Elektro: jatuh tegangan tiga fase dan energi operasi bersama SAIFI, SAIDI, daya aktif, dan faktor daya.
+
+## 2.1.0 — 2026-10-11
+- Mengaktifkan seluruh kartu analisis yang sebelumnya masih **Tahap berikutnya**.
+- **Legal & Regulatory Analysis**: matriks hierarki instrumen, kemungkinan, dampak, gap kepatuhan, skor risiko, dan prioritas.
+- **Psychometrics & Intervention**: data respons per item, statistik item, dan konsistensi internal Cronbach's alpha.
+- **CFD · ENVI-met · UHI**: analisis keluaran skenario berupa intensitas UHI, apparent temperature, MRT, angin, kelembapan, dan kategori beban panas. Modul membaca ringkasan hasil—bukan menggantikan solver CFD/ENVI-met.
+- **Mechanical & Thermal**: FMEA/RPN, tegangan, kekuatan izin, faktor keamanan, dan status tindakan.
+- **Industrial Systems**: OEE, utilisasi, serta indikator antrian M/M/1.
+- **Civil Infrastructure**: kondisi aset, risiko, biaya, indeks prioritas, dan rekomendasi penanganan.
+- **Electrical Systems**: daya aktif, faktor daya, SAIFI, SAIDI, dan status sistem.
+- Semua modul baru memiliki data contoh, penyimpanan lokal, ekspor/impor proyek, salin tabel, interpretasi, rujukan, dan pengujian otomatis.
+
+## 2.0.0 — 2026-10-11
+- Identitas visual baru dengan palet **indigo–terakota**, tetap mendukung mode terang dan gelap, untuk membedakan generasi v2 tanpa mengubah pola navigasi yang telah dikenal.
+- **Data & Model Hub** sebagai pintu masuk aset penelitian: gambar, model 3D OBJ/STL/GLB/glTF, BIM/CAD IFC/DXF, GIS GeoJSON, tabel, cuaca EPW, dan hasil simulasi NetCDF/VTK.
+- Pratinjau gambar dan ilustrasi isometrik lokal untuk OBJ/STL; metadata aset ikut tersimpan dalam proyek tanpa memasukkan berkas besar ke JSON.
+- Peta pengembangan lintas disiplin untuk hukum, psikologi, CFD/ENVI-met/UHI, teknik mesin, industri, sipil, dan elektro. Kartu yang belum aktif ditandai jelas sebagai tahap berikutnya.
+- Ekspor/impor proyek v2 kini menyertakan metadata Data & Model Hub; pengosongan proyek juga membersihkan daftar aset.
+
 ## 1.6.0 — 2026-10-11
 - Rumpun baru **Statistik & Pemodelan Kuantitatif** dengan **dataset bersama** (tempel dari Excel/CSV, data view & variable view):
   - **Statistik setara SPSS/Stata**: deskriptif (skewness/kurtosis + SE), frekuensi, Shapiro–Wilk (Royston), korelasi Pearson/Spearman, regresi OLS (dummy otomatis, beta baku, VIF, Durbin–Watson, SE robust HC1), uji t (independen + Levene + Welch, berpasangan, satu sampel), ANOVA satu arah (+ Levene, Welch, Bonferroni, η²), Mann–Whitney, Wilcoxon, Kruskal–Wallis, crosstab χ² (+ LR, Cramér's V), Cronbach's α (item-total), analisis faktor (KMO, MSA, Bartlett, PCA + varimax Kaiser); log hasil masuk Laporan.

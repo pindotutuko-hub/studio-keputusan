@@ -12,6 +12,9 @@ exports.default = async function afterPack(context) {
   if (/-temp$/.test(context.appOutDir)) { console.log(`  • skip ad-hoc signing of intermediate ${context.appOutDir}`); return; }
   const app = path.join(context.appOutDir, `${context.packager.appInfo.productFilename}.app`);
   console.log(`  • ad-hoc signing ${app}`);
+  // Files downloaded by npm may carry macOS provenance/resource-fork metadata. It is not part of
+  // the application and makes codesign reject an otherwise valid bundle.
+  execFileSync('xattr', ['-cr', app], { stdio: 'inherit' });
   execFileSync('codesign', ['--force', '--deep', '--sign', '-', app], { stdio: 'inherit' });
   execFileSync('codesign', ['--verify', '--deep', '--strict', '--verbose=2', app], { stdio: 'inherit' });
 };

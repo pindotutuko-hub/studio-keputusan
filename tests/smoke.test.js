@@ -8,6 +8,7 @@ const w = dom.window; w.scrollTo = () => {};
 const d = w.document, click = s => { const el = d.querySelector(s); assert(el, 'missing ' + s); el.click(); }, step = s => click(`.rail button[data-step="${s}"]`);
 const near = (a, b, tol = 1e-3) => assert(Math.abs(a - b) < tol, `${a} != ${b}`);
 setTimeout(() => {
+  assert(d.querySelector('#firstSetup'), 'first-run edition setup'); assert.strictEqual(d.querySelector('[data-setup="topic"] .mk').textContent,'TIPIKAL'); assert(d.querySelector('[data-setup="custom"]')); click('[data-setup="full"]'); step('addons'); assert.strictEqual(d.querySelectorAll('#addonsBox [data-addon]').length, 7); click('#bCoreProfile'); assert.strictEqual(w.__ADD().enabled.law, false); click('#bFullProfile'); assert.strictEqual(w.__ADD().enabled.law, true);
   const flows = [['el', '#bSample', ['ssim', 'rm', 'lp', 'model', 'micmac']], ['dl-setup', '#bDlSample', ['dl-rate', 'dl-res']], ['ahp-crit', '#bAhpSample', ['ahp-cmp', 'ahp-res']], ['swot-in', '#bSwotSample', ['swot-res']],
     ['pe-in', '#bPeSample', ['pe-res']], ['po-in', '#bPoSample', ['po-res']], ['cb-in', '#bCbSample', ['cb-res']], ['cp-in', '#bCpSample', ['cp-res']], ['bs-in', '#bBsSample', ['bs-res']],
     ['sn-in', '#bSnSample', ['sn-res']], ['ql-in', '#bQlSample', ['ql-code', 'ql-res']], ['sx-in', '#bSxSample', ['sx-res']], ['st-in', '#bStSample', ['st-res']], ['bm-in', '#bBmSample', ['bm-obs', 'bm-res']], ['poe-in', '#bPoeSample', ['poe-res']], ['de-in', '#bDeSample', ['de-res']], ['tp-in', '#bTpSample', ['tp-res']]];
@@ -35,6 +36,18 @@ setTimeout(() => {
   const vk = w.__vikorCalc(); near(vk.Q[2], 0.3026, 1e-4); assert.strictEqual(vk.c2, true);
   step('refs'); assert(d.querySelectorAll('#refsBox .reflist li').length > 30);
   const pkg = require('../package.json'); assert.strictEqual(w.__APP_VERSION, pkg.version, 'APP_VERSION must match package.json');
+  // v2.0: Data & Model Hub — UI, OBJ/STL parsing, and local SVG illustration
+  step('vz-in'); assert(d.querySelector('#vzDrop')); assert(d.querySelector('#vzFile').accept.includes('.obj'));
+  const obj = w.__vzObj('v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3'); assert.strictEqual(obj.v.length, 3); assert.strictEqual(obj.f.length, 1);
+  const stl = w.__vzStl('solid t\nfacet normal 0 0 1\nouter loop\nvertex 0 0 0\nvertex 1 0 0\nvertex 0 1 0\nendloop\nendfacet\nendsolid t'); assert.strictEqual(stl.v.length, 3); assert.strictEqual(stl.f.length, 1);
+  assert(w.__vzMeshSvg(obj).includes('<line')); assert(d.body.textContent.includes('Studio Keputusan 2'));
+  // v2.0 multidisciplinary packs: every formerly planned card is operational
+  for (const [mod, input, result] of [['legal','legal-in','legal-res'],['psych','psych-in','psych-res'],['microclimate','micro-in','micro-res'],['mechanical','mech-in','mech-res'],['industrial','ind-in','ind-res'],['civil','civil-in','civil-res'],['electrical','elec-in','elec-res']]) {
+    step(input); const sec=d.querySelector(`section[data-sec="${input}"]`); const sample=sec.querySelector('#dmSample'); assert(sample,'sample '+mod); sample.click(); step(result); assert(d.querySelector(`section[data-sec="${result}"] table`),'result '+mod); assert(w.__domainCalc(mod).rows.length>0,'calculation '+mod);
+  }
+  near(w.__domainCalc('microclimate').rows[0].uhi,3.8,1e-9); near(w.__domainCalc('mechanical').rows[0].rpn,216,1e-9); near(w.__domainCalc('industrial').rows[0].oee,69.9952,1e-4); near(w.__domainCalc('electrical').summary.SAIFI,3350/2300,1e-9);
+  near(w.__domainCalc('psych').intervention.change,6.5,1e-9); near(w.__domainCalc('microclimate').rows[1].cooling,2.4,1e-9); near(w.__domainCalc('mechanical').rows[0].availability,4200/4208*100,1e-9);
+  near(w.__domainCalc('industrial').rows[0].eoq,Math.sqrt(180000),1e-9); near(w.__domainCalc('civil').rows[0].peakQ,.00278*.75*95*2.4,1e-9); assert(w.__domainCalc('electrical').rows[0].dropPct>0);
   step('sy-in'); ['dl_med', 'dl_agr'].forEach(k => { const c = d.querySelector('#sy_' + k); c.checked = true; c.dispatchEvent(new w.Event('change', { bubbles: true })); }); step('sy-res');
   const sy = w.__syCalc(); near(sy.corr[0][1].r, 0.73, 0.01);
   step('rp'); click('#bRpBuild'); assert(d.querySelectorAll('#reportOut .rpsec').length >= 10);
