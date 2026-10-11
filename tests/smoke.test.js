@@ -43,5 +43,10 @@ setTimeout(() => {
   step('ot-in'); click('#bOtSample'); step('ot-fac'); step('ot-res'); const ot = w.__otCalc(); near(ot.OTTV, 47.63, 0.02); near(ot.A, 3606.72, 0.01); assert.strictEqual(ot.ok, false);
   [40.46, 53.49, 37.15, 60.72].forEach((v, i) => near(ot.rows[i].OTTV, v, 0.02)); near(ot.rows[0].terms[0].q, 2.24, 0.02); near(ot.rows[0].rg, 23.37, 0.02);
   near(w.__otSC('horizontal_projection', 'BD', 0.5, NaN, 0).sc, 0.698, 5e-4); near(w.__otSC('horizontal_projection', 'TGR', 0.4, NaN, 30).sc, 0.669, 5e-4); near(w.__otFenU(3, 8, 1, 1, 0.05).U, 4.75, 1e-9);
+  // v1.6: Space Syntax angular segments & VGA (verified against NetworkX + Shapely, exact ties)
+  step('sx-in'); click('[data-sxmode="segment"]'); click('#bSxSample'); step('sx-res'); const sg = w.__sxSegCalc(); assert.strictEqual(sg.segs.length, 45); near(sg.rows[0].td_n, 60.056641, 1e-5); near(sg.rows[0].int_n, 33.718169, 1e-5); near(sg.rows[2].ch_n, 210.066667, 1e-5); assert.strictEqual(sg.rows[3].nc_400, 24); near(sg.rows[3].td_400, 26.056641, 1e-5);
+  step('sx-in'); click('[data-sxmode="vga"]'); click('#bSxSample'); step('sx-res'); const vg = w.__sxVgaCalc(); assert.strictEqual(vg.n, 93); near(vg.rows[0].int, 8.847501, 1e-5); near(vg.rows[0].clus, 0.986122, 1e-5); near(vg.rows[0].MD, 1.456522, 1e-5);
+  const dd = w.__sxDedupe([{ x1: 0, y1: 0, x2: 1, y2: 1 }, { x1: 1, y1: 1, x2: 0, y2: 0 }, { x1: 2, y1: 2, x2: 2, y2: 2 }]); assert.strictEqual(dd.removed, 1); assert.strictEqual(dd.zero, 1);
+  step('about'); assert(d.querySelector('#aboutBox').textContent.includes('Pindo Tutuko'));
   assert.deepStrictEqual(errs, []); console.log('All module checks passed'); process.exit(0);
 }, 300);
