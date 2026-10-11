@@ -312,6 +312,15 @@ label.btn{display:inline-flex;align-items:center;cursor:pointer}
 .cell .agp{position:absolute;right:1px;top:0;font:600 8px var(--f-mono);color:var(--muted);line-height:1}
 .cell.lowag{box-shadow:inset 0 0 0 2px var(--ochre)}
 .kendall{margin-top:12px}
+.fzk{display:inline-grid;place-items:center;min-width:28px;height:22px;border-radius:5px;background:var(--petrol);color:var(--sheet);font:700 11px var(--f-mono);margin-right:4px}
+.tisrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:10px;padding:8px 0;border-top:1px solid var(--line);align-items:start;font-size:14px}
+.tisrow textarea{min-height:52px}
+.reflist{margin:6px 0 12px;padding-left:22px;display:flex;flex-direction:column;gap:6px;font-size:14px;overflow-wrap:anywhere}
+.plainlist{list-style:disc}
+.refh{font:700 15px var(--f-display);color:var(--petrol);margin:14px 0 6px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.refmod{margin-left:4px}
+.citebox{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:14.5px;overflow-wrap:anywhere}
+@media (max-width:820px){.tisrow{grid-template-columns:1fr}}
 .desk-only{display:none}
 .is-desktop .desk-only{display:inline-flex}
 @media (max-width:820px){
@@ -335,7 +344,7 @@ label.btn{display:inline-flex;align-items:center;cursor:pointer}
     <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="10" y="2" width="8" height="6" rx="1.5" fill="var(--petrol)"/><rect x="3" y="12" width="8" height="6" rx="1.5" fill="var(--petrol)" opacity=".7"/><rect x="17" y="12" width="8" height="6" rx="1.5" fill="var(--petrol)" opacity=".7"/><rect x="10" y="21" width="8" height="5" rx="1.5" fill="var(--ochre)"/><path d="M14 21l-6-3M14 21l6-3M7 12l6-4M21 12l-6-4" stroke="var(--muted)" stroke-width="1.2" fill="none"/></svg>
     <span>Studio Keputusan<br><small>Analisis strategis &amp; keputusan lintas rumpun ilmu</small></span>
   </div>
-  <div class="modpick"><button class="btn" data-modgo="home">☰ Semua metode</button><button class="btn" data-modgo="report">Laporan</button><select id="modSel" aria-label="Metode aktif"></select></div>
+  <div class="modpick"><button class="btn" data-modgo="home">☰ Semua metode</button><button class="btn" data-modgo="report">Laporan</button><button class="btn" data-modgo="refs">Sumber &amp; Referensi</button><select id="modSel" aria-label="Metode aktif"></select></div>
   <input id="title" aria-label="Judul proyek" value="">
   <div class="actions">
     <button class="btn" id="bNew">Proyek baru</button>
@@ -357,6 +366,7 @@ label.btn{display:inline-flex;align-items:center;cursor:pointer}
     <button data-step="lp"><span class="n">4</span><span class="t">Level partition</span><span class="s">(Partisi level) · <span id="s-lp"></span></span></button>
     <button data-step="model"><span class="n">5</span><span class="t">Model ISM</span><span class="s">Digraph (Digraf hierarki)</span></button>
     <button data-step="micmac"><span class="n">6</span><span class="t">MICMAC</span><span class="s">(Klasifikasi daya dorong &amp; ketergantungan)</span></button>
+    <button data-step="fmic"><span class="n">7</span><span class="t">Fuzzy MICMAC</span><span class="s">(Kekuatan hubungan, max–min)</span></button>
     </div>
     <div class="grp" data-mod="ahp">
       <button data-step="ahp-crit"><span class="n">1</span><span class="t">Criteria</span><span class="s">(Kriteria &amp; alternatif) · <span id="s-ahp1"></span></span></button>
@@ -449,6 +459,9 @@ label.btn{display:inline-flex;align-items:center;cursor:pointer}
       <button data-step="tp-in"><span class="n">1</span><span class="t">Decision matrix</span><span class="s">(Kriteria, bobot, alternatif)</span></button>
       <div class="sep"></div>
       <button data-step="tp-res"><span class="n">2</span><span class="t">Ranking</span><span class="s">(Jarak ideal &amp; kedekatan)</span></button>
+    </div>
+    <div class="grp" data-mod="refs">
+      <button data-step="refs"><span class="n">§</span><span class="t">Sources &amp; references</span><span class="s">(Sumber &amp; referensi, keaslian, lisensi)</span></button>
     </div>
   </nav>
 
@@ -554,6 +567,7 @@ label.btn{display:inline-flex;align-items:center;cursor:pointer}
         <button class="btn small desk-only" id="bPngModel">Simpan PNG…</button>
       </div>
       <div class="svgwrap" id="modelWrap"></div>
+      <div class="card" id="tismBox"></div>
       <div class="row"><button class="btn" data-go="lp">← Partisi level</button><span class="spacer"></span><button class="btn primary" data-go="micmac">MICMAC →</button></div>
     </section>
 
@@ -580,7 +594,7 @@ label.btn{display:inline-flex;align-items:center;cursor:pointer}
         </div>
       </div>
       <div id="ismSend"></div>
-      <div class="row"><button class="btn" data-go="model">← Model ISM</button></div>
+      <div class="row"><button class="btn" data-go="model">← Model ISM</button><span class="spacer"></span><button class="btn primary" data-go="fmic">Fuzzy MICMAC →</button></div>
     </section>
 
     <!-- ================= HOME ================= -->
@@ -766,6 +780,8 @@ label.btn{display:inline-flex;align-items:center;cursor:pointer}
     <section data-sec="de-res" hidden><div id="deRes" class="modbox"></div></section>
     <section data-sec="tp-in" hidden><div id="tpIn" class="modbox"></div></section>
     <section data-sec="tp-res" hidden><div id="tpRes" class="modbox"></div></section>
+    <section data-sec="fmic" hidden><div id="fmicBox" class="modbox"></div></section>
+    <section data-sec="refs" hidden><div id="refsBox" class="modbox"></div></section>
   </main>
 </div>
 
@@ -783,6 +799,7 @@ label.btn{display:inline-flex;align-items:center;cursor:pointer}
 <script>
 (function(){
 "use strict";
+const APP_VERSION="1.5.0"; window.__APP_VERSION=APP_VERSION;
 const LS_KEY="ism-studio-v1";
 const desktop = typeof window.ismDesktop==="object" && window.ismDesktop;
 if(desktop) document.documentElement.classList.add("is-desktop");
@@ -873,13 +890,13 @@ function compute(){
 window.__ismCompute=compute; // exposed for testing
 
 /* ---------- navigation ---------- */
-const MODS={dematel:["de-in","de-res"],topsis:["tp-in","tp-res"],synth:["sy-in","sy-res"],report:["rp"],sna:["sn-in","sn-res"],qual:["ql-in","ql-code","ql-res"],syntax:["sx-in","sx-res"],site:["st-in","st-res"],behav:["bm-in","bm-obs","bm-res"],poe:["poe-in","poe-res"],pestel:["pe-in","pe-res"],porter:["po-in","po-res"],cba:["cb-in","cb-res"],cpm:["cp-in","cp-res"],bsc:["bs-in","bs-res"],home:["home"],ism:["el","ssim","rm","lp","model","micmac"],ahp:["ahp-crit","ahp-cmp","ahp-res"],swot:["swot-in","swot-res"],delphi:["dl-setup","dl-rate","dl-res"]};
+const MODS={refs:["refs"],dematel:["de-in","de-res"],topsis:["tp-in","tp-res"],synth:["sy-in","sy-res"],report:["rp"],sna:["sn-in","sn-res"],qual:["ql-in","ql-code","ql-res"],syntax:["sx-in","sx-res"],site:["st-in","st-res"],behav:["bm-in","bm-obs","bm-res"],poe:["poe-in","poe-res"],pestel:["pe-in","pe-res"],porter:["po-in","po-res"],cba:["cb-in","cb-res"],cpm:["cp-in","cp-res"],bsc:["bs-in","bs-res"],home:["home"],ism:["el","ssim","rm","lp","model","micmac","fmic"],ahp:["ahp-crit","ahp-cmp","ahp-res"],swot:["swot-in","swot-res"],delphi:["dl-setup","dl-rate","dl-res"]};
 const STEPS=Object.values(MODS).flat();
 const modOf=st=>Object.keys(MODS).find(m=>MODS[m].includes(st));
 const CREDIT={
   home:`<p>Setiap metode menampilkan rujukan utamanya di sini saat metode itu dibuka.</p>`,
-  ism:`<p>Ahmad, N., &amp; Qahmash, A. (2021). SmartISM: Implementation and Assessment of Interpretive Structural Modeling. <i>Sustainability</i>, 13(16), 8801. <a href="https://doi.org/10.3390/su13168801" target="_blank" rel="noopener">doi.org/10.3390/su13168801</a></p>`,
-  ahp:`<p>Saaty, T. L. (1980). <i>The Analytic Hierarchy Process: Planning, Priority Setting, Resource Allocation</i>. McGraw-Hill.</p>`,
+  ism:`<p>Ahmad, N., &amp; Qahmash, A. (2021). SmartISM: Implementation and Assessment of Interpretive Structural Modeling. <i>Sustainability</i>, 13(16), 8801. <a href="https://doi.org/10.3390/su13168801" target="_blank" rel="noopener">doi.org/10.3390/su13168801</a></p><p>Ahmad, N. (2024). SmartISM 2.0: A roadmap and system to implement fuzzy ISM and fuzzy MICMAC. <i>Sustainability</i>, 16(20), 8873. https://doi.org/10.3390/su16208873</p><p>Sushil. (2012). Interpreting the interpretive structural model. <i>Global Journal of Flexible Systems Management</i>, 13(2), 87–106. https://doi.org/10.1007/s40171-012-0008-3</p>`,
+  ahp:`<p>Saaty, T. L. (1980). <i>The Analytic Hierarchy Process: Planning, Priority Setting, Resource Allocation</i>. McGraw-Hill.</p><p>Buckley, J. J. (1985). Fuzzy hierarchical analysis. <i>Fuzzy Sets and Systems</i>, 17, 233–247.</p>`,
   swot:`<p>Rangkuti, F. (1997). <i>Analisis SWOT: Teknik Membedah Kasus Bisnis</i>. Gramedia Pustaka Utama.</p>`,
   pestel:`<p>Aguilar, F. J. (1967). <i>Scanning the Business Environment</i>. Macmillan.</p>`,
   porter:`<p>Porter, M. E. (1979). How competitive forces shape strategy. <i>Harvard Business Review</i>, 57(2), 137–145.</p>`,
@@ -892,10 +909,11 @@ const CREDIT={
   site:`<p>White, E. T. (1983). <i>Site Analysis: Diagramming Information for Architectural Design</i>. Architectural Media.</p>`,
   behav:`<p>Ittelson, W. H., Rivlin, L. G., &amp; Proshansky, H. M. (1970). The use of behavioral maps in environmental psychology. Dalam H. M. Proshansky, W. H. Ittelson, &amp; L. G. Rivlin (Eds.), <i>Environmental Psychology: Man and His Physical Setting</i>. Holt, Rinehart &amp; Winston.</p>`,
   poe:`<p>Preiser, W. F. E., Rabinowitz, H. Z., &amp; White, E. T. (1988). <i>Post-Occupancy Evaluation</i>. Van Nostrand Reinhold.</p><p>Martilla, J. A., &amp; James, J. C. (1977). Importance-performance analysis. <i>Journal of Marketing</i>, 41(1), 77–79.</p>`,
+  refs:`<p>Halaman ini merangkum rujukan semua metode, pernyataan keaslian, dan lisensi komponen.</p>`,
   synth:`<p>Spearman, C. (1904). The proof and measurement of association between two things. <i>American Journal of Psychology</i>, 15(1), 72–101.</p>`,
   report:`<p>Laporan memuat rujukan setiap metode yang disertakan.</p>`,
   dematel:`<p>Gabus, A., &amp; Fontela, E. (1972). <i>World problems, an invitation to further thought within the framework of DEMATEL</i>. Battelle Geneva Research Centre.</p><p>Tzeng, G.-H., Chiang, C.-H., &amp; Li, C.-W. (2007). Evaluating intertwined effects in e-learning programs: A novel hybrid MCDM model based on factor analysis and DEMATEL. <i>Expert Systems with Applications</i>, 32(4), 1028–1044. https://doi.org/10.1016/j.eswa.2006.02.004</p>`,
-  topsis:`<p>Hwang, C.-L., &amp; Yoon, K. (1981). <i>Multiple Attribute Decision Making: Methods and Applications</i>. Springer-Verlag.</p>`,
+  topsis:`<p>Hwang, C.-L., &amp; Yoon, K. (1981). <i>Multiple Attribute Decision Making: Methods and Applications</i>. Springer-Verlag.</p><p>Opricovic, S., &amp; Tzeng, G.-H. (2004). Compromise solution by MCDM methods: A comparative analysis of VIKOR and TOPSIS. <i>European Journal of Operational Research</i>, 156(2), 445–455.</p>`,
   delphi:`<p>Dalkey, N., &amp; Helmer, O. (1963). An experimental application of the Delphi method to the use of experts. <i>Management Science</i>, 9(3), 458–467.</p><p>von der Gracht, H. A. (2012). Consensus measurement in Delphi studies. <i>Technological Forecasting and Social Change</i>, 79(8), 1525–1536.</p><p>Kendall, M. G., &amp; Babington Smith, B. (1939). The problem of m rankings. <i>Annals of Mathematical Statistics</i>, 10(3), 275–287.</p><p>Schmidt, R. C. (1997). Managing Delphi surveys using nonparametric statistical techniques. <i>Decision Sciences</i>, 28(3), 763–774.</p>`};
 function go(step){
   if(!STEPS.includes(step))step="home"; S.step=step; const mod=modOf(step); S.last=S.last||{}; S.last[mod]=step; persist();
@@ -1088,7 +1106,7 @@ function buildModelSVG(inline){
   // edges: from driver a (lower) to dependent b (upper)
   R.edges.forEach(([a,b])=>{const A=geo[a],B=geo[b]; const x1=A.x+A.w/2, y1=A.y, x2=B.x+B.w/2, y2=B.y+B.h;
     const skip=gl[a]-gl[b]>1, my=(y1+y2)/2, dx=skip?(x1<=W/2?-40:40):0;
-    s+=`<path d="M${x1},${y1} C${x1+dx},${my} ${x2+dx},${my} ${x2},${y2+1}" fill="none" stroke="${col.petrol}" stroke-width="1.6" marker-end="url(#ah)"/>`;});
+    s+=`<path d="M${x1},${y1} C${x1+dx},${my} ${x2+dx},${my} ${x2},${y2+1}" fill="none" stroke="${col.petrol}" stroke-width="1.6" marker-end="url(#ah)">${(()=>{const t=edgeTitle(a,b); return t?`<title>${esc(t)}</title>`:"";})()}</path>`;});
   for(let g=0;g<G;g++){const b=geo[g], mem=R.groups[g], cyc=mem.length>1;
     s+=`<rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="8" fill="${cyc?col.och:col.soft}" stroke="${cyc?col.ochre:col.petrol}" stroke-width="1.4"/>`;
     let ty=b.y+padY+12;
@@ -1098,7 +1116,7 @@ function buildModelSVG(inline){
   }
   return s+"</svg>";
 }
-function renderModel(){$("#modelWrap").innerHTML=buildModelSVG();}
+function renderModel(){$("#modelWrap").innerHTML=buildModelSVG(); renderTism();}
 $("#optCodes").onchange=$("#optNames").onchange=renderModel;
 
 /* ---------- step 6: MICMAC ---------- */
@@ -1172,13 +1190,15 @@ if(desktop){
   $("#bOpen").onclick=()=>$("#fileIn").click();
 }
 $("#fileIn").onchange=e=>{const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>importText(r.result); r.readAsText(f); e.target.value="";};
-function exportObj(){return {app:"Studio Keputusan",version:2,title:S.title,ismExperts:multi()?S.experts.map(x=>{const E=namedEls(); return {name:x.name,ssim:E.map((a,i)=>E.slice(i+1).map(b=>getRelIn(x.rel,a.id,b.id)))};}):undefined,ahp:AH,swot:SW,delphi:DL,pestel:PE,porter:PO,cba:CB,cpm:CP,bsc:BS,sna:SN,qual:QL,syntax:SX,site:ST,behav:BM,poe:POE,synth:SY,dematel:DE,topsis:TP,elements:namedEls().map(e=>e.name),ssim:(()=>{const E=namedEls(),o=[];for(let i=0;i<E.length;i++){const row=[];for(let j=i+1;j<E.length;j++)row.push(getRel(E[i].id,E[j].id)||"");o.push(row);}return o;})()};}
+function exportObj(){const E0=namedEls(), ix=id=>E0.findIndex(e=>e.id===id), pk=M=>Object.entries(M||{}).map(([k,v])=>{const [a,b]=k.split(">"); return [ix(a),ix(b),v];}).filter(x=>x[0]>=0&&x[1]>=0);
+  return {app:"Studio Keputusan",version:2,title:S.title,ismFuzzy:pk(S.fuz),ismInterp:pk(S.interp),ismExperts:multi()?S.experts.map(x=>{const E=namedEls(); return {name:x.name,ssim:E.map((a,i)=>E.slice(i+1).map(b=>getRelIn(x.rel,a.id,b.id)))};}):undefined,ahp:AH,swot:SW,delphi:DL,pestel:PE,porter:PO,cba:CB,cpm:CP,bsc:BS,sna:SN,qual:QL,syntax:SX,site:ST,behav:BM,poe:POE,synth:SY,dematel:DE,topsis:TP,elements:namedEls().map(e=>e.name),ssim:(()=>{const E=namedEls(),o=[];for(let i=0;i<E.length;i++){const row=[];for(let j=i+1;j<E.length;j++)row.push(getRel(E[i].id,E[j].id)||"");o.push(row);}return o;})()};}
 $("#bCopyJson").onclick=()=>copyText(JSON.stringify(exportObj(),null,2),"Data proyek disalin (JSON)");
 function importText(t){try{const o=JSON.parse(t); if(!Array.isArray(o.elements))throw 0;
     if(o.ahp&&Array.isArray(o.ahp.crit)){AH=o.ahp; AH.sample=false; persistA();} if(o.swot&&o.swot.S){SW=o.swot; SW.sample=false; persistW();} if(o.delphi&&Array.isArray(o.delphi.rounds)){DL=o.delphi; DL.sample=false; persistD();} if(o.pestel&&o.pestel.rows){PE=o.pestel;PE.sample=false;persistPE();} if(o.porter&&o.porter.f){PO=o.porter;PO.sample=false;persistPO();} if(o.cba&&o.cba.rows){CB=o.cba;CB.sample=false;persistCB();} if(o.cpm&&o.cpm.acts){CP=o.cpm;CP.sample=false;persistCP();} if(o.bsc&&o.bsc.k){BS=o.bsc;BS.sample=false;persistBS();} if(o.sna&&o.sna.actors){SN=o.sna;SN.sample=false;persistSN();} if(o.qual&&o.qual.docs){QL=o.qual;QL.sample=false;persistQL();} if(o.syntax&&o.syntax.spaces){SX=o.syntax;SX.sample=false;persistSX();} if(o.site&&o.site.a){ST=o.site;ST.sample=false;persistST();} if(o.behav&&o.behav.zones){BM=o.behav;BM.sample=false;persistBM();} if(o.poe&&o.poe.c){POE=o.poe;POE.sample=false;persistPOE();} if(o.synth&&o.synth.sel){SY=o.synth;persistSY();} if(o.dematel&&o.dematel.factors){DE=o.dematel;DE.sample=false;persistDE();} if(o.topsis&&o.topsis.crit){TP=o.topsis;TP.sample=false;persistTP();}
     const els=o.elements.map(n=>({id:newId(),name:String(n)})); const rel={};
     (o.ssim||[]).forEach((row,i)=>row.forEach((v,k)=>{const j=i+1+k; v=String(v||"").toUpperCase(); if(els[i]&&els[j]&&"VAXO".includes(v)&&v)rel[els[i].id+">"+els[j].id]=v;}));
     S={title:o.title||"Proyek analisis",elements:els,rel,sample:false,step:"home"};
+    const unpk=L=>{const m={}; (L||[]).forEach(([i,j,v])=>{if(els[i]&&els[j])m[els[i].id+">"+els[j].id]=v;}); return m;}; S.fuz=unpk(o.ismFuzzy); S.interp=unpk(o.ismInterp);
     if(Array.isArray(o.ismExperts)&&o.ismExperts.length>=2){S.experts=o.ismExperts.map(x=>{const r={}; (x.ssim||[]).forEach((row,i)=>row.forEach((v,k)=>{const j=i+1+k; v=String(v||"").toUpperCase(); if(els[i]&&els[j]&&"VAXO".includes(v)&&v)r[els[i].id+">"+els[j].id]=v;})); return {id:newId(),name:String(x.name||"Pakar"),rel:r};}); S.curExp="agg";} persist(); syncAll(); go("home"); toast("Proyek dibuka");
   }catch(e){toast("Berkas tidak dikenali. Pilih berkas .json yang disimpan dari Studio Keputusan.");}}
 // Paste JSON anywhere (outside inputs) to import
@@ -1209,7 +1229,7 @@ function updateStatus(){const n=namedEls().length, {tot,f}=ssimStats();
     HS.delphi=ni?`${ni} butir · ${DL.experts.length} pakar · ${DL.rounds.length} putaran`:"Belum diisi";}
 }
 function render(){R=compute(); const st=S.step;
-  ({el:renderElements,ssim:renderSSIM,rm:renderRM,lp:renderLP,model:renderModel,micmac:renderMic,"ahp-crit":renderAhpCrit,"ahp-cmp":renderAhpCmp,"ahp-res":renderAhpRes,"swot-in":renderSwotIn,"swot-res":renderSwotRes,"dl-setup":renderDlSetup,"dl-rate":renderDlRate,"dl-res":renderDlRes,home:renderHome,"pe-in":renderPeIn,"pe-res":renderPeRes,"po-in":renderPoIn,"po-res":renderPoRes,"cb-in":renderCbIn,"cb-res":renderCbRes,"cp-in":renderCpIn,"cp-res":renderCpRes,"bs-in":renderBsIn,"bs-res":renderBsRes,"de-in":renderDeIn,"de-res":renderDeRes,"tp-in":renderTpIn,"tp-res":renderTpRes,"sy-in":renderSyIn,"sy-res":renderSyRes,rp:renderRp,"sn-in":renderSnIn,"sn-res":renderSnRes,"ql-in":renderQlIn,"ql-code":renderQlCode,"ql-res":renderQlRes,"sx-in":renderSxIn,"sx-res":renderSxRes,"st-in":renderStIn,"st-res":renderStRes,"bm-in":renderBmIn,"bm-obs":renderBmObs,"bm-res":renderBmRes,"poe-in":renderPoeIn,"poe-res":renderPoeRes}[st]||(()=>{}))(); updateStatus();}
+  ({el:renderElements,ssim:renderSSIM,rm:renderRM,lp:renderLP,model:renderModel,micmac:renderMic,"ahp-crit":renderAhpCrit,"ahp-cmp":renderAhpCmp,"ahp-res":renderAhpRes,"swot-in":renderSwotIn,"swot-res":renderSwotRes,"dl-setup":renderDlSetup,"dl-rate":renderDlRate,"dl-res":renderDlRes,home:renderHome,"pe-in":renderPeIn,"pe-res":renderPeRes,"po-in":renderPoIn,"po-res":renderPoRes,"cb-in":renderCbIn,"cb-res":renderCbRes,"cp-in":renderCpIn,"cp-res":renderCpRes,"bs-in":renderBsIn,"bs-res":renderBsRes,fmic:renderFmic,refs:renderRefs,"de-in":renderDeIn,"de-res":renderDeRes,"tp-in":renderTpIn,"tp-res":renderTpRes,"sy-in":renderSyIn,"sy-res":renderSyRes,rp:renderRp,"sn-in":renderSnIn,"sn-res":renderSnRes,"ql-in":renderQlIn,"ql-code":renderQlCode,"ql-res":renderQlRes,"sx-in":renderSxIn,"sx-res":renderSxRes,"st-in":renderStIn,"st-res":renderStRes,"bm-in":renderBmIn,"bm-obs":renderBmObs,"bm-res":renderBmRes,"poe-in":renderPoeIn,"poe-res":renderPoeRes}[st]||(()=>{}))(); updateStatus();}
 function syncAll(){$("#title").value=S.title||""; $("#sampleBanner").hidden=!S.sample;}
 let tt; function toast(m){const t=$("#toast"); t.textContent=m; t.hidden=false; clearTimeout(tt); tt=setTimeout(()=>t.hidden=true,2600);}
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>render());}catch(e){}
@@ -1339,7 +1359,7 @@ function renderAhpRes(){const o=ahpResult(), box=$("#ahpOut");
       ${o.Al.map((a,i)=>`<tr class="${ord[0]===i?"hit":""}"><td><b>A${i+1}</b> ${esc(a.name)}</td>${o.local.map(r=>`<td class="m">${fmt(r.w[i])}</td>`).join("")}<td class="m"><b>${fmt(o.global[i])}</b></td><td class="m">${ord.indexOf(i)+1}</td></tr>`).join("")}
       <tr><td class="note">CR matriks</td>${o.local.map(r=>`<td class="m ${r.CR>0.1?"warn":""}">${fmt(r.CR)}</td>`).join("")}<td></td><td></td></tr></tbody></table></div></div>`;
   }else h+=`<div class="card"><p class="note">Tambahkan minimal dua alternatif bila ingin memperingkat pilihan berdasarkan bobot kriteria ini.</p></div>`;
-  box.innerHTML=h+sendBar("ahp");}
+  box.innerHTML=h+fahpCard()+sendBar("ahp");}
 
 /* =====================================================================
    SWOT
@@ -2390,7 +2410,7 @@ TSVX.synth=()=>{const r=syCalc(); return [["Peringkat","Butir",...r.act.map(a=>a
 window.__syCalc=syCalc; window.__SY=()=>SY;
 
 /* ---------- COMBINED REPORT ---------- */
-const RES={dematel:["de-res"],topsis:["tp-res"],delphi:["dl-res"],ism:["lp","model","micmac"],ahp:["ahp-res"],swot:["swot-res"],pestel:["pe-res"],porter:["po-res"],cba:["cb-res"],cpm:["cp-res"],bsc:["bs-res"],sna:["sn-res"],qual:["ql-res"],syntax:["sx-res"],site:["st-res"],behav:["bm-res"],poe:["poe-res"],synth:["sy-res"]};
+const RES={dematel:["de-res"],topsis:["tp-res"],delphi:["dl-res"],ism:["lp","model","micmac","fmic"],ahp:["ahp-res"],swot:["swot-res"],pestel:["pe-res"],porter:["po-res"],cba:["cb-res"],cpm:["cp-res"],bsc:["bs-res"],sna:["sn-res"],qual:["ql-res"],syntax:["sx-res"],site:["st-res"],behav:["bm-res"],poe:["poe-res"],synth:["sy-res"]};
 const RPNAME=k=>k==="synth"?"Sintesis & komparasi":(METHODS.find(m=>m.k===k)||{n:k}).n;
 function hasData(k){statusA(); statusB(); statusD(); return ({ism:()=>namedEls().length>=2,ahp:()=>named(AH.crit).length>=2,swot:()=>"SWOT".split("").some(q=>swNamed(q).length),delphi:()=>named(DL.items).length>0&&DL.rounds.some(r=>Object.keys(r.r).length),synth:()=>syCalc().act.length>0}[k]||(()=>!!HS[k]))();}
 let RP=loadK("sk-report-v1")||{sel:{}};
@@ -2398,11 +2418,11 @@ function renderRp(){const box=$("#rpIn"), avail=Object.keys(RES).filter(hasData)
   box.innerHTML=`<h1>Combined report (Laporan gabungan)</h1>
   <p class="lede">Pilih metode yang dimasukkan. Laporan memuat tabel dan diagram hasil setiap metode, serta daftar rujukannya. ${desktop?"Simpan sebagai PDF atau salin ke Word.":"Salin ke Word atau Google Docs. Di aplikasi desktop, laporan juga bisa disimpan langsung sebagai PDF."}</p>
   <div class="card">${avail.length?`<div class="rpsel">${avail.map(k=>`<label class="row note" style="gap:6px"><input type="checkbox" data-rp="${k}" ${RP.sel[k]===false?"":"checked"}> ${esc(RPNAME(k))}</label>`).join("")}</div>
-   <div class="row" style="margin-top:12px"><button class="btn primary" id="bRpBuild">Susun laporan</button><button class="btn" id="bRpCopy">Salin untuk Word</button><button class="btn desk-only" id="bRpPdf">Simpan PDF…</button></div>`:`<p class="note">Belum ada metode yang berisi data. Isi minimal satu metode terlebih dahulu.</p>`}</div>
+   <div class="row" style="margin-top:12px"><button class="btn primary" id="bRpBuild">Susun laporan</button><button class="btn" id="bRpCopy">Salin untuk Word</button><button class="btn desk-only" id="bRpPdf">Simpan PDF…</button><button class="btn desk-only" id="bRpXlsx">Simpan buku kerja Excel…</button></div>`:`<p class="note">Belum ada metode yang berisi data. Isi minimal satu metode terlebih dahulu.</p>`}</div>
   <div id="reportOut" class="report"></div>`;
   if(avail.length) buildReport();}
 function buildReport(){const out=$("#reportOut"); if(!out)return; const sel=Object.keys(RES).filter(k=>hasData(k)&&RP.sel[k]!==false), keepStep=S.step;
-  const parts=sel.map(k=>{const html=RES[k].map(st=>{ (({lp:renderLP,model:renderModel,micmac:renderMic,"dl-res":renderDlRes,"ahp-res":renderAhpRes,"swot-res":renderSwotRes,"pe-res":renderPeRes,"po-res":renderPoRes,"cb-res":renderCbRes,"cp-res":renderCpRes,"bs-res":renderBsRes,"sn-res":renderSnRes,"ql-res":renderQlRes,"sx-res":renderSxRes,"st-res":renderStRes,"bm-res":renderBmRes,"poe-res":renderPoeRes,"sy-res":renderSyRes,"de-res":renderDeRes,"tp-res":renderTpRes})[st]||(()=>{}))();
+  const parts=sel.map(k=>{const html=RES[k].filter(st=>st!=="fmic"||(S.fuz&&Object.keys(S.fuz).length)).map(st=>{ (({lp:renderLP,model:renderModel,micmac:renderMic,"dl-res":renderDlRes,"ahp-res":renderAhpRes,"swot-res":renderSwotRes,"pe-res":renderPeRes,"po-res":renderPoRes,"cb-res":renderCbRes,"cp-res":renderCpRes,"bs-res":renderBsRes,"sn-res":renderSnRes,"ql-res":renderQlRes,"sx-res":renderSxRes,"st-res":renderStRes,"bm-res":renderBmRes,"poe-res":renderPoeRes,"sy-res":renderSyRes,fmic:renderFmic,"de-res":renderDeRes,"tp-res":renderTpRes})[st]||(()=>{}))();
       const sec=document.querySelector(`section[data-sec="${st}"]`).cloneNode(true);
       sec.querySelectorAll("button,.btn,.banner,.sendbar,select,input[type=checkbox],textarea").forEach(x=>{ if(x.tagName==="TEXTAREA"){const p=document.createElement("p"); p.textContent=x.value; x.replaceWith(p);} else x.remove();});
       sec.querySelectorAll("label").forEach(l=>{if(!l.textContent.trim())l.remove();});
@@ -2419,6 +2439,7 @@ $("#rpIn").addEventListener("click",async e=>{const b=e.target.closest("button")
     try{ if(window.ClipboardItem&&navigator.clipboard&&navigator.clipboard.write){await navigator.clipboard.write([new ClipboardItem({"text/html":new Blob([`<div style="font-family:Calibri,Arial,sans-serif">${node.innerHTML}</div>`],{type:"text/html"}),"text/plain":new Blob([node.innerText],{type:"text/plain"})})]); ok=true;} }catch(_){}
     if(!ok){try{const rg=document.createRange(); rg.selectNodeContents(node); const sl=getSelection(); sl.removeAllRanges(); sl.addRange(rg); ok=document.execCommand("copy"); sl.removeAllRanges();}catch(_){}}
     toast(ok?"Laporan disalin. Tempel di Word atau Google Docs (Ctrl+V / ⌘V).":"Penyalinan ditolak browser. Blok laporan lalu salin manual, atau gunakan aplikasi desktop.");}
+  else if(b.id==="bRpXlsx"&&desktop){const sh=workbookSheets(); if(!sh.length)return toast("Belum ada data untuk diekspor"); const r=await desktop.save({name:fname()+".xlsx",data:toB64(buildXlsx(sh)),encoding:"base64",kind:"xlsx"}); if(r)toast(`Buku kerja disimpan (${sh.length} lembar)`);}
   else if(b.id==="bRpPdf"&&desktop&&desktop.pdf){buildReport(); document.body.classList.add("printing-report"); try{const r=await desktop.pdf({name:fname()+"-laporan.pdf"}); if(r)toast("PDF disimpan");}finally{document.body.classList.remove("printing-report");}}});
 
 /* =====================================================================
@@ -2582,6 +2603,7 @@ function renderTpRes(){const r=tpCalc(), box=$("#tpRes");
   <div class="card"><h2>Bobot &amp; solusi ideal</h2><table class="plain" style="margin-top:8px"><thead><tr><th>Kriteria</th><th>Jenis</th><th>Bobot</th><th>A⁺</th><th>A⁻</th></tr></thead><tbody>${r.C.map((c,j)=>`<tr><td><b>K${j+1}</b> ${esc(c.name)}</td><td>${c.type==="c"?"Cost ↓":"Benefit ↑"}</td><td class="m">${fmt(r.w[j],4)}</td><td class="m">${fmt(r.pos[j],4)}</td><td class="m">${fmt(r.neg[j],4)}</td></tr>`).join("")}</tbody></table>
    ${Math.abs(r.wsum-1)>0.001&&r.wsum?`<p class="note">Bobot masukan berjumlah ${fmt(r.wsum,3)} dan telah dinormalisasi.</p>`:""}</div></div>
   <div class="grid2"><div class="card"><h2>Matriks ternormalisasi (R)</h2>${vt(r.Rn,4,"Alternatif")}</div><div class="card"><h2>Matriks terbobot (V)</h2>${vt(r.V,4,"Alternatif")}</div></div>
+  ${vikorCard()}
   ${navRow(["tp-in","Kriteria & matriks"],null)}`;}
 
 /* ---------- TSV & status ---------- */
@@ -2591,6 +2613,160 @@ Object.assign(TSVX,{
 });
 function statusD(){HS.dematel=deF().length?`${deF().length} faktor · ${DE.experts.length} pakar`:""; HS.topsis=tpA().length&&tpC().length?`${tpA().length} alternatif × ${tpC().length} kriteria`:"";}
 window.__deCalc=deCalc; window.__tpCalc=tpCalc; window.__kendallW=kendallW; window.__aggregate=()=>aggregate(); window.__S=()=>S;
+
+/* =====================================================================
+   BATCH E — Fuzzy MICMAC, TISM, Fuzzy AHP, VIKOR, XLSX export, References
+   ===================================================================== */
+/* ---------- Fuzzy MICMAC (singleton approach, max–min composition) ---------- */
+const FZL=[["P",0.25,"rendah (poor)"],["F",0.5,"sedang (fair)"],["G",0.75,"tinggi (good)"],["VG",1,"sangat tinggi (very good)"]];
+const fzVal=k=>(FZL.find(x=>x[0]===k)||FZL[3])[1];
+function fuzzyCalc(){const R=compute(), n=R.n, E=R.E; S.fuz=S.fuz||{};
+  const A=[...Array(n)].map((_,i)=>[...Array(n)].map((_,j)=>i!==j&&R.irm[i][j]?fzVal(S.fuz[E[i].id+">"+E[j].id]||"VG"):0));
+  let B=A.map((r,i)=>r.map((x,j)=>i===j?1:x)), it=1;
+  const mm=(X,Y)=>X.map(r=>Y[0].map((_,j)=>Math.max(...r.map((x,k)=>Math.min(x,Y[k][j])))));
+  for(;it<60;it++){const P=mm(B,B); if(P.every((r,i)=>r.every((x,j)=>Math.abs(x-B[i][j])<1e-12)))break; B=P;}
+  const drv=B.map(r=>r.reduce((a,b)=>a+b,0)), dep=E.map((_,j)=>B.reduce((a,r)=>a+r[j],0));
+  const q=i=>{const mid=n/2, hd=drv[i]>mid, hp=dep[i]>mid; return hd&&hp?"III":hd?"IV":hp?"II":"I";};
+  return {R,n,E,A,B,it,drv,dep,quad:E.map((_,i)=>q(i)),crispQuad:E.map((_,i)=>quad(i))};}
+function fzSVG(f){const n=f.n, S0=440, m={l:50,r:14,t:14,b:44}, pw=S0-m.l-m.r, ph=S0-m.t-m.b, X=v=>m.l+v/n*pw, Y=v=>m.t+ph-v/n*ph;
+  const c={ink:css("--ink"),muted:css("--muted"),line:css("--line"),pet:css("--petrol"),och:css("--ochre"),sheet:css("--sheet"),q1:css("--q1"),q2:css("--q2"),q3:css("--q3"),q4:css("--q4")}, mid=n/2;
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${S0} ${S0}" width="100%" style="max-width:${S0}px" font-family="Atkinson Hyperlegible, Segoe UI, sans-serif"><rect width="100%" height="100%" fill="${c.sheet}"/>`;
+  s+=`<rect x="${X(0)}" y="${Y(n)}" width="${X(mid)-X(0)}" height="${Y(mid)-Y(n)}" fill="${c.q4}"/><rect x="${X(mid)}" y="${Y(n)}" width="${X(n)-X(mid)}" height="${Y(mid)-Y(n)}" fill="${c.q3}"/><rect x="${X(0)}" y="${Y(mid)}" width="${X(mid)-X(0)}" height="${Y(0)-Y(mid)}" fill="${c.q1}"/><rect x="${X(mid)}" y="${Y(mid)}" width="${X(n)-X(mid)}" height="${Y(0)-Y(mid)}" fill="${c.q2}"/>`;
+  for(let v=0;v<=n;v+=n<=12?1:2)s+=`<text x="${X(v)}" y="${Y(0)+15}" text-anchor="middle" font-size="10.5" fill="${c.muted}" font-family="JetBrains Mono, monospace">${v}</text><text x="${X(0)-7}" y="${Y(v)+3}" text-anchor="end" font-size="10.5" fill="${c.muted}" font-family="JetBrains Mono, monospace">${v}</text>`;
+  s+=`<line x1="${X(mid)}" x2="${X(mid)}" y1="${Y(0)}" y2="${Y(n)}" stroke="${c.ink}" stroke-width="1.2"/><line x1="${X(0)}" x2="${X(n)}" y1="${Y(mid)}" y2="${Y(mid)}" stroke="${c.ink}" stroke-width="1.2"/><rect x="${X(0)}" y="${Y(n)}" width="${pw}" height="${ph}" fill="none" stroke="${c.ink}"/>`;
+  f.E.forEach((e,i)=>{const cx=X(f.dep[i]), cy=Y(f.drv[i]), cx0=X(f.R.dep[i]), cy0=Y(f.R.drv[i]); if(Math.hypot(cx-cx0,cy-cy0)>2)s+=`<line x1="${cx0}" y1="${cy0}" x2="${cx}" y2="${cy}" stroke="${c.muted}" stroke-dasharray="3 3"/><circle cx="${cx0}" cy="${cy0}" r="3.5" fill="none" stroke="${c.muted}"/>`;
+    s+=`<circle cx="${cx}" cy="${cy}" r="5.5" fill="${f.quad[i]!==f.crispQuad[i]?c.och:c.pet}" stroke="${c.sheet}" stroke-width="1.5"/><text x="${cx+8}" y="${cy-7}" font-size="12" font-weight="700" fill="${c.ink}" font-family="JetBrains Mono, monospace" paint-order="stroke" stroke="${c.sheet}" stroke-width="3">E${i+1}</text>`;});
+  return s+`<text x="${X(mid)}" y="${S0-8}" text-anchor="middle" font-size="12" font-weight="700" fill="${c.ink}">Fuzzy dependence power</text><text transform="translate(13 ${Y(mid)}) rotate(-90)" text-anchor="middle" font-size="12" font-weight="700" fill="${c.ink}">Fuzzy driving power</text></svg>`;}
+function renderFmic(){const box=$("#fmicBox"), f=fuzzyCalc();
+  if(f.n<2){box.innerHTML=`<h1>Fuzzy MICMAC</h1><div class="card"><p class="note">Isi minimal dua elemen dan SSIM terlebih dahulu.</p></div>`;return;}
+  const links=[]; f.E.forEach((a,i)=>f.E.forEach((b,j)=>{ if(i!==j&&f.R.irm[i][j])links.push([i,j]);}));
+  box.innerHTML=`<h1>Fuzzy MICMAC</h1>
+  <p class="lede">Hubungan biner pada matriks keterjangkauan awal belum membedakan pengaruh lemah dan kuat. Beri <b>tingkat kekuatan</b> setiap hubungan langsung; matriks fuzzy lalu dipangkatkan dengan komposisi <b>max–min</b> sampai stabil, dan daya dorong/ketergantungan dihitung ulang.</p>
+  <div class="card"><div class="row"><h2>Kekuatan hubungan langsung</h2><span class="spacer"></span><span class="note">${links.length} hubungan · bawaan = sangat tinggi (sama dengan MICMAC biasa)</span></div>
+   <div class="legend" style="margin:8px 0">${FZL.map(([k,v,l])=>`<span><b class="fzk">${k}</b> ${l} = ${fmt(v,2)}</span>`).join("")}</div>
+   <div class="scroll" style="border:0"><table class="plain"><thead><tr><th>Hubungan</th><th>Kekuatan</th></tr></thead><tbody>
+   ${links.map(([i,j])=>{const key=f.E[i].id+">"+f.E[j].id, cur=S.fuz[key]||"VG"; return `<tr><td><b>E${i+1}</b> ${esc(f.E[i].name)} → <b>E${j+1}</b> ${esc(f.E[j].name)}</td><td><span class="rate">${FZL.map(([k])=>`<button data-fz="${key}" data-v="${k}" class="${cur===k?"on":""}" style="width:auto;padding:0 8px">${k}</button>`).join("")}</span></td></tr>`;}).join("")||`<tr><td colspan="2" class="note">Belum ada hubungan langsung di SSIM.</td></tr>`}</tbody></table></div></div>
+  <div class="grid2"><div class="card"><div class="row"><h2>Diagram Fuzzy MICMAC</h2><span class="spacer"></span><button class="btn small" id="bCopySvgFz">Salin SVG</button></div>${fzSVG(f)}<p class="note">Lingkaran kosong = posisi MICMAC biasa; titik jingga = elemen yang berpindah kuadran. Garis tengah = n/2.</p></div>
+  <div class="card"><div class="row"><h2>Daya dorong &amp; ketergantungan fuzzy</h2><span class="spacer"></span><button class="btn small" data-copyx="fmic">Salin untuk Excel</button></div>
+   <table class="plain" style="margin-top:8px"><thead><tr><th>Elemen</th><th>Driving (biasa → fuzzy)</th><th>Dependence (biasa → fuzzy)</th><th>Kuadran (biasa → fuzzy)</th></tr></thead><tbody>
+   ${f.E.map((e,i)=>`<tr class="${f.quad[i]!==f.crispQuad[i]?"hit":""}"><td><b>E${i+1}</b> ${esc(e.name)}</td><td class="m">${f.R.drv[i]} → <b>${fmt(f.drv[i],2)}</b></td><td class="m">${f.R.dep[i]} → <b>${fmt(f.dep[i],2)}</b></td><td>${f.crispQuad[i]} → <b>${f.quad[i]} · ${QN[f.quad[i]]}</b></td></tr>`).join("")}</tbody></table>
+   <p class="note">Matriks stabil pada pangkat ke-${f.it}. Nilai tingkat kekuatan mengikuti titik tengah skala lima tingkat dan pendekatan singleton yang diulas Ahmad (2024, SmartISM 2.0).</p></div></div>
+  <div class="card"><h2>Matriks keterjangkauan fuzzy (stabil)</h2><div class="scroll" style="margin-top:8px"><table class="mx"><thead><tr><th class="rn">Elemen</th>${f.E.map((_,j)=>`<th>E${j+1}</th>`).join("")}<th class="sum">Driving</th></tr></thead><tbody>${f.E.map((e,i)=>`<tr><th class="rn" title="${esc(e.name)}"><b>E${i+1}</b>${esc(e.name)}</th>${f.B[i].map((v,j)=>`<td class="${i===j?"diag":v?(f.A[i][j]?"one":"tr"):"zero"}">${i===j?"":fmt(v,2)}</td>`).join("")}<td class="sum">${fmt(f.drv[i],2)}</td></tr>`).join("")}<tr><th class="rn sum">Dependence</th>${f.dep.map(v=>`<td class="sum">${fmt(v,2)}</td>`).join("")}<td class="sum"></td></tr></tbody></table></div><p class="note">Sel jingga = hubungan tidak langsung (transitif) hasil komposisi max–min.</p></div>
+  <div class="row"><button class="btn" data-go="micmac">← MICMAC</button></div>`;}
+$("#fmicBox").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return; if(b.dataset.fz){S.fuz=S.fuz||{}; S.fuz[b.dataset.fz]=b.dataset.v; markEdited(); persist(); renderFmic();} else if(b.id==="bCopySvgFz")copyText(fzSVG(fuzzyCalc()).replace('width="100%"','width="440" height="440"'),"SVG Fuzzy MICMAC disalin");});
+TSVX.fmic=()=>{const f=fuzzyCalc(); return [["Elemen","Driving","Driving fuzzy","Dependence","Dependence fuzzy","Kuadran","Kuadran fuzzy"],...f.E.map((e,i)=>[`E${i+1} ${e.name}`,f.R.drv[i],fmt(f.drv[i],3),f.R.dep[i],fmt(f.dep[i],3),f.crispQuad[i],f.quad[i]])].map(x=>x.join("\t")).join("\n");};
+
+/* ---------- TISM: interpretation of direct links ---------- */
+function renderTism(){const box=$("#tismBox"); if(!box)return; if(R.n<2){box.innerHTML="";return;} S.interp=S.interp||{};
+  const links=[]; R.E.forEach((a,i)=>R.E.forEach((b,j)=>{ if(i!==j&&R.irm[i][j])links.push([i,j]);}));
+  const done=links.filter(([i,j])=>(S.interp[R.E[i].id+">"+R.E[j].id]||"").trim()).length;
+  box.innerHTML=`<div class="row"><h2>Link interpretation (Interpretasi tautan, TISM)</h2><span class="spacer"></span><span class="badge ${done===links.length&&links.length?"ok":"todo"}">${done}/${links.length} ditafsirkan</span><button class="btn small" data-copyx="tism">Salin untuk Excel</button></div>
+   <p class="note">Total ISM menambahkan penjelasan <i>bagaimana/mengapa</i> setiap hubungan terjadi. Tafsiran muncul saat kursor diarahkan ke panah model dan ikut masuk ke laporan.</p>
+   <details class="qx" ${done?"open":""}><summary><b>Isi tafsiran ${links.length} hubungan langsung</b></summary>
+   ${links.map(([i,j])=>{const k=R.E[i].id+">"+R.E[j].id; return `<div class="tisrow"><div><b>E${i+1}</b> ${esc(R.E[i].name)} <span class="muted">→</span> <b>E${j+1}</b> ${esc(R.E[j].name)}</div><textarea data-tism="${k}" placeholder="Bagaimana E${i+1} memengaruhi E${j+1}?">${esc(S.interp[k]||"")}</textarea></div>`;}).join("")}</details>`;}
+document.addEventListener("input",e=>{const k=e.target.dataset&&e.target.dataset.tism; if(!k)return; S.interp=S.interp||{}; S.interp[k]=e.target.value; markEdited(); persist();});
+function edgeTitle(a,b){ if(!S.interp)return ""; const t=[]; R.groups[a].forEach(i=>R.groups[b].forEach(j=>{const v=S.interp[R.E[i].id+">"+R.E[j].id]; if(v&&v.trim())t.push(`E${i+1}→E${j+1}: ${v.trim()}`);})); return t.join("\n");}
+TSVX.tism=()=>{const L=[["Dari","Ke","Tafsiran"]]; R.E.forEach((a,i)=>R.E.forEach((b,j)=>{ if(i!==j&&R.irm[i][j])L.push([`E${i+1} ${a.name}`,`E${j+1} ${b.name}`,String((S.interp||{})[a.id+">"+b.id]||"").replace(/\s+/g," ")]);})); return L.map(x=>x.join("\t")).join("\n");};
+
+/* ---------- Fuzzy AHP (Buckley geometric mean) ---------- */
+const tfn=v=>{const k=v<=0?1-v:1+v, base=k===1?[1,1,1]:k===9?[8,9,9]:[k-1,k,k+1]; return v<=0?base:[1/base[2],1/base[1],1/base[0]];};
+function fahp(items,m){const n=items.length; if(n<2)return null; const M=items.map((a,i)=>items.map((b,j)=>{ if(i===j)return [1,1,1]; const v=cmpGet(m,a.id,b.id)||0; return tfn(v);}));
+  const r=M.map(row=>[0,1,2].map(t=>Math.pow(row.reduce((p,x)=>p*x[t],1),1/n))), sum=[0,1,2].map(t=>r.reduce((s,x)=>s+x[t],0));
+  const W=r.map(x=>[x[0]/sum[2],x[1]/sum[1],x[2]/sum[0]]), crisp=W.map(x=>(x[0]+x[1]+x[2])/3), cs=crisp.reduce((a,b)=>a+b,0);
+  return {W,w:crisp.map(x=>x/cs)};}
+function fahpCard(){const o=ahpResult(); if(o.C.length<2)return ""; const fc=fahp(o.C,"crit"); let glob=null;
+  if(o.Al.length>=2){const loc=o.C.map(c=>fahp(o.Al,c.id)); glob=o.Al.map((_,a)=>o.C.reduce((s,_,k)=>s+fc.w[k]*loc[k].w[a],0));}
+  const rk=v=>rankOf(v,"up");
+  const rc=rk(o.rc.w), rf=rk(fc.w);
+  return `<div class="card"><div class="row"><h2>Fuzzy AHP (Buckley) sebagai pembanding</h2><span class="spacer"></span><button class="btn small" data-copyx="fahp">Salin untuk Excel</button></div>
+   <p class="note">Penilaian yang sama diubah menjadi bilangan fuzzy segitiga (TFN): 1 → (1, 1, 1); k → (k−1, k, k+1) untuk k = 2–8; 9 → (8, 9, 9); kebalikannya untuk penilaian berlawanan. Bobot dihitung dengan rata-rata geometrik fuzzy (Buckley, 1985), didefuzzifikasi dengan centroid, lalu dinormalisasi.</p>
+   <div class="scroll" style="margin-top:8px;border:0"><table class="plain"><thead><tr><th>Kriteria</th><th>Bobot fuzzy (l, m, u)</th><th>Fuzzy AHP</th><th>AHP klasik</th><th>Peringkat (fuzzy / klasik)</th></tr></thead><tbody>
+   ${o.C.map((c,i)=>`<tr class="${rf[i]!==rc[i]?"hit":""}"><td><b>K${i+1}</b> ${esc(c.name)}</td><td class="m">(${fmt(fc.W[i][0],3)}; ${fmt(fc.W[i][1],3)}; ${fmt(fc.W[i][2],3)})</td><td class="m"><b>${fmt(fc.w[i],4)}</b></td><td class="m">${fmt(o.rc.w[i],4)}</td><td class="m">${rf[i]} / ${rc[i]}</td></tr>`).join("")}</tbody></table></div>
+   ${glob?`<h3 style="margin-top:12px;font:600 15px var(--f-display)">Skor global alternatif</h3><table class="plain"><thead><tr><th>Alternatif</th><th>Fuzzy AHP</th><th>AHP klasik</th><th>Peringkat (fuzzy / klasik)</th></tr></thead><tbody>${o.Al.map((a,i)=>`<tr class="${rk(glob)[i]!==rk(o.global)[i]?"hit":""}"><td><b>A${i+1}</b> ${esc(a.name)}</td><td class="m"><b>${fmt(glob[i],4)}</b></td><td class="m">${fmt(o.global[i],4)}</td><td class="m">${rk(glob)[i]} / ${rk(o.global)[i]}</td></tr>`).join("")}</tbody></table>`:""}
+   <p class="note">Baris berwarna = peringkat berbeda antara kedua pendekatan. Pemetaan TFN di atas adalah konvensi yang umum dipakai; rasio konsistensi tetap merujuk pada AHP klasik.</p></div>`;}
+TSVX.fahp=()=>{const o=ahpResult(); if(o.C.length<2)return ""; const fc=fahp(o.C,"crit"); return [["Kriteria","l","m","u","Bobot Fuzzy AHP","Bobot AHP klasik"],...o.C.map((c,i)=>[c.name,fmt(fc.W[i][0],4),fmt(fc.W[i][1],4),fmt(fc.W[i][2],4),fmt(fc.w[i],4),fmt(o.rc.w[i],4)])].map(x=>x.join("\t")).join("\n");};
+
+/* ---------- VIKOR (on the TOPSIS decision matrix) ---------- */
+function vikorCalc(){const r=tpCalc(); if(!r.ok)return null; const v=Number.isFinite(parseFloat(String(TP.v).replace(",",".")))?Math.min(1,Math.max(0,parseFloat(String(TP.v).replace(",",".")))):0.5;
+  const best=r.C.map((c,j)=>{const col=r.X.map(x=>x[j]); return c.type==="c"?Math.min(...col):Math.max(...col);}), worst=r.C.map((c,j)=>{const col=r.X.map(x=>x[j]); return c.type==="c"?Math.max(...col):Math.min(...col);});
+  const d=r.X.map(x=>x.map((f,j)=>best[j]===worst[j]?0:r.w[j]*(best[j]-f)/(best[j]-worst[j])));
+  const Sv=d.map(x=>x.reduce((a,b)=>a+b,0)), Rv=d.map(x=>Math.max(...x)), s0=Math.min(...Sv), s1=Math.max(...Sv), r0=Math.min(...Rv), r1=Math.max(...Rv);
+  const Q=Sv.map((s,i)=>v*(s1>s0?(s-s0)/(s1-s0):0)+(1-v)*(r1>r0?(Rv[i]-r0)/(r1-r0):0));
+  const ord=Q.map((q,i)=>i).sort((a,b)=>Q[a]-Q[b]), m=r.A.length, DQ=1/(m-1);
+  const c1=m>1&&Q[ord[1]]-Q[ord[0]]>=DQ, sMin=Sv.indexOf(s0), rMin=Rv.indexOf(r0), c2=ord[0]===sMin||ord[0]===rMin;
+  let comp=[ord[0]]; if(!c1){comp=ord.filter(i=>Q[i]-Q[ord[0]]<DQ);} else if(!c2){comp=[ord[0],ord[1]];}
+  return {r,v,best,worst,S:Sv,R:Rv,Q,ord,DQ,c1,c2,comp,rkQ:rankOf(Q,"down"),rkS:rankOf(Sv,"down"),rkR:rankOf(Rv,"down")};}
+function vikorCard(){const k=vikorCalc(); if(!k)return ""; const A=k.r.A;
+  return `<div class="card"><div class="row"><h2>VIKOR (solusi kompromi) pada data yang sama</h2><span class="spacer"></span><label class="row note" style="gap:6px">v (bobot strategi mayoritas) <input id="vkV" class="mini" value="${esc(TP.v??"0.5")}" inputmode="decimal" style="width:64px"></label><button class="btn small" data-copyx="vikor">Salin untuk Excel</button></div>
+   <p class="note">S = utilitas kelompok, R = penyesalan individual, Q = indeks kompromi; nilai lebih kecil lebih baik. Syarat C1 (keunggulan memadai): Q(a₂) − Q(a₁) ≥ DQ = 1/(m − 1) = ${fmt(k.DQ,3)}. Syarat C2 (stabilitas): a₁ juga terbaik menurut S atau R.</p>
+   <div class="scroll" style="margin-top:8px;border:0"><table class="plain"><thead><tr><th>Peringkat Q</th><th>Alternatif</th><th>S</th><th>R</th><th>Q</th><th>Peringkat TOPSIS</th></tr></thead><tbody>
+   ${k.ord.map(i=>`<tr class="${k.comp.includes(i)?"hit":""}"><td class="m">${k.rkQ[i]}</td><td>${esc(A[i].name)}</td><td class="m">${fmt(k.S[i],4)}</td><td class="m">${fmt(k.R[i],4)}</td><td class="m"><b>${fmt(k.Q[i],4)}</b></td><td class="m">${k.r.rk[i]}</td></tr>`).join("")}</tbody></table></div>
+   <p><span class="badge ${k.c1?"ok":"bad"}">C1 ${k.c1?"terpenuhi":"tidak terpenuhi"}</span> <span class="badge ${k.c2?"ok":"bad"}">C2 ${k.c2?"terpenuhi":"tidak terpenuhi"}</span></p>
+   <p class="big" style="font-size:16px">Solusi kompromi: ${k.comp.map(i=>esc(A[i].name)).join(", ")}</p></div>`;}
+TSVX.vikor=()=>{const k=vikorCalc(); if(!k)return ""; return [["Alternatif","S","R","Q","Peringkat Q","Peringkat TOPSIS"],...k.r.A.map((a,i)=>[a.name,fmt(k.S[i],4),fmt(k.R[i],4),fmt(k.Q[i],4),k.rkQ[i],k.r.rk[i]]),[],["v",k.v],["DQ",fmt(k.DQ,4)],["C1",k.c1?"ya":"tidak"],["C2",k.c2?"ya":"tidak"],["Solusi kompromi",k.comp.map(i=>k.r.A[i].name).join("; ")]].map(x=>x.join("\t")).join("\n");};
+document.addEventListener("input",e=>{ if(e.target.id==="vkV"){TP.v=e.target.value; persistTP(); clearTimeout(window.__vkT); window.__vkT=setTimeout(()=>{const pos=e.target.selectionStart; renderTpRes(); const f=$("#vkV"); if(f){f.focus(); try{f.setSelectionRange(pos,pos);}catch(_){}}},400);}});
+
+/* ---------- XLSX workbook writer (store-only ZIP, SpreadsheetML) ---------- */
+const CRC=(()=>{const t=new Uint32Array(256); for(let n=0;n<256;n++){let c=n; for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1; t[n]=c>>>0;} return t;})();
+const crc32=b=>{let c=0xFFFFFFFF; for(let i=0;i<b.length;i++)c=CRC[(c^b[i])&255]^(c>>>8); return (c^0xFFFFFFFF)>>>0;};
+function zipStore(files){const enc=new TextEncoder(), parts=[], cen=[]; let off=0;
+  const u16=v=>[v&255,(v>>>8)&255], u32=v=>[v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255];
+  files.forEach(f=>{const name=enc.encode(f.name), data=enc.encode(f.data), crc=crc32(data);
+    const loc=new Uint8Array([...u32(0x04034b50),...u16(20),...u16(0x0800),...u16(0),...u16(0),...u16(0x21),...u32(crc),...u32(data.length),...u32(data.length),...u16(name.length),...u16(0)]);
+    parts.push(loc,name,data); cen.push(new Uint8Array([...u32(0x02014b50),...u16(20),...u16(20),...u16(0x0800),...u16(0),...u16(0),...u16(0x21),...u32(crc),...u32(data.length),...u32(data.length),...u16(name.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(off)]),name);
+    off+=loc.length+name.length+data.length;});
+  const csz=cen.reduce((s,a)=>s+a.length,0), end=new Uint8Array([...u32(0x06054b50),...u16(0),...u16(0),...u16(files.length),...u16(files.length),...u32(csz),...u32(off),...u16(0)]);
+  const all=[...parts,...cen,end], out=new Uint8Array(all.reduce((s,a)=>s+a.length,0)); let p=0; all.forEach(a=>{out.set(a,p); p+=a.length;}); return out;}
+const xe=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,"");
+function colName(i){let s=""; i++; while(i>0){const m=(i-1)%26; s=String.fromCharCode(65+m)+s; i=Math.floor((i-1)/26);} return s;}
+function cellXml(v,r,c){const ref=colName(c)+(r+1), t=String(v??"").trim(); if(t==="")return "";
+  if(/^-?\d+(,\d+)?$/.test(t)||/^-?\d+\.\d+$/.test(t))return `<c r="${ref}"><v>${parseFloat(t.replace(",","."))}</v></c>`;
+  return `<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${xe(t.replace(/^"|"$/g,""))}</t></is></c>`;}
+function buildXlsx(sheets){const ws=sheets.map((sh,k)=>({name:`xl/worksheets/sheet${k+1}.xml`,data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${sh.rows.map((row,r)=>`<row r="${r+1}">${row.map((v,c)=>cellXml(v,r,c)).join("")}</row>`).join("")}</sheetData></worksheet>`}));
+  const files=[{name:"[Content_Types].xml",data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${sheets.map((_,k)=>`<Override PartName="/xl/worksheets/sheet${k+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join("")}</Types>`},
+    {name:"_rels/.rels",data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`},
+    {name:"xl/workbook.xml",data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${sheets.map((s,k)=>`<sheet name="${xe(s.title)}" sheetId="${k+1}" r:id="rId${k+1}"/>`).join("")}</sheets></workbook>`},
+    {name:"xl/_rels/workbook.xml.rels",data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((_,k)=>`<Relationship Id="rId${k+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${k+1}.xml"/>`).join("")}<Relationship Id="rId${sheets.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`},
+    {name:"xl/styles.xml",data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="1"><font><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`},...ws];
+  return zipStore(files);}
+const XLSHEETS=[["ism","ISM-FRM","frm"],["ism","ISM-Level","iter"],["ism","MICMAC","mic"],["ism","Fuzzy MICMAC","fmic"],["ism","TISM","tism"],["delphi","Delphi","delphi"],["ahp","AHP","ahpw"],["ahp","AHP-Global","ahpg"],["ahp","Fuzzy AHP","fahp"],["swot","IFAS","ifas"],["swot","EFAS","efas"],["swot","TOWS","tows"],["dematel","DEMATEL","dematel"],["topsis","TOPSIS","topsis"],["topsis","VIKOR","vikor"],["pestel","PESTEL","pestel"],["porter","Porter","porter"],["cba","CBA","cba"],["cpm","CPM-PERT","cpm"],["bsc","BSC","bsc"],["sna","SNA","sna"],["qual","Kualitatif","qual"],["syntax","Space Syntax","syntax"],["site","Tapak","site"],["behav","Behavioral Map","behav"],["poe","POE","poe"],["synth","Sintesis","synth"]];
+function workbookSheets(){R=compute(); const out=[]; XLSHEETS.forEach(([mod,title,key])=>{ if(!hasData(mod))return; let t=""; try{t=(TSV[key]||TSVX[key])();}catch(_){t="";} if(!t)return; out.push({title:title.slice(0,31),rows:t.split("\n").map(l=>l.split("\t"))});}); return out;}
+const toB64=u8=>{let s=""; for(let i=0;i<u8.length;i+=0x8000)s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000)); return btoa(s);};
+window.__buildXlsx=()=>buildXlsx(workbookSheets()); window.__toB64=toB64; window.__fuzzyCalc=fuzzyCalc; window.__vikorCalc=vikorCalc; window.__fahp=()=>{const o=ahpResult(); return fahp(o.C,"crit");};
+
+/* ---------- Sources & references page ---------- */
+const EXTRA_REFS={
+  ism:[`Warshall, S. (1962). A theorem on Boolean matrices. <i>Journal of the ACM</i>, 9(1), 11–12.`],
+  sna:[`Brandes, U. (2001). A faster algorithm for betweenness centrality. <i>Journal of Mathematical Sociology</i>, 25(2), 163–177.`,`Fruchterman, T. M. J., &amp; Reingold, E. M. (1991). Graph drawing by force-directed placement. <i>Software: Practice and Experience</i>, 21(11), 1129–1164.`]};
+function renderRefs(){const box=$("#refsBox"), v=(typeof APP_VERSION!=="undefined"?APP_VERSION:"");
+  const groups=[{k:"cross",n:"Lintas metode",mods:["synth"]},...CATS.map(c=>({k:c.id,n:c.name,mods:METHODS.filter(m=>m.c[0]===c.id).map(m=>m.k)}))];
+  const refList=k=>[...(CREDIT[k]?CREDIT[k].split(/<\/p>\s*<p>|<\/?p>/).map(x=>x.trim()).filter(Boolean):[]),...(EXTRA_REFS[k]||[])];
+  box.innerHTML=`<h1>Sources &amp; references (Sumber &amp; referensi)</h1>
+  <p class="lede">Halaman ini menjelaskan asal setiap metode, rumus, dan komponen yang dipakai Studio Keputusan, agar penggunaan aplikasi dan hasilnya dapat dipertanggungjawabkan secara akademik.</p>
+  <div class="card"><h2>Pernyataan keaslian</h2>
+   <ul class="reflist plainlist">
+    <li>Studio Keputusan adalah perangkat lunak yang dikembangkan oleh <b>Pindo Tutuko</b>. Seluruh kode program, antarmuka, dan perhitungan ditulis secara mandiri; tidak ada kode, antarmuka, atau berkas dari perangkat lunak lain yang disalin.</li>
+    <li>Metode yang diimplementasikan (ISM, AHP, Delphi, DEMATEL, TOPSIS, Space Syntax, dan lainnya) adalah metode ilmiah yang dipublikasikan. Setiap metode mencantumkan rujukan aslinya di bawah, di kaki halaman metode tersebut, dan di laporan gabungan.</li>
+    <li>Modul ISM–MICMAC terinspirasi oleh alur kerja <b>SmartISM</b> (Ahmad &amp; Qahmash, 2021; Ahmad, 2024). Studio Keputusan merupakan versi lain yang dibangun ulang dari awal, dengan antarmuka dan fitur yang berbeda.</li>
+    <li>Pengembangan kode dibantu asisten AI (Claude, Anthropic). Rumus dan hasil diverifikasi dengan perhitungan independen (NetworkX, NumPy, SciPy) dan uji otomatis di repositori.</li>
+    <li>Semua <b>data contoh</b> di aplikasi bersifat ilustratif dan disusun untuk demonstrasi; bukan data penelitian dan tidak boleh dikutip sebagai temuan.</li>
+   </ul></div>
+  <div class="card"><h2>Cara mensitasi aplikasi ini</h2>
+   <p class="citebox" id="citeApa">Tutuko, P. (2026). <i>Studio Keputusan</i>${v?` (Versi ${esc(v)})`:""} [Perangkat lunak]. https://github.com/pindotutuko-hub/studio-keputusan</p>
+   <button class="btn small" id="bCopyCite">Salin sitasi</button>
+   <p class="note">Saat melaporkan hasil, sitasi juga rujukan metode yang dipakai (lihat daftar di bawah), bukan hanya aplikasinya.</p></div>
+  <div class="card"><h2>Rujukan metode</h2>${groups.map(g=>{const ms=g.mods.filter(k=>refList(k).length); if(!ms.length)return ""; return `<h3 class="refh">${esc(g.n)}</h3>${ms.map(k=>`<div class="refmod"><b>${esc(k==="synth"?"Sintesis & komparasi":(METHODS.find(m=>m.k===k)||{n:k}).n)}</b><ol class="reflist">${refList(k).map(r=>`<li>${r}</li>`).join("")}</ol></div>`).join("")}`;}).join("")}</div>
+  <div class="card"><h2>Komponen pihak ketiga</h2>
+   <table class="plain"><thead><tr><th>Komponen</th><th>Kegunaan</th><th>Lisensi</th></tr></thead><tbody>
+    <tr><td>Atkinson Hyperlegible (Braille Institute)</td><td>Huruf teks</td><td>SIL Open Font License 1.1</td></tr>
+    <tr><td>Familjen Grotesk (Familjen STHLM)</td><td>Huruf judul</td><td>SIL Open Font License 1.1</td></tr>
+    <tr><td>JetBrains Mono (JetBrains)</td><td>Huruf angka &amp; tabel</td><td>SIL Open Font License 1.1</td></tr>
+    <tr><td>Electron</td><td>Kerangka aplikasi desktop</td><td>MIT</td></tr>
+    <tr><td>electron-builder</td><td>Pembuat installer Windows/macOS</td><td>MIT</td></tr>
+    <tr><td>jsdom</td><td>Uji otomatis (tidak dibundel di aplikasi)</td><td>MIT</td></tr></tbody></table>
+   <p class="note">Tidak ada pustaka grafik atau perhitungan pihak ketiga yang dipakai saat aplikasi berjalan; semua diagram dan perhitungan ditulis sendiri.</p></div>
+  <div class="card"><h2>Kredit</h2><p>Dikembangkan versi lain oleh <b>Pindo Tutuko</b>, Universitas Merdeka Malang. Kode sumber, riwayat perubahan, dan uji otomatis tersedia di repositori GitHub <code>pindotutuko-hub/studio-keputusan</code>.</p></div>`;}
+$("#refsBox").addEventListener("click",e=>{if(e.target.closest("#bCopyCite"))copyText($("#citeApa").innerText,"Sitasi disalin");});
 
 /* =====================================================================
    METHOD REGISTRY & HOME (grouped by discipline)
@@ -2619,12 +2795,12 @@ const METHODS=[
  {k:"behav",ready:true,n:"Behavioral Mapping",t:"Perilaku spasial",d:"Rekap observasi aktivitas per zona dan waktu menjadi pola penggunaan ruang.",c:["ars","sos"]},
  {k:"poe",ready:true,n:"Post-Occupancy Evaluation",t:"Evaluasi pascahuni",d:"Skor kinerja bangunan menurut penghuni, kesenjangan terhadap harapan, dan prioritas perbaikan.",c:["ars"]}];
 const HS={}; let homeCat="all";
-function fillModSel(){const sel=$("#modSel"); sel.innerHTML=`<option value="home">Pilih metode…</option><optgroup label="Lintas metode"><option value="synth">Sintesis &amp; komparasi</option><option value="report">Laporan gabungan</option></optgroup>`+CATS.map(c=>`<optgroup label="${esc(c.name)}">${METHODS.filter(m=>m.c[0]===c.id).map(m=>`<option value="${m.k}" ${m.ready?"":"disabled"}>${esc(m.n)}${m.ready?"":" (tahap berikutnya)"}</option>`).join("")}</optgroup>`).join("");}
+function fillModSel(){const sel=$("#modSel"); sel.innerHTML=`<option value="home">Pilih metode…</option><optgroup label="Lintas metode"><option value="synth">Sintesis &amp; komparasi</option><option value="report">Laporan gabungan</option><option value="refs">Sumber &amp; referensi</option></optgroup>`+CATS.map(c=>`<optgroup label="${esc(c.name)}">${METHODS.filter(m=>m.c[0]===c.id).map(m=>`<option value="${m.k}" ${m.ready?"":"disabled"}>${esc(m.n)}${m.ready?"":" (tahap berikutnya)"}</option>`).join("")}</optgroup>`).join("");}
 $("#modSel").onchange=e=>{const m=e.target.value; go(m==="home"?"home":((S.last&&S.last[m])||MODS[m][0]));};
 function renderHome(){updateStatus(); statusA(); statusB(); statusD(); const sa=METRICS.filter(m=>SY.sel[m.k]&&SY.sel[m.k].on).length; HS.synth=sa?sa+" ukuran dipilih":""; const nr=Object.keys(RES).filter(k=>k!=="synth"&&hasData(k)).length; HS.report=nr?nr+" metode berisi data":"Belum ada data";
   $("#homeFilter").innerHTML=[`<button class="tabx ${homeCat==="all"?"on":""}" data-hcat="all">Semua rumpun</button>`,...CATS.map(c=>`<button class="tabx ${homeCat===c.id?"on":""}" data-hcat="${c.id}">${esc(c.name)}</button>`)].join("");
   const cats=homeCat==="all"?CATS:CATS.filter(c=>c.id===homeCat);
-  $("#homeCats").innerHTML=`<div class="hcat"><h2>Lintas metode <small>(Cross-method) · Bandingkan hasil dan susun keputusan</small></h2><div class="mgrid"><button class="mcard" data-modgo="synth"><span class="mk">Sintesis</span><b>Komparasi &amp; keputusan</b><span>Gabungkan ukuran dari beberapa metode untuk butir yang sama, beri bobot, dapatkan peringkat gabungan dan uji kesepakatan antarmetode (Spearman).</span><span class="mst">${esc(HS.synth||"Pilih ukuran")}</span></button><button class="mcard" data-modgo="report"><span class="mk">Laporan</span><b>Laporan gabungan</b><span>Tabel, diagram, dan rujukan semua metode yang dipakai dalam satu dokumen, siap disalin ke Word atau disimpan sebagai PDF.</span><span class="mst">${esc(HS.report||"")}</span></button></div></div>`+cats.map(c=>{const list=METHODS.filter(m=>homeCat==="all"?m.c[0]===c.id:m.c.includes(c.id));
+  $("#homeCats").innerHTML=`<div class="hcat"><h2>Lintas metode <small>(Cross-method) · Bandingkan hasil dan susun keputusan</small></h2><div class="mgrid"><button class="mcard" data-modgo="synth"><span class="mk">Sintesis</span><b>Komparasi &amp; keputusan</b><span>Gabungkan ukuran dari beberapa metode untuk butir yang sama, beri bobot, dapatkan peringkat gabungan dan uji kesepakatan antarmetode (Spearman).</span><span class="mst">${esc(HS.synth||"Pilih ukuran")}</span></button><button class="mcard" data-modgo="report"><span class="mk">Laporan</span><b>Laporan gabungan</b><span>Tabel, diagram, dan rujukan semua metode yang dipakai dalam satu dokumen, siap disalin ke Word atau disimpan sebagai PDF.</span><span class="mst">${esc(HS.report||"")}</span></button><button class="mcard" data-modgo="refs"><span class="mk">Referensi</span><b>Sumber &amp; referensi</b><span>Rujukan setiap metode, pernyataan keaslian, lisensi komponen, dan cara mensitasi aplikasi.</span><span class="mst">Lihat daftar rujukan</span></button></div></div>`+cats.map(c=>{const list=METHODS.filter(m=>homeCat==="all"?m.c[0]===c.id:m.c.includes(c.id));
     return `<div class="hcat"><h2>${esc(c.name)} <small>(${esc(c.en)}) · ${esc(c.desc)}</small></h2><div class="mgrid">${list.map(m=>`<button class="mcard" ${m.ready?`data-modgo="${m.k}"`:"disabled"}><span class="mk">${esc(m.n)}</span><b>${esc(m.t)}</b><span>${esc(m.d)}</span><span class="tags">${m.c.map(x=>`<i>${esc(CATS.find(y=>y.id===x).name.split(/[ ,&]/)[0])}</i>`).join("")}</span>${m.ready?`<span class="mst">${esc(HS[m.k]||"Belum diisi")}</span>`:`<span class="soon">Tahap berikutnya</span>`}</button>`).join("")}</div></div>`;}).join("");}
 $("#homeFilter").addEventListener("click",e=>{const b=e.target.closest("[data-hcat]"); if(!b)return; homeCat=b.dataset.hcat; renderHome();});
 

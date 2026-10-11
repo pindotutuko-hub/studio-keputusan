@@ -29,6 +29,12 @@ setTimeout(() => {
   cells().forEach(c => c.dispatchEvent(new w.KeyboardEvent('keydown', { key: 'V', bubbles: true })));
   click('[data-exp="agg"]'); const ag = w.__aggregate(); assert(ag.cnt > 0); assert(Number.isFinite(ag.mean));
   const snap = JSON.stringify(ag.map); cells()[0].dispatchEvent(new w.KeyboardEvent('keydown', { key: 'O', bubbles: true })); assert.strictEqual(JSON.stringify(w.__aggregate().map), snap);
+  // v1.5: fuzzy MICMAC (all VG == crisp), Fuzzy AHP, VIKOR, references page, version sync
+  const fz = w.__fuzzyCalc(); assert.strictEqual(JSON.stringify(fz.drv), JSON.stringify(Array.from(fz.R.drv)));
+  const fa = w.__fahp(); near(fa.w.reduce((a, b) => a + b, 0), 1, 1e-9); assert(fa.w[3] > fa.w[1]);
+  const vk = w.__vikorCalc(); near(vk.Q[2], 0.3026, 1e-4); assert.strictEqual(vk.c2, true);
+  step('refs'); assert(d.querySelectorAll('#refsBox .reflist li').length > 30);
+  const pkg = require('../package.json'); assert.strictEqual(w.__APP_VERSION, pkg.version, 'APP_VERSION must match package.json');
   step('sy-in'); ['dl_med', 'dl_agr'].forEach(k => { const c = d.querySelector('#sy_' + k); c.checked = true; c.dispatchEvent(new w.Event('change', { bubbles: true })); }); step('sy-res');
   const sy = w.__syCalc(); near(sy.corr[0][1].r, 0.73, 0.01);
   step('rp'); click('#bRpBuild'); assert(d.querySelectorAll('#reportOut .rpsec').length >= 10);

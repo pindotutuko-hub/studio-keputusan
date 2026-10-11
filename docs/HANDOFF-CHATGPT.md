@@ -23,7 +23,7 @@ Sebelum mengubah apa pun, baca AGENTS.md dan docs/ARCHITECTURE.md, lalu patuhi:
 - Ikuti pola modul (state + persist, fungsi hitung murni, renderXIn/renderXRes, TSVX, MODS, CREDIT, METHODS).
 - UI berbahasa Indonesia; istilah teknis Inggris + padanan Indonesia dalam kurung.
 - Kebijakan tanpa halusinasi untuk rujukan akademik: hanya rujukan yang bisa diverifikasi.
-- Pertahankan kredit "Dikembangkan versi lain oleh: Pindo Tutuko" dan rujukan SmartISM (Ahmad & Qahmash, 2021).
+- Pertahankan kredit "Dikembangkan versi lain oleh: Pindo Tutuko", rujukan SmartISM (Ahmad & Qahmash, 2021), dan menu Sumber & Referensi; setiap metode baru wajib menambah rujukannya ke CREDIT.
 - Tanpa library/CDN runtime; diagram SVG manual; warna lewat token CSS (mode terang & gelap).
 - Tambahkan uji angka di tests/smoke.test.js dan pastikan `npm test` lulus.
 - Bila merilis, naikkan "version" di package.json dan jelaskan perubahan di CHANGELOG.md.
@@ -34,8 +34,7 @@ Permintaan saya:
 ```
 
 ## Ide lanjutan (belum dikerjakan)
-- **Fuzzy ISM / Fuzzy MICMAC** (sejalan dengan SmartISM 2.0) dan **TISM** (interpretasi tautan).
-- **Fuzzy AHP**, **VIKOR**, **Fuzzy DEMATEL** (DEMATEL, TOPSIS, dan ISM multi-pakar sudah tersedia sejak v1.4.0).
+- **Fuzzy ISM** penuh dengan SSIM linguistik (TFN/TzFN) dan **Fuzzy DEMATEL** (Fuzzy MICMAC singleton, TISM, Fuzzy AHP, dan VIKOR sudah tersedia sejak v1.5.0).
 - **Space Syntax**: segment angular analysis, radius metrik, VGA berbasis grid — selaraskan dengan repo `pindotutuko-hub/space-syntax-analyzer` (Python) agar hasil bisa divalidasi silang.
-- **Ekspor .xlsx** langsung (saat ini via salin ke Excel) dan ekspor Word (.docx) untuk laporan.
+- **Ekspor Word (.docx)** untuk laporan (ekspor .xlsx sudah tersedia di desktop sejak v1.5.0).
 - **Penandatanganan kode** installer (Windows Authenticode, Apple notarization) agar tidak muncul peringatan keamanan.

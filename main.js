@@ -19,7 +19,8 @@ const FILTERS = {
   json: [{ name: 'Proyek ISM', extensions: ['json'] }],
   png: [{ name: 'Gambar PNG', extensions: ['png'] }],
   csv: [{ name: 'CSV (pemisah titik koma)', extensions: ['csv'] }],
-  geojson: [{ name: 'GeoJSON', extensions: ['geojson'] }]
+  geojson: [{ name: 'GeoJSON', extensions: ['geojson'] }],
+  xlsx: [{ name: 'Buku kerja Excel', extensions: ['xlsx'] }]
 };
 
 ipcMain.handle('ism:save', async (e, { name, data, encoding, kind }) => {

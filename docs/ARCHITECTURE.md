@@ -61,6 +61,10 @@ Langkah menambah metode baru:
 - **Penyimpanan**: `localStorage` per modul, dibungkus try/catch. Berkas proyek `.json` memuat semua modul.
 - **Desktop**: fitur khusus desktop memakai `window.ismDesktop` (`save`, `open`, `pdf`) dan tombol `.desk-only`.
 
+## Rujukan & versi
+- Rujukan metode ada di objek `CREDIT` (tampil di kaki halaman metode dan laporan) dan `EXTRA_REFS` (rujukan algoritma). Menu **Sumber & Referensi** (`renderRefs`) menyusunnya otomatis per rumpun ilmu — menambah metode cukup mengisi `CREDIT`.
+- `APP_VERSION` di `app.html` harus sama dengan `version` di `package.json` (diperiksa `npm test`).
+
 ## Uji & rilis
 
 ```bash

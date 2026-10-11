@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.5.0 — 2026-10-11
+- Menu **Sumber & Referensi**: pernyataan keaslian, rujukan semua metode per rumpun ilmu, rujukan algoritma, lisensi komponen pihak ketiga, dan cara mensitasi aplikasi.
+- **Fuzzy MICMAC** (pendekatan singleton, komposisi max–min sampai konvergen; Ahmad, 2024 — SmartISM 2.0): kekuatan hubungan P/F/G/VG, perbandingan kuadran biasa vs fuzzy.
+- **TISM**: tafsiran setiap hubungan langsung (Sushil, 2012), tampil di panah model dan di laporan.
+- **Fuzzy AHP** (rata-rata geometrik fuzzy Buckley, 1985) sebagai pembanding AHP klasik untuk kriteria dan skor global.
+- **VIKOR** (Opricovic & Tzeng, 2004) pada matriks TOPSIS: S, R, Q, syarat C1/C2, solusi kompromi.
+- **Ekspor buku kerja Excel (.xlsx)** di aplikasi desktop: satu lembar per tabel hasil.
+- Ekspor/impor proyek menyimpan tingkat kekuatan fuzzy dan tafsiran TISM. `license` di package.json diubah ke `UNLICENSED` sampai pemilik menetapkan lisensi.
+
 ## 1.4.0 — 2026-10-11
 - **ISM multi-pakar**: setiap pakar mengisi SSIM sendiri; SSIM konsensus (modus, aturan seri terdokumentasi) dipakai untuk perhitungan; % kesepakatan per sel dan rata-rata; ekspor/impor ikut menyimpan SSIM per pakar.
 - **Delphi: Kendall's W** dengan koreksi peringkat seri, uji χ² dan nilai p, tafsiran mengacu Schmidt (1997).
