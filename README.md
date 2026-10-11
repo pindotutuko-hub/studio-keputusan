@@ -24,6 +24,9 @@ Buka tab **Actions → Build installers → Run workflow**. Setelah selesai (±1
 
 macOS: aplikasi belum ditandatangani Apple — saat pertama dibuka, klik kanan → **Open**.
 
+## Melanjutkan dengan AI lain
+Panduan untuk ChatGPT/Codex atau agen AI lain ada di [`AGENTS.md`](AGENTS.md), [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), dan prompt siap tempel di [`docs/HANDOFF-CHATGPT.md`](docs/HANDOFF-CHATGPT.md).
+
 ## Pengembangan
     npm install
     node build-page.js   # setelah mengubah app.html
