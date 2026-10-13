@@ -32,6 +32,9 @@ Dikembangkan versi lain oleh **Pindo Tutuko**. Rujukan lengkap setiap metode ada
 ## Space Syntax
 Mode graf ruang convex, **peta axial**, **segmen angular** (radius metrik), dan **VGA** (grid visibilitas), dengan pembersihan segmen duplikat DXF dan ringkasan statistik per metrik (alur RuangSyntax). Mode graf ruang convex dan **peta axial** (gambar garis di atas denah/peta, atau impor DXF/GeoJSON). Ukuran: Connectivity, Mean depth, Integration [HH] global dan R3, Choice, NACH/NAIN (versi topologis), Control, intelligibility, synergy. Peta gradasi warna; ekspor CSV dan GeoJSON. Selaras dengan roadmap [space-syntax-analyzer](https://github.com/pindotutuko-hub/space-syntax-analyzer).
 
+## Impor IFC
+OTTV · RTTV, Space Syntax (graf ruang & VGA), dan Javanese House Depth dapat membaca model BIM **IFC2X3/IFC4** (ArchiCAD, Revit, dll.) langsung di aplikasi, tanpa pustaka luar.
+
 ## Modul yang diadaptasi dari aplikasi pengembang
 - **Javanese House Depth**: dari House Depth Calculation v1.0 (Java; pemrograman Tristiyanto) dan Javanese House Depth Calculation (Pindo Tutuko), metode Basic Depth Ratio (Tutuko, 2014).
 - **OTTV · RTTV**: dari EnvelopeSim (Dara Citra Saraswati Tutuko & Pindo Tutuko, MIT), diuji terhadap contoh Lampiran B.4, C, dan D SNI 6389:2020.
@@ -66,4 +69,4 @@ Panduan untuk ChatGPT/Codex atau agen AI lain ada di [`AGENTS.md`](AGENTS.md), [
 Hak cipta © 2026 Pindo Tutuko. Lisensi distribusi belum ditetapkan (`UNLICENSED`); komponen pihak ketiga mengikuti lisensinya masing-masing (lihat menu Sumber & Referensi).
 
 ## Cara mensitasi
-Tutuko, P. (2026). *Studio Keputusan* (Versi 2.4.0) [Perangkat lunak]. https://github.com/pindotutuko-hub/studio-keputusan
+Tutuko, P. (2026). *Studio Keputusan* (Versi 2.5.0) [Perangkat lunak]. https://github.com/pindotutuko-hub/studio-keputusan

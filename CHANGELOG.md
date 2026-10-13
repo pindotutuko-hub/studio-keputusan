@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.5.0 — 2026-10-13
+- **Impor IFC (IFC2X3/IFC4)** tanpa pustaka luar — pembaca STEP sendiri (satuan, placement, property/quantity set, material, bukaan, space boundary, sumbu dinding):
+  - **OTTV · RTTV**: dinding luar (luas dari quantity set, arah hadap dari placement → 8 oktan SNI, koreksi utara sejati), jendela pada bukaan, atap (IfcSlab ROOF/IfcRoof), lapisan material (IfcMaterialLayerSet; IfcMaterialList dibaca namanya, tebal diisi pengguna), laporan per dinding, tombol batalkan impor. Aturan mengikuti EnvelopeSim; diuji sama dengan `read_ifc` EnvelopeSim pada contoh kantor dan model ArchiCAD.
+  - **Space Syntax**: graf ruang dari IfcSpace + pintu pada IfcRelSpaceBoundary (pintu luar → ruang "Luar"); dinding VGA dari sumbu IfcWall dengan celah pintu.
+  - **Javanese House Depth**: ruang dari IfcSpace, akses dari pintu, akar = ruang berpintu luar.
+
 ## 2.4.0 — 2026-10-11
 - Penyempurnaan identitas visual: menu atas memakai indigo gelap, panel langkah kiri memakai lavender–slate, dan pilihan aktif memakai aksen terakota.
 - Token warna navigasi terpisah untuk mode terang dan gelap dengan kontras teks yang lebih jelas.

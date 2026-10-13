@@ -72,5 +72,9 @@ setTimeout(() => {
   const bt = w.__plsBoot(pl.M, pl.sp.blocks, pl.sp.P, pl.sp.modes, 500, 1); near(bt.res[1].sd, 0.08819792, 1e-6);
   step('cs-model'); click('[data-semsample="cs"]'); step('cs-res'); const cs = w.__csCalc(); near(cs.f.chi, 52.690807, 1e-4); near(cs.f.cfi, 0.964829, 1e-5); near(cs.f.rmsea, 0.065875, 1e-5); near(cs.f.rLo, 0.031071, 1e-5); near(cs.f.srmr, 0.052503, 1e-5); near(cs.f.gfi, 0.931324, 1e-5);
   step('jh-res'); click('#bJhToData'); const dj = w.__dsData(); assert(dj.n >= 3 && dj.cols.find(c => c.name === 'TD').num, 'house table to dataset');
+  // v1.6.1: IFC import (EnvelopeSim sample office, IFC4) — same facades as EnvelopeSim read_ifc
+  const ifcTxt = fs.readFileSync(path.join(__dirname, 'fixtures', 'sample_office.ifc'), 'utf8'); const IM = w.__ifcParse(ifcTxt); const env = w.__ifcToEnvelope(IM, {});
+  const facs = Object.fromEntries(Array.from(env.fac).map(f => [f.ori, [+f.parts[0].area, +f.win]])); assert.strictEqual(JSON.stringify(facs), JSON.stringify({ U: [144, 96], T: [86.4, 57.6], S: [144, 96], B: [86.4, 57.6] }));
+  near(env.roofArea, 240, 1e-9); assert.strictEqual(env.asm[0].layers.length, 3); assert.strictEqual(env.asm[0].layers[1].mat, 'Bata dengan lapisan plester'); assert.strictEqual(env.asm[0].layers[1].t, '110');
   assert.deepStrictEqual(errs, []); console.log('All module checks passed'); process.exit(0);
 }, 300);
