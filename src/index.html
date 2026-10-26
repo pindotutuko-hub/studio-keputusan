@@ -672,6 +672,7 @@ label.btn{display:inline-flex;align-items:center;cursor:pointer}
     <section data-sec="home" hidden>
       <h1>Pilih metode analisis</h1>
       <p class="lede">Metode dikelompokkan menurut rumpun keilmuan yang umum memakainya. Setiap metode bisa dipakai sendiri atau digabung: hasil satu metode dapat dikirim menjadi masukan metode lain untuk perbandingan sebelum mengambil keputusan.</p>
+      <div id="linkIn"></div>
       <div class="tabsx" id="homeFilter" role="tablist" aria-label="Rumpun ilmu"></div>
       <div id="homeCats" class="hcats"></div>
       <div class="card">
@@ -898,7 +899,7 @@ label.btn{display:inline-flex;align-items:center;cursor:pointer}
 <script>
 (function(){
 "use strict";
-const APP_VERSION="2.5.0"; window.__APP_VERSION=APP_VERSION;
+const APP_VERSION="2.6.0"; window.__APP_VERSION=APP_VERSION;
 const LS_KEY="ism-studio-v1";
 const desktop = typeof window.ismDesktop==="object" && window.ismDesktop;
 if(desktop) document.documentElement.classList.add("is-desktop");
@@ -2230,7 +2231,7 @@ function renderSxIn(){const box=$("#sxIn"), S=sxSp(), ax=sxIsLine(), md=SX.mode,
     <div class="axwrap">${vg?sxVgaSVG(null,null,true):sxAxialSVG(null,null,true)}</div>
     <div class="row" style="margin-top:10px"><label class="btn small">Latar denah/peta (gambar)…<input type="file" id="axBg" accept="image/*" hidden></label>${SXBG?`<label class="row note" style="gap:6px">Transparansi <input type="range" id="axBgOp" min="0.1" max="1" step="0.05" value="${SXBGop}"></label><button class="btn small" id="bAxBgOff">Lepas latar</button>`:""}
      <label class="btn small">Impor DXF / GeoJSON…<input type="file" id="axImp" accept=".dxf,.geojson,.json" hidden></label>${vg?`<label class="btn small">Impor dinding dari IFC…<input type="file" id="sxIfcW" accept=".ifc" hidden></label><label class="row note" style="gap:6px"><input type="checkbox" id="sxIfcGap" ${SX.ifcGaps!==false?"checked":""}> beri celah selebar pintu</label>`:""}<span class="note">Tarik untuk menggambar garis; ujung garis menempel otomatis ke ujung garis lain yang dekat. Impor DXF membuang segmen duplikat persis (termasuk arah terbalik). Gambar latar tidak disimpan.</span></div></div>${md==="segment"?`<div class="card"><h2>Parameter segmen</h2><div class="row" style="gap:12px;flex-wrap:wrap;margin-top:6px"><label class="row note" style="gap:6px">Radius (pisahkan koma; n = global) <input data-fid="sxsr" data-sxp="segR" value="${esc(SX.segR)}" style="width:140px" placeholder="400,800,n"></label><label class="row note" style="gap:6px">Skala: 1 satuan gambar = <input data-fid="sxss" data-sxp="segScale" value="${esc(SX.segScale)}" inputmode="decimal" style="width:70px"> meter</label></div><p class="note">Radius metrik diukur sepanjang jaringan dari tengah segmen asal. Verifikasi skala gambar sebelum memakai radius metrik.</p></div>`:""}${vg?`<div class="card"><h2>Parameter VGA</h2><div class="row" style="gap:12px;flex-wrap:wrap;margin-top:6px"><label class="row note" style="gap:6px">Ukuran grid (satuan gambar) <input data-fid="sxvg" data-sxp="vgaGrid" value="${esc(SX.vgaGrid)}" inputmode="decimal" style="width:70px" placeholder="1"></label><label class="row note" style="gap:6px">Radius visual (langkah atau n) <input data-fid="sxvr" data-sxp="vgaR" value="${esc(SX.vgaR)}" style="width:60px"></label><span class="note">Titik isi: ${Number.isFinite(SX.vgaFx)?`(${fmt(SX.vgaFx,2)}, ${fmt(SX.vgaFy,2)})`:"belum dipilih — pakai alat ⊙ Titik isi lalu klik di dalam ruang"}</span></div><p class="note">Ruang harus tertutup agar pengisian grid tidak bocor ke luar. Batas: 4.000 titik.</p></div>`:""}`
-  :`<div class="grid2"><div class="card"><h2>Spaces (Ruang)</h2><div class="elist" id="sxList" style="margin-top:10px"></div><div class="row" style="margin-top:10px;gap:8px"><button class="btn small" id="bSxAdd">+ Tambah ruang</button><label class="btn small" style="cursor:pointer">Impor ruang dari IFC…<input type="file" id="sxIfcSp" accept=".ifc" hidden></label></div><p class="note">IFC: IfcSpace menjadi ruang; dua ruang terhubung bila berbagi pintu/bukaan pada IfcRelSpaceBoundary; pintu luar menambah ruang “Luar (eksterior)” sebagai akar.</p></div>
+  :`<div class="grid2"><div class="card"><h2>Spaces (Ruang)</h2><div class="elist" id="sxList" style="margin-top:10px"></div><div class="row" style="margin-top:10px;gap:8px"><button class="btn small" id="bSxAdd">+ Tambah ruang</button>${linkOk()?`<button class="btn small" id="bSxToApp" title="Buka graf convex ini sebagai denah di Javanese House">⇄ Denah di Javanese House</button>`:""}<label class="btn small" style="cursor:pointer">Impor ruang dari IFC…<input type="file" id="sxIfcSp" accept=".ifc" hidden></label></div><p class="note">IFC: IfcSpace menjadi ruang; dua ruang terhubung bila berbagi pintu/bukaan pada IfcRelSpaceBoundary; pintu luar menambah ruang “Luar (eksterior)” sebagai akar.</p></div>
   <div class="card"><h2>Root (Ruang akar)</h2><select id="sxRoot" style="margin-top:8px;width:100%">${S.map(s=>`<option value="${s.id}" ${s.id===SX.root?"selected":""}>${esc(s.name)}</option>`).join("")}</select><p class="note">Kedalaman pada graf justifikasi dihitung dari ruang ini.</p></div></div>
   <div class="card"><h2>Permeability matrix (Matriks hubungan ruang)</h2><p class="note">Klik atau sapukan pada sel untuk menandai ruang yang terhubung langsung.</p><div class="scroll"><table class="mx" id="sxMx"></table></div></div>`}
   <div class="row"><button class="btn" id="bSxSample">Muat contoh ${vg?"ruang VGA":md==="segment"?"jaringan":ax?"peta axial":"denah"}</button><span class="spacer"></span><button class="btn primary" data-go="sx-res">Hitung ukuran sintaksis →</button></div>`;});
@@ -2909,7 +2910,7 @@ function renderJhIn(){const box=$("#jhIn"), h=jhCur(), R=h.rooms, named=jhRooms(
   keepFocus(box,()=>{box.innerHTML=`<h1>Javanese House Depth (Kedalaman ruang rumah Jawa)</h1>
   <p class="lede">Hitung depth setiap ruang dari titik akses (justified graph), Total Depth (TD), dan rasio depth ruang tamu, ruang keluarga, serta dapur, lalu bandingkan dengan Basic Depth Ratio (BDR) rumah Jawa dasar. Satu proyek dapat memuat banyak rumah.</p>
   ${banner(JH.sample,"tiga rumah ilustratif")}
-  <div class="card"><div class="row"><h2>Rumah</h2><span class="spacer"></span><button class="btn small" id="bJhAddH">+ Rumah</button><button class="btn small" id="bJhDelH">Hapus rumah ini</button></div>
+  <div class="card"><div class="row"><h2>Rumah</h2><span class="spacer"></span>${linkOk()?`<button class="btn small" id="bJhToApp" title="Buka graf ruang rumah ini sebagai denah 2D/3D di aplikasi Javanese House">⇄ Denah 2D/3D di Javanese House</button>`:""}<button class="btn small" id="bJhAddH">+ Rumah</button><button class="btn small" id="bJhDelH">Hapus rumah ini</button></div>
    <div class="row" style="margin-top:8px;flex-wrap:wrap;gap:6px">${JH.houses.map((x,i)=>`<button class="tabx ${x.id===h.id?"on":""}" data-jhh="${x.id}">H${i+1} ${esc(x.name||"(tanpa nama)")}</button>`).join("")}</div>
    <div class="grid2" style="margin-top:10px"><label class="fld">Nama rumah<input data-fid="jhn" data-jhf="name" value="${esc(h.name)}" placeholder="contoh: Rumah Bapak Sastro"></label><label class="fld">Alamat / lokasi<input data-fid="jha" data-jhf="addr" value="${esc(h.addr)}" placeholder="contoh: Kotagede, Yogyakarta"></label></div>
    <div class="row" style="margin-top:8px"><span class="note">Cara menentukan depth:</span><span class="rate"><button data-jhmode="graph" class="${h.mode!=="level"?"on":""}" style="width:auto;padding:0 10px">Dari hubungan akses</button><button data-jhmode="level" class="${h.mode==="level"?"on":""}" style="width:auto;padding:0 10px">Level diisi langsung</button></span></div></div>
@@ -3985,6 +3986,76 @@ document.addEventListener("click",e=>{const b=e.target.closest("#bOtIfcUndo"); i
 window.__ifcParse=ifcParse; window.__ifcToEnvelope=ifcToEnvelope; window.__ifcToSpaces=ifcToSpaces; window.__ifcToWallLines=ifcToWallLines;
 window.__ifcImportText=(kind,text,name)=>{const M=ifcParse(text); IFCLAST={name,info:ifcInfo(M)}; return M;};
 
+/* ---------- Tautan Javanese House & Ruang Syntax (localStorage satu origin) ---------- */
+function linkOk(){return /^https?:$/.test(location.protocol)&&/\/apps\/studio-keputusan\//.test(location.pathname);}
+function linkUrl(k){return new URL(k==="jh"?"../javanese-house/index.html":"../ruangsyntax-web/index.html",location.href).href;}
+const LINK_NAME={"javanese-house":"Javanese House","ruang-syntax":"Ruang Syntax"};
+let LINKIN=null, LINKSEL={};
+function linkBoot(){ if(!linkOk())return; const f=new URLSearchParams(location.search).get("from"); if(f!=="jh"&&f!=="rs")return;
+  let d=null; try{d=JSON.parse(localStorage.getItem("pt-link-sk")||"null");}catch(e){} history.replaceState(null,"",location.pathname);
+  if(!d||!Array.isArray(d.design)){setTimeout(()=>toast("Data tautan tidak ditemukan"),300); return;}
+  LINKIN=d; LINKSEL={}; d.design.forEach((x,i)=>LINKSEL[i]=x.pick!==false); S.step="home";}
+function linkOpen(k,q){const u=linkUrl(k)+(q||""), w=window.open(u,k==="jh"?"javanese-house":"ruang-syntax"); if(!w)location.href=u;}
+function renderLinkIn(){const box=$("#linkIn"); if(!box)return; if(!linkOk()){box.innerHTML=""; return;}
+  if(!LINKIN){box.innerHTML=`<div class="card"><h2>⇄ Terhubung dengan Javanese House &amp; Ruang Syntax</h2>
+   <p class="note">Di <a href="${linkUrl("jh")}" target="javanese-house">Javanese House</a> (denah 2D/3D, justified graph) atau <a href="${linkUrl("rs")}" target="ruang-syntax">Ruang Syntax</a> (VGA, axial, segmen, UNA), pilih <b>⇄ Kirim ke Studio Keputusan</b>. Indikator konfigurasi ruang menjadi kriteria TOPSIS untuk membandingkan alternatif desain; graf ruangnya dapat dihitung di modul Javanese House Depth atau Space Syntax. Sebaliknya, graf ruang dari kedua modul itu dapat dibuka sebagai denah di Javanese House.</p></div>`; return;}
+  const d=LINKIN, src=LINK_NAME[d.from]||d.from, nR=(d.rooms||[]).length, rm=(d.roomMetrics||[]).length;
+  box.innerHTML=`<div class="card" style="border:2px solid var(--petrol)"><div class="row"><h2>⇄ Data dari ${esc(src)}: ${esc(d.name||"(tanpa nama)")}</h2><span class="spacer"></span><button class="btn small" id="bLinkBack">← Kembali ke ${esc(src)}</button><button class="icon" id="bLinkX" aria-label="Tutup">✕</button></div>
+   <p class="note">${nR} ruang · ${(d.links||[]).length} hubungan · ${d.design.length} indikator desain${d.note?` · ${esc(d.note)}`:""}. Centang indikator yang dijadikan kriteria, tetapkan jenisnya, lalu pilih tujuan.</p>
+   <div class="scroll" style="border:0;margin-top:6px"><table class="plain"><thead><tr><th></th><th>Indikator</th><th>Nilai</th><th>Jenis kriteria</th></tr></thead><tbody>${d.design.map((x,i)=>`<tr><td><input type="checkbox" data-lks="${i}" ${LINKSEL[i]?"checked":""} aria-label="Pakai ${esc(x.label)}"></td><td>${esc(x.label)}${x.group?` <span class="note">· ${esc(x.group)}</span>`:""}</td><td class="m">${fmt(x.value,4)}</td><td><span class="rate"><button data-lkt="${i}" data-v="b" class="${x.type!=="c"?"on":""}" style="width:auto;padding:0 8px">Benefit ↑</button><button data-lkt="${i}" data-v="c" class="${x.type==="c"?"on":""}" style="width:auto;padding:0 8px">Cost ↓</button></span></td></tr>`).join("")}</tbody></table></div>
+   <p class="note">Benefit atau cost bergantung tujuan desain: untuk privasi, depth yang tinggi justru menguntungkan; untuk keterbukaan dan pergerakan, integrasi yang tinggi menguntungkan. Periksa jenis kriteria sebelum menghitung.</p>
+   <div class="row" style="flex-wrap:wrap;gap:6px;margin-top:8px">
+    <button class="btn primary small" id="bLinkTpAlt">Tambahkan sebagai alternatif desain (TOPSIS)</button>
+    ${nR>=2&&rm?`<button class="btn small" id="bLinkTpRooms">Ruang sebagai alternatif (TOPSIS, ${rm} kriteria)</button>`:""}
+    ${nR>=2?`<button class="btn small" id="bLinkJh">Muat ke Javanese House Depth</button><button class="btn small" id="bLinkSx">Muat ke Space Syntax (graf convex)</button>`:""}</div></div>`;}
+const LINK_CAT={publik:"TE",tamu:"LR",keluarga:"FR",tidur:"BR"}, LINK_FN={TE:"publik",LR:"tamu",FR:"keluarga",K:"servis",BR:"tidur",BA:"servis",ST:"sakral",WH:"servis",OT:"lain"};
+function linkGraph(d){const n=d.rooms.length, adj=[...Array(n)].map(()=>[]), out=[];
+  (d.links||[]).forEach(([a,b])=>{if(a<0&&b>=0&&b<n)out.push(b); else if(b<0&&a>=0&&a<n)out.push(a); else if(a>=0&&b>=0&&a<n&&b<n&&a!==b){adj[a].push(b); adj[b].push(a);}});
+  return {n,adj,out:[...new Set(out)]};}
+function linkTpAlt(){const d=LINKIN, pick=d.design.filter((x,i)=>LINKSEL[i]&&Number.isFinite(x.value)); if(!pick.length)return toast("Pilih minimal satu indikator bernilai");
+  if(TP.sample){TP={...tpBlank(),crit:[],alts:[]};} TP.crit=TP.crit.filter(c=>c.name.trim()); TP.alts=TP.alts.filter(a=>a.name.trim());
+  const nm=`${d.name||"Desain"} (${LINK_NAME[d.from]||d.from})`; let a=TP.alts.find(x=>x.name===nm); const isNew=!a; if(!a){a={id:newId(),name:nm}; TP.alts.push(a);}
+  pick.forEach(x=>{let c=TP.crit.find(c=>c.name===x.label); if(!c){c={id:newId(),name:x.label,w:"",type:x.type==="c"?"c":"b"}; TP.crit.push(c);} TP.x[a.id+"|"+c.id]=Number(x.value.toPrecision(6));});
+  TP.sample=false; persistTP(); updateStatus(); go("tp-in");
+  toast(`${isNew?"Alternatif ditambahkan":"Alternatif diperbarui"}: ${nm}. ${TP.alts.length<2?"Kirim desain lain dari aplikasi tautan untuk dibandingkan.":TP.alts.length+" alternatif siap dibandingkan."}`);}
+function linkTpRooms(b){const d=LINKIN; if(tpA().length&&!TP.sample&&!confirmArm(b,"Klik lagi: ganti isian TOPSIS?",b.textContent))return;
+  const C=d.roomMetrics.map(m=>({id:newId(),name:m.label,w:"",type:m.type==="c"?"c":"b"})), A=d.rooms.map(r=>({id:newId(),name:r.name})), x={};
+  A.forEach((a,i)=>C.forEach((c,j)=>{const v=(d.roomValues[i]||[])[j]; if(Number.isFinite(v))x[a.id+"|"+c.id]=Number(v.toPrecision(6));}));
+  TP={crit:C,alts:A,x,sample:false}; persistTP(); updateStatus(); go("tp-in"); toast(`${A.length} ruang × ${C.length} kriteria dari ${LINK_NAME[d.from]||d.from}`);}
+function linkJh(){const d=LINKIN, g=linkGraph(d), rooms=d.rooms.map(r=>{const c=jhGuess(r.name); return {id:newId(),name:r.name,cat:c==="OT"&&LINK_CAT[r.fn]?LINK_CAT[r.fn]:c,par:"",lvl:""};});
+  let rootI; const all=[...rooms]; if(g.out.length===1)rootI=g.out[0]; else if(g.out.length>1){all.unshift({id:newId(),name:"Luar (akses)",cat:"OT",par:"",lvl:""}); rootI=-1;} else rootI=0;
+  const par=Array(g.n).fill(-2), q=[]; if(rootI===-1)g.out.forEach(i=>{par[i]=-1; q.push(i);}); else{par[rootI]=-1; q.push(rootI);}
+  while(q.length){const u=q.shift(); g.adj[u].forEach(v=>{if(par[v]===-2){par[v]=u; q.push(v);}});}
+  rooms.forEach((r,i)=>{if(par[i]>=0)r.par=rooms[par[i]].id; else if(par[i]===-1&&rootI===-1)r.par=all[0].id;});
+  const h={id:newId(),name:d.name||"Rumah",addr:"",mode:"graph",root:rootI===-1?all[0].id:rooms[rootI].id,rooms:all}; const cur=jhCur();
+  if(JH.sample||!jhRooms(cur).length)JH.houses=JH.houses.filter(x=>x!==cur&&!JH.sample); JH.houses.push(h); JH.cur=h.id; JH.sample=false; persistJH(); updateStatus(); go("jh-in");
+  const E=g.adj.reduce((s,a)=>s+a.length,0)/2, lost=par.filter(p=>p===-2).length;
+  toast(`${g.n} ruang dimuat${E+g.out.length>g.n?"; hubungan berpola cincin disederhanakan menjadi pohon akses (depth tetap)":""}${lost?`; ${lost} ruang tidak terhubung`:""}`);}
+function linkSx(b){const d=LINKIN, g=linkGraph(d); if(sxSp().length&&!SX.sample&&!confirmArm(b,"Klik lagi: ganti graf Space Syntax?",b.textContent))return;
+  const sp=d.rooms.map(r=>({id:newId(),name:r.name})), L={}; for(let i=0;i<g.n;i++)g.adj[i].forEach(j=>{if(i<j)L[pairKey(sp[i].id,sp[j].id,false)]=1;});
+  let root=sp[0].id; if(g.out.length){const o={id:newId(),name:"Luar (carrier)"}; g.out.forEach(i=>L[pairKey(o.id,sp[i].id,false)]=1); sp.unshift(o); root=o.id;}
+  SX={...SX,mode:"convex",spaces:sp,links:L,root,sample:false}; persistSX(); updateStatus(); go("sx-in"); toast(`${d.rooms.length} ruang dan ${Object.keys(L).length} hubungan dimuat sebagai graf convex`);}
+function linkSendJh(name,rooms,links){ if(!linkOk())return toast("Tautan hanya tersedia pada versi web di pindotutuko.id"); if(rooms.length<2)return toast("Isi minimal dua ruang");
+  try{localStorage.setItem("pt-link-jh",JSON.stringify({from:"studio-keputusan",created:Date.now(),graph:{name,rooms,links}}));}catch(e){return toast("Penyimpanan peramban tidak tersedia");}
+  linkOpen("jh","?from=sk"); toast("Graf ruang dibuka sebagai denah di Javanese House");}
+const LINK_OUTER=/^(luar|carrier|exterior|outside|jalan)\b/i;
+function linkFromJhouse(){const h=jhCur(), all=jhRooms(h), rt0=all.find(r=>r.id===h.root), outer=h.mode!=="level"&&rt0&&LINK_OUTER.test(rt0.name)?rt0.id:null;
+  const R=all.filter(r=>r.id!==outer), ix=Object.fromEntries(R.map((r,i)=>[r.id,i])), links=[];
+  if(h.mode==="level"){R.forEach((r,i)=>{const L=parseInt(r.lvl,10); if(L===0)links.push([-1,i]); else if(L>0){const p=R.findIndex(q=>parseInt(q.lvl,10)===L-1); if(p>=0)links.push([p,i]);}});}
+  else{R.forEach((r,i)=>{if(outer&&r.par===outer)links.push([-1,i]); else{const j=ix[r.par]; if(j!==undefined&&j!==i)links.push([j,i]);}}); if(!outer&&R.length)links.push([-1,ix[h.root]!==undefined?ix[h.root]:0]);}
+  linkSendJh(h.name||"Rumah",R.map(r=>({name:r.name,fn:LINK_FN[r.cat]||"lain"})),links);}
+function linkFromSx(){const sp=sxSp(), ix=Object.fromEntries(sp.map((s,i)=>[s.id,i])), rt=sp.find(s=>s.id===SX.root), outer=rt&&LINK_OUTER.test(rt.name)?rt.id:null;
+  const keep=sp.filter(s=>s.id!==outer), kx=Object.fromEntries(keep.map((s,i)=>[s.id,i])), links=[];
+  Object.keys(SX.links).forEach(k=>{const [a,b]=k.split(">"); if(ix[a]===undefined||ix[b]===undefined)return; const A=a===outer?-1:kx[a], B=b===outer?-1:kx[b]; links.push([A,B]);});
+  if(!outer&&rt&&kx[rt.id]!==undefined)links.push([-1,kx[rt.id]]);
+  linkSendJh("Graf Space Syntax",keep.map(s=>({name:s.name,fn:"lain"})),links);}
+document.addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return;
+  if(b.dataset.lkt&&LINKIN){LINKIN.design[+b.dataset.lkt].type=b.dataset.v; renderLinkIn(); return;}
+  switch(b.id){case "bLinkBack": if(LINKIN)linkOpen(LINKIN.from==="ruang-syntax"?"rs":"jh"); break; case "bLinkX": LINKIN=null; renderLinkIn(); break;
+   case "bLinkTpAlt": linkTpAlt(); break; case "bLinkTpRooms": linkTpRooms(b); break; case "bLinkJh": linkJh(); break; case "bLinkSx": linkSx(b); break;
+   case "bJhToApp": linkFromJhouse(); break; case "bSxToApp": linkFromSx(); break;}});
+document.addEventListener("change",e=>{const t=e.target; if(t.dataset&&t.dataset.lks!==undefined){LINKSEL[+t.dataset.lks]=t.checked;}});
+
 /* ---------- Sources & references page ---------- */
 const EXTRA_REFS={
   stat:[`Student. (1908). The probable error of a mean. <i>Biometrika</i>, 6(1), 1–25.`,`Welch, B. L. (1947). The generalization of 'Student's' problem when several different population variances are involved. <i>Biometrika</i>, 34(1–2), 28–35.`,`Levene, H. (1960). Robust tests for equality of variances. Dalam I. Olkin (Ed.), <i>Contributions to Probability and Statistics</i> (hlm. 278–292). Stanford University Press.`,`Royston, P. (1995). Remark AS R94: A remark on algorithm AS 181: The W-test for normality. <i>Applied Statistics</i>, 44(4), 547–551.`,`Pearson, K. (1900). On the criterion that a given system of deviations from the probable in the case of a correlated system of variables is such that it can be reasonably supposed to have arisen from random sampling. <i>Philosophical Magazine</i>, 50(302), 157–175.`,`Mann, H. B., &amp; Whitney, D. R. (1947). On a test of whether one of two random variables is stochastically larger than the other. <i>Annals of Mathematical Statistics</i>, 18(1), 50–60.`,`Wilcoxon, F. (1945). Individual comparisons by ranking methods. <i>Biometrics Bulletin</i>, 1(6), 80–83.`,`Kruskal, W. H., &amp; Wallis, W. A. (1952). Use of ranks in one-criterion variance analysis. <i>Journal of the American Statistical Association</i>, 47(260), 583–621.`,`Durbin, J., &amp; Watson, G. S. (1950). Testing for serial correlation in least squares regression. I. <i>Biometrika</i>, 37(3/4), 409–428.`,`Kaiser, H. F. (1958). The varimax criterion for analytic rotation in factor analysis. <i>Psychometrika</i>, 23(3), 187–200.`,`Kaiser, H. F. (1974). An index of factorial simplicity. <i>Psychometrika</i>, 39(1), 31–36.`],
@@ -4074,14 +4145,14 @@ const METHODS=[
 const HS={}; let homeCat="all";
 function fillModSel(){const sel=$("#modSel"); sel.innerHTML=`<option value="home">Pilih metode…</option><optgroup label="Lintas metode"><option value="addons">Kelola add-on…</option><option value="synth">Sintesis &amp; komparasi</option><option value="report">Laporan gabungan</option><option value="refs">Sumber &amp; referensi</option><option value="about">Tentang aplikasi</option></optgroup>`+CATS.map(c=>`<optgroup label="${esc(c.name)}">${METHODS.filter(m=>m.c[0]===c.id).map(m=>`<option value="${m.k}" ${methodReady(m)?"":"disabled"}>${esc(m.n)}${methodReady(m)?"":" (add-on tidak aktif)"}</option>`).join("")}</optgroup>`).join("");}
 $("#modSel").onchange=e=>{const m=e.target.value; go(m==="home"?"home":((S.last&&S.last[m])||MODS[m][0]));};
-function renderHome(){updateStatus(); statusA(); statusB(); statusD(); statusE(); statusF(); const sa=METRICS.filter(m=>SY.sel[m.k]&&SY.sel[m.k].on).length; HS.synth=sa?sa+" ukuran dipilih":""; const nr=Object.keys(RES).filter(k=>k!=="synth"&&hasData(k)).length; HS.report=nr?nr+" metode berisi data":"Belum ada data";
+function renderHome(){renderLinkIn(); updateStatus(); statusA(); statusB(); statusD(); statusE(); statusF(); const sa=METRICS.filter(m=>SY.sel[m.k]&&SY.sel[m.k].on).length; HS.synth=sa?sa+" ukuran dipilih":""; const nr=Object.keys(RES).filter(k=>k!=="synth"&&hasData(k)).length; HS.report=nr?nr+" metode berisi data":"Belum ada data";
   $("#homeFilter").innerHTML=[`<button class="tabx ${homeCat==="all"?"on":""}" data-hcat="all">Semua rumpun</button>`,...CATS.map(c=>`<button class="tabx ${homeCat===c.id?"on":""}" data-hcat="${c.id}">${esc(c.name)}</button>`)].join("");
   const cats=homeCat==="all"?CATS:CATS.filter(c=>c.id===homeCat);
   $("#homeCats").innerHTML=`<div class="hcat"><h2>Lintas metode <small>(Cross-method) · Bandingkan hasil dan susun keputusan</small></h2><div class="mgrid"><button class="mcard" data-modgo="addons"><span class="mk">Add-on</span><b>Kelola paket analisis</b><span>Pilih profil Basic/Core atau Lengkap dan pasang manifest add-on sesuai kebutuhan.</span><span class="mst">${ADDON_LIST.filter(x=>ADD.enabled[x.id]).length} paket aktif</span></button><button class="mcard" data-modgo="synth"><span class="mk">Sintesis</span><b>Komparasi &amp; keputusan</b><span>Gabungkan ukuran dari beberapa metode untuk butir yang sama, beri bobot, dapatkan peringkat gabungan dan uji kesepakatan antarmetode (Spearman).</span><span class="mst">${esc(HS.synth||"Pilih ukuran")}</span></button><button class="mcard" data-modgo="report"><span class="mk">Laporan</span><b>Laporan gabungan</b><span>Tabel, diagram, dan rujukan semua metode yang dipakai dalam satu dokumen, siap disalin ke Word atau disimpan sebagai PDF.</span><span class="mst">${esc(HS.report||"")}</span></button><button class="mcard" data-modgo="refs"><span class="mk">Referensi</span><b>Sumber &amp; referensi</b><span>Rujukan setiap metode, pernyataan keaslian, lisensi komponen, dan cara mensitasi aplikasi.</span><span class="mst">Lihat daftar rujukan</span></button></div></div>`+cats.map(c=>{const list=METHODS.filter(m=>homeCat==="all"?m.c[0]===c.id:m.c.includes(c.id));
     return `<div class="hcat"><h2>${esc(c.name)} <small>(${esc(c.en)}) · ${esc(c.desc)}</small></h2><div class="mgrid">${list.map(m=>`<button class="mcard" ${methodReady(m)?`data-modgo="${m.k}"`:"disabled"}><span class="mk">${esc(m.n)}</span><b>${esc(m.t)}</b><span>${esc(m.d)}</span><span class="tags">${m.c.map(x=>`<i>${esc(CATS.find(y=>y.id===x).name.split(/[ ,&]/)[0])}</i>`).join("")}</span>${methodReady(m)?`<span class="mst">${esc(HS[m.k]||"Belum diisi")}</span>`:`<span class="soon">Aktifkan add-on</span>`}</button>`).join("")}</div></div>`;}).join("");}
 $("#homeFilter").addEventListener("click",e=>{const b=e.target.closest("[data-hcat]"); if(!b)return; homeCat=b.dataset.hcat; renderHome();});
 
-fillModSel(); syncAll(); go(S.step||"home"); showFirstSetup();
+linkBoot(); fillModSel(); syncAll(); go(S.step||"home"); showFirstSetup();
 })();
 </script>
 

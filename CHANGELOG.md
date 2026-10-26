@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.6.0 — 2026-10-26
+- **Tautan dengan Javanese House dan Ruang Syntax** (versi web di pindotutuko.id, satu origin, lewat localStorage):
+  - Dari Javanese House/Ruang Syntax, tombol *⇄ Studio Keputusan* mengirim indikator desain (kedalaman, integrasi, cincin, VGA, intelligibility axial, NACH/NAIN, UNA). Di beranda muncul kartu data masuk: pilih indikator, tetapkan benefit/cost, lalu tambahkan sebagai **alternatif desain TOPSIS**, jadikan **ruang sebagai alternatif TOPSIS**, atau muat graf ruangnya ke **Javanese House Depth** / **Space Syntax (convex)**.
+  - Arah balik: tombol *⇄ Denah 2D/3D di Javanese House* pada modul Javanese House Depth dan Space Syntax (convex) membuka graf ruang sebagai denah yang disusun otomatis per kedalaman.
+- Uji `tests/link.test.js`.
+
 ## 2.5.0 — 2026-10-13
 - **Impor IFC (IFC2X3/IFC4)** tanpa pustaka luar — pembaca STEP sendiri (satuan, placement, property/quantity set, material, bukaan, space boundary, sumbu dinding):
   - **OTTV · RTTV**: dinding luar (luas dari quantity set, arah hadap dari placement → 8 oktan SNI, koreksi utara sejati), jendela pada bukaan, atap (IfcSlab ROOF/IfcRoof), lapisan material (IfcMaterialLayerSet; IfcMaterialList dibaca namanya, tebal diisi pengguna), laporan per dinding, tombol batalkan impor. Aturan mengikuti EnvelopeSim; diuji sama dengan `read_ifc` EnvelopeSim pada contoh kantor dan model ArchiCAD.
