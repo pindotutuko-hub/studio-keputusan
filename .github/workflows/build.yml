@@ -21,7 +21,7 @@ jobs:
     needs: test
     strategy:
       matrix:
-        os: [windows-latest, macos-latest]
+        os: [windows-latest, macos-14]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 40
     steps:
@@ -53,7 +53,9 @@ jobs:
             dist/*.zip
 
   release:
-    needs: build
+    needs: [test, build]
+    # tetap terbit walau salah satu installer gagal/tidak mendapat mesin (mis. antrean macOS GitHub)
+    if: ${{ always() && needs.test.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
