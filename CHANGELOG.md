@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.8.0 — 2026-10-30
+- **Metode baru: Lingkungan Bangunan (gaya Ecotect)** di jalur *Ruang, bangunan & lingkungan*, tujuh langkah:
+  - **Lintasan matahari** stereografik (tanggal 21 tiap bulan + garis jam/analema), tabel posisi per jam, terbit/terbenam, panjang bayangan; 17 kota preset (Indonesia + Kanazawa) atau koordinat sendiri. Algoritma NOAA/Meeus, selisih < 0,01° terhadap NREL SPA (pvlib).
+  - **Peneduh**: overhang + sirip, HSA/VSA (Olgyay & Olgyay 1957), **topeng bayangan** pada lintasan matahari, % kaca terkena sinar per bulan × jam, kedalaman overhang minimum.
+  - **Radiasi langit cerah** pada 8 orientasi dinding + atap (Hottel 1976, Liu & Jordan 1960, model isotropik), harian, per jam, dan sepanjang tahun.
+  - **Faktor cahaya alami rata-rata** (BRE, Littlefair 1988), kriteria BS 8206-2, uji kedalaman ruang, luas kaca untuk target DF.
+  - **Kenyamanan termal PMV/PPD** (ISO 7730, cocok dengan pythermalcomfort), kategori A/B/C, peringatan rentang berlaku, **diagram psikrometrik** dengan zona |PMV| ≤ 0,5, pengaruh kecepatan udara.
+  - **Akustik ruang**: waktu dengung Sabine & Eyring per pita oktaf 125–4000 Hz.
+  - **Mawar angin** dari data tempelan (derajat atau U/TL/…/N/NE).
+- **CFD · ENVI-met · UHI** dilengkapi: tempel CSV hasil ENVI-met/CFD (kolom dikenali otomatis), MRT dari **termometer bola** (ISO 7726), **heat index** (Rothfusz 1990), grafik antarskenario.
+- **Space Syntax › VGA**: metrik **isovist** per titik (luas, keliling, radial maks/min, kekompakan, drift; Benedikt 1979); klik sel peta untuk melihat poligon isovist.
+- Glosarium bertambah 12 istilah (sun path, HSA/VSA, PMV/PPD, clo/met, isovist, MRT, dll.).
+- Angka diverifikasi terhadap pvlib dan pythermalcomfort — `tests/v28.test.js`.
+
 ## 2.7.2 — 2026-10-30
 - **Galeri video tutorial** di aplikasi: tombol 🎬 Video tutorial (beranda dan Panduan) membuka keempat video sekaligus dengan gambar sampul; bab *Video tutorial* di Panduan memuat pemutar langsung.
 
