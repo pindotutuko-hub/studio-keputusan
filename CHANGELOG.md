@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.7.1 — 2026-10-30
+- Kanvas: satu klik pada ikon metode (AHP, ISM, SWOT, …) langsung membuka formulir isiannya di bawah kanvas dan menggulir ke sana, dengan petunjuk "isi di bawah". Kartu metode menjelaskan tempat mengisi data.
+- Situs: lencana "Data dari Lensa Preseden" kini punya tombol ✕ (pt-bridge.js di tema situs).
+
 ## 2.7.0 — 2026-10-29
 - **Beranda baru menurut tujuan analisis**: 10 jalur belajar (memahami konteks → menggali pendapat → memetakan hubungan → membobot & memilih → ketidakpastian & kelayakan → statistik → penggalian data → ruang & bangunan → rekayasa → melaporkan), peta alur keputusan, kotak cari, label tingkat (Dasar/Menengah/Lanjut), dan **pemandu memilih metode**. Tampilan lama per rumpun ilmu tetap tersedia.
 - **Panduan metode** di setiap metode: pertanyaan yang dijawab, contoh pemakaian, diagram Masukan → Proses → Keluaran, **animasi cara kerja**, tautan ke panduan/PDF, video, dan ekspor/impor.
