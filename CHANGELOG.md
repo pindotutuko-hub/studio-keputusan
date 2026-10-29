@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.7.2 — 2026-10-30
+- **Galeri video tutorial** di aplikasi: tombol 🎬 Video tutorial (beranda dan Panduan) membuka keempat video sekaligus dengan gambar sampul; bab *Video tutorial* di Panduan memuat pemutar langsung.
+
 ## 2.7.1 — 2026-10-30
 - Kanvas: satu klik pada ikon metode (AHP, ISM, SWOT, …) langsung membuka formulir isiannya di bawah kanvas dan menggulir ke sana, dengan petunjuk "isi di bawah". Kartu metode menjelaskan tempat mengisi data.
 - Situs: lencana "Data dari Lensa Preseden" kini punya tombol ✕ (pt-bridge.js di tema situs).
