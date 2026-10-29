@@ -23,6 +23,7 @@ jobs:
       matrix:
         os: [windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -58,18 +59,29 @@ jobs:
       - uses: actions/checkout@v4
       - id: v
         run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Susun catatan rilis (bahasa awam + isi CHANGELOG versi ini)
+        run: |
+          V=${{ steps.v.outputs.version }}
+          {
+            echo "# Studio Keputusan 2 versi $V"
+            echo
+            echo "Aplikasi analisis dan pengambilan keputusan untuk dosen, mahasiswa, dan peneliti (Windows dan Mac)."
+            echo
+            sed "s/<versi>/$V/g" .github/release-guide.md
+            echo
+            echo "## Apa yang baru di versi $V"
+            awk -v v="## $V" 'index($0,v)==1{f=1;next} /^## [0-9]/{if(f)exit} f' CHANGELOG.md
+            echo
+            echo "_Dibangun otomatis dari commit ${{ github.sha }}._"
+          } > release-body.md
       - uses: actions/download-artifact@v4
         with: { path: out, merge-multiple: true }
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.v.outputs.version }}
           name: Studio Keputusan v${{ steps.v.outputs.version }}
-          body: |
-            Installer otomatis dari commit ${{ github.sha }}.
-            - Windows: `Studio Keputusan Setup *.exe` (installer) atau `*-win.zip` (portabel)
-            - macOS: `*.dmg` (universal, Intel & Apple Silicon). Belum ditandatangani Apple: klik kanan → Open saat pertama dibuka.
-            - Panduan penggunaan versi 2.4.0 dan manifest add-on lengkap disertakan pada aset rilis.
+          body_path: release-body.md
           files: |
             out/*
-            docs/Panduan-Studio-Keputusan-2-v2.4.0.pdf
+            docs/Panduan-Studio-Keputusan-2-v${{ steps.v.outputs.version }}.pdf
             addons/studio-keputusan-complete.skaddon.json

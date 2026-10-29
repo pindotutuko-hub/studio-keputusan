@@ -92,3 +92,17 @@ Naikkan `version` di `package.json` → push ke `main` → GitHub Actions menjal
 - CB-SEM: ML Wishart (S/(N−1), χ² = (N−1)F), SE dari informasi Fisher harapan; semopy memakai N sehingga χ² dan SE berbeda faktor N/(N−1).
 
 Angka acuan di `tests/smoke.test.js` sudah dicocokkan dengan NetworkX, Shapely, SciPy, statsmodels, pingouin, factor_analyzer, dan semopy.
+
+## v2.7 — blok `/* ===== v2.7 BEGIN ===== */` di app.html
+
+| Bagian | Isi |
+|---|---|
+| `V27` | Mesin murni: MCDM (SAW, WP, TOPSIS, VIKOR, PROMETHEE II, MOORA), bobot Entropy/CRITIC, BWM (`V27.lp` simpleks dua fase), `uncert`, data mining (`kmeans`, `silhouette`, `hclust`, `cutTree`, `pca`, `learners`, `evaluate`, `rankFeatures`). |
+| `LGROUPS`, `MINFO`, `GLOSS` | Jalur belajar, info panduan per metode (pertanyaan, masukan, proses, keluaran, tingkat), glosarium (istilah, definisi, URL sumber). |
+| `CH` | Grafik SVG bersama (hbars, bars, hist, box, scatter, lines, heat, qq) — warna lewat token `--c1..--c8`. |
+| `regModule(k, steps, railBtns, meta)` | Mendaftarkan modul baru: MODS/STEPS, tombol rail, section, kartu METHODS. Render langkah didaftarkan di `V27_NEW[step]`. |
+| `regStore({k,label,get,set,blank,has,extra})` | **Wajib untuk analisis baru** agar otomatis ikut Pusat ekspor–impor, menu ⇅, berkas proyek (`extra:true`), dan paket metode. |
+| `WT` / `OW` | Widget kanvas & keadaan kanvas. Metode Studio menjadi widget `m:<k>`; pengiriman antarmetode di `xferFor()`. |
+| `manSections()` / `window.__manualDoc()` | Isi panduan; PDF dibangun dengan `node tools/build-manual.js` (mengisi `MAN_PAGES`). |
+
+Langkah menambah analisis baru (v2.7+): tulis modul seperti pola di atas → `regModule(...)` → `V27_NEW[...]` → `MINFO[k]` (panduan) → `CREDIT[k]` (rujukan terverifikasi) → `regStore({...})` → bila ada tabel hasil, `TSVX[key]` + `XLSHEETS.push([k, judul, key])` → uji di `tests/v27.test.js` → `node tools/build-manual.js` agar panduan/PDF ikut diperbarui.

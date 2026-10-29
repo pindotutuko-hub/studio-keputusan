@@ -11,7 +11,7 @@ function createWindow() {
   });
   win.loadFile(path.join(__dirname, 'src', 'index.html'));
   // open external links (DOI) in the default browser
-  win.webContents.setWindowOpenHandler(({ url }) => { if (/^https?:/.test(url)) shell.openExternal(url); return { action: 'deny' }; });
+  win.webContents.setWindowOpenHandler(({ url }) => { if (/^https?:/.test(url)) shell.openExternal(url); else if (/^file:.*\.(pdf|mp4)(#.*)?$/i.test(url)) shell.openPath(require('url').fileURLToPath(url.replace(/#.*$/, ''))); return { action: 'deny' }; });
   win.webContents.on('will-navigate', (e, url) => { if (!url.startsWith('file:')) { e.preventDefault(); shell.openExternal(url); } });
 }
 
@@ -20,7 +20,8 @@ const FILTERS = {
   png: [{ name: 'Gambar PNG', extensions: ['png'] }],
   csv: [{ name: 'CSV (pemisah titik koma)', extensions: ['csv'] }],
   geojson: [{ name: 'GeoJSON', extensions: ['geojson'] }],
-  xlsx: [{ name: 'Buku kerja Excel', extensions: ['xlsx'] }]
+  xlsx: [{ name: 'Buku kerja Excel', extensions: ['xlsx'] }],
+  svg: [{ name: 'Gambar SVG', extensions: ['svg'] }]
 };
 
 ipcMain.handle('ism:save', async (e, { name, data, encoding, kind }) => {

@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.7.0 — 2026-10-29
+- **Beranda baru menurut tujuan analisis**: 10 jalur belajar (memahami konteks → menggali pendapat → memetakan hubungan → membobot & memilih → ketidakpastian & kelayakan → statistik → penggalian data → ruang & bangunan → rekayasa → melaporkan), peta alur keputusan, kotak cari, label tingkat (Dasar/Menengah/Lanjut), dan **pemandu memilih metode**. Tampilan lama per rumpun ilmu tetap tersedia.
+- **Panduan metode** di setiap metode: pertanyaan yang dijawab, contoh pemakaian, diagram Masukan → Proses → Keluaran, **animasi cara kerja**, tautan ke panduan/PDF, video, dan ekspor/impor.
+- **Metode baru**
+  - **MCDM Lab**: SAW, WP, TOPSIS, VIKOR, PROMETHEE II (usual/linear), MOORA; bobot Manual, AHP, **Entropy**, **CRITIC**, **BWM** (model linear Rezaei 2016, simpleks); peringkat konsensus, Spearman antarmetode, **uji sensitivitas bobot**.
+  - **Keputusan dalam ketidakpastian**: maximax, maximin, Hurwicz (+ sensitivitas α), Laplace, minimax regret, EMV, EVPI, **pohon keputusan**.
+  - **Analisis kuadran (Diagram Kartesius)**: variabel X/Y bebas, pembagi rerata/median/acuan, nomor & nama kuadran bebas; preset IPA (Martilla & James 1977) dan Tipologi Klassen (Klaassen 1965); narasi temuan otomatis.
+  - **Statistik › Visualize**: histogram, box plot, scatter + regresi, diagram batang, heatmap korelasi, Q-Q plot (unduh SVG/PNG).
+- **Kanvas alur kerja gaya Orange Data Mining** (kredit: Demšar dkk., 2013, JMLR 14): widget Data, Data Table, Select Columns, Impute, Normalize, Distributions, Box Plot, Scatter Plot, Correlations, k-Means (k otomatis via silhouette), Hierarchical Clustering (dendrogram), PCA, kNN, Tree (CART, pohon digambar), Naive Bayes, Linear Regression, Test & Score (validasi silang berstrata), Confusion Matrix, Rank; plus **ikon semua metode Studio** yang bisa ditarik, disambung (Ambil: bobot AHP → TOPSIS, data → dataset/kuadran/MCDM, dst.), dan dibuka langsung di kanvas termasuk tab **Tabel & grafik** dan Laporan. Template: klasterisasi, klasifikasi, eksplorasi, alur keputusan, alur masalah, alur survei.
+- **Pusat ekspor–impor**: proyek lengkap, paket metode terpilih (.json), Excel per metode/semua, CSV, grafik SVG/PNG; impor .json dengan pilihan metode, impor tabel .xlsx/.csv ke dataset, MCDM, TOPSIS, kuadran, payoff, atau kanvas. Modul baru otomatis ikut lewat `regStore()`. Menu ⇅ di setiap metode.
+- **Glosarium pop-up**: 95 istilah ditandai otomatis di halaman metode, definisi singkat + tautan sumber; halaman Glosarium yang bisa dicari.
+- **Panduan (manual)** di aplikasi + **PDF** (`docs/Panduan-Studio-Keputusan-2-v2.7.0.pdf`), dengan tautan langsung ke halaman PDF tiap bab; bab *Belajar statistik* (memilih uji).
+- **4 video tutorial** di aplikasi (`src/video/`).
+- Kredit: Contributor **You Ari Faeni** di kiri bawah menu. Lencana integrasi situs dipindah ke kanan bawah agar kredit tidak tertutup.
+- Catatan rilis GitHub kini berbahasa awam (unduh yang mana, cara membuka pertama kali).
+- Angka baru diverifikasi terhadap NumPy/SciPy (linprog, linkage) dan scikit-learn (KMeans, silhouette, PCA, GaussianNB, DecisionTree, KNN, f_classif) — `tests/v27.test.js`.
+
 ## 2.6.0 — 2026-10-26
 - **Tautan dengan Javanese House dan Ruang Syntax** (versi web di pindotutuko.id, satu origin, lewat localStorage):
   - Dari Javanese House/Ruang Syntax, tombol *⇄ Studio Keputusan* mengirim indikator desain (kedalaman, integrasi, cincin, VGA, intelligibility axial, NACH/NAIN, UNA). Di beranda muncul kartu data masuk: pilih indikator, tetapkan benefit/cost, lalu tambahkan sebagai **alternatif desain TOPSIS**, jadikan **ruang sebagai alternatif TOPSIS**, atau muat graf ruangnya ke **Javanese House Depth** / **Space Syntax (convex)**.
