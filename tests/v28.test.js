@@ -45,6 +45,9 @@ setTimeout(() => {
   step('micro-res'); assert($('#microCh svg'));
   // VGA: metrik isovist ikut dihitung
   go('syntax'); step('sx-in'); click('[data-sxmode="vga"]'); click('#bSxSample'); step('sx-res'); assert(d.querySelector('#sxRes [data-vgi]')); d.querySelector('#sxRes [data-vgi]').dispatchEvent(new w.MouseEvent('click',{bubbles:true})); assert($('#sxRes polygon'));
+  // tampilan sederhana/lanjutan & kanvas layar penuh
+  click('header .uiseg [data-uim="sederhana"]'); assert(d.body.classList.contains('ui-simple')); click('header .uiseg [data-uim="lanjutan"]'); assert(!d.body.classList.contains('ui-simple'));
+  go('orange'); click('#bOwFull'); assert($('section[data-sec="ow-canvas"]').classList.contains('owfull')); assert($('#owEmbed')); click('#bOwFull'); assert(!$('section[data-sec="ow-canvas"]').classList.contains('owfull'));
   assert.deepStrictEqual(errs, []);
   console.log('v28 OK');
 }, 300);

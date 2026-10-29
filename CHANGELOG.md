@@ -11,6 +11,8 @@
   - **Mawar angin** dari data tempelan (derajat atau U/TL/…/N/NE).
 - **CFD · ENVI-met · UHI** dilengkapi: tempel CSV hasil ENVI-met/CFD (kolom dikenali otomatis), MRT dari **termometer bola** (ISO 7726), **heat index** (Rothfusz 1990), grafik antarskenario.
 - **Space Syntax › VGA**: metrik **isovist** per titik (luas, keliling, radial maks/min, kekompakan, drift; Benedikt 1979); klik sel peta untuk melihat poligon isovist.
+- **Dua pilihan tampilan: Sederhana dan Lanjutan** (tombol di kepala halaman dan beranda). Sederhana menampilkan metode tingkat Dasar–Menengah dan menu ringkas; Lanjutan menampilkan semuanya. Pilihan diingat.
+- **Kanvas layar penuh** (⛶): kanvas di kiri, isian & hasil metode di panel kanan; Esc untuk keluar.
 - Glosarium bertambah 12 istilah (sun path, HSA/VSA, PMV/PPD, clo/met, isovist, MRT, dll.).
 - Angka diverifikasi terhadap pvlib dan pythermalcomfort — `tests/v28.test.js`.
 

@@ -471,6 +471,18 @@ a.btn{text-decoration:none;color:inherit;display:inline-flex;align-items:center}
 #ptb-chip{left:auto!important;right:14px!important;bottom:64px!important}
 #ptb{left:auto!important;right:14px!important;bottom:110px!important}
 @media (max-width:820px){#ptb-chip{bottom:124px!important}#ptb{bottom:170px!important}}
+
+/* v2.8: tampilan Sederhana/Lanjutan & kanvas layar penuh */
+body.ui-simple .modpick [data-modgo="addons"],body.ui-simple .modpick [data-modgo="refs"],body.ui-simple .modpick [data-modgo="about"],body.ui-simple .modpick [data-modgo="io"],body.ui-simple .modpick [data-modgo="gloss"],body.ui-simple .qa1[data-modgo="io"],body.ui-simple .qa1[data-modgo="gloss"],body.ui-simple .mcard[data-lvl="3"],body.ui-simple #homeV27 .pathwrap,body.ui-simple #homeV27 .pathwrap+*,body.ui-simple .credit #creditRef,body.ui-simple .credit .k:first-child,body.ui-simple .owadv{display:none!important}
+body.ui-simple #homeV27 .card:has(.pathwrap){display:none}
+.uiseg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}.uiseg button{border:0;background:transparent;color:inherit;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer}.uiseg button.on{background:var(--petrol);color:var(--sheet)}
+header.top .uiseg{border-color:rgba(255,255,255,.35)}header.top .uiseg button.on{background:var(--sheet);color:var(--petrol)}
+section.owfull{position:fixed;inset:0;z-index:950;background:var(--paper);display:grid!important;grid-template-columns:minmax(0,1.45fr) minmax(360px,1fr);gap:12px;padding:10px 14px;overflow:hidden}
+section.owfull>.modbox,section.owfull>#owEmbed{overflow:auto;height:calc(100vh - 20px);margin:0}
+section.owfull .lede{display:none}section.owfull .owcredit{font-size:11.5px;padding:6px 10px}section.owfull .card{padding:10px 12px}section.owfull h1{font-size:20px;margin:0 0 6px}
+section.owfull .owlay{grid-template-columns:200px minmax(0,1fr)}section.owfull .owpal{max-height:calc(100vh - 170px);overflow:auto}
+section.owfull>#owEmbed:empty::before{content:"Klik ikon metode di kanvas untuk membuka isian dan hasilnya di panel ini.";display:block;padding:24px;color:var(--muted);border:1px dashed var(--line);border-radius:12px;margin-top:40px}
+@media (max-width:980px){section.owfull{grid-template-columns:1fr;overflow:auto}section.owfull>.modbox,section.owfull>#owEmbed{height:auto;overflow:visible}}
 </style>
 
 <header class="top">
@@ -1007,7 +1019,7 @@ a.btn{text-decoration:none;color:inherit;display:inline-flex;align-items:center}
 <script>
 (function(){
 "use strict";
-const APP_VERSION="2.7.2"; window.__APP_VERSION=APP_VERSION;
+const APP_VERSION="2.8.0"; window.__APP_VERSION=APP_VERSION;
 const LS_KEY="ism-studio-v1";
 const desktop = typeof window.ismDesktop==="object" && window.ismDesktop;
 if(desktop) document.documentElement.classList.add("is-desktop");
@@ -4730,7 +4742,7 @@ function openVideoGallery(){let m=$("#vidModal"); if(m)m.remove(); m=document.cr
 let HOMEV=loadK("sk-homeview-v1")||"tujuan"; let homeQ="";
 const lvlBadge=l=>`<span class="lvl l${l}">${LVL[l]}</span>`;
 function mcardV27(m){const I=MINFO[m.k]||{}, ready=methodReady(m);
-  return `<button class="mcard v27" ${ready?`data-modgo="${m.k}"`:"disabled"} data-q="${esc((m.n+" "+m.t+" "+m.d+" "+(I.q||"")+" "+(I.use||"")).toLowerCase())}"><span class="row" style="gap:6px"><span class="mk">${esc(m.n)}</span><span class="spacer"></span>${I.lvl?lvlBadge(I.lvl):""}</span><b>${esc(I.q||m.t)}</b><span>${esc(m.d)}</span>
+  return `<button class="mcard v27" data-lvl="${I.lvl||1}" ${ready?`data-modgo="${m.k}"`:"disabled"} data-q="${esc((m.n+" "+m.t+" "+m.d+" "+(I.q||"")+" "+(I.use||"")).toLowerCase())}"><span class="row" style="gap:6px"><span class="mk">${esc(m.n)}</span><span class="spacer"></span>${I.lvl?lvlBadge(I.lvl):""}</span><b>${esc(I.q||m.t)}</b><span>${esc(m.d)}</span>
    ${I.inp?`<span class="io"><i>Masukan</i> ${esc(I.inp[0])}</span><span class="io"><i>Keluaran</i> ${esc(I.out[0])}</span>`:""}${ready?`<span class="mst">${esc(HS[m.k]||"Belum diisi")}</span>`:`<span class="soon">Aktifkan add-on</span>`}</button>`;}
 function pathSVG(){const W=980, n=LGROUPS.length, bw=88, gap=(W-n*bw)/(n-1);
   return `<svg viewBox="0 0 ${W} 104" width="100%" role="img" aria-label="Peta alur keputusan" font-family="Atkinson Hyperlegible, sans-serif">${LGROUPS.map((g,i)=>{const x=i*(bw+gap); return `${i?`<path d="M${x-gap+2} 34h${gap-6}" stroke="var(--line)" stroke-width="2"/>`:""}<g class="pnode" data-jump="${g.id}" tabindex="0" role="button" aria-label="${esc(g.n)}"><rect x="${x}" y="6" width="${bw}" height="56" rx="12" fill="var(--sheet)" stroke="var(--petrol)" stroke-width="1.5"/><text x="${x+bw/2}" y="30" text-anchor="middle" font-size="18" fill="var(--petrol)">${g.ic}</text><text x="${x+bw/2}" y="52" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">${g.no}</text>${g.n.split(" ").reduce((L,w)=>{const t=L[L.length-1]; if((t+" "+w).trim().length>13&&t)L.push(w); else L[L.length-1]=(t+" "+w).trim(); return L;},[""]).slice(0,3).map((l,j)=>`<text x="${x+bw/2}" y="${76+j*12}" text-anchor="middle" font-size="10" fill="var(--muted)">${esc(l)}</text>`).join("")}</g>`;}).join("")}</svg>`;}
@@ -5180,7 +5192,7 @@ function renderOw(){const box=boxOf("ow-canvas"); OWM={}; const sel=OW.nodes.fin
   box.innerHTML=`<h1>Alur kerja data (gaya Orange Data Mining)</h1>
   <p class="lede">Susun analisis seperti merangkai pipa: setiap <b>widget</b> mengerjakan satu tugas, lalu hasilnya mengalir lewat garis ke widget berikutnya. Klik widget di panel kiri untuk menambahkannya; widget baru otomatis disambungkan dari widget yang sedang dipilih. <b>Klik ikon metode (AHP, ISM, SWOT, …) untuk membuka formulir isian dan hasilnya langsung di bawah kanvas.</b> Tarik titik bulat di sisi kanan widget ke widget lain untuk menyambung manual.</p>
   <div class="banner owcredit"><span>Konsep dan cara kerja diadaptasi dari <b>Orange Data Mining</b> (Biolab, Universitas Ljubljana) — Demšar, J., Curk, T., Erjavec, A., dkk. (2013). Orange: Data Mining Toolbox in Python. <i>Journal of Machine Learning Research</i>, 14, 2349–2353. <a href="https://orangedatamining.com/" target="_blank" rel="noopener">orangedatamining.com ↗</a>. Perhitungan di sini ditulis ulang untuk pembelajaran; untuk analisis besar gunakan Orange asli.</span></div>
-  <div class="card"><div class="row"><b>Template:</b>${Object.entries(OWTPL).map(([k,t])=>`<button class="btn small" data-owtpl="${k}" title="${esc(t.d)}">${esc(t.n)}</button>`).join("")}<span class="spacer"></span><button class="btn small" id="bOwClear">Kosongkan kanvas</button></div></div>
+  <div class="card"><div class="row"><b>Template:</b>${Object.entries(OWTPL).map(([k,t])=>`<button class="btn small" data-owtpl="${k}" title="${esc(t.d)}">${esc(t.n)}</button>`).join("")}<span class="spacer"></span><button class="btn small primary" id="bOwFull">${OWFULL?"✕ Keluar layar penuh":"⛶ Layar penuh"}</button><button class="btn small" id="bOwClear">Kosongkan kanvas</button></div></div>
   <div class="owlay"><div class="owpal card">   <div class="owpg"><div class="owpgh" style="color:var(--c8)">Metode analisis (tarik ke kanvas)</div>${LGROUPS.map(g=>{const L=Object.entries(WT).filter(([,w])=>w.method&&w.g===g.id); return L.length?`<details class="owmg" ${OWOPEN[g.id]?"open":""} data-owmg="${g.id}"><summary>${g.ic} ${esc(g.n)}</summary>${L.map(([k,w])=>`<button class="owpb" draggable="true" data-owadd="${k}" title="${esc(w.doc)}"><span class="ab" style="color:var(--c8);border-color:var(--c8)">${esc(w.ic)}</span>${esc(w.n)}</button>`).join("")}</details>`:"";}).join("")}</div><div class="owpgh" style="color:var(--muted);margin-top:8px">Widget data mining (gaya Orange)</div>${OWCAT.map(([c,col])=>`<div class="owpg"><div class="owpgh" style="color:${col}">${c==="Keputusan"?"Keputusan (Studio)":c}</div>${Object.entries(WT).filter(([,w])=>w.cat===c).map(([k,w])=>`<button class="owpb" draggable="true" data-owadd="${k}" title="${esc(w.doc)}"><span style="color:${col};border-color:${col}">${w.ic}</span>${esc(w.n)}</button>`).join("")}</div>`).join("")}</div>
    <div class="owmain"><div class="svgwrap owcv">${owCanvas()}</div><p class="note">Pilih widget lalu tekan <kbd>Delete</kbd> untuk menghapus; klik garis lalu <kbd>Delete</kbd> untuk memutus sambungan. Garis putus-putus berarti widget tujuan belum lengkap.</p></div></div>
   <div id="owPanel">${sel?owPanel(sel):`<div class="card"><p class="note">Pilih sebuah widget di kanvas untuk melihat pengaturan dan hasilnya.</p></div>`}</div>`;}
@@ -5627,7 +5639,7 @@ const RH0=renderHome; renderHome=function(){RH0(); renderHomeV27();};
 owRegisterMethods();
 const FMS0=fillModSel; fillModSel=function(){FMS0(); const og=$("#modSel optgroup"); if(og&&!og.querySelector('[value="manual"]'))og.insertAdjacentHTML("afterbegin",`<option value="manual">📘 Panduan</option><option value="orange">⇄ Kanvas alur kerja</option><option value="io">⇅ Ekspor–impor</option><option value="gloss">📖 Glosarium</option>`);};
 glObs.observe($("main"),{childList:true,subtree:true});
-window.__v27=V27; window.__IRIS=IRIS_RAW; window.__exportObj=()=>exportObj(); window.__mcCalc=mcCalc; window.__duCalc=duCalc; window.__qdCalc=qdCalc; window.__owEval=id=>{OWM={}; return owEval(id);}; window.__OW=()=>OW; window.__glossN=GLOSS.length; window.__MSTORE=()=>MSTORE.map(r=>r.k);
+window.__v27=V27; window.__IRIS=IRIS_RAW; window.__exportObj=()=>exportObj(); window.__mcCalc=mcCalc; window.__duCalc=duCalc; window.__qdCalc=qdCalc; window.__owEval=id=>{OWM={}; return owEval(id);}; window.__OW=()=>OW; window.__owOpen=id=>owOpenMethod(id); window.__glossN=GLOSS.length; window.__MSTORE=()=>MSTORE.map(r=>r.k);
 
 /* ===== v2.7 END ===== */
 /* ===== v2.8 BEGIN ===== */
@@ -5904,6 +5916,24 @@ GLOSS.push(
       box.querySelector(".card").insertAdjacentHTML("afterend",`<div class="grid2" id="microCh"><div class="card"><h2>Δ UHI per skenario (°C)</h2>${CH.hbars(n,R.rows.map(r=>f(r.uhi)),{fmt:v=>fmt(v,2)})}</div><div class="card"><h2>MRT per skenario (°C)</h2>${CH.hbars(n,R.rows.map(r=>f(r.mrt)),{fmt:v=>fmt(v,1)})}</div><div class="card"><h2>Apparent temperature & heat index (°C)</h2>${CH.lines([{name:"Apparent T",pts:R.rows.map((r,i)=>[i+1,f(r.at)])},{name:"Heat index",pts:R.rows.map((r,i)=>[i+1,f(r.hi)])}],{xl:"Skenario ke-",yl:"°C",h:280,dots:true})}</div><div class="card"><h2>Penurunan vs baseline (°C)</h2>${CH.hbars(n,R.rows.map(r=>f(r.cooling)),{fmt:v=>fmt(v,2)})}<p class="note">Nilai positif = lebih sejuk daripada baseline. Skenario terbaik = penurunan suhu udara dan MRT terbesar.</p></div></div>`);}}};})();
 CREDIT.syntax=(CREDIT.syntax||"")+`<p>Benedikt, M. L. (1979). To take hold of space: Isovists and isovist fields. <i>Environment and Planning B</i>, 6(1), 47–65. https://doi.org/10.1068/b060047 (ukuran isovist pada VGA)</p>`;
 GLOSS.push(["Isovist",/isovist/i,"Area yang terlihat dari satu titik berdiri; luas, keliling, dan kekompakannya menggambarkan keterbukaan ruang.",WK("Isovist"),"Wikipedia: Isovist"],["MRT (suhu radiasi rata-rata)",/\bMRT\b|mean radiant/i,"Suhu rata-rata permukaan sekeliling yang dirasakan tubuh lewat radiasi; bisa diukur dengan termometer bola hitam.",WK("Mean_radiant_temperature"),"Wikipedia: Mean radiant temperature"]);
+
+/* ---------- tampilan Sederhana / Lanjutan ---------- */
+let UIM=loadK("sk-uimode-v1")||"lanjutan";
+function applyUiMode(){document.body.classList.toggle("ui-simple",UIM==="sederhana"); $$(".uiseg [data-uim]").forEach(b=>b.classList.toggle("on",b.dataset.uim===UIM));}
+const uiSeg=()=>`<span class="uiseg" role="group" aria-label="Tampilan"><button data-uim="sederhana" title="Metode dasar–menengah, menu ringkas">Sederhana</button><button data-uim="lanjutan" title="Semua metode dan fitur">Lanjutan</button></span>`;
+(()=>{const mp=$(".modpick"); if(mp&&!mp.querySelector(".uiseg"))mp.insertAdjacentHTML("afterbegin",uiSeg());})();
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-uim]"); if(!b)return; UIM=b.dataset.uim; saveK("sk-uimode-v1",UIM); applyUiMode(); if(S.step==="home")renderHomeV27(); toast(UIM==="sederhana"?"Tampilan sederhana: metode dasar–menengah dan menu ringkas":"Tampilan lanjutan: semua metode dan fitur");});
+{const RH1=renderHomeV27; renderHomeV27=function(){RH1(); const h=$("#homeV27 .hero .row"); if(h&&!h.querySelector(".uiseg")){h.insertAdjacentHTML("afterbegin",`<span class="note" style="margin-right:4px">Tampilan:</span>${uiSeg()}`);} const box=$("#homeV27"); if(box&&!box.querySelector("#uiNote"))box.querySelector(".hero").insertAdjacentHTML("afterend",`<p class="note" id="uiNote"></p>`); const n=$("#uiNote"); if(n)n.innerHTML=UIM==="sederhana"?`Tampilan <b>sederhana</b>: hanya metode tingkat Dasar dan Menengah serta menu ringkas. Pilih <b>Lanjutan</b> untuk melihat semua metode, ekspor–impor, glosarium, dan rujukan.`:""; applyUiMode();};}
+applyUiMode();
+/* ---------- kanvas layar penuh ---------- */
+let OWFULL=false;
+function owSetFull(on){OWFULL=on; const sec=$('section[data-sec="ow-canvas"]'); if(!sec)return; if(on)embHost(); sec.classList.toggle("owfull",on); document.body.style.overflow=on?"hidden":"";
+  try{if(on&&sec.requestFullscreen&&!document.fullscreenElement)sec.requestFullscreen().catch(()=>{}); else if(!on&&document.fullscreenElement)document.exitFullscreen().catch(()=>{});}catch(_){}
+  renderOw(); if(EMB)embRender();}
+document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("#bOwFull"))owSetFull(!OWFULL);});
+document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement&&OWFULL)owSetFull(false);});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&OWFULL&&!document.fullscreenElement)owSetFull(false);});
+{const G1=go; go=function(st){if(OWFULL&&st!=="ow-canvas")owSetFull(false); G1(st);};}
 /* ===== v2.8 END ===== */
 linkBoot(); fillModSel(); syncAll(); go(S.step||"home"); showFirstSetup();
 })();
