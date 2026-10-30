@@ -42,6 +42,22 @@ add_action(
 	7
 );
 
+/* Satu kali (disetujui pemilik situs 30-10-2026): akun jm_admin mendapat peran tambahan PJPI — Admin pusat; peran Mintakat tetap. */
+add_action(
+	'init',
+	function () {
+		if ( get_option( 'pt_pj_grant_jm' ) === '1' || ! get_role( 'pjpi_admin' ) ) {
+			return;
+		}
+		$u = get_user_by( 'login', 'jm_admin' );
+		if ( $u ) {
+			$u->add_role( 'pjpi_admin' );
+		}
+		update_option( 'pt_pj_grant_jm', '1' );
+	},
+	8
+);
+
 /* ---------------- jurnal & hak per jurnal ---------------- */
 function pt_pj_journals() {
 	$l    = function_exists( 'pt_jr_journals' ) ? pt_jr_journals() : array( 'list' => array() );
