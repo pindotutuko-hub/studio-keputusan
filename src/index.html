@@ -1075,7 +1075,7 @@ const PROJ=(()=>{const REG="sk-projects-v1", GLOBAL=new Set([REG,"sk-uimode-v1",
     backup};
   try{window.addEventListener("pagehide",backup); document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")backup();});}catch(e){}
   return api;})();
-const APP_VERSION="3.0.0"; window.__APP_VERSION=APP_VERSION;
+const APP_VERSION="3.0.1"; window.__APP_VERSION=APP_VERSION;
 const LS_KEY="ism-studio-v1";
 const desktop = typeof window.ismDesktop==="object" && window.ismDesktop;
 if(desktop) document.documentElement.classList.add("is-desktop");
@@ -3758,7 +3758,7 @@ function renderAbout(){const box=$("#aboutBox"), v=(typeof APP_VERSION!=="undefi
    <div><h2 style="font-size:24px;margin:0">Studio Keputusan</h2><p class="note" style="margin:2px 0 0">Aplikasi analisis strategis dan pengambilan keputusan lintas rumpun ilmu · Versi <b>${esc(v)}</b> · ${desktop?"aplikasi desktop":"versi web"}</p></div></div>
    <p style="margin-top:12px">Studio Keputusan menghimpun ${ms.length} metode analisis dari ${CATS.length} rumpun ilmu dalam satu aplikasi. Setiap metode dapat dipakai sendiri atau digabung: hasil satu metode dikirim menjadi masukan metode lain, lalu dibandingkan di <b>Sintesis &amp; komparasi</b> dan disusun dalam <b>Laporan gabungan</b>.</p></div>
   <div class="grid2"><div class="card"><h2>Pengembang</h2>
-    <p><b>Prof. Pindo Tutuko, ST., MT., PhD.</b><br>Universitas Merdeka Malang</p>
+    <p><b>Prof. Pindo Tutuko, ST., MT., PhD., PgDip.</b><br>Universitas Merdeka Malang</p>
     <p class="note" style="margin-top:8px">Kontributor modul:</p><ul class="plainlist"><li><b>You Ari Faeni</b> — contributor</li><li><b>Dara Citra Saraswati Tutuko</b> — EnvelopeSim, dasar modul OTTV · RTTV (SNI 6389:2020)</li><li><b>Tristiyanto</b> — pemrograman House Depth Calculation v1.0 (Java), dasar modul Javanese House Depth</li></ul>
     <p class="note" style="margin-top:8px">Modul ISM–MICMAC dikembangkan sebagai versi lain dari SmartISM (Ahmad &amp; Qahmash, 2021). Pengembangan kode dibantu asisten AI (Claude, Anthropic); rumus dan hasil diverifikasi dengan perhitungan independen dan uji otomatis.</p></div>
    <div class="card"><h2>Isi aplikasi</h2><table class="plain"><tbody>${CATS.map(c=>{const L=ms.filter(m=>m.c[0]===c.id); return `<tr><td><b>${esc(c.name)}</b></td><td class="m">${L.length}</td><td>${L.map(m=>esc(m.n)).join(", ")}</td></tr>`;}).join("")}
