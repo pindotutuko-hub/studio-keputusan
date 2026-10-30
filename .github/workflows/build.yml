@@ -1,0 +1,89 @@
+name: Build installers
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore: ['**.md', 'docs/**']
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm install
+      - run: npm test
+
+  build:
+    needs: test
+    strategy:
+      matrix:
+        os: [windows-latest, macos-14]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm install
+      - run: node build-page.js
+      - name: Build Windows installer
+        if: runner.os == 'Windows'
+        run: npx electron-builder --win --publish never
+      - name: Build macOS dmg
+        if: runner.os == 'macOS'
+        env: { CSC_IDENTITY_AUTO_DISCOVERY: false }
+        run: npx electron-builder --mac --publish never
+      - name: Verify macOS signature
+        if: runner.os == 'macOS'
+        run: |
+          APP=$(find dist -maxdepth 2 -name "*.app" -path "*universal*" | head -1)
+          echo "Checking $APP"
+          codesign --verify --deep --strict --verbose=2 "$APP"
+          codesign -dv "$APP" 2>&1 | grep -E "Signature|Identifier|Format"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Studio-Keputusan-${{ runner.os }}
+          path: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.zip
+
+  release:
+    needs: [test, build]
+    # tetap terbit walau salah satu installer gagal/tidak mendapat mesin (mis. antrean macOS GitHub)
+    if: ${{ always() && needs.test.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Susun catatan rilis (bahasa awam + isi CHANGELOG versi ini)
+        run: |
+          V=${{ steps.v.outputs.version }}
+          {
+            echo "# Studio Keputusan 2 versi $V"
+            echo
+            echo "Aplikasi analisis dan pengambilan keputusan untuk dosen, mahasiswa, dan peneliti (Windows dan Mac)."
+            echo
+            sed "s/<versi>/$V/g" .github/release-guide.md
+            echo
+            echo "## Apa yang baru di versi $V"
+            awk -v v="## $V" 'index($0,v)==1{f=1;next} /^## [0-9]/{if(f)exit} f' CHANGELOG.md
+            echo
+            echo "_Dibangun otomatis dari commit ${{ github.sha }}._"
+          } > release-body.md
+      - uses: actions/download-artifact@v4
+        with: { path: out, merge-multiple: true }
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.v.outputs.version }}
+          name: Studio Keputusan v${{ steps.v.outputs.version }}
+          body_path: release-body.md
+          files: |
+            out/*
+            docs/Panduan-Studio-Keputusan-2-v${{ steps.v.outputs.version }}.pdf
+            addons/studio-keputusan-complete.skaddon.json

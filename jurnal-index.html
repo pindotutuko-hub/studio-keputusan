@@ -20,7 +20,7 @@ h1{font:600 26px/1.2 Georgia,serif;margin:0 0 4px}h2{font:600 18px Georgia,serif
 .kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}.kpi{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:10px;padding:10px 14px}.kpi b{display:block;font:700 24px/1.2 Georgia,serif}.kpi span{color:var(--mut);font-size:12.5px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:900px){.grid2{grid-template-columns:1fr}}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{flex:1}
-button.b,a.b{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:8px;padding:6px 12px;font:inherit;cursor:pointer;text-decoration:none;display:inline-block}button.b.p{background:var(--acc);border-color:var(--acc);color:#fff}button.b:disabled{opacity:.55;cursor:wait}button.b.s{padding:3px 8px;font-size:12.5px}
+button.b,a.b{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:8px;padding:6px 12px;font:inherit;cursor:pointer;text-decoration:none;display:inline-block}button.b.p,a.b.p{background:var(--acc);border-color:var(--acc);color:#fff}button.b:disabled{opacity:.55;cursor:wait}button.b.s{padding:3px 8px;font-size:12.5px}
 select,input[type=text]{padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font:inherit}
 table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:var(--soft);position:sticky;top:0;cursor:pointer;white-space:nowrap;font-size:12px}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}tr.tot td{font-weight:700;background:var(--soft)}
 .tw{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:8px}
@@ -35,7 +35,7 @@ svg{display:block;max-width:100%;height:auto}svg text{fill:var(--ink);font:11px 
 </style>
 </head>
 <body>
-<header><b><a href="#" id="hHome" style="text-decoration:none">PINDO TUTUKO</a> · Aplikasi Khusus</b><span>Monitor Jurnal UNMER</span><span class="sp"></span><a href="../direktori/">Direktori Jurnal</a><span id="hUser"></span><a id="hOut" href="#">Keluar</a></header>
+<header><b><a href="#" id="hHome" style="text-decoration:none">PINDO TUTUKO</a> · Aplikasi Khusus</b><span>Monitor Jurnal UNMER</span><span class="sp"></span><a href="../pjpi/">PJPI Monitoring</a><a href="../direktori/">Direktori Jurnal</a><span id="hUser"></span><a id="hOut" href="#">Keluar</a></header>
 <nav class="tabs" id="tabs"></nav>
 <main id="main"><div class="empty">Memuat data…</div></main>
 <script>
@@ -132,7 +132,7 @@ function vJur(S){
   const au={};s.R.forEach(r=>{const k=r[6]>=6?"6+":String(r[6]||0);au[k]=(au[k]||0)+1;});
   const kw=Object.entries(s.kws).sort((a,b)=>b[1]-a[1]).slice(0,24), lg=Object.entries(s.langs).sort((a,b)=>b[1]-a[1]);
   const LN={eng:"Inggris",ind:"Indonesia",en:"Inggris",id:"Indonesia"};
-  return `<div class="card"><div class="row">${pick}<span class="sp"></span><a class="b" href="https://jurnal.unmer.ac.id/index.php/${esc(s.p)}" target="_blank" rel="noopener">Buka di OJS ↗</a>${CFG.update?`<button class="b" data-h="${s.p}">⟳ Perbarui jurnal ini</button>`:""}</div>
+  return `<div class="card"><div class="row">${pick}<span class="sp"></span>${(CFG.pjpi||[]).includes(s.p)?`<a class="b p" href="${esc((CFG.home||"/khusus/")+"pjpi/"+s.p+"/")}">📋 Cek naskah &amp; email (PJPI)</a>`:""}<a class="b" href="https://jurnal.unmer.ac.id/index.php/${esc(s.p)}" target="_blank" rel="noopener">Buka di OJS ↗</a>${CFG.update?`<button class="b" data-h="${s.p}">⟳ Perbarui jurnal ini</button>`:""}</div>
    <h1 style="margin-top:10px">${esc(s.name)}</h1><p class="lead">${esc(s.ak)} · SINTA ${esc(sintaLbl(s.sinta))}${s.unit?" · "+esc(s.unit):""}${s.frek?" · "+esc(s.frek):""} · ${stPill(s)} · dipanen ${s.at?esc(new Date(s.at).toLocaleString("id-ID",{dateStyle:"medium",timeStyle:"short"})):"belum"}</p></div>
   ${s.n?`<div class="kpis" style="margin-bottom:16px">${[[fmt(s.n),"artikel"+(s.prevN!=null&&s.prevN!==s.n?` (${s.n-s.prevN>0?"+":""}${s.n-s.prevN} sejak panen sebelumnya)`:"")],[fmt(s.nIss),"nomor terbitan"],[s.y0+"–"+s.y1,"rentang tahun"],[fmt(s.thisY),"artikel "+THIS],[fmt(s.prevY),"artikel "+(THIS-1)],[isNaN(s.perIss)?"–":s.perIss.toFixed(1),"artikel per nomor"],[pct(s.doi),"ber-DOI"],[isNaN(s.au)?"–":s.au.toFixed(1),"penulis per artikel"],[s.lastIss?esc(s.lastIss.lab):"–","terbitan terakhir"+(s.days!=null?` · ${s.days} hari lalu`:"")]].map(k=>`<div class="kpi"><b style="font-size:${String(k[0]).length>12?16:24}px">${k[0]}</b><span>${k[1]}</span></div>`).join("")}</div>
   <div class="grid2"><div class="card"><h2>Artikel per tahun</h2>${bars(ys.map(y=>({k:y,v:s.byY[y]||0})))}</div><div class="card"><h2>Artikel per nomor (16 terbitan terakhir)</h2>${bars(lastIss,{rot:true,color:"var(--c2)",h:260})}</div>

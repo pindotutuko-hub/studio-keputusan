@@ -1,0 +1,88 @@
+{
+  "name": "studio-keputusan",
+  "productName": "Studio Keputusan 2",
+  "version": "2.9.1",
+  "description": "Platform analisis dan keputusan multidisiplin dengan pusat data, model 3D, visualisasi, sintesis, dan laporan",
+  "author": "Pindo Tutuko",
+  "license": "UNLICENSED",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux",
+    "test": "node tests/smoke.test.js && node tests/link.test.js && node tests/v27.test.js && node tests/v28.test.js && node tests/v29.test.js && node tests/proj.test.js"
+  },
+  "devDependencies": {
+    "electron": "31.7.7",
+    "electron-builder": "24.13.3",
+    "jsdom": "^24.1.3"
+  },
+  "build": {
+    "appId": "id.ac.unmer.studiokeputusan",
+    "productName": "Studio Keputusan 2",
+    "copyright": "Pindo Tutuko",
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*"
+    ],
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "signAndEditExecutable": true
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "Studio Keputusan 2"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "category": "public.app-category.education",
+      "icon": "build/icon.png",
+      "identity": null,
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "icon": "build/icon.png",
+      "category": "Education"
+    },
+    "afterPack": "build/adhoc-sign.js"
+  }
+}

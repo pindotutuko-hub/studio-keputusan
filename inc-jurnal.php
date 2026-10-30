@@ -111,6 +111,9 @@ function pt_jr_landing() {
 		$cards[] = array( '/khusus/jurnal/', 'Monitor Jurnal UNMER', 'Pemantau terbitan seluruh jurnal di jurnal.unmer.ac.id — grafik dan rekap per jurnal maupun semua jurnal, diperbarui langsung dari OJS.' );
 		$cards[] = array( '/khusus/direktori/', 'Direktori Jurnal UNMER', 'Direktori jurnal dan jaringan publikasi: mitra bestari, dewan editor, afiliasi, sasaran publikasi — dengan cek pembaruan dari OJS.' );
 	}
+	if ( current_user_can( 'pjpi_view' ) || current_user_can( 'pjpi_admin' ) ) {
+		$cards[] = array( '/khusus/pjpi/', 'PJPI Monitoring', 'Pemantau naskah OJS semua jurnal UNMER untuk PJPI — cek artikel/naskah per jurnal, rekomendasi tindakan, draf email per kasus, ekspor Excel. Login per peran dan per jurnal.' );
+	}
 	if ( current_user_can( 'mintakat_view' ) ) {
 		$cards[] = array( '/khusus/mintakat/', 'Mintakat Monitoring', 'Pemantau naskah OJS Mintakat: Jurnal Arsitektur — tracker redaksi, rekomendasi tindakan, draf email per kasus, dan ekspor Excel.' );
 	}
@@ -530,6 +533,7 @@ function pt_jr_static( $dir, $f, $app ) {
 			'nonce'  => wp_create_nonce( 'pt_jr' ),
 			'user'   => wp_get_current_user()->display_name,
 			'update' => current_user_can( 'jurnal_update' ),
+			'pjpi'   => function_exists( 'pt_pj_role_for' ) ? array_values( array_filter( array_keys( pt_pj_journals() ), function ( $p ) { return '' !== pt_pj_role_for( wp_get_current_user(), $p ); } ) ) : array(),
 		);
 		$body = str_replace( '<!--PT_CFG-->', '<script>window.PT_JR=' . wp_json_encode( $cfg ) . ';</script>', $body );
 	}
