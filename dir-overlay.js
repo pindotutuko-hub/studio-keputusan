@@ -93,7 +93,7 @@
       if (!arr.length) return "<div class='mut'>" + lab + ": tidak ada.</div>";
       return "<div><b class='" + cls + "'>" + lab + " (" + arr.length + ")</b>" + arr.map(function (p, i) { return "<label><input type='checkbox' data-k='" + key + "' data-i='" + i + "'> " + fmt(p) + "</label>"; }).join("") + "</div>";
     };
-    var pg = function (key, lab) { var p = r.res.pages[key]; return p ? "<a href='" + esc(p.url) + "' target='_blank' rel='noopener'>" + lab + "</a> " + (p.code === 200 ? "<span class='ok'>✓</span>" : "<span class='warn'>HTTP " + p.code + "</span>") : ""; };
+    var pg = function (key, lab) { var p = r.res.pages[key]; return p ? "<a href='" + esc(p.url) + "' target='_blank' rel='noopener'>" + lab + "</a> " + (p.code === 200 ? "<span class='ok'>✓</span>" + (p.cached ? " <span class='mut'>(dibaca " + esc(String(p.cached).slice(0, 10)) + ")</span>" : "") : "<span class='warn'>HTTP " + p.code + "</span>") : ""; };
     h += "<div class='j' data-j='" + esc(r.j.id) + "' data-x='" + k + "'><h4>" + esc(r.j.akronim || r.j.id) + " <span class='mut'>" + esc(r.j.nama || "") + "</span></h4><div class='mut'>Laman diperiksa: " + pg("rev", "mitra bestari") + " · " + pg("ed", "dewan editor") + "</div><div class='cols'>" +
       "<div>" + list(r.revNew, "revNew", "Mitra bestari baru di OJS", "ok", function (p) { return esc(p.n) + " <span class='mut'>" + esc(p.a) + (p.k ? " · " + esc(p.k) : "") + "</span>"; }) +
       list(r.revGone, "revGone", "Mitra bestari tidak ditemukan lagi", "warn", function (p) { return esc(p.n) + " <span class='mut'>" + esc(p.a || "") + "</span>"; }) + "</div>" +

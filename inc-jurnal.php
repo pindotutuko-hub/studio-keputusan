@@ -681,9 +681,13 @@ function pt_jd_api( $ep ) {
 			$urls['rev'] = $jj['url'];
 		}
 		$urls['ed'] = PT_JR_OJS . $id . '/about/editorialTeam';
+		$cache = pt_jr_read( 'dir-pages.json', array() );
 		foreach ( $urls as $k => $u ) {
 			list( $c, $h ) = pt_jr_get( $u, 45 );
 			$pages[ $k ] = array( 'url' => $u, 'code' => $c, 'lines' => 200 === $c ? pt_jd_lines( $h ) : array() );
+			if ( 200 !== $c && isset( $cache[ $id ]['pages'][ $k ]['lines'] ) ) {
+				$pages[ $k ] = array( 'url' => $u, 'code' => 200, 'lines' => $cache[ $id ]['pages'][ $k ]['lines'], 'cached' => $cache[ $id ]['at'] );
+			}
 		}
 		pt_jr_json( array( 'j' => $id, 'at' => current_time( 'c' ), 'pages' => $pages ) );
 	}
@@ -730,6 +734,29 @@ function pt_jd_api( $ep ) {
 		$o['log']   = array_slice( $o['log'], -300 );
 		pt_jr_write( 'dir-ovr.json', $o );
 		pt_jr_json( array( 'ok' => true ) );
+	}
+	/* Simpan laman OJS yang dibaca lewat peramban Pengelola (bila server diblokir portal OJS). */
+	if ( 'pages-import' === $ep ) {
+		pt_jr_need_update();
+		$b     = pt_jr_body();
+		$cache = pt_jr_read( 'dir-pages.json', array() );
+		$n     = 0;
+		foreach ( (array) ( isset( $b['pages'] ) ? $b['pages'] : array() ) as $id => $v ) {
+			$id = sanitize_key( $id );
+			if ( ! pt_jr_path_ok( $id ) || ! is_array( $v ) || empty( $v['pages'] ) ) {
+				continue;
+			}
+			$pg = array();
+			foreach ( array( 'rev', 'ed' ) as $k ) {
+				if ( isset( $v['pages'][ $k ]['lines'] ) && is_array( $v['pages'][ $k ]['lines'] ) ) {
+					$pg[ $k ] = array( 'lines' => array_map( function ( $l ) { return pt_jr_clean( $l, 400 ); }, array_slice( $v['pages'][ $k ]['lines'], 0, 1500 ) ) );
+				}
+			}
+			$cache[ $id ] = array( 'at' => current_time( 'c' ), 'pages' => $pg );
+			++$n;
+		}
+		pt_jr_write( 'dir-pages.json', $cache );
+		pt_jr_json( array( 'ok' => true, 'n' => $n ) );
 	}
 	if ( 'reinstall' === $ep ) {
 		pt_jr_need_update();
