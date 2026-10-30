@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.0
+- **Rumpun baru: Sains & Matematika (MIPA)** — Kalkulator Sains: aljabar linear (determinan, invers, Ax = b, nilai eigen), akar persamaan (bagi dua & Newton–Raphson), integral (Simpson & trapesium), PD biasa (Runge–Kutta 4), regresi & kurva kalibrasi, ketidakpastian pengukuran (GUM), massa molar & penyetaraan reaksi, pH, keanekaragaman spesies, Hardy–Weinberg, Michaelis–Menten, proyeksi penduduk, indeks pencemaran air, Streeter–Phelps.
+- **Rumpun baru: Kesehatan, Farmasi, Pendidikan & Pertanian** — Kalkulator Kesehatan & Terapan: tabel 2×2 (OR, RR, χ² Pearson & Yates), uji diagnostik (IK Wilson), farmakokinetik 1 kompartemen, analisis butir soal (KR-20/21), RAL/RAK dengan uji BNT dan notasi huruf.
+- Nilai p (χ², F, t) dihitung dengan fungsi gamma/beta tak lengkap; diverifikasi terhadap SciPy (tests/v30.test.js).
+
 ## 2.9.3
 - Kredit "Contributor" dihapus dari footer kiri bawah menu (atas permintaan pemilik). Kredit "Dikembangkan versi lain oleh: Pindo Tutuko" tetap.
 
