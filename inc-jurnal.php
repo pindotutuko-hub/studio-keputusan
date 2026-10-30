@@ -411,6 +411,53 @@ function pt_jr_api( $ep ) {
 			)
 		);
 	}
+	/* Impor hasil panen OAI yang dibaca lewat peramban Pengelola (bila server diblokir portal OJS). */
+	if ( 'import' === $ep ) {
+		pt_jr_need_update();
+		$b = pt_jr_body();
+		if ( ! empty( $b['list'] ) && is_array( $b['list'] ) ) {
+			$old  = pt_jr_journals();
+			$man  = array();
+			foreach ( $old['list'] as $j ) {
+				if ( ! empty( $j['manual'] ) ) {
+					$man[ $j['p'] ] = $j;
+				}
+			}
+			$list = array();
+			foreach ( array_slice( $b['list'], 0, 200 ) as $j ) {
+				$p = isset( $j['p'] ) ? sanitize_key( $j['p'] ) : '';
+				if ( pt_jr_path_ok( $p ) ) {
+					$list[ $p ] = array( 'p' => $p, 'name' => pt_jr_clean( isset( $j['name'] ) ? $j['name'] : $p, 200 ), 'src' => ( isset( $j['src'] ) && 'oai' === $j['src'] ) ? 'oai' : 'portal' );
+				}
+			}
+			foreach ( $man as $p => $j ) {
+				$list[ $p ] = isset( $list[ $p ] ) ? array_merge( $list[ $p ], array( 'manual' => 1 ) ) : $j;
+			}
+			pt_jr_write( 'journals.json', array( 'at' => current_time( 'c' ), 'list' => array_values( $list ), 'via' => 'browser' ) );
+		}
+		if ( ! empty( $b['j'] ) && is_array( $b['j'] ) ) {
+			$j = $b['j'];
+			$p = isset( $j['p'] ) ? sanitize_key( $j['p'] ) : '';
+			if ( ! pt_jr_path_ok( $p ) || ! isset( $j['r'] ) || ! is_array( $j['r'] ) ) {
+				pt_jr_err( 'Data impor tidak sah.' );
+			}
+			$recs = array();
+			foreach ( array_slice( $j['r'], 0, 20000 ) as $r ) {
+				if ( ! is_array( $r ) || count( $r ) < 10 ) {
+					continue;
+				}
+				$recs[] = array( (int) $r[0], substr( preg_replace( '/[^0-9-]/', '', (string) $r[1] ), 0, 10 ), (int) $r[2], pt_jr_clean( $r[3], 90 ), pt_jr_clean( $r[4], 120 ), substr( preg_replace( '/[^a-z]/', '', strtolower( (string) $r[5] ) ), 0, 3 ), max( 0, min( 99, (int) $r[6] ) ), substr( preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $r[7] ), 0, 20 ), pt_jr_clean( $r[8], 220 ), pt_jr_clean( $r[9], 400 ) );
+			}
+			$prev = pt_jr_read( 'j-' . $p . '.json', array() );
+			$out  = array( 'p' => $p, 'at' => current_time( 'c' ), 'n' => count( $recs ), 'total' => isset( $j['total'] ) ? (int) $j['total'] : count( $recs ), 'prevN' => isset( $prev['n'] ) ? (int) $prev['n'] : null, 'via' => 'browser', 'r' => $recs );
+			pt_jr_write( 'j-' . $p . '.json', $out );
+			$log   = pt_jr_read( 'log.json', array() );
+			$log[] = array( 'at' => $out['at'], 'p' => $p, 'n' => $out['n'], 'prev' => $out['prevN'], 'u' => wp_get_current_user()->user_login . ' (peramban)' );
+			pt_jr_write( 'log.json', array_slice( $log, -400 ) );
+			pt_jr_json( array( 'p' => $p, 'n' => $out['n'], 'prevN' => $out['prevN'] ) );
+		}
+		pt_jr_json( array( 'ok' => true ) );
+	}
 	if ( 'refresh-list' === $ep ) {
 		pt_jr_need_update();
 		pt_jr_json( pt_jr_refresh_list() );

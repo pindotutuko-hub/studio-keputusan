@@ -69,7 +69,8 @@
       .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || ("HTTP " + r.status)); return j; }); });
   }
   function check(j) {
-    return api("check?j=" + encodeURIComponent(j.id), {}).then(function (res) {
+    var pre = window.PT_DIR_PAGES && window.PT_DIR_PAGES[j.id];
+    return (pre ? Promise.resolve(pre) : api("check?j=" + encodeURIComponent(j.id), {})).then(function (res) {
       var D = window.PT_DIR, txt = function (k) { var p = res.pages[k]; return p ? NORM(p.lines.join(" \n ")) : ""; };
       var rev = j.reviewers || [], ed = (D.editor || []).filter(function (e) { return e.kode === j.id; });
       var tRev = txt("rev"), tEd = txt("ed"), tAll = tRev + " " + tEd;
