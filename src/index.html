@@ -497,6 +497,8 @@ section.owfull>#owEmbed:empty::before{content:"Klik ikon metode di kanvas untuk 
 
 .iawall{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.iath{margin:0;border:3px solid transparent;border-radius:8px;background:var(--sheet);overflow:hidden}.iath img{display:block;object-fit:cover}.iath figcaption{font-size:10.5px;padding:2px 4px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ianothumb{display:grid;place-items:center;font-size:10px;color:var(--muted);background:var(--paper)}
 .iagrid{display:grid;gap:2px;margin-top:8px;overflow:auto;max-width:100%}.iacell{display:flex;align-items:flex-start;justify-content:center}
+
+.projbar{display:inline-flex;gap:6px;align-items:center}#projSel{max-width:220px;font:inherit;padding:6px 8px;border-radius:8px}
 </style>
 
 <header class="top">
@@ -505,9 +507,10 @@ section.owfull>#owEmbed:empty::before{content:"Klik ikon metode di kanvas untuk 
     <span>Studio Keputusan 2<br><small>Platform analisis &amp; keputusan multidisiplin</small></span>
   </div>
   <div class="modpick"><button class="btn" data-modgo="home">☰ Semua metode</button><button class="btn" data-modgo="addons">Add-on</button><button class="btn" data-modgo="report">Laporan</button><button class="btn" data-modgo="refs">Sumber &amp; Referensi</button><button class="btn" data-modgo="about">Tentang</button><select id="modSel" aria-label="Metode aktif"></select></div>
+  <span class="projbar"><select id="projSel" aria-label="Pilih proyek" title="Ganti proyek; setiap proyek menyimpan isian & laporannya sendiri"></select><button class="btn" id="bProjNew" title="Buat proyek baru terpisah (proyek ini tetap tersimpan)">＋ Proyek</button></span>
   <input id="title" aria-label="Judul proyek" value="">
   <div class="actions">
-    <button class="btn" id="bNew">Proyek baru</button>
+    <button class="btn" id="bNew" title="Mengosongkan semua isian di proyek yang sedang aktif">Kosongkan</button>
     <button class="btn" id="bOpen">Buka…</button>
     <button class="btn desk-only" id="bSave">Simpan…</button>
     <button class="btn" id="bCopyJson">Salin data proyek</button>
@@ -1033,7 +1036,34 @@ section.owfull>#owEmbed:empty::before{content:"Klik ikon metode di kanvas untuk 
 <script>
 (function(){
 "use strict";
-const APP_VERSION="2.9.0"; window.__APP_VERSION=APP_VERSION;
+/* ===== PROYEK TERPISAH (v2.9.1): setiap proyek = salinan kunci penyimpanan modul; hanya proyek aktif yang terurai ===== */
+const PROJ=(()=>{const REG="sk-projects-v1", GLOBAL=new Set([REG,"sk-uimode-v1","sk-guide-v1","sk-homeview-v1","sk-addons-v1","sk-gloss-off","sk-owopen-v1","sk-statviz-v1","sk-iosel-v1"]), BRIDGE={preseden:["ism-studio-swot-v1","sk-topsis-v1","ism-studio-ahp-v1","sk-site-v1"]};
+  let ls=null; try{ls=window.localStorage;}catch(e){} const get=k=>{try{return ls.getItem(k);}catch(e){return null;}}, set=(k,v)=>{try{ls.setItem(k,v); return true;}catch(e){return false;}}, del=k=>{try{ls.removeItem(k);}catch(e){}};
+  const scoped=()=>{const o=[]; try{for(let i=0;i<ls.length;i++){const k=ls.key(i); if(k&&(k.startsWith("sk-")||k.startsWith("ism-studio"))&&!GLOBAL.has(k))o.push(k);}}catch(e){} return o;};
+  const nid=()=>"p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  let R=null; try{R=JSON.parse(get(REG)||"null");}catch(e){} if(!R||!Array.isArray(R.list)||!R.list.length){const id=nid(); R={cur:id,list:[{id,name:"",upd:Date.now(),src:""}]};} if(!R.list.find(p=>p.id===R.cur))R.cur=R.list[0].id;
+  const save=()=>set(REG,JSON.stringify(R)), cur=()=>R.list.find(p=>p.id===R.cur);
+  const snapTo=id=>{const o={}; scoped().forEach(k=>o[k]=get(k)); return set("skp-"+id,JSON.stringify(o));};
+  const clear=()=>scoped().forEach(del);
+  const loadFrom=id=>{let o={}; try{o=JSON.parse(get("skp-"+id)||"{}");}catch(e){} clear(); Object.entries(o).forEach(([k,v])=>{if(v!=null)set(k,v);}); del("skp-"+id);};
+  /* cadangan kunci yang biasa ditimpa Lensa Preseden, agar proyek lain tidak kehilangan isinya */
+  let ext=false; try{window.addEventListener("storage",e=>{if(e.key&&BRIDGE.preseden.includes(e.key))ext=true;});}catch(e){}
+  const backup=()=>{if(ext)return; const o={}; BRIDGE.preseden.forEach(k=>{const v=get(k); if(v!=null)o[k]=v;}); set("skb-"+R.cur,JSON.stringify(o));};
+  let moved=null; const from=(()=>{try{return new URLSearchParams(location.search).get("from");}catch(e){return null;}})();
+  if(ls&&from&&BRIDGE[from]){const c=cur(); if(c.src!==from){const keys=BRIDGE[from], incoming={}; keys.forEach(k=>{const v=get(k); if(v!=null)incoming[k]=v;});
+    let bk={}; try{bk=JSON.parse(get("skb-"+R.cur)||"{}");}catch(e){} keys.forEach(k=>{if(k in bk)set(k,bk[k]); else del(k);}); snapTo(R.cur); c.upd=Date.now();
+    let t=R.list.find(p=>p.src===from); if(t){loadFrom(t.id);} else {t={id:nid(),name:from==="preseden"?"Lensa Preseden (foto)":"Dari "+from,upd:Date.now(),src:from}; R.list.push(t); clear();}
+    Object.entries(incoming).forEach(([k,v])=>set(k,v)); moved={from:c.name||"proyek sebelumnya",to:t.name}; R.cur=t.id; save();}}
+  save();
+  const api={list:()=>R.list.slice(),cur:()=>cur(),moved:()=>moved,
+    rename(n){const c=cur(); if(c&&c.name!==n){c.name=n; c.upd=Date.now(); save();}},
+    switchTo(id){if(id===R.cur||!R.list.find(p=>p.id===id))return; backup(); snapTo(R.cur); loadFrom(id); R.cur=id; save(); location.replace(location.pathname);},
+    create(name,copy){backup(); snapTo(R.cur); const id=nid(); R.list.push({id,name:name||"",upd:Date.now(),src:""}); if(copy){/* kunci tetap = salinan */} else clear(); R.cur=id; save(); location.replace(location.pathname);},
+    remove(){if(R.list.length<2)return false; const old=R.cur; clear(); del("skb-"+old); R.list=R.list.filter(p=>p.id!==old); const nx=R.list[0]; loadFrom(nx.id); R.cur=nx.id; save(); location.replace(location.pathname); return true;},
+    backup};
+  try{window.addEventListener("pagehide",backup); document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")backup();});}catch(e){}
+  return api;})();
+const APP_VERSION="2.9.1"; window.__APP_VERSION=APP_VERSION;
 const LS_KEY="ism-studio-v1";
 const desktop = typeof window.ismDesktop==="object" && window.ismDesktop;
 if(desktop) document.documentElement.classList.add("is-desktop");
@@ -1461,8 +1491,8 @@ function importText(t){try{const o=JSON.parse(t); if(!Array.isArray(o.elements))
 document.addEventListener("paste",e=>{if(e.target.closest("input,textarea"))return; const t=(e.clipboardData||{}).getData?e.clipboardData.getData("text"):""; if(t&&t.trim().startsWith("{")&&t.includes('"elements"')){e.preventDefault(); importText(t);}});
 
 let newArmed=0;
-$("#bNew").onclick=e=>{const b=e.currentTarget; if(Date.now()-newArmed>3000){newArmed=Date.now(); b.textContent="Klik lagi: kosongkan semua metode?"; setTimeout(()=>b.textContent="Proyek baru",3000); return;}
-  newArmed=0; b.textContent="Proyek baru"; S=blank(); AH=ahpBlank(); SW=swBlank(); DL=dlBlank(); PE=peBlank(); PO=poBlank(); CB=cbBlank(); CP=cpBlank(); BS=bsBlank(); SN=snBlank(); QL=qlBlank(); SX=sxBlank(); ST=stBlank(); BM=bmBlank(); POE=poeBlank(); SY={sel:{}}; persistSY(); DE=deBlank(); TP=tpBlank(); DS={text:"",name:"",sample:false}; persistDS(); SS=ssBlank(); persistSS(); PL=semBlank(); PLBOOT=null; persistPL(); CS=semBlank(); persistCS(); JH=jhBlank(); persistJH(); OT=otBlank(); persistOT(); persistDE(); persistTP(); persistSN(); persistQL(); persistSX(); persistST(); persistBM(); persistPOE(); persist(); persistA(); persistW(); persistD(); persistPE(); persistPO(); persistCB(); persistCP(); persistBS(); syncAll(); go("home"); const f=$("#elist input"); f&&f.focus();};
+$("#bNew").onclick=e=>{const b=e.currentTarget; if(Date.now()-newArmed>3000){newArmed=Date.now(); b.textContent="Klik lagi: kosongkan semua metode?"; setTimeout(()=>b.textContent="Kosongkan",3000); return;}
+  newArmed=0; b.textContent="Kosongkan"; S=blank(); AH=ahpBlank(); SW=swBlank(); DL=dlBlank(); PE=peBlank(); PO=poBlank(); CB=cbBlank(); CP=cpBlank(); BS=bsBlank(); SN=snBlank(); QL=qlBlank(); SX=sxBlank(); ST=stBlank(); BM=bmBlank(); POE=poeBlank(); SY={sel:{}}; persistSY(); DE=deBlank(); TP=tpBlank(); DS={text:"",name:"",sample:false}; persistDS(); SS=ssBlank(); persistSS(); PL=semBlank(); PLBOOT=null; persistPL(); CS=semBlank(); persistCS(); JH=jhBlank(); persistJH(); OT=otBlank(); persistOT(); persistDE(); persistTP(); persistSN(); persistQL(); persistSX(); persistST(); persistBM(); persistPOE(); persist(); persistA(); persistW(); persistD(); persistPE(); persistPO(); persistCB(); persistCP(); persistBS(); syncAll(); go("home"); const f=$("#elist input"); f&&f.focus();};
 $("#bNew").addEventListener("click",()=>{if(newArmed===0){VZ={files:[],current:"",caption:"Ilustrasi model dan data proyek"};VZBIN={};persistVZ();DM={};Object.keys(DM_CFG).forEach(k=>DM[k]={rows:[]});persistDM();}});
 $("#bSample").onclick=()=>{ if(namedEls().length&&!S.sample&&!confirmArm($("#bSample"),"Klik lagi: ganti isian dengan contoh?","Muat contoh penelitian"))return; S=sample(); persist(); syncAll(); go("el"); toast("Contoh dimuat. Lihat hasilnya di langkah 3–6.");};
 let armT={}; function confirmArm(b,msg,orig){const k=b.id; if(armT[k]&&Date.now()-armT[k]<3000){armT[k]=0; b.textContent=orig; return true;} armT[k]=Date.now(); b.textContent=msg; setTimeout(()=>{b.textContent=orig;},3000); return false;}
@@ -5755,7 +5785,7 @@ const beBlank=()=>({city:"malang",lat:-7.98,lon:112.63,tz:7,alt:440,date:"2026-0
   ac:{V:180,use:"kelas",surf:[{id:newId(),name:"Dinding",a:150,m:"plaster",al:BE_MAT.plaster[1].slice()},{id:newId(),name:"Lantai",a:60,m:"beton",al:BE_MAT.beton[1].slice()},{id:newId(),name:"Plafon",a:60,m:"plaster",al:BE_MAT.plaster[1].slice()},{id:newId(),name:"Jendela",a:12,m:"kaca",al:BE_MAT.kaca[1].slice()}]},
   wd:{text:"",calm:0.5},sample:false});
 function beSample(){const o=beBlank(), rnd=V27.rng(17), L=[]; for(let i=0;i<360;i++){const r=rnd(), d=r<0.55?110+rnd()*50:r<0.8?260+rnd()*60:rnd()*360, s=Math.max(0,(r<0.55?3.2:2)+(rnd()+rnd()+rnd()-1.5)*1.6); L.push(Math.round(d)+";"+s.toFixed(1));} o.wd.text="arah;kecepatan\n"+L.join("\n"); o.sample=true; return o;}
-let BE=mkStore(BE_KEY,beBlank); const persistBE=()=>saveK(BE_KEY,BE);
+let BE=mkStore(BE_KEY,beBlank); const persistBE=(touch=true)=>{if(touch)BE.touched=true; saveK(BE_KEY,BE);};
 const beYMD=()=>{const m=String(BE.date||"").match(/(\d{4})-(\d{1,2})-(\d{1,2})/); return m?[+m[1],+m[2],+m[3]]:[2026,6,21];};
 const beHour=()=>{const m=String(BE.time||"").match(/(\d{1,2})[:.](\d{2})/); return m?+m[1]+(+m[2])/60:12;};
 const hhmm=h=>Number.isFinite(h)?`${String(Math.floor(((h%24)+24)%24)).padStart(2,"0")}.${String(Math.round((h-Math.floor(h))*60)%60).padStart(2,"0")}`:"–";
@@ -5892,12 +5922,12 @@ MINFO.bldenv={g:"g8",lvl:2,q:"Bagaimana matahari, cahaya, panas, bunyi, dan angi
 regModule("bldenv",BE_STEPS.map(x=>x[0]),[["be-site","Sun path","(Lokasi & lintasan matahari)"],["be-shade","Shading","(Overhang, sirip, topeng bayangan)"],["be-rad","Solar radiation","(Radiasi per orientasi)"],["be-day","Daylight","(Faktor cahaya alami)"],["be-cmf","Thermal comfort","(PMV/PPD & psikrometrik)"],["be-acou","Acoustics","(Waktu dengung)"],["be-wind","Wind rose","(Mawar angin)"]],{n:"Lingkungan Bangunan (gaya Ecotect)",t:"Matahari · cahaya · termal · akustik · angin",d:"Analisis lingkungan bangunan seperti Ecotect: lintasan matahari stereografik, peneduh & topeng bayangan, radiasi langit cerah per orientasi, faktor cahaya alami, PMV/PPD & diagram psikrometrik, waktu dengung Sabine/Eyring, dan mawar angin.",c:["ars","rekayasa","pwk"]});
 Object.assign(V27_NEW,{"be-site":renderBeSite,"be-shade":renderBeShade,"be-rad":renderBeRad,"be-day":renderBeDay,"be-cmf":renderBeCmf,"be-acou":renderBeAcou,"be-wind":renderBeWind});
 CREDIT.bldenv=`<p>Meeus, J. (1998). <i>Astronomical Algorithms</i> (2nd ed.). Willmann-Bell. — dasar algoritma posisi matahari NOAA Solar Calculator (NOAA Global Monitoring Laboratory).</p><p>Olgyay, A., &amp; Olgyay, V. (1957). <i>Solar Control and Shading Devices</i>. Princeton University Press.</p><p>Hottel, H. C. (1976). A simple model for estimating the transmittance of direct solar radiation through clear atmospheres. <i>Solar Energy</i>, 18(2), 129–134. https://doi.org/10.1016/0038-092X(76)90045-1</p><p>Liu, B. Y. H., &amp; Jordan, R. C. (1960). The interrelationship and characteristic distribution of direct, diffuse and total solar radiation. <i>Solar Energy</i>, 4(3), 1–19.</p><p>Duffie, J. A., &amp; Beckman, W. A. (2013). <i>Solar Engineering of Thermal Processes</i> (4th ed.). Wiley. (koreksi iklim Hottel &amp; model bidang miring isotropik)</p><p>Littlefair, P. J. (1988). <i>Average Daylight Factor: A Simple Basis for Daylight Design</i> (BRE Information Paper IP 15/88). Building Research Establishment.</p><p>BS 8206-2. <i>Lighting for buildings — Part 2: Code of practice for daylighting</i>. British Standards Institution. (kriteria DF 5% / 2% dan uji kedalaman ruang, sebagaimana dikutip pedoman BRE)</p><p>Fanger, P. O. (1970). <i>Thermal Comfort: Analysis and Applications in Environmental Engineering</i>. Danish Technical Press.</p><p>ISO 7730:2005. <i>Ergonomics of the thermal environment — Analytical determination and interpretation of thermal comfort using calculation of the PMV and PPD indices and local thermal comfort criteria</i>. ISO.</p><p>Alduchov, O. A., &amp; Eskridge, R. E. (1996). Improved Magnus form approximation of saturation vapor pressure. <i>Journal of Applied Meteorology</i>, 35(4), 601–609.</p><p>Rothfusz, L. P. (1990). <i>The Heat Index "Equation"</i> (NWS Southern Region Technical Attachment SR 90-23). National Weather Service.</p><p>Sabine, W. C. (1922). <i>Collected Papers on Acoustics</i>. Harvard University Press.</p><p>Eyring, C. F. (1930). Reverberation time in "dead" rooms. <i>Journal of the Acoustical Society of America</i>, 1(2A), 217–241. https://doi.org/10.1121/1.1915175</p><p>ISO 354:2003. <i>Acoustics — Measurement of sound absorption in a reverberation room</i>. ISO. (sumber koefisien serap yang semestinya dipakai)</p><p>Konsep alat mengikuti Autodesk Ecotect Analysis (perangkat analisis kinerja bangunan; dihentikan Autodesk pada 2015). Studio Keputusan tidak memakai kode Ecotect; seluruh perhitungan ditulis ulang dari rujukan di atas dan dicocokkan angkanya dengan pvlib (NREL SPA) dan pythermalcomfort.</p>`;
-regStore({k:"bldenv",label:"Lingkungan Bangunan (gaya Ecotect)",extra:true,get:()=>BE,set:v=>{BE={...beBlank(),...v,sample:false};persistBE();},has:()=>true});
-NEWHAS.bldenv=()=>!!(BE&&(BE.wd.text||!BE.sample));
+regStore({k:"bldenv",label:"Lingkungan Bangunan (gaya Ecotect)",extra:true,get:()=>BE,set:v=>{BE={...beBlank(),...v,sample:false};persistBE();},has:()=>!!BE.touched});
+NEWHAS.bldenv=()=>!!(BE&&BE.touched);
 RES.bldenv=["be-shade","be-rad","be-day","be-cmf","be-acou"];
 XLSHEETS.push(["bldenv","Matahari","besun"],["bldenv","Peneduh","beshade"],["bldenv","Radiasi","berad"],["bldenv","Termal","becmf"],["bldenv","Akustik","bert"]);
 ABBR.bldenv="ECO"; MREAD.bldenv="Pakai diagram lintasan matahari untuk orientasi; topeng bayangan menunjukkan jam saat kaca masih terkena sinar. Bandingkan radiasi per orientasi, lalu cek DF, PMV/PPD, dan RT terhadap kriteria fungsi ruang.";
-$("#bNew").addEventListener("click",()=>{if(newArmed===0){BE=beBlank();persistBE();}});
+$("#bNew").addEventListener("click",()=>{if(newArmed===0){BE=beBlank();persistBE(false);}});
 {const US1=updateStatus; updateStatus=function(){US1(); try{HS.bldenv=`${(BE_CITY[BE.city]||["Koordinat sendiri"])[0]} · ${BE.date}`;}catch(_){}};}
 owRegisterMethods();
 window.__BEN=BEN; window.__BE=()=>BE; window.__beCalc={shade:()=>beShadeCalc(),rad:()=>beRadCalc(),df:()=>beDfCalc(),cmf:()=>beCmfCalc(),rt:()=>beRtCalc(),wind:()=>BEN.windRose(beWindRows(),BE_WB,+BE.wd.calm||0.5)};
@@ -6315,6 +6345,16 @@ OWTPL.citra={n:"Analisis citra: Import Images → Embedding → Hierarchical →
 CREDIT.orange=(CREDIT.orange||"")+`<p>Godec, P., Pančur, M., Ilenič, N., Čopar, A., Stražar, M., Erjavec, A., Pretnar, A., Demšar, J., Starič, A., Toplak, M., Žagar, L., Hartman, J., Wang, H., Bellazzi, R., Petrovič, U., Garagna, S., Zuccotti, M., Park, D., Shaulsky, G., &amp; Zupan, B. (2019). Democratized image analytics by visual programming through integration of deep models and small-scale machine learning. <i>Nature Communications</i>, 10, 4551. (alur widget Image Analytics; algoritma Image Grid ditiru dari kode sumber Orange3-ImageAnalytics)</p><p>Haralick, R. M., Shanmugam, K., &amp; Dinstein, I. (1973). Textural features for image classification. <i>IEEE Transactions on Systems, Man, and Cybernetics</i>, SMC-3(6), 610–621. (GLCM)</p><p>Hasler, D., &amp; Süsstrunk, S. (2003). Measuring colourfulness in natural images. <i>Proceedings of SPIE</i>, 5007, 87–95. https://doi.org/10.1117/12.477378</p><p>Dalal, N., &amp; Triggs, B. (2005). Histograms of oriented gradients for human detection. <i>IEEE CVPR 2005</i>, 886–893. (histogram orientasi gradien)</p><p>Kuhn, H. W. (1955). The Hungarian method for the assignment problem. <i>Naval Research Logistics Quarterly</i>, 2(1–2), 83–97.</p>`;
 GLOSS.push(["Image embedding",/embedding/i,"Ringkasan sebuah foto dalam deret angka sehingga foto bisa dibandingkan, dikelompokkan, atau diklasifikasi seperti data tabel.",WK("Feature_learning"),"Wikipedia: Feature learning"],["GLCM",/\bGLCM\b/,"Gray-level co-occurrence matrix: seberapa sering dua tingkat keabuan bertetangga; dasar ukuran tekstur (kontras, homogenitas, energi).",WK("Co-occurrence_matrix"),"Wikipedia: Co-occurrence matrix"]);
 window.__IMGE=IMGE; window.__iaSample=iaSampleSet;
+
+/* ---------- pemilih proyek ---------- */
+(()=>{const c=PROJ.cur(); if(c&&c.name&&(!S.title||S.title==="Proyek analisis baru")){S.title=c.name; persist();} if(c&&!c.name&&S.title)PROJ.rename(S.title);
+  const fill=()=>{const sel=$("#projSel"); if(!sel)return; const L=PROJ.list(), cu=PROJ.cur(); sel.innerHTML=L.map(p=>`<option value="${p.id}" ${p.id===cu.id?"selected":""}>${esc((p.id===cu.id?S.title:p.name)||"Proyek tanpa nama")}</option>`).join("")+`<option disabled>──────────</option><option value="__dup">⧉ Gandakan proyek ini</option>${L.length>1?`<option value="__del">✕ Hapus proyek ini…</option>`:""}`;}; fill();
+  $("#title").addEventListener("input",()=>{PROJ.rename(S.title); const o=$(`#projSel option[value="${PROJ.cur().id}"]`); if(o)o.textContent=S.title||"Proyek tanpa nama";});
+  let delArm=0; $("#projSel").addEventListener("change",e=>{const v=e.target.value; if(v==="__dup"){persist(); PROJ.create((S.title||"Proyek")+" (salinan)",true); return;}
+    if(v==="__del"){if(Date.now()-delArm>4000){delArm=Date.now(); toast("Pilih “Hapus proyek ini” sekali lagi dalam 4 detik untuk menghapus proyek ini beserta isinya"); fill(); return;} PROJ.remove(); return;}
+    persist(); PROJ.switchTo(v);});
+  $("#bProjNew").addEventListener("click",()=>{persist(); PROJ.create("Proyek "+(PROJ.list().length+1),false);});
+  const m=PROJ.moved(); if(m)setTimeout(()=>toast(`Data dari Lensa Preseden dibuka di proyek “${m.to}”. Proyek “${m.from}” tetap tersimpan; pilih di menu proyek kiri atas.`),900);})();
 /* ===== v2.9 END ===== */
 linkBoot(); fillModSel(); syncAll(); go(S.step||"home"); showFirstSetup();
 })();

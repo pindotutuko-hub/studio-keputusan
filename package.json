@@ -1,7 +1,7 @@
 {
   "name": "studio-keputusan",
   "productName": "Studio Keputusan 2",
-  "version": "2.9.0",
+  "version": "2.9.1",
   "description": "Platform analisis dan keputusan multidisiplin dengan pusat data, model 3D, visualisasi, sintesis, dan laporan",
   "author": "Pindo Tutuko",
   "license": "UNLICENSED",
@@ -11,7 +11,7 @@
     "dist:win": "electron-builder --win",
     "dist:mac": "electron-builder --mac",
     "dist:linux": "electron-builder --linux",
-    "test": "node tests/smoke.test.js && node tests/link.test.js && node tests/v27.test.js && node tests/v28.test.js && node tests/v29.test.js"
+    "test": "node tests/smoke.test.js && node tests/link.test.js && node tests/v27.test.js && node tests/v28.test.js && node tests/v29.test.js && node tests/proj.test.js"
   },
   "devDependencies": {
     "electron": "31.7.7",

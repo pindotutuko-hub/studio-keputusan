@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.9.1
+- **Proyek terpisah** dalam satu browser: pilih/ganti/gandakan/hapus proyek di header (＋ Proyek). Tiap proyek menyimpan datanya sendiri, laporan gabungan hanya berisi proyek aktif.
+- Data dari **Lensa Preseden** otomatis dibuka di proyek tersendiri "Lensa Preseden (foto)"; proyek lain (mis. perbankan) tetap utuh.
+- Tombol "Baru" diganti "Kosongkan" (mengosongkan proyek aktif).
+- Laporan tidak lagi mencentang Lingkungan Bangunan bila modul itu belum dipakai.
+
 ## 2.9.0 — 2026-10-30
 - **Studio Kualitatif (gaya NVivo)**, enam langkah:
   - **Sumber & kasus**: transkrip/dokumen (tempel, impor .txt/.docx), kasus per sumber atau **per nama pembicara** (FGD), *classification sheet* atribut; panduan 6 fase analisis tematik (Braun & Clarke 2006); ambil data dari Analisis Kualitatif lama.
