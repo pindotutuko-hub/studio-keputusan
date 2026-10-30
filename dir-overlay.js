@@ -46,6 +46,7 @@
     "#ptjM select{padding:6px;border-radius:8px;border:1px solid #c9bda9}#ptjM .j{border:1px solid #e3d9c8;border-radius:10px;padding:10px 12px;margin:10px 0}#ptjM .j h4{margin:0 0 4px;font-size:15px}#ptjM .ok{color:#2f7d4a}#ptjM .warn{color:#b0451c}#ptjM .mut{color:#7a705f;font-size:12.5px}" +
     "#ptjM label{display:block;padding:2px 0}#ptjM .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:720px){#ptjM .cols{grid-template-columns:1fr}}#ptjM .prog{height:6px;background:#eee4d4;border-radius:4px;overflow:hidden}#ptjM .prog i{display:block;height:100%;background:#c4572a;width:0}";
   var TITLE_RE = /\b(prof|dr|ph\.?d|m\.?sc|m\.?t|m\.?m|m\.?si|m\.?pd|m\.?eng|m\.?kom|s\.?e|s\.?t|s\.?h|m\.?h|mba|assoc|associate professor|lecturer)\b\.?/i;
+  var INST_RE = /\b(universit\w*|institut\w*|polytechnic|politeknik|department|departemen|faculty|fakultas|program|programme|study|studies|school|sekolah|college|association|asosiasi|himpunan|masyarakat|ikatan|law|hukum|engineering|teknik|center|centre|road|indonesia|indonesian|malaysia|international|editor|editorial|board|journal|jurnal|ministry|kementerian|research|penelitian|management|manajemen|science|sciences|economics|ekonomi|state|negeri|criminal|human|rights)\b/i;
   var HEAD_RE = /^(editor|editorial|chief|managing|section|associate|advisory|peer|reviewer|mitra|dewan|penyunting|ketua|redaksi|layout|copy|proof|international|board|honorary|journal manager|assistant)/i;
   function candidates(lines, known, withRole) {
     var out = [], role = "", kn = known.map(NORM);
@@ -57,6 +58,8 @@
       if (/scopus|sinta|google scholar|orcid|publons|copyright|issn|http/i.test(ln) && !TITLE_RE.test(ln)) continue;
       var nm = ln.split(/[,(|–—]/)[0].trim(), core = NORM(nm);
       if (core.split(" ").length < 2 || core.length < 5 || core.split(" ").length > 7) continue;
+      if (INST_RE.test(nm.replace(TITLE_RE, ""))) continue;
+      if (!TITLE_RE.test(nm) && !/^([A-Z][\w'’.-]*\s+){1,5}[A-Z][\w'’.-]*$/u.test(nm)) continue;
       if (kn.some(function (k) { return k && (k.indexOf(core) >= 0 || core.indexOf(k) >= 0); })) continue;
       var aff = ln.indexOf(",") > 0 ? ln.slice(ln.indexOf(",") + 1).trim() : (lines[i + 1] && !TITLE_RE.test(lines[i + 1]) ? lines[i + 1] : "");
       if (out.some(function (o) { return NORM(o.n) === core; })) continue;
