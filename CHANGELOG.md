@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.9.3
+- Kredit "Contributor" dihapus dari footer kiri bawah menu (atas permintaan pemilik). Kredit "Dikembangkan versi lain oleh: Pindo Tutuko" tetap.
+
 ## 2.9.2
 - Video tutorial kini bernarasi suara (narator laki-laki, bahasa Indonesia) pada keempat video singkat.
 - Video baru **Panduan lengkap seluruh fitur** (±11 menit): direkam langsung dari aplikasi yang sedang dioperasikan, dengan narasi dan keterangan teks.

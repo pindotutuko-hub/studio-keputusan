@@ -1010,8 +1010,6 @@ section.owfull>#owEmbed:empty::before{content:"Klik ikon metode di kanvas untuk 
   <div id="creditRef"></div>
   <div class="k">Dikembangkan versi lain oleh</div>
   <p class="who">Pindo Tutuko</p>
-  <div class="k" style="margin-top:6px">Contributor</div>
-  <p class="who">You Ari Faeni</p>
 </footer>
 
 <div id="ghost" hidden></div>
@@ -1048,7 +1046,7 @@ const PROJ=(()=>{const REG="sk-projects-v1", GLOBAL=new Set([REG,"sk-uimode-v1",
     backup};
   try{window.addEventListener("pagehide",backup); document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")backup();});}catch(e){}
   return api;})();
-const APP_VERSION="2.9.2"; window.__APP_VERSION=APP_VERSION;
+const APP_VERSION="2.9.3"; window.__APP_VERSION=APP_VERSION;
 const LS_KEY="ism-studio-v1";
 const desktop = typeof window.ismDesktop==="object" && window.ismDesktop;
 if(desktop) document.documentElement.classList.add("is-desktop");
