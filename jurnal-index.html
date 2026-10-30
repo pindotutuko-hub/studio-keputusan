@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Monitor Jurnal UNMER — Aplikasi Khusus</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23c4572a'/%3E%3Cpath d='M8 23V9h4v14zm6 0V13h4v10zm6 0V6h4v17z' fill='%23fff'/%3E%3C/svg%3E">
+<!--PT_CFG-->
+<style>
+:root{--bg:#ece7dd;--paper:#fffdf8;--ink:#1d1b17;--mut:#6b6255;--line:#d9cfbf;--acc:#c4572a;--acc2:#2f6f8f;--ok:#2f7d4a;--warn:#b7791f;--bad:#b0451c;--head:#161412;--soft:#f5efe4;
+--c1:#c4572a;--c2:#2f6f8f;--c3:#6b8e23;--c4:#8e4585;--c5:#b7791f;--c6:#4a5568}
+@media (prefers-color-scheme:dark){:root{--bg:#171512;--paper:#211e1a;--ink:#efe8db;--mut:#a89e8d;--line:#3a352d;--soft:#2a2620;--head:#0d0c0a}}
+*{box-sizing:border-box}body{margin:0;font:14.5px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--head);color:#f3ede0;padding:12px 22px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}header a{color:#f3ede0}header b{font:700 17px Georgia,serif;letter-spacing:.02em}header .sp{flex:1}
+nav.tabs{display:flex;gap:4px;padding:0 22px;background:var(--head);flex-wrap:wrap}nav.tabs button{background:none;border:0;color:#cfc6b5;padding:10px 14px;font:600 13.5px system-ui;cursor:pointer;border-bottom:3px solid transparent}nav.tabs button.on{color:#fff;border-color:var(--acc)}
+main{max-width:1280px;margin:0 auto;padding:18px 22px 60px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+h1{font:600 26px/1.2 Georgia,serif;margin:0 0 4px}h2{font:600 18px Georgia,serif;margin:0 0 10px}.lead{color:var(--mut);margin:0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}.kpi{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:10px;padding:10px 14px}.kpi b{display:block;font:700 24px/1.2 Georgia,serif}.kpi span{color:var(--mut);font-size:12.5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{flex:1}
+button.b,a.b{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:8px;padding:6px 12px;font:inherit;cursor:pointer;text-decoration:none;display:inline-block}button.b.p{background:var(--acc);border-color:var(--acc);color:#fff}button.b:disabled{opacity:.55;cursor:wait}button.b.s{padding:3px 8px;font-size:12.5px}
+select,input[type=text]{padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font:inherit}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:var(--soft);position:sticky;top:0;cursor:pointer;white-space:nowrap;font-size:12px}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}tr.tot td{font-weight:700;background:var(--soft)}
+.tw{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:8px}
+.pill{display:inline-block;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:600}.st-a{background:#dcefe2;color:#1f5e35}.st-w{background:#f7e8c8;color:#7a4e0c}.st-x{background:#f6d6cb;color:#8a2d12}.st-0{background:#e5e1d9;color:#5d564b}
+svg{display:block;max-width:100%;height:auto}svg text{fill:var(--ink);font:11px system-ui}svg .ax{stroke:var(--line)}svg .g{stroke:var(--line);stroke-dasharray:2 3}
+.mut{color:var(--mut);font-size:12.5px}.prog{height:8px;background:var(--soft);border-radius:5px;overflow:hidden;margin:8px 0}.prog i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+.log{max-height:260px;overflow:auto;font:12.5px ui-monospace,Menlo,monospace;background:var(--soft);border-radius:8px;padding:8px 10px;white-space:pre-wrap}
+.kw{display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:999px;background:var(--soft);border:1px solid var(--line);font-size:12.5px}
+.empty{padding:30px;text-align:center;color:var(--mut)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--mut)}.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+@media print{header,nav.tabs,.noprint{display:none!important}body{background:#fff}.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header><b><a href="#" id="hHome" style="text-decoration:none">PINDO TUTUKO</a> · Aplikasi Khusus</b><span>Monitor Jurnal UNMER</span><span class="sp"></span><a href="../direktori/">Direktori Jurnal</a><span id="hUser"></span><a id="hOut" href="#">Keluar</a></header>
+<nav class="tabs" id="tabs"></nav>
+<main id="main"><div class="empty">Memuat data…</div></main>
+<script>
+(function(){
+"use strict";
+const CFG=window.PT_JR||{api:"api/",update:false,user:""};
+const $=s=>document.querySelector(s), esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=n=>(n==null||isNaN(n))?"–":Number(n).toLocaleString("id-ID"), pct=x=>isNaN(x)?"–":Math.round(x*100)+"%";
+const NOW=new Date(), THIS=NOW.getFullYear(), COLORS=["var(--c1)","var(--c2)","var(--c3)","var(--c4)","var(--c5)","var(--c6)"];
+$("#hHome").href=CFG.home||"/khusus/"; $("#hOut").href=CFG.logout||"#"; $("#hUser").textContent=CFG.user||"";
+let DB=null, TAB="ring", SEL=null, SORT={k:"n",d:-1}, Y0=THIS-4, Y1=THIS;
+const TABS=[["ring","Ringkasan"],["jur","Per jurnal"],["rekap","Rekap"],["tahun","Rekap per tahun"],["upd","Pembaruan OJS"]];
+async function api(ep,body){const r=await fetch(CFG.api+ep,{method:body?"POST":"GET",credentials:"same-origin",headers:{"Content-Type":"application/json","X-WP-Nonce":CFG.nonce||""},body:body?JSON.stringify(body):undefined});let j;try{j=await r.json();}catch(e){throw new Error("HTTP "+r.status);}if(!r.ok)throw new Error(j.error||("HTTP "+r.status));return j;}
+
+/* ---------- olah data ---------- */
+function stats(J){
+  const m=(DB.meta||{})[J.p]||{}, R=J.r||[], iss=new Map(), byY={}, langs={}, kws={}, secs={};
+  let doi=0, au=0, last="", first="";
+  for(const a of R){const [aid,date,yr,lab,d,lang,na,sec,title,subj]=a;
+    const key=lab||("Tanpa nomor ("+(yr||"?")+")"); let I=iss.get(key); if(!I){I={lab:key,y:yr,date:date||"",n:0};iss.set(key,I);} I.n++; if(date&&(!I.date||date<I.date))I.date=date;
+    if(yr)byY[yr]=(byY[yr]||0)+1; if(d)doi++; au+=na||0; langs[lang||"?"]=(langs[lang||"?"]||0)+1; if(sec)secs[sec]=(secs[sec]||0)+1;
+    if(date){if(date>last)last=date; if(!first||date<first)first=date;}
+    if(subj)subj.split("; ").forEach(k=>{const t=k.trim().toLowerCase(); if(t.length>2)kws[t]=(kws[t]||0)+1;});}
+  const issues=[...iss.values()].sort((a,b)=>(a.date||"").localeCompare(b.date||"")||(a.y-b.y));
+  const ys=Object.keys(byY).map(Number), lastIss=issues.length?issues[issues.reduce((bi,x,i)=>((x.date||"")>(issues[bi].date||"")?i:bi),0)]:null;
+  const days=last?Math.round((NOW-new Date(last))/864e5):null;
+  const st=!R.length?["0","Belum dipanen"]:days<=240?["a","Aktif"]:days<=430?["w","Perlu perhatian"]:["x","Tidak aktif"];
+  const issY={}; issues.forEach(i=>{if(i.y)issY[i.y]=(issY[i.y]||0)+1;});
+  return {p:J.p,name:J.name,ak:m.ak||J.p.toUpperCase(),sinta:m.sinta,unit:m.unit||"",bid:m.bid||"",frek:m.frek||"",at:J.at,n:R.length,prevN:J.prevN,
+    issues,nIss:issues.length,byY,issY,y0:ys.length?Math.min(...ys):null,y1:ys.length?Math.max(...ys):null,last,first,days,lastIss,
+    thisY:byY[THIS]||0,prevY:byY[THIS-1]||0,doi:R.length?doi/R.length:NaN,au:R.length?au/R.length:NaN,perIss:issues.length?R.length/issues.length:NaN,langs,kws,secs,st,R};
+}
+function sintaLbl(s){return s==null||s===""?"–":(s===-1?"Belum":s===0?"Terdaftar":"S"+s);}
+function stPill(s){return `<span class="pill st-${s.st[0]}">${esc(s.st[1])}</span>`;}
+
+/* ---------- grafik SVG manual ---------- */
+function bars(data,{w=620,h=230,color="var(--c1)",lbl=x=>x,val=fmt,rot=false,stack=null}={}){
+  if(!data.length)return `<div class="empty">Belum ada data.</div>`;
+  const pl=42,pb=rot?62:26,pt=14,pr=8,W=w-pl-pr,H=h-pt-pb,max=Math.max(1,...data.map(d=>d.v)),bw=W/data.length,step=niceStep(max);
+  let s=`<svg viewBox="0 0 ${w} ${h}" role="img">`;
+  for(let v=0;v<=max;v+=step){const y=pt+H-H*v/max;s+=`<line class="g" x1="${pl}" x2="${w-pr}" y1="${y}" y2="${y}"/><text x="${pl-5}" y="${y+3}" text-anchor="end">${fmt(v)}</text>`;}
+  data.forEach((d,i)=>{const x=pl+i*bw+bw*.12,bh=H*d.v/max,y=pt+H-bh;
+    if(stack&&d.parts){let yy=pt+H;d.parts.forEach((p,k)=>{const ph=H*p/max;yy-=ph;s+=`<rect x="${x}" y="${yy}" width="${bw*.76}" height="${Math.max(0,ph)}" fill="${COLORS[k%6]}"><title>${esc(stack[k])}: ${fmt(p)}</title></rect>`;});}
+    else s+=`<rect x="${x}" y="${y}" width="${bw*.76}" height="${Math.max(0,bh)}" rx="2" fill="${d.c||color}"><title>${esc(lbl(d.k))}: ${val(d.v)}</title></rect>`;
+    if(bw>16&&d.v)s+=`<text x="${x+bw*.38}" y="${y-3}" text-anchor="middle">${val(d.v)}</text>`;
+    const tx=x+bw*.38,ty=pt+H+12; if(rot)s+=`<text transform="translate(${tx},${ty}) rotate(-40)" text-anchor="end">${esc(lbl(d.k))}</text>`;else s+=`<text x="${tx}" y="${ty+2}" text-anchor="middle">${esc(lbl(d.k))}</text>`;});
+  return s+`<line class="ax" x1="${pl}" x2="${w-pr}" y1="${pt+H}" y2="${pt+H}"/></svg>`;
+}
+function hbars(data,{w=620,row=20,color="var(--c2)",val=fmt}={}){
+  if(!data.length)return `<div class="empty">Belum ada data.</div>`;
+  const pl=150,pr=50,h=data.length*row+10,max=Math.max(1,...data.map(d=>d.v));let s=`<svg viewBox="0 0 ${w} ${h}" role="img" style="max-width:${w*1.1}px">`;
+  data.forEach((d,i)=>{const y=5+i*row,bw=(w-pl-pr)*d.v/max;s+=`<text x="${pl-6}" y="${y+row*.62}" text-anchor="end">${esc(d.k.length>24?d.k.slice(0,23)+"…":d.k)}</text><rect x="${pl}" y="${y+3}" width="${Math.max(0,bw)}" height="${row-7}" rx="2" fill="${d.c||color}"><title>${esc(d.k)}: ${val(d.v)}</title></rect><text x="${pl+bw+4}" y="${y+row*.62}">${val(d.v)}</text>`;});
+  return s+"</svg>";
+}
+function heat(rows,years){
+  const cw=Math.max(28,Math.min(48,640/years.length)),pl=92,h=rows.length*18+28,w=pl+years.length*cw+4,max=Math.max(1,...rows.flatMap(r=>years.map(y=>r.byY[y]||0)));
+  let s=`<svg viewBox="0 0 ${w} ${h}" role="img" style="max-width:${w*1.3}px">`;years.forEach((y,i)=>s+=`<text x="${pl+i*cw+cw/2}" y="12" text-anchor="middle">${y}</text>`);
+  rows.forEach((r,j)=>{const yy=18+j*18;s+=`<text x="${pl-6}" y="${yy+12}" text-anchor="end">${esc(r.ak)}</text>`;
+    years.forEach((y,i)=>{const v=r.byY[y]||0,a=v?0.15+0.85*v/max:0;s+=`<rect x="${pl+i*cw+1}" y="${yy}" width="${cw-2}" height="16" rx="2" fill="${v?"var(--c1)":"var(--soft)"}" fill-opacity="${v?a.toFixed(2):1}"><title>${esc(r.ak)} ${y}: ${v} artikel</title></rect>${v?`<text x="${pl+i*cw+cw/2}" y="${yy+12}" text-anchor="middle" style="font-size:10px">${v}</text>`:""}`;});});
+  return s+"</svg>";
+}
+function niceStep(max){const raw=max/5,p=Math.pow(10,Math.floor(Math.log10(raw||1))),f=raw/p;return Math.max(1,(f<1.5?1:f<3?2:f<7?5:10)*p);}
+
+/* ---------- tampilan ---------- */
+function render(){
+  $("#tabs").innerHTML=TABS.filter(t=>t[0]!=="upd"||CFG.update||true).map(t=>`<button data-t="${t[0]}" class="${TAB===t[0]?"on":""}">${t[1]}</button>`).join("");
+  const S=DB.S, main=$("#main");
+  if(TAB==="ring")main.innerHTML=vRing(S);else if(TAB==="jur")main.innerHTML=vJur(S);else if(TAB==="rekap")main.innerHTML=vRekap(S);else if(TAB==="tahun")main.innerHTML=vTahun(S);else main.innerHTML=vUpd(S);
+}
+function lastUpd(){const t=DB.j.map(j=>j.at).filter(Boolean).sort().pop();return t?new Date(t).toLocaleString("id-ID",{dateStyle:"medium",timeStyle:"short"}):"belum pernah";}
+function vRing(S){
+  const H=S.filter(s=>s.n), tot=H.reduce((a,s)=>a+s.n,0), iss=H.reduce((a,s)=>a+s.nIss,0), y12=H.reduce((a,s)=>a+s.R.filter(r=>r[1]&&(NOW-new Date(r[1]))/864e5<=365).length,0);
+  const doi=tot?H.reduce((a,s)=>a+s.doi*s.n,0)/tot:NaN, act=H.filter(s=>s.st[0]==="a").length, warn=H.filter(s=>s.st[0]!=="a");
+  if(!H.length)return `<div class="card"><h1>Monitor Jurnal UNMER</h1><p class="lead">Belum ada data. ${CFG.update?'Buka tab <b>Pembaruan OJS</b> lalu tekan <b>Perbarui semua dari OJS</b>.':"Minta Pengelola memperbarui data dari OJS."}</p></div>`;
+  const ys=[];for(let y=THIS-11;y<=THIS;y++)ys.push(y);
+  const perY=ys.map(y=>({k:y,v:H.reduce((a,s)=>a+(s.byY[y]||0),0)}));
+  const rank=H.map(s=>({k:s.ak,v:s.R.filter(r=>r[2]>=Y0&&r[2]<=Y1).length})).sort((a,b)=>b.v-a.v);
+  const hy=[];for(let y=THIS-9;y<=THIS;y++)hy.push(y);
+  return `<div class="card"><div class="row"><div><h1>Monitor Jurnal UNMER</h1><p class="lead">Seluruh jurnal di jurnal.unmer.ac.id · data OAI-PMH OJS · diperbarui ${esc(lastUpd())}</p></div><span class="sp"></span><button class="b noprint" onclick="print()">Cetak</button></div></div>
+  <div class="kpis" style="margin-bottom:16px">${[[H.length+" / "+S.length,"jurnal sudah dipanen"],[fmt(tot),"artikel terbit"],[fmt(iss),"nomor terbitan"],[fmt(y12),"artikel 12 bulan terakhir"],[fmt(S.reduce((a,s)=>a+s.thisY,0)),"artikel terbitan "+THIS],[pct(doi),"artikel ber-DOI"],[act+" / "+H.length,"jurnal aktif (terbit ≤ 8 bulan)"]].map(k=>`<div class="kpi"><b>${k[0]}</b><span>${k[1]}</span></div>`).join("")}</div>
+  <div class="grid2"><div class="card"><h2>Artikel per tahun — semua jurnal</h2>${bars(perY)}</div>
+  <div class="card"><div class="row"><h2 style="margin:0">Peringkat jurnal menurut jumlah artikel</h2><span class="sp"></span>${yearPick()}</div>${hbars(rank)}</div></div>
+  <div class="card"><h2>Peta panas artikel per jurnal per tahun (10 tahun terakhir)</h2><div style="overflow:auto">${heat(H.slice().sort((a,b)=>a.ak.localeCompare(b.ak)),hy)}</div></div>
+  <div class="card"><h2>Perlu perhatian</h2>${warn.length?`<table><tr><th>Jurnal</th><th>Status</th><th>Terbitan terakhir</th><th class="n">Hari sejak artikel terakhir</th></tr>${warn.sort((a,b)=>(b.days||0)-(a.days||0)).map(s=>`<tr><td><a href="#" data-j="${s.p}">${esc(s.ak)}</a> <span class="mut">${esc(s.name)}</span></td><td>${stPill(s)}</td><td>${esc(s.lastIss?s.lastIss.lab:"–")}</td><td class="n">${fmt(s.days)}</td></tr>`).join("")}</table>`:`<p class="mut">Semua jurnal terbit dalam 8 bulan terakhir.</p>`}</div>`;
+}
+function yearPick(){const o=[];for(let y=THIS;y>=2005;y--)o.push(y);const sel=(v,id)=>`<select id="${id}" class="noprint">${o.map(y=>`<option${y===v?" selected":""}>${y}</option>`).join("")}</select>`;return `<span class="mut">Tahun</span> ${sel(Y0,"y0")} – ${sel(Y1,"y1")}`;}
+function vJur(S){
+  if(!SEL||!S.find(s=>s.p===SEL))SEL=(S.find(s=>s.n)||S[0]||{}).p;const s=S.find(x=>x.p===SEL);
+  const pick=`<select id="jSel">${S.slice().sort((a,b)=>a.ak.localeCompare(b.ak)).map(x=>`<option value="${x.p}"${x.p===SEL?" selected":""}>${esc(x.ak)} — ${esc(x.name)}${x.n?"":" (belum dipanen)"}</option>`).join("")}</select>`;
+  if(!s)return `<div class="card">${pick}</div>`;
+  const ys=[];if(s.y0)for(let y=Math.max(s.y0,THIS-14);y<=Math.max(THIS,s.y1);y++)ys.push(y);
+  const lastIss=s.issues.slice(-16).map(i=>({k:i.lab.replace(/^Vol\.?\s*/i,"V").replace(/\s*No\.?\s*/i,"/").replace(/\s*\((\d{4})\)/," ($1)"),v:i.n}));
+  const doiY=ys.map(y=>{const a=s.R.filter(r=>r[2]===y);return {k:y,v:a.length?Math.round(100*a.filter(r=>r[4]).length/a.length):0};});
+  const au={};s.R.forEach(r=>{const k=r[6]>=6?"6+":String(r[6]||0);au[k]=(au[k]||0)+1;});
+  const kw=Object.entries(s.kws).sort((a,b)=>b[1]-a[1]).slice(0,24), lg=Object.entries(s.langs).sort((a,b)=>b[1]-a[1]);
+  const LN={eng:"Inggris",ind:"Indonesia",en:"Inggris",id:"Indonesia"};
+  return `<div class="card"><div class="row">${pick}<span class="sp"></span><a class="b" href="https://jurnal.unmer.ac.id/index.php/${esc(s.p)}" target="_blank" rel="noopener">Buka di OJS ↗</a>${CFG.update?`<button class="b" data-h="${s.p}">⟳ Perbarui jurnal ini</button>`:""}</div>
+   <h1 style="margin-top:10px">${esc(s.name)}</h1><p class="lead">${esc(s.ak)} · SINTA ${esc(sintaLbl(s.sinta))}${s.unit?" · "+esc(s.unit):""}${s.frek?" · "+esc(s.frek):""} · ${stPill(s)} · dipanen ${s.at?esc(new Date(s.at).toLocaleString("id-ID",{dateStyle:"medium",timeStyle:"short"})):"belum"}</p></div>
+  ${s.n?`<div class="kpis" style="margin-bottom:16px">${[[fmt(s.n),"artikel"+(s.prevN!=null&&s.prevN!==s.n?` (${s.n-s.prevN>0?"+":""}${s.n-s.prevN} sejak panen sebelumnya)`:"")],[fmt(s.nIss),"nomor terbitan"],[s.y0+"–"+s.y1,"rentang tahun"],[fmt(s.thisY),"artikel "+THIS],[fmt(s.prevY),"artikel "+(THIS-1)],[isNaN(s.perIss)?"–":s.perIss.toFixed(1),"artikel per nomor"],[pct(s.doi),"ber-DOI"],[isNaN(s.au)?"–":s.au.toFixed(1),"penulis per artikel"],[s.lastIss?esc(s.lastIss.lab):"–","terbitan terakhir"+(s.days!=null?` · ${s.days} hari lalu`:"")]].map(k=>`<div class="kpi"><b style="font-size:${String(k[0]).length>12?16:24}px">${k[0]}</b><span>${k[1]}</span></div>`).join("")}</div>
+  <div class="grid2"><div class="card"><h2>Artikel per tahun</h2>${bars(ys.map(y=>({k:y,v:s.byY[y]||0})))}</div><div class="card"><h2>Artikel per nomor (16 terbitan terakhir)</h2>${bars(lastIss,{rot:true,color:"var(--c2)",h:260})}</div>
+  <div class="card"><h2>Nomor terbitan per tahun</h2>${bars(ys.map(y=>({k:y,v:s.issY[y]||0})),{color:"var(--c3)"})}<p class="mut">${s.frek?"Frekuensi menurut Direktori: "+esc(s.frek)+".":""}</p></div><div class="card"><h2>Cakupan DOI per tahun (%)</h2>${bars(doiY,{color:"var(--c4)",val:v=>v+"%"})}</div>
+  <div class="card"><h2>Jumlah penulis per artikel</h2>${bars(["0","1","2","3","4","5","6+"].map(k=>({k,v:au[k]||0})),{color:"var(--c5)"})}</div><div class="card"><h2>Bahasa artikel</h2>${hbars(lg.map(([k,v],i)=>({k:LN[k]||k,v,c:COLORS[i%6]})))}<h2 style="margin-top:14px">Kata kunci terbanyak</h2>${kw.map(([k,v])=>`<span class="kw">${esc(k)} <b>${v}</b></span>`).join("")||'<span class="mut">Tidak ada kata kunci di metadata.</span>'}</div></div>
+  <div class="card"><h2>Daftar nomor terbitan</h2><div class="tw" style="max-height:340px"><table><tr><th>Nomor</th><th class="n">Tahun</th><th>Tanggal artikel pertama</th><th class="n">Artikel</th></tr>${s.issues.slice().reverse().map(i=>`<tr><td>${esc(i.lab)}</td><td class="n">${i.y||"–"}</td><td>${esc(i.date)}</td><td class="n">${i.n}</td></tr>`).join("")}</table></div></div>
+  <div class="card"><h2>Artikel terbaru</h2><table><tr><th>Judul</th><th>Nomor</th><th>Tanggal</th><th>DOI</th></tr>${s.R.slice().sort((a,b)=>(b[1]||"").localeCompare(a[1]||"")).slice(0,20).map(r=>`<tr><td><a href="https://jurnal.unmer.ac.id/index.php/${esc(s.p)}/article/view/${r[0]}" target="_blank" rel="noopener">${esc(r[8])}</a></td><td>${esc(r[3])}</td><td>${esc(r[1])}</td><td>${r[4]?`<a href="https://doi.org/${esc(r[4])}" target="_blank" rel="noopener">${esc(r[4])}</a>`:"–"}</td></tr>`).join("")}</table></div>`
+  :`<div class="card empty">Jurnal ini belum dipanen dari OJS${CFG.update?" — tekan ⟳ Perbarui jurnal ini.":"."}</div>`}`;
+}
+const COLS=[["ak","Jurnal"],["sinta","SINTA",1],["unit","Unit"],["n","Artikel",1],["nIss","Nomor",1],["y0","Tahun awal",1],["y1","Tahun akhir",1],["lastLab","Terbitan terakhir"],["days","Hari sejak terbit",1],["pY0","Artikel periode",1],["thisY","Artikel "+THIS,1],["prevY","Artikel "+(THIS-1),1],["perIss","Artikel/nomor",1],["doi","% DOI",1],["au","Penulis/artikel",1],["stL","Status"]];
+function rowsRekap(S){return S.map(s=>Object.assign({},s,{lastLab:s.lastIss?s.lastIss.lab:"",pY0:s.R.filter(r=>r[2]>=Y0&&r[2]<=Y1).length,stL:s.st[1],sintaN:s.sinta==null?99:(s.sinta<=0?9:s.sinta)}));}
+function cell(r,k){const v=r[k];if(k==="ak")return `<a href="#" data-j="${r.p}"><b>${esc(v)}</b></a><div class="mut">${esc(r.name)}</div>`;if(k==="sinta")return esc(sintaLbl(v));if(k==="doi")return pct(v);if(k==="perIss"||k==="au")return isNaN(v)?"–":v.toFixed(1);if(k==="stL")return stPill(r);if(typeof v==="number")return fmt(v);return esc(v||"–");}
+function vRekap(S){
+  const R=rowsRekap(S).sort((a,b)=>{const k=SORT.k==="sinta"?"sintaN":SORT.k,x=a[k],y=b[k];return (typeof x==="number"||typeof y==="number")?((x??-1e9)-(y??-1e9))*SORT.d:String(x||"").localeCompare(String(y||""))*SORT.d;});
+  const H=R.filter(r=>r.n),sum=k=>H.reduce((a,r)=>a+(r[k]||0),0),tot=sum("n");
+  const T={ak:"Semua jurnal",n:tot,nIss:sum("nIss"),y0:H.length?Math.min(...H.map(r=>r.y0)):null,y1:H.length?Math.max(...H.map(r=>r.y1)):null,pY0:sum("pY0"),thisY:sum("thisY"),prevY:sum("prevY"),perIss:sum("nIss")?tot/sum("nIss"):NaN,doi:tot?H.reduce((a,r)=>a+r.doi*r.n,0)/tot:NaN,au:tot?H.reduce((a,r)=>a+r.au*r.n,0)/tot:NaN};
+  return `<div class="card"><div class="row"><div><h1>Rekap per jurnal</h1><p class="lead">${S.length} jurnal · klik judul kolom untuk mengurutkan · "Artikel periode" mengikuti pilihan tahun.</p></div><span class="sp"></span>${yearPick()}<button class="b noprint" id="xCsv">Unduh CSV</button><button class="b noprint" id="xXls">Unduh Excel</button><button class="b noprint" onclick="print()">Cetak</button></div></div>
+  <div class="card" style="padding:0"><div class="tw"><table><tr>${COLS.map(c=>`<th data-s="${c[0]}" class="${c[2]?"n":""}">${c[1]==="Artikel periode"?`Artikel ${Y0}–${Y1}`:c[1]}${SORT.k===c[0]?(SORT.d>0?" ▲":" ▼"):""}</th>`).join("")}</tr>
+  ${R.map(r=>`<tr>${COLS.map(c=>`<td class="${c[2]?"n":""}">${cell(r,c[0])}</td>`).join("")}</tr>`).join("")}
+  <tr class="tot">${COLS.map(c=>`<td class="${c[2]?"n":""}">${c[0]==="ak"?"Semua jurnal ("+H.length+" dipanen)":c[0] in T?cell(T,c[0]):""}</td>`).join("")}</tr></table></div></div>`;
+}
+function vTahun(S){
+  const H=S.filter(s=>s.n).sort((a,b)=>a.ak.localeCompare(b.ak)),ys=[];for(let y=Y0;y<=Y1;y++)ys.push(y);
+  const tY=y=>H.reduce((a,s)=>a+(s.byY[y]||0),0),tI=y=>H.reduce((a,s)=>a+(s.issY[y]||0),0);
+  return `<div class="card"><div class="row"><div><h1>Rekap per tahun</h1><p class="lead">Jumlah artikel (dan nomor terbitan) setiap jurnal per tahun.</p></div><span class="sp"></span>${yearPick()}<button class="b noprint" id="xCsvY">Unduh CSV</button></div></div>
+  <div class="grid2"><div class="card"><h2>Artikel semua jurnal</h2>${bars(ys.map(y=>({k:y,v:tY(y)})))}</div><div class="card"><h2>Nomor terbitan semua jurnal</h2>${bars(ys.map(y=>({k:y,v:tI(y)})),{color:"var(--c3)"})}</div></div>
+  <div class="card" style="padding:0"><div class="tw"><table><tr><th>Jurnal</th>${ys.map(y=>`<th class="n">${y}</th>`).join("")}<th class="n">Jumlah</th></tr>
+  ${H.map(s=>`<tr><td><a href="#" data-j="${s.p}"><b>${esc(s.ak)}</b></a></td>${ys.map(y=>`<td class="n">${s.byY[y]?fmt(s.byY[y])+`<span class="mut"> (${s.issY[y]||0})</span>`:"–"}</td>`).join("")}<td class="n"><b>${fmt(ys.reduce((a,y)=>a+(s.byY[y]||0),0))}</b></td></tr>`).join("")}
+  <tr class="tot"><td>Semua jurnal</td>${ys.map(y=>`<td class="n">${fmt(tY(y))}<span class="mut"> (${tI(y)})</span></td>`).join("")}<td class="n">${fmt(ys.reduce((a,y)=>a+tY(y),0))}</td></tr></table></div><p class="mut" style="padding:0 12px">Angka dalam kurung: jumlah nomor terbitan.</p></div>`;
+}
+function vUpd(S){
+  const log=(DB.log||[]).slice().reverse().map(l=>`${l.at.slice(0,16).replace("T"," ")}  ${l.p.padEnd(10)} ${String(l.n).padStart(5)} artikel${l.prev!=null&&l.prev!==l.n?` (${l.n-l.prev>0?"+":""}${l.n-l.prev})`:""}  · ${l.u}`).join("\n");
+  return `<div class="card"><h1>Pembaruan dari OJS</h1><p class="lead">Data diambil dari OAI-PMH tiap jurnal di jurnal.unmer.ac.id (metadata artikel terbit: tanggal, nomor, DOI, bahasa, penulis, kata kunci). Daftar jurnal dibaca dari portal dan daftar set OAI, sehingga jurnal yang tidak tampil di portal ikut terdeteksi.</p>
+  ${CFG.update?`<div class="row" style="margin-top:12px"><button class="b p" id="uAll">⟳ Perbarui semua dari OJS</button><button class="b" id="uList">Perbarui daftar jurnal saja</button><span class="sp"></span><input type="text" id="mP" placeholder="kode jurnal, mis. bijak" size="18"><button class="b" id="mAdd">+ Tambah jurnal</button></div><div class="prog"><i id="uP"></i></div><div id="uS" class="mut"></div>`:`<p class="mut">Akun Anda hanya dapat melihat. Pembaruan dilakukan oleh Pengelola.</p>`}</div>
+  <div class="card" style="padding:0"><div class="tw"><table><tr><th>Kode</th><th>Nama jurnal</th><th>Sumber daftar</th><th class="n">Artikel</th><th>Dipanen</th>${CFG.update?"<th></th>":""}</tr>${S.slice().sort((a,b)=>a.p.localeCompare(b.p)).map(s=>{const J=DB.j.find(j=>j.p===s.p);return `<tr><td>${esc(s.p)}</td><td>${esc(s.name)}</td><td>${J.src==="portal"?"portal":J.src==="oai"?"set OAI (tidak di portal)":"ditambah manual"}</td><td class="n">${fmt(s.n)}</td><td>${s.at?esc(new Date(s.at).toLocaleString("id-ID",{dateStyle:"short",timeStyle:"short"})):"–"}</td>${CFG.update?`<td><button class="b s" data-h="${s.p}">⟳</button>${J.src==="manual"?` <button class="b s" data-rm="${s.p}">hapus</button>`:""}</td>`:""}</tr>`;}).join("")}</table></div></div>
+  <div class="card"><h2>Riwayat pembaruan</h2><div class="log">${esc(log)||"Belum ada."}</div></div>`;
+}
+
+/* ---------- ekspor ---------- */
+function dl(name,text,type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);}
+function tableRekap(){const R=rowsRekap(DB.S);const head=["Kode","Jurnal","Nama","SINTA","Unit","Artikel","Nomor","Tahun awal","Tahun akhir","Terbitan terakhir","Tanggal artikel terakhir","Hari sejak terbit",`Artikel ${Y0}-${Y1}`,"Artikel "+THIS,"Artikel "+(THIS-1),"Artikel per nomor","% DOI","Penulis per artikel","Status"];
+  return [head,...R.map(r=>[r.p,r.ak,r.name,sintaLbl(r.sinta),r.unit,r.n,r.nIss,r.y0??"",r.y1??"",r.lastLab,r.last,r.days??"",r.pY0,r.thisY,r.prevY,isNaN(r.perIss)?"":r.perIss.toFixed(2),isNaN(r.doi)?"":Math.round(r.doi*100),isNaN(r.au)?"":r.au.toFixed(2),r.stL])];}
+function tableTahun(){const ys=[];for(let y=Y0;y<=Y1;y++)ys.push(y);const H=DB.S.filter(s=>s.n);return [["Kode","Jurnal",...ys.flatMap(y=>[y+" artikel",y+" nomor"])],...H.map(s=>[s.p,s.ak,...ys.flatMap(y=>[s.byY[y]||0,s.issY[y]||0])])];}
+const csv=t=>"﻿"+t.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(";")).join("\r\n");
+function xls(t){const x=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));return `<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Styles><Style ss:ID="h"><Font ss:Bold="1"/></Style></Styles><Worksheet ss:Name="Rekap jurnal"><Table>${t.map((r,i)=>`<Row>${r.map(c=>`<Cell${i?"":' ss:StyleID="h"'}><Data ss:Type="${typeof c==="number"||(/^-?\d+(\.\d+)?$/.test(String(c))&&i)?"Number":"String"}">${x(c)}</Data></Cell>`).join("")}</Row>`).join("")}</Table></Worksheet></Workbook>`;}
+
+/* ---------- pembaruan ---------- */
+async function harvestOne(p,say){const r=await api("harvest?j="+encodeURIComponent(p),{});say&&say(`${p}: ${r.n} artikel${r.prevN!=null&&r.prevN!==r.n?` (${r.n-r.prevN>0?"+":""}${r.n-r.prevN})`:""}`);return r;}
+async function updateAll(listOnly){
+  const btns=document.querySelectorAll("#uAll,#uList");btns.forEach(b=>b.disabled=true);const S=$("#uS"),P=$("#uP");
+  try{S.textContent="Membaca daftar jurnal dari portal OJS…";await api("refresh-list",{});await load(true);
+    if(!listOnly){const L=DB.j.map(j=>j.p),fail=[],msg=[];for(let i=0;i<L.length;i++){$("#uS").textContent=`Memanen ${L[i]} (${i+1}/${L.length})…`;$("#uP").style.width=(100*i/L.length)+"%";try{await harvestOne(L[i],m=>msg.push(m));}catch(e){fail.push(L[i]+": "+e.message);}}
+      await load(true);TAB="upd";render();$("#uP").style.width="100%";$("#uS").innerHTML=`Selesai: ${L.length-fail.length} jurnal diperbarui.${fail.length?` <span style="color:var(--bad)">Gagal: ${esc(fail.join("; "))}</span>`:""}`;}
+    else{TAB="upd";render();$("#uS").textContent="Daftar jurnal diperbarui: "+DB.j.length+" jurnal.";}
+  }catch(e){S.textContent="Gagal: "+e.message;}finally{document.querySelectorAll("#uAll,#uList").forEach(b=>b.disabled=false);}
+}
+async function load(quiet){if(!quiet)$("#main").innerHTML='<div class="empty">Memuat data…</div>';DB=await api("data");CFG.update=CFG.update||DB.me.update;DB.S=DB.j.map(stats);}
+
+document.addEventListener("click",async e=>{
+  const t=e.target.closest("[data-t]");if(t){TAB=t.dataset.t;render();scrollTo(0,0);return;}
+  const j=e.target.closest("[data-j]");if(j){e.preventDefault();SEL=j.dataset.j;TAB="jur";render();scrollTo(0,0);return;}
+  const s=e.target.closest("th[data-s]");if(s){SORT=SORT.k===s.dataset.s?{k:SORT.k,d:-SORT.d}:{k:s.dataset.s,d:s.classList.contains("n")?-1:1};render();return;}
+  const h=e.target.closest("[data-h]");if(h){h.disabled=true;const o=h.textContent;h.textContent="…";try{await harvestOne(h.dataset.h);await load(true);if(TAB==="jur")SEL=h.dataset.h;render();}catch(er){h.textContent="!";h.title=er.message;alertBox(er.message);}return;}
+  const rm=e.target.closest("[data-rm]");if(rm){if(rm.dataset.arm!=="1"){rm.dataset.arm="1";rm.textContent="yakin?";setTimeout(()=>{rm.dataset.arm="";rm.textContent="hapus";},3000);return;}await api("manual",{p:rm.dataset.rm,remove:1});await load(true);render();return;}
+  if(e.target.id==="uAll")updateAll(false);if(e.target.id==="uList")updateAll(true);
+  if(e.target.id==="mAdd"){const p=$("#mP").value.trim().toLowerCase();if(!p)return;try{await api("manual",{p});await harvestOne(p);await load(true);render();$("#uS").textContent="Jurnal "+p+" ditambahkan.";}catch(er){$("#uS").textContent="Gagal: "+er.message;}}
+  if(e.target.id==="xCsv")dl(`Rekap-Jurnal-UNMER-${NOW.toISOString().slice(0,10)}.csv`,csv(tableRekap()),"text/csv;charset=utf-8");
+  if(e.target.id==="xXls")dl(`Rekap-Jurnal-UNMER-${NOW.toISOString().slice(0,10)}.xls`,xls(tableRekap()),"application/vnd.ms-excel");
+  if(e.target.id==="xCsvY")dl(`Rekap-Jurnal-UNMER-per-tahun-${Y0}-${Y1}.csv`,csv(tableTahun()),"text/csv;charset=utf-8");
+});
+document.addEventListener("change",e=>{if(e.target.id==="jSel"){SEL=e.target.value;render();}if(e.target.id==="y0"||e.target.id==="y1"){Y0=+$("#y0").value;Y1=+$("#y1").value;if(Y0>Y1)[Y0,Y1]=[Y1,Y0];render();}});
+function alertBox(m){const d=document.createElement("div");d.style.cssText="position:fixed;right:16px;bottom:16px;background:var(--bad);color:#fff;padding:10px 14px;border-radius:8px;z-index:99;max-width:420px";d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.remove(),6000);}
+load().then(()=>{if(!DB.S.some(s=>s.n))TAB=CFG.update?"upd":"ring";render();}).catch(e=>{$("#main").innerHTML=`<div class="card empty">Gagal memuat: ${esc(e.message)}</div>`;});
+})();
+</script>
+</body>
+</html>
