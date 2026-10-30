@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.9.0 — 2026-10-30
+- **Studio Kualitatif (gaya NVivo)**, enam langkah:
+  - **Sumber & kasus**: transkrip/dokumen (tempel, impor .txt/.docx), kasus per sumber atau **per nama pembicara** (FGD), *classification sheet* atribut; panduan 6 fase analisis tematik (Braun & Clarke 2006); ambil data dari Analisis Kualitatif lama.
+  - **Coding**: node bertingkat (induk–anak) dengan memo, coding stripes, anotasi paragraf, **dua pengode** (A/B).
+  - **Query**: frekuensi kata + word cloud (stopword Indonesia/Inggris), pencarian teks dengan konteks (KWIC) + kodekan hasil, query coding dengan saringan atribut kasus.
+  - **Matrix coding** (node × kasus/nilai atribut; jumlah, % baris, % kolom) dan **framework matrix** (kasus × tema).
+  - **Visualisasi**: hierarchy chart (treemap), cluster analysis node (Jaccard, average linkage), ko-okurensi.
+  - **Perbandingan pengode**: persen kesepakatan dan **Cohen's κ** per node (tafsiran Landis & Koch).
+- **Analisis Skala Psikologi**: butir unfavorable, korelasi butir-total terkoreksi, α jika butir dihapus, **Cronbach α**, **McDonald ω**, skor total, z, T, persentil, kategori norma (3 atau 5); skor bisa ditambahkan ke dataset.
+- **Analisis Citra di kanvas (gaya Orange Image Analytics)**: widget Import Images (subfolder = kategori), Image Embedding (fitur visual lokal: warna HSV, colourfulness, tekstur GLCM, arah tepi, entropi, perkiraan hijau/langit, piksel mini — bukan jaringan saraf), Image Viewer, **Image Grid** (algoritma Orange: ukuran grid berkurtosis + penugasan Hungarian); template *Analisis citra* dengan 24 citra sintetis.
+- Perbaikan: menu langkah di kiri tidak lagi tertutup panel kredit.
+- Angka diverifikasi terhadap scikit-learn, SciPy, scikit-image, dan NumPy — `tests/v29.test.js`.
+
 ## 2.8.0 — 2026-10-30
 - **Metode baru: Lingkungan Bangunan (gaya Ecotect)** di jalur *Ruang, bangunan & lingkungan*, tujuh langkah:
   - **Lintasan matahari** stereografik (tanggal 21 tiap bulan + garis jam/analema), tabel posisi per jam, terbit/terbenam, panjang bayangan; 17 kota preset (Indonesia + Kanazawa) atau koordinat sendiri. Algoritma NOAA/Meeus, selisih < 0,01° terhadap NREL SPA (pvlib).

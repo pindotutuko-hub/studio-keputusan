@@ -26,6 +26,7 @@ const faces = fs.readFileSync(path.join(SRC, 'index.html'), 'utf8').match(/@font
   await p.click('[data-owtpl="keputusan"]'); await p.click('[data-owtpl="keputusan"]'); await p.click('[data-owemb="ahp-res"]'); imgs.canvas = await shot('canvas', '.owlay');
   await modgo('io'); imgs.io = await shot('io', '#v27_io');
   await modgo('bldenv'); await step('be-shade'); imgs.bldenv = await shot('bldenv', '#v27_be_shade .grid2');
+  await modgo('qdas'); await p.click('#bQsSample'); await step('qs-code'); imgs.qdas = await shot('qdas', '#v27_qs_code .qscode');
   const build = async pages => { const html = (await p.evaluate(o => window.__manualDoc(o), { pages, imgs })).replace('<style>', '<style>' + faces + '\n');
     const tmp = path.join(OUT, '_manual.html'); fs.writeFileSync(tmp, html); const q = await b.newPage(); await q.goto('file://' + tmp); await q.waitForTimeout(500);
     await q.pdf({ path: PDF, format: 'A4', printBackground: true, displayHeaderFooter: true, headerTemplate: '<span></span>', footerTemplate: `<div style="font:8px sans-serif;width:100%;text-align:center;color:#888">Panduan Studio Keputusan 2 · v${ver} · <span class="pageNumber"></span>/<span class="totalPages"></span></div>`, margin: { top: '16mm', bottom: '16mm', left: '14mm', right: '14mm' } });
