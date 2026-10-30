@@ -72,6 +72,10 @@ function pt_jr_route() {
 	header( 'X-Robots-Tag: noindex, nofollow' );
 	header( 'Cache-Control: no-store, private' );
 	$is_api = (bool) preg_match( '#^/api/#', $rest );
+	/* Daftar Aplikasi Khusus terbuka tanpa login; tiap aplikasi (kecuali Direktori) tetap meminta login. */
+	if ( '' === $app && ! is_user_logged_in() ) {
+		pt_jr_landing_public();
+	}
 	/* Direktori Jurnal terbuka untuk umum (hanya baca); fitur pembaruan dari OJS tetap khusus Pengelola yang login. */
 	if ( 'direktori' === $app && ! $is_api && '' !== $rest && ! current_user_can( 'jurnal_view' ) ) {
 		$f = ltrim( $rest, '/' );
@@ -111,6 +115,20 @@ function pt_jr_route() {
 		pt_jr_static( PT_JR_APP, '' === $f ? 'index.html' : $f, 'jurnal' );
 	}
 	pt_jd_serve( '' === $f ? 'index.html' : $f );
+}
+
+function pt_jr_landing_public() {
+	$apps = array(
+		array( '/khusus/direktori/', 'Direktori Jurnal UNMER', 'Direktori jurnal dan jaringan publikasi: mitra bestari, dewan editor, afiliasi, sasaran publikasi.', 'Terbuka untuk umum →' ),
+		array( '/khusus/jurnal/', 'Monitor Jurnal UNMER', 'Pemantau terbitan seluruh jurnal di jurnal.unmer.ac.id — grafik dan rekap per jurnal maupun semua jurnal.', '🔒 Masuk untuk membuka →' ),
+		array( '/khusus/pjpi/', 'PJPI Monitoring', 'Pemantau naskah OJS semua jurnal UNMER untuk PJPI — cek naskah per jurnal, rekomendasi tindakan, draf email per kasus.', '🔒 Masuk untuk membuka →' ),
+		array( '/khusus/mintakat/', 'Mintakat Monitoring', 'Pemantau naskah OJS Mintakat: Jurnal Arsitektur — tracker redaksi, rekomendasi tindakan, draf email per kasus.', '🔒 Masuk untuk membuka →' ),
+	);
+	$h = '';
+	foreach ( $apps as $a ) {
+		$h .= '<a class="app" href="' . esc_url( home_url( $a[0] ) ) . '"><h2>' . esc_html( $a[1] ) . '</h2><p>' . esc_html( $a[2] ) . '</p><small>' . esc_html( $a[3] ) . '</small></a>';
+	}
+	pt_khusus_page( '<h1>Aplikasi Khusus</h1><p class="lead">Aplikasi kerja pengelolaan jurnal Universitas Merdeka Malang. Direktori Jurnal terbuka untuk umum; aplikasi lain hanya untuk pengguna terdaftar. <a href="' . esc_url( wp_login_url( home_url( '/khusus/' ) ) ) . '"><b>Masuk</b></a></p><div class="apps">' . $h . '</div><p class="note">Belum punya akun? Hubungi pengelola PJPI Universitas Merdeka Malang.</p>' );
 }
 
 function pt_jr_landing() {
