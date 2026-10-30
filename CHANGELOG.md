@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.9.2
+- Video tutorial kini bernarasi suara (narator laki-laki, bahasa Indonesia) pada keempat video singkat.
+- Video baru **Panduan lengkap seluruh fitur** (±11 menit): direkam langsung dari aplikasi yang sedang dioperasikan, dengan narasi dan keterangan teks.
+
 ## 2.9.1
 - **Proyek terpisah** dalam satu browser: pilih/ganti/gandakan/hapus proyek di header (＋ Proyek). Tiap proyek menyimpan datanya sendiri, laporan gabungan hanya berisi proyek aktif.
 - Data dari **Lensa Preseden** otomatis dibuka di proyek tersendiri "Lensa Preseden (foto)"; proyek lain (mis. perbankan) tetap utuh.
