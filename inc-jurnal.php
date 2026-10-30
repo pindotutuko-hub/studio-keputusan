@@ -117,18 +117,69 @@ function pt_jr_route() {
 	pt_jd_serve( '' === $f ? 'index.html' : $f );
 }
 
-function pt_jr_landing_public() {
-	$apps = array(
-		array( '/khusus/direktori/', 'Direktori Jurnal UNMER', 'Direktori jurnal dan jaringan publikasi: mitra bestari, dewan editor, afiliasi, sasaran publikasi.', 'Terbuka untuk umum →' ),
-		array( '/khusus/jurnal/', 'Monitor Jurnal UNMER', 'Pemantau terbitan seluruh jurnal di jurnal.unmer.ac.id — grafik dan rekap per jurnal maupun semua jurnal.', '🔒 Masuk untuk membuka →' ),
-		array( '/khusus/pjpi/', 'PJPI Monitoring', 'Pemantau naskah OJS semua jurnal UNMER untuk PJPI — cek naskah per jurnal, rekomendasi tindakan, draf email per kasus.', '🔒 Masuk untuk membuka →' ),
-		array( '/khusus/mintakat/', 'Mintakat Monitoring', 'Pemantau naskah OJS Mintakat: Jurnal Arsitektur — tracker redaksi, rekomendasi tindakan, draf email per kasus.', '🔒 Masuk untuk membuka →' ),
-	);
-	$h = '';
-	foreach ( $apps as $a ) {
-		$h .= '<a class="app" href="' . esc_url( home_url( $a[0] ) ) . '"><h2>' . esc_html( $a[1] ) . '</h2><p>' . esc_html( $a[2] ) . '</p><small>' . esc_html( $a[3] ) . '</small></a>';
+/* Login Aplikasi Khusus: halaman masuk sendiri di /khusus/ (formulir dikirim ke WordPress; kata sandi tidak disimpan aplikasi). */
+function pt_jr_to( $to ) {
+	$to = is_string( $to ) ? $to : '';
+	return preg_match( '#^/khusus/[a-z0-9_/-]*$#i', $to ) ? $to : '/khusus/';
+}
+add_filter(
+	'login_url',
+	function ( $url, $redirect ) {
+		$path = $redirect ? wp_parse_url( $redirect, PHP_URL_PATH ) : '';
+		if ( is_string( $path ) && 0 === strpos( $path, '/khusus/' ) ) {
+			return home_url( '/khusus/?to=' . rawurlencode( pt_jr_to( $path ) ) . '#masuk' );
+		}
+		return $url;
+	},
+	20,
+	2
+);
+add_action(
+	'wp_login_failed',
+	function () {
+		$to = isset( $_POST['pt_khusus_to'] ) ? pt_jr_to( sanitize_text_field( wp_unslash( $_POST['pt_khusus_to'] ) ) ) : '';
+		if ( '' !== $to ) {
+			wp_safe_redirect( home_url( '/khusus/?login=gagal&to=' . rawurlencode( $to ) . '#masuk' ) );
+			exit;
+		}
 	}
-	pt_khusus_page( '<h1>Aplikasi Khusus</h1><p class="lead">Aplikasi kerja pengelolaan jurnal Universitas Merdeka Malang. Direktori Jurnal terbuka untuk umum; aplikasi lain hanya untuk pengguna terdaftar. <a href="' . esc_url( wp_login_url( home_url( '/khusus/' ) ) ) . '"><b>Masuk</b></a></p><div class="apps">' . $h . '</div><p class="note">Belum punya akun? Hubungi pengelola PJPI Universitas Merdeka Malang.</p>' );
+);
+add_filter(
+	'authenticate',
+	function ( $user, $username, $password ) {
+		if ( isset( $_POST['pt_khusus_to'] ) && ( '' === $username || '' === $password ) ) {
+			do_action( 'wp_login_failed', $username, new WP_Error( 'empty' ) );
+		}
+		return $user;
+	},
+	99,
+	3
+);
+function pt_jr_landing_public() {
+	$to   = isset( $_GET['to'] ) ? pt_jr_to( sanitize_text_field( wp_unslash( $_GET['to'] ) ) ) : '/khusus/';
+	$fail = isset( $_GET['login'] ) && 'gagal' === $_GET['login'];
+	$apps = array(
+		array( '/khusus/direktori/', 'Direktori Jurnal UNMER', 'Direktori jurnal dan jaringan publikasi: mitra bestari, dewan editor, afiliasi, sasaran publikasi.', 'Terbuka untuk umum →', true ),
+		array( '/khusus/jurnal/', 'Monitor Jurnal UNMER', 'Pemantau terbitan seluruh jurnal di jurnal.unmer.ac.id — grafik dan rekap per jurnal maupun semua jurnal.', '🔒 Login untuk membuka', false ),
+		array( '/khusus/pjpi/', 'PJPI Monitoring', 'Pemantau naskah OJS semua jurnal UNMER untuk PJPI — cek naskah per jurnal, rekomendasi tindakan, draf email per kasus.', '🔒 Login untuk membuka', false ),
+		array( '/khusus/mintakat/', 'Mintakat Monitoring', 'Pemantau naskah OJS Mintakat: Jurnal Arsitektur — tracker redaksi, rekomendasi tindakan, draf email per kasus.', '🔒 Login untuk membuka', false ),
+	);
+	$names = array( '/khusus/jurnal/' => 'Monitor Jurnal UNMER', '/khusus/pjpi/' => 'PJPI Monitoring', '/khusus/mintakat/' => 'Mintakat Monitoring' );
+	$h     = '';
+	foreach ( $apps as $a ) {
+		$href = $a[4] ? home_url( $a[0] ) : home_url( '/khusus/?to=' . rawurlencode( $a[0] ) . '#masuk' );
+		$h   .= '<a class="app" href="' . esc_url( $href ) . '"><h2>' . esc_html( $a[1] ) . '</h2><p>' . esc_html( $a[2] ) . '</p><small>' . esc_html( $a[3] ) . '</small></a>';
+	}
+	$tujuan = '/khusus/' !== $to ? '<p class="tuj">Untuk membuka <b>' . esc_html( isset( $names[ preg_replace( '#^(/khusus/[a-z0-9_-]+/).*$#i', '$1', $to ) ] ) ? $names[ preg_replace( '#^(/khusus/[a-z0-9_-]+/).*$#i', '$1', $to ) ] : 'aplikasi ini' ) . '</b>, silakan login.</p>' : '';
+	$form   = '<section class="login" id="masuk"><h2>Login</h2>' . $tujuan . ( $fail ? '<p class="err">Nama pengguna atau kata sandi salah. Silakan coba lagi.</p>' : '' ) .
+		'<form method="post" action="' . esc_url( site_url( 'wp-login.php', 'login_post' ) ) . '">' .
+		'<label>Nama pengguna atau email<input type="text" name="log" autocomplete="username" required></label>' .
+		'<label>Kata sandi<input type="password" name="pwd" autocomplete="current-password" required></label>' .
+		'<label class="cb"><input type="checkbox" name="rememberme" value="forever"> Ingat saya</label>' .
+		'<input type="hidden" name="redirect_to" value="' . esc_attr( home_url( $to ) ) . '"><input type="hidden" name="pt_khusus_to" value="' . esc_attr( $to ) . '">' .
+		'<button type="submit">Login</button></form><p class="small"><a href="' . esc_url( wp_lostpassword_url( home_url( '/khusus/' ) ) ) . '">Lupa kata sandi?</a> · Belum punya akun? Hubungi pengelola PJPI Universitas Merdeka Malang.</p></section>';
+	$css    = '<style>.wrap2{display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start}@media(max-width:860px){.wrap2{grid-template-columns:1fr}}.login{background:#fff;border:1px solid #d9cfbf;border-top:5px solid #c4572a;border-radius:10px;padding:18px 20px;position:sticky;top:16px}.login h2{margin:0 0 8px;font:600 22px Georgia,serif}.login label{display:block;font-size:13px;color:#5d564b;margin:10px 0 0}.login input[type=text],.login input[type=password]{display:block;width:100%;box-sizing:border-box;margin-top:4px;padding:9px 10px;border:1px solid #cfc4b2;border-radius:8px;font:inherit}.login .cb{display:flex;gap:6px;align-items:center}.login button{margin-top:14px;width:100%;padding:10px;border:0;border-radius:8px;background:#c4572a;color:#fff;font:600 15px system-ui,sans-serif;cursor:pointer}.login .err{background:#f6d6cb;color:#8a2d12;padding:8px 10px;border-radius:8px;font-size:13.5px}.login .tuj{background:#f5efe4;padding:8px 10px;border-radius:8px;font-size:13.5px;margin:0 0 4px}.login .small{font-size:12.5px;color:#6b6255;margin:12px 0 0}.apps{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}main{max-width:1180px}</style>';
+	pt_khusus_page( $css . '<h1>Aplikasi Khusus</h1><p class="lead">Aplikasi kerja pengelolaan jurnal Universitas Merdeka Malang. Direktori Jurnal terbuka untuk umum; aplikasi lain hanya untuk pengguna terdaftar.</p><div class="wrap2"><div class="apps">' . $h . '</div>' . $form . '</div>' );
 }
 
 function pt_jr_landing() {
