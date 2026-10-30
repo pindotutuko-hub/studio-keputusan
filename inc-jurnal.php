@@ -72,6 +72,14 @@ function pt_jr_route() {
 	header( 'X-Robots-Tag: noindex, nofollow' );
 	header( 'Cache-Control: no-store, private' );
 	$is_api = (bool) preg_match( '#^/api/#', $rest );
+	/* Direktori Jurnal terbuka untuk umum (hanya baca); fitur pembaruan dari OJS tetap khusus Pengelola yang login. */
+	if ( 'direktori' === $app && ! $is_api && '' !== $rest && ! current_user_can( 'jurnal_view' ) ) {
+		$f = ltrim( $rest, '/' );
+		if ( 'index.html' === ( '' === $f ? 'index.html' : $f ) && ! is_file( PT_JR_DIRAPP . '/index.html' ) ) {
+			pt_khusus_page( '<h1>Direktori belum tersedia</h1>' );
+		}
+		pt_jd_serve( '' === $f ? 'index.html' : $f );
+	}
 	if ( ! is_user_logged_in() ) {
 		if ( $is_api ) {
 			pt_jr_json( array( 'error' => 'Silakan login.' ), 401 );
@@ -109,7 +117,7 @@ function pt_jr_landing() {
 	$cards = array();
 	if ( current_user_can( 'jurnal_view' ) ) {
 		$cards[] = array( '/khusus/jurnal/', 'Monitor Jurnal UNMER', 'Pemantau terbitan seluruh jurnal di jurnal.unmer.ac.id — grafik dan rekap per jurnal maupun semua jurnal, diperbarui langsung dari OJS.' );
-		$cards[] = array( '/khusus/direktori/', 'Direktori Jurnal UNMER', 'Direktori jurnal dan jaringan publikasi: mitra bestari, dewan editor, afiliasi, sasaran publikasi — dengan cek pembaruan dari OJS.' );
+		$cards[] = array( '/khusus/direktori/', 'Direktori Jurnal UNMER', 'Direktori jurnal dan jaringan publikasi: mitra bestari, dewan editor, afiliasi, sasaran publikasi — dengan cek pembaruan dari OJS. Terbuka untuk umum (hanya baca).' );
 	}
 	if ( current_user_can( 'pjpi_view' ) || current_user_can( 'pjpi_admin' ) ) {
 		$cards[] = array( '/khusus/pjpi/', 'PJPI Monitoring', 'Pemantau naskah OJS semua jurnal UNMER untuk PJPI — cek artikel/naskah per jurnal, rekomendasi tindakan, draf email per kasus, ekspor Excel. Login per peran dan per jurnal.' );
@@ -124,7 +132,7 @@ function pt_jr_landing() {
 	foreach ( $cards as $c ) {
 		$h .= '<a class="app" href="' . esc_url( home_url( $c[0] ) ) . '"><h2>' . esc_html( $c[1] ) . '</h2><p>' . esc_html( $c[2] ) . '</p><small>Buka aplikasi →</small></a>';
 	}
-	pt_khusus_page( '<h1>Aplikasi Khusus</h1><p class="lead">Aplikasi kerja yang hanya dapat dibuka oleh pengguna terdaftar.</p><div class="apps">' . $h . '</div><p class="note">Akses diatur dari WP Admin → Pengguna (peran Jurnal UNMER — Pembaca/Pengelola, Mintakat — Admin/Editor/Pembaca). Data aplikasi disimpan di server dan tidak dapat diakses publik.</p>' );
+	pt_khusus_page( '<h1>Aplikasi Khusus</h1><p class="lead">Aplikasi kerja yang hanya dapat dibuka oleh pengguna terdaftar.</p><div class="apps">' . $h . '</div><p class="note">Semua aplikasi di sini wajib login, kecuali Direktori Jurnal UNMER yang terbuka untuk umum (hanya baca). Akses diatur dari WP Admin → Pengguna (peran Jurnal UNMER, PJPI, dan Mintakat). Data aplikasi disimpan di server, di luar folder publik.</p>' );
 }
 
 /* ---------------- utilitas ---------------- */
@@ -631,6 +639,8 @@ function pt_jd_serve( $f ) {
 		'nonce'  => wp_create_nonce( 'pt_jr' ),
 		'user'   => wp_get_current_user()->display_name,
 		'update' => current_user_can( 'jurnal_update' ),
+		'public' => ! current_user_can( 'jurnal_view' ),
+		'login'  => wp_login_url( home_url( '/khusus/' ) ),
 	);
 	$ovr  = pt_jr_read( 'dir-ovr.json', array( 'j' => array(), 'log' => array() ) );
 	$data = (string) file_get_contents( PT_JR_DIRAPP . '/data.json' );

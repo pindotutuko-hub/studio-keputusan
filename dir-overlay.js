@@ -163,7 +163,9 @@
     var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
     var bar = document.createElement("div"); bar.id = "ptjBar";
     var n = Object.keys(OVR.j || {}).length;
-    bar.innerHTML = "<b>APLIKASI KHUSUS</b><a href='" + esc(CFG.home || "/khusus/") + "'>← Daftar aplikasi</a><a href='../jurnal/'>Monitor Jurnal UNMER</a>" + (n ? "<span>· " + n + " jurnal diperbarui dari OJS</span>" : "") + "<span style='margin-left:auto'>" + esc(CFG.user || "") + "</span>";
+    bar.innerHTML = CFG.public
+      ? "<b>DIREKTORI JURNAL UNMER</b><span>Terbuka untuk umum · hanya baca</span>" + (n ? "<span>· " + n + " jurnal diperbarui dari OJS</span>" : "") + "<a style='margin-left:auto' href='" + esc(CFG.login || "/wp-login.php") + "'>Masuk Pengelola →</a>"
+      : "<b>APLIKASI KHUSUS</b><a href='" + esc(CFG.home || "/khusus/") + "'>← Daftar aplikasi</a><a href='../jurnal/'>Monitor Jurnal UNMER</a>" + (n ? "<span>· " + n + " jurnal diperbarui dari OJS</span>" : "") + "<span style='margin-left:auto'>" + esc(CFG.user || "") + "</span>";
     document.body.insertBefore(bar, document.body.firstChild);
     if (CFG.update) { var b = document.createElement("button"); b.id = "ptjBtn"; b.textContent = "⟳ Pembaruan dari OJS"; b.onclick = open; document.body.appendChild(b); }
   });
