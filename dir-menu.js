@@ -77,7 +77,7 @@
 (function () {
   "use strict";
   var main = document.querySelector("main.wrap"), pr = document.getElementById("p-ringkasan");
-  if (!main || !pr || document.getElementById("ptDash")) return;
+  if (!main || !pr || document.getElementById("ptDash")) { var dp0 = document.getElementById("ptDashPh"); if (dp0) dp0.remove(); return; }
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
   var D = typeof DATA !== "undefined" ? DATA : {};
   var K = [];
@@ -124,6 +124,7 @@
     return "<a href='#' class='dc" + (x.hot ? " hot" : "") + (x.warn ? " warn" : "") + "' data-dash='" + esc(x.go) + "'" + (x.sub ? " data-sub2='" + esc(x.sub) + "'" : "") + "><span class='ck'>" + esc(x.k) + "</span><span class='ca'>→</span><span class='cv'>" + esc(x.v) + "</span><span class='cl'>" + esc(x.l) + "</span><span class='cd'>" + esc(x.d) + "</span></a>";
   }).join("") + "</div>";
   main.insertBefore(box, main.firstChild);
+  var dph = document.getElementById("ptDashPh"); if (dph) dph.remove();
   box.addEventListener("click", function (e) {
     var a = e.target.closest("a[data-dash]"); if (!a) return; e.preventDefault();
     var b = document.querySelector('#tabs button[data-t="' + a.dataset.dash + '"]'); if (b) b.click();

@@ -21,9 +21,12 @@
   var yg = function (y) { return y <= 2021 ? "a" : y <= 2023 ? "b" : y === 2024 ? "c" : "d"; };
 
   /* ---------- tab & panel ---------- */
-  var btn = document.createElement("button");
-  btn.type = "button"; btn.dataset.t = "cite"; btn.setAttribute("role", "tab"); btn.setAttribute("aria-selected", "false"); btn.textContent = "Citedness Scopus";
-  tabs.insertBefore(btn, tabs.querySelector('button[data-t="ojs"]') || null);
+  var btn = tabs.querySelector('button[data-t="cite"]');
+  if (!btn) {
+    btn = document.createElement("button");
+    btn.type = "button"; btn.dataset.t = "cite"; btn.setAttribute("role", "tab"); btn.setAttribute("aria-selected", "false"); btn.textContent = "Citedness Scopus";
+    tabs.insertBefore(btn, tabs.querySelector('button[data-t="ojs"]') || null);
+  }
   var sec = document.createElement("section"); sec.className = "panel"; sec.id = "p-cite"; sec.setAttribute("role", "tabpanel");
   var ref = document.getElementById("p-ojs") || document.getElementById("p-update");
   ref ? ref.parentNode.insertBefore(sec, ref) : document.querySelector("main").appendChild(sec);
