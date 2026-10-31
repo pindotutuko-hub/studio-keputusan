@@ -13,7 +13,11 @@
   (DATA.jur || []).forEach(function (j) { JUR[j.id] = j; if (j.akronim) BYAK[j.akronim.toUpperCase()] = j.id; BYNAME[(j.nama || "").toLowerCase()] = j.id; });
   var idOf = function (txt) {
     var t = String(txt || "").replace(/[✓✔︎•·]/g, "").replace(/\s+/g, " ").trim();
-    return BYAK[t.toUpperCase()] || BYNAME[t.toLowerCase()] || null;
+    var hit = BYAK[t.toUpperCase()] || BYNAME[t.toLowerCase()];
+    if (hit) return hit;
+    var lt = t.toLowerCase(); if (lt.length < 6) return null;
+    var k = Object.keys(SEM).filter(function (x) { var n = (SEM[x].nama || "").toLowerCase(); return n.indexOf(lt) === 0 || lt.indexOf(n) === 0; })[0];
+    return k || null;
   };
   var CAT = { noed: ["Belum ada editor", 3], norev: ["Belum ada reviewer", 3], resp: ["Reviewer belum merespons", 3], late: ["Review terlambat", 3], dec: ["Menunggu keputusan editor", 2], init: ["Menunggu pemeriksaan awal", 2], auth: ["Menunggu revisi penulis", 2], prod: ["Tertahan di penyuntingan/produksi", 2], wait: ["Menunggu hasil review", 1] };
 
@@ -52,7 +56,7 @@
     var h = "<div class='bt'>" +
       "<div style='display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin:14px 0 4px'><button type='button' class='x' id='pfBack'>← Kembali</button>" +
       "<label class='lbl' style='display:flex;gap:8px;align-items:center'>Jurnal lain <select id='pfSel' style='font:inherit;font-size:13px;padding:5px;border:1.5px solid var(--bk);border-radius:0;background:#fff;color:var(--bk);text-transform:none;letter-spacing:0'>" +
-      Object.keys(SEM).map(function (k) { return "<option value='" + esc(k) + "'" + (k === id ? " selected" : "") + ">" + esc((JUR[k] && JUR[k].akronim ? JUR[k].akronim + " — " : "") + SEM[k].nama) + "</option>"; }).join("") + "</select></label></div>" +
+      Object.keys(SEM).map(function (k) { return "<option value='" + esc(k) + "'" + (k === id ? " selected" : "") + ">" + esc((JUR[k] && JUR[k].akronim && (SEM[k].nama || "").toUpperCase().indexOf(JUR[k].akronim.toUpperCase()) !== 0 ? JUR[k].akronim + " — " : "") + SEM[k].nama) + "</option>"; }).join("") + "</select></label></div>" +
       "<span class='lbl'>Profil jurnal · " + (sinta > 0 ? "SINTA " + sinta : "belum terakreditasi SINTA") + (s.bidang || j.bidang ? " · " + esc(s.bidang || j.bidang) : "") + "</span>" +
       "<h2 class='disp ttl' style='font-size:clamp(44px,7vw,84px)'>" + esc(ak) + "</h2>" +
       "<p class='lead' style='margin:6px 0 10px;font-size:17px'><b>" + esc(nama) + "</b>" + (s.unit || j.unit ? "<br><span style='color:#47404C'>" + esc(s.unit || j.unit) + " · Universitas Merdeka Malang</span>" : "") + "</p>" +
