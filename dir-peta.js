@@ -175,7 +175,7 @@
       var items;
       if (rmode === "n") items = Object.keys(A.k).map(function (k) { return { k: k, l: k, v: A.k[k], d: tagsOf(k).slice(0, 2).join(" · ") }; });
       else if (rmode === "j") { var jc = {}, ji = {}, jn = {}; rows.forEach(function (r) { jc[r.j] = (jc[r.j] || 0) + 1; if (r.k !== "Indonesia") ji[r.j] = (ji[r.j] || 0) + 1; (jn[r.j] = jn[r.j] || {})[r.k] = 1; });
-        items = Object.keys(jc).map(function (a) { var f = ji[a] || 0, p = Math.round(100 * f / jc[a]), ng = Object.keys(jn[a]).length; return { k: "j:" + a, l: a, n: jc[a], f: f, p: p, g: ng, v: jsort === "p" ? p : jsort === "g" ? ng : jc[a], vt: jsort === "p" ? p + "%" : String(jsort === "g" ? ng : jc[a]), d: f + " dari " + jc[a] + " orang luar negeri (" + p + "%) · " + ng + " negara" + (JA[a] && JA[a].s ? " · S" + JA[a].s : "") }; }); }
+        items = Object.keys(jc).map(function (a) { var f = ji[a] || 0, p = Math.round(100 * f / jc[a]), ng = Object.keys(jn[a]).length; return { k: "j:" + a, l: a, n: jc[a], f: f, p: p, g: ng, v: jsort === "p" ? p : jsort === "g" ? ng : jc[a], vt: jsort === "p" ? p + "%" : String(jsort === "g" ? ng : jc[a]), d: f + " dari " + jc[a] + " orang luar negeri (" + p + "%) · " + ng + " negara" + (JA[a] && JA[a].s > 0 ? " · S" + JA[a].s : " · belum SINTA") }; }); }
       else items = RK.map(function (rk) { var v = 0; REG[rk].c.forEach(function (k) { v += A.k[k] || 0; }); return { k: "r:" + rk, l: REG[rk].l, v: v, d: REG[rk].c.filter(function (k) { return A.k[k]; }).length + " negara" }; }).filter(function (x) { return x.v; });
       items.sort(function (a, b) { return b.v - a.v || (b.n || 0) - (a.n || 0); });
       var mx = items.length ? items[0].v : 1;
