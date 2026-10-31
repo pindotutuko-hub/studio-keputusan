@@ -7,8 +7,8 @@
     var m = document.querySelector("header.mast");
     if (!m || document.getElementById("ptHeroBg")) return;
     var st = document.createElement("style");
-    st.textContent = "header.mast{position:relative;overflow:hidden;isolation:isolate}" +
-      "#ptHeroBg{position:absolute;inset:0;z-index:-1;pointer-events:none;background:#F5F1F2}" +
+    st.textContent = "header.mast{position:relative;isolation:isolate;z-index:20}" +
+      "#ptHeroBg{position:absolute;inset:0;z-index:-1;pointer-events:none;background:#F5F1F2;overflow:hidden}" +
       "#ptHeroBg .ly{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.6s ease;transform:scale(1.02)}#ptHeroBg .ly.on{opacity:1}" +
       "#ptHeroBg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.95) 0%,rgba(255,255,255,.9) 50%,rgba(255,255,255,.72) 75%,rgba(255,255,255,.5) 100%),linear-gradient(0deg,rgba(251,242,244,.95) 0,rgba(251,242,244,0) 70px)}" +
       "header.mast{background:transparent!important}header.mast h1,header.mast .eyebrow,header.mast .lede,header.mast #tabs>*{text-shadow:0 0 14px rgba(255,255,255,.95),0 0 3px rgba(255,255,255,.9)}" +
