@@ -264,6 +264,11 @@
     "#p-akr .pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px;border:1px solid currentColor}#p-akr .pill.ok{color:var(--patina)}#p-akr .pill.mid{color:var(--amber)}#p-akr .pill.bad{color:var(--rust)}" +
     "#p-akr .asm{color:var(--muted);font-style:italic}#p-akr select{font:inherit;font-size:12px;padding:2px 4px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}" +
     "#p-akr svg text{fill:var(--ink);font-size:11px}#p-akr svg .mu{fill:var(--muted)}#p-akr .note{font-size:12px;color:var(--muted)}" +
+    "#p-akr .akr-subg{margin:14px 0 18px;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:6px 12px}#p-akr .akr-subg .akr-sub{margin:6px 0;align-items:center}#p-akr .sgl{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);min-width:118px}" +
+    "#p-akr svg.flow text{font-size:12px}#p-akr svg.flow .t{font-weight:700}#p-akr .flowwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px}" +
+    "#p-akr .dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin:0 1px;border:1px solid var(--line);vertical-align:-2px}#p-akr .dot.done{background:var(--patina);border-color:var(--patina)}#p-akr .dot.doing{background:var(--amber);border-color:var(--amber)}#p-akr .dot.todo{background:transparent;border-color:var(--rust)}" +
+    "#p-akr .bar{height:8px;background:var(--line-soft);border-radius:8px;overflow:hidden;min-width:90px}#p-akr .bar i{display:block;height:100%;background:var(--patina)}" +
+    "#p-akr .phase{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:12px 0}#p-akr .phase .card{margin:0;position:relative;padding-top:30px}#p-akr .phase .no{position:absolute;top:10px;left:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--patina)}" +
     "@media (max-width:700px){#p-akr .ex{grid-template-columns:1fr}}";
   document.head.appendChild(css);
 
@@ -276,7 +281,8 @@
   var ref = document.getElementById("p-ojs") || document.getElementById("p-update");
   ref.parentNode.insertBefore(sec, ref);
 
-  var SUBNAV = [["sim", "Kesiapan tiap jurnal"], ["sit", "Sitasi & Scopus"], ["status", "Masa berlaku"], ["dasar", "Aturan pokok"], ["min", "Syarat minimum"], ["unsur", "Unsur penilaian A–G"], ["dis", "Disinsentif & larangan"], ["laksana", "Pengajuan & masa berlaku"], ["kalk", "Simulator"]];
+  var SUBG = [["Jurnal UNMER", [["sim", "Kesiapan tiap jurnal"], ["prog", "Pantauan progres"], ["sit", "Sitasi & Scopus"], ["status", "Masa berlaku"]]], ["Panduan 2026", [["alur", "Alur akreditasi"], ["siap", "Alur kesiapan"], ["dasar", "Aturan pokok"], ["min", "Syarat minimum"], ["unsur", "Unsur A–G"], ["dis", "Disinsentif & larangan"], ["laksana", "Pengajuan ulang"], ["kalk", "Simulator"]]]];
+  var SUBNAV = [].concat.apply([], SUBG.map(function (g) { return g[1]; }));
   var info = function (id) { return "<i class='i' data-ref='" + id + "' title='Lihat penjelasan " + id + " di panduan'>i</i>"; };
 
   function hUnsur() {
@@ -406,9 +412,126 @@
       "<p style='font-size:18px'>Total <b>" + fmt(t + dis) + "</b> → <span class='pill " + pkKelas(t + dis) + "'>" + peringkat(t + dis) + "</span></p>";
   }
 
+  /* ---------- 5. Alur akreditasi, alur kesiapan, pantauan progres ---------- */
+  function box(x, y, w, h, title, sub, kind) {
+    var fill = kind === "ok" ? "var(--patina)" : kind === "bad" ? "var(--rust)" : kind === "soft" ? "var(--surface-2)" : "var(--surface)";
+    var tc = kind === "ok" || kind === "bad" ? "#fff" : "var(--ink)";
+    var s = "<rect x='" + x + "' y='" + y + "' width='" + w + "' height='" + h + "' rx='10' fill='" + fill + "' stroke='" + (kind === "soft" ? "var(--line)" : kind ? "none" : "var(--ink)") + "' stroke-width='1.2'/>";
+    s += "<text class='t' x='" + (x + w / 2) + "' y='" + (y + (sub ? 20 : h / 2 + 4)) + "' text-anchor='middle' style='fill:" + tc + "'>" + esc(title) + "</text>";
+    (sub || []).forEach(function (l, i) { s += "<text x='" + (x + w / 2) + "' y='" + (y + 38 + i * 15) + "' text-anchor='middle' style='fill:" + (kind === "ok" || kind === "bad" ? "#fff" : "var(--muted)") + ";font-size:11px'>" + esc(l) + "</text>"; });
+    return s;
+  }
+  function arr(x1, y1, x2, y2, lbl, dash) {
+    var s = "<line x1='" + x1 + "' y1='" + y1 + "' x2='" + x2 + "' y2='" + y2 + "' stroke='var(--muted)' stroke-width='1.4' marker-end='url(#ah)'" + (dash ? " stroke-dasharray='4 3'" : "") + "/>";
+    if (lbl) s += "<text x='" + ((x1 + x2) / 2 + 6) + "' y='" + ((y1 + y2) / 2 - 4) + "' style='fill:var(--muted);font-size:11px'>" + esc(lbl) + "</text>";
+    return s;
+  }
+  var DEFS = "<defs><marker id='ah' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0,0 L10,5 L0,10 z' fill='var(--muted)'/></marker></defs>";
+  function hAlur() {
+    var W = 940, s = "<svg class='flow' viewBox='0 0 " + W + " 840' width='100%' role='img' aria-label='Diagram alur akreditasi jurnal 2026'>" + DEFS;
+    var cx = 120, bw = 360;
+    s += box(cx, 10, bw, 64, "1 · Pengajuan lewat ARJUNA", ["Borang, seluruh nomor yang diajukan, teks penuh,", "akun editor, lalu tombol “Siap Akreditasi”"]);
+    s += arr(cx + bw / 2, 74, cx + bw / 2, 104);
+    s += box(cx, 104, bw, 64, "2 · Pemeriksaan Awal", ["15 butir kriteria minimum: ISSN, frekuensi,", "≥5 artikel/nomor, DOI, etika, biaya, keberagaman"]);
+    s += box(620, 110, 300, 52, "Tidak lolos", ["ajukan lagi periode berikutnya*"], "bad"); s += arr(cx + bw, 136, 620, 136, "", 1);
+    s += arr(cx + bw / 2, 168, cx + bw / 2, 198);
+    s += box(cx, 198, bw, 64, "3 · Pemeriksaan Kelayakan", ["setiap artikel ditelaah mitra bestari;", "validitas & integritas penerbit"]);
+    s += box(620, 204, 300, 52, "Tidak lolos", ["ajukan lagi paling cepat 2 tahun"], "bad"); s += arr(cx + bw, 230, 620, 230, "", 1);
+    s += arr(cx + bw / 2, 262, cx + 80, 300); s += arr(cx + bw / 2, 262, cx + bw - 80, 300);
+    s += box(cx - 100, 300, 270, 64, "4a · Tata kelola — 46", ["A identitas · B tata kelola · C laman", "D keberkalaan · E penyebarluasan"], "soft");
+    s += box(cx + 230, 300, 250, 64, "4b · Mutu artikel — 54", ["F substansi (34)", "G gaya & penyuntingan (20)"], "soft");
+    s += "<text x='" + (cx + 200) + "' y='292' text-anchor='middle' style='fill:var(--muted);font-size:11px'>dinilai paralel</text>";
+    s += arr(cx + 35, 364, cx + bw / 2, 400); s += arr(cx + 355, 364, cx + bw / 2, 400);
+    s += box(cx, 400, bw, 56, "5 · Disinsentif (bila ada)", ["integritas akademik −10/−15/−20 · Ethical Clearance −3"]);
+    s += arr(cx + bw / 2, 456, cx + bw / 2, 486);
+    s += box(cx, 486, bw, 56, "6 · Rapat pleno asesor", ["verifikasi & harmonisasi oleh Tim Akreditasi"]);
+    s += arr(cx + bw / 2, 542, cx + bw / 2, 572);
+    s += box(cx, 572, bw, 50, "7 · Penetapan SK Direktur Jenderal");
+    var outs = [["Peringkat 1", "90–100", "ok"], ["Peringkat 2", "80–<90", "ok"], ["Peringkat 3", "70–<80", "ok"], ["Peringkat 4", "60–<70", "ok"], ["Tidak terakreditasi", "<60", "bad"]];
+    outs.forEach(function (o, i) { var x = 10 + i * 186; s += box(x, 670, 176, 52, o[0], [o[1]], o[2]); s += arr(cx + bw / 2, 622, x + 88, 670); });
+    s += box(10, 750, 548, 70, "Berlaku 5 tahun", ["Cantumkan peringkat, nomor & tanggal SK, dan tanggal akhir di laman.", "Ajukan ulang setelah 3 nomor baru, paling lambat 6 bulan sebelum berakhir."], "soft");
+    s += box(578, 750, 352, 70, "Nilai <60", ["tanpa disinsentif: ajukan lagi setelah 3 nomor baru", "dengan disinsentif: paling cepat 3 tahun"], "soft");
+    s += arr(98, 722, 98, 750); s += arr(754, 722, 754, 750);
+    s += "</svg>";
+    return "<p>Urutan resmi menurut Kepdirjen 374/DST/D.D1/HM.01.01/2026. Klik ikon di bawah untuk membaca rinciannya.</p><div class='flowwrap'>" + s + "</div>" +
+      "<p class='note'>* Bila gagal karena frekuensi/keberkalaan, harus menunggu terbitan 3 tahun yang memenuhi. Rincian: syarat minimum" + info("min") + " · unsur penilaian" + info("A") + " · disinsentif" + info("dis") + " · pengajuan ulang & masa berlaku" + info("laksana") + "</p>";
+  }
+  /* langkah kesiapan: id, fase, judul, rujukan, fungsi cek otomatis (null = manual) */
+  var STEPS = [
+    ["S1", 1, "Syarat minimum terpenuhi", "min", function (r) { return r.ok; }],
+    ["S2", 1, "Evaluasi diri: perkiraan nilai ≥60", "kalk", function (r) { return total(r, EDIT[r.kode]).t >= 60; }],
+    ["S3", 2, "Kebijakan AI lengkap (penulis, editor, reviewer)", "C3", function (r) { return +r.sc.C3 >= 1; }],
+    ["S4", 2, "Kebijakan telaah & petunjuk penulisan lengkap", "C1", function (r) { return +r.sc.C1 >= 1 && +r.sc.C2 >= 1; }],
+    ["S5", 2, "16 klausul COPE ada di laman", "C4", function (r) { return +r.sc.C4 >= 3; }],
+    ["S6", 3, "Mitra bestari ≥6 institusi, ≥2 penelaah per naskah di OJS", "B1", function (r) { return +r.sc.B1 >= 2; }],
+    ["S7", 3, "Dewan editor beragam & memenuhi h-indeks", "B3", function (r) { return +r.sc.B3 >= 3; }],
+    ["S8", 3, "Penulis per nomor dari ≥4 institusi", "B4", function (r) { return +r.sc.B4 >= 2; }],
+    ["S9", 4, "Terbit tepat jadwal + prapublikasi", "D1", function (r) { return +r.sc.D1 >= 1.5; }],
+    ["S10", 4, "100% artikel ber-DOI & ber-PDF", "G1", function (r) { return r.doiCov >= 0.999 && r.galCov >= 0.999; }],
+    ["S11", 4, "Metadata nama & afiliasi penulis rapi", "G2", function (r) { return +r.sc.G2 >= 1; }],
+    ["S12", 4, "PDF memuat riwayat naskah + 4 deklarasi", "G1", null],
+    ["S13", 5, "Setor daftar pustaka ke Crossref; sitasi DOI ≥11", "E1", function (r) { return +r.sc.E1 >= 3; }],
+    ["S14", 5, "Terindeks di pengindeks bersistem seleksi (mis. DOAJ)", "E2", null],
+    ["S15", 6, "Diajukan di ARJUNA", "laksana", null]
+  ];
+  var FASE = ["", "Diagnosa", "Benahi laman", "Benahi tata kelola", "Benahi terbitan", "Mutu & dampak", "Ajukan"];
+  function hSiap() {
+    var W = 940, s = "<svg class='flow' viewBox='0 0 " + W + " 130' width='100%' role='img' aria-label='Diagram alur kesiapan akreditasi'>" + DEFS;
+    for (var f = 1; f <= 6; f++) { var x = 6 + (f - 1) * 156; s += box(x, 20, 140, 80, f + " · " + FASE[f], [STEPS.filter(function (z) { return z[1] === f; }).map(function (z) { return z[0]; }).join(" · ")], f === 6 ? "ok" : "soft"); if (f < 6) s += arr(x + 140, 60, x + 156, 60); }
+    s += "</svg>";
+    var cards = [1, 2, 3, 4, 5, 6].map(function (f) {
+      return "<div class='card'><span class='no'>FASE " + f + "</span><h4 style='margin-top:0'>" + esc(FASE[f]) + "</h4><ul>" + STEPS.filter(function (z) { return z[1] === f; }).map(function (z) { return "<li><b>" + z[0] + "</b> " + esc(z[2]) + info(z[3]) + (z[4] ? "" : " <span class='asm'>(dicentang manual)</span>") + "</li>"; }).join("") + "</ul></div>";
+    }).join("");
+    return "<p>Urutan kerja yang disarankan bagi pengelola jurnal UNMER sebelum mengajukan, disusun dari unsur penilaian 2026. Langkah yang bisa dicek dari data diisi otomatis di <b>Pantauan progres</b>; sisanya dicentang Pengelola.</p><div class='flowwrap'>" + s + "</div><div class='phase'>" + cards + "</div>" +
+      "<div class='card'><h4>Kapan mengajukan</h4><ul><li>Akreditasi ulang: setelah menerbitkan minimal 3 nomor baru sejak nomor terakhir yang dinilai, dan paling lambat 6 bulan sebelum masa berlaku berakhir" + info("laksana") + ".</li><li>Akreditasi baru: setelah terbit berkala minimal 3 tahun; seluruh nomor 3 tahun terakhir diajukan.</li><li>Peringkat 5 dan 6 tidak ada lagi; pengajuan berikutnya harus mencapai minimal 60.</li></ul></div>";
+  }
+  var PROG = (window.PT_AKRP && window.PT_AKRP.j) || {};
+  var CANED = !!(window.PT_JR && window.PT_JR.update);
+  function stepState(r, z) {
+    var m = PROG[r.kode] && PROG[r.kode].steps && PROG[r.kode].steps[z[0]];
+    if (m && m.s) return { s: m.s, src: "manual", note: m.note || "", d: m.d || "" };
+    if (z[4]) return { s: z[4](r) ? "done" : "todo", src: "data" };
+    return { s: "todo", src: "belum diisi" };
+  }
+  var endYear = function (k) { var h = (A.hist || {})[k]; return h && h.length ? +h[h.length - 1].b : null; };
+  function hProg() {
+    if (!R.length) return "<p>Data jurnal belum tersedia.</p>";
+    var rows = R.map(function (r) {
+      var st = STEPS.map(function (z) { return stepState(r, z); }), done = st.filter(function (x) { return x.s === "done"; }).length, pct = Math.round(done / STEPS.length * 100);
+      var P = PROG[r.kode] || {}, ey = endYear(r.kode);
+      return { r: r, st: st, done: done, pct: pct, P: P, ey: ey };
+    }).sort(function (a, b) { return (a.ey || 9999) - (b.ey || 9999) || b.pct - a.pct; });
+    var siap = rows.filter(function (x) { return x.st[0].s === "done" && x.st[1].s === "done"; }).length;
+    var mendesak = rows.filter(function (x) { return x.ey && x.ey <= 2026; }).length;
+    var avg = Math.round(rows.reduce(function (t, x) { return t + x.pct; }, 0) / rows.length);
+    var chart = barChart(rows.slice().sort(function (a, b) { return b.pct - a.pct; }).map(function (x) { return { l: namaPendek(x.r), v: x.pct, t: x.pct + "% · " + x.done + "/" + STEPS.length, c: x.pct >= 70 ? "var(--patina)" : x.pct >= 40 ? "var(--amber)" : "var(--rust)" }; }), { max: 100, label: "Progres kesiapan akreditasi per jurnal" });
+    var head = "<tr><th>Jurnal</th><th>Masa berlaku" + info("laksana") + "</th><th>Progres</th>" + STEPS.map(function (z) { return "<th title='" + esc(z[2]) + "'>" + z[0] + "</th>"; }).join("") + "<th>Rencana ajukan</th><th>Target</th></tr>";
+    var body = rows.map(function (x) {
+      var dl = !x.ey ? "<span class='pill bad'>belum tercatat</span>" : x.ey < 2026 ? "<span class='pill bad'>berakhir " + x.ey + "</span>" : x.ey === 2026 ? "<span class='pill mid'>berakhir 2026</span>" : "<span class='pill ok'>s.d. " + x.ey + "</span>";
+      return "<tr class='pr' data-k='" + esc(x.r.kode) + "' style='cursor:pointer'><td><b>" + esc(x.r.nama) + "</b></td><td>" + dl + "</td><td><div class='bar'><i style='width:" + x.pct + "%'></i></div><span class='note'>" + x.pct + "%</span></td>" +
+        x.st.map(function (q, i) { return "<td style='text-align:center'><span class='dot " + q.s + "' title='" + esc(STEPS[i][0] + " " + STEPS[i][2] + " — " + (q.s === "done" ? "selesai" : q.s === "doing" ? "sedang dikerjakan" : "belum") + " (" + q.src + ")") + "'></span></td>"; }).join("") +
+        "<td>" + esc(x.P.plan || "–") + "</td><td>" + esc(x.P.target || "–") + "</td></tr>";
+    }).join("");
+    var info2 = window.PT_AKRP && window.PT_AKRP.at ? "Terakhir diperbarui " + esc(String(window.PT_AKRP.at).slice(0, 10)) + (window.PT_AKRP.by ? " oleh " + esc(window.PT_AKRP.by) : "") + "." : "Belum ada isian manual dari Pengelola.";
+    return "<p>Progres setiap jurnal terhadap 15 langkah kesiapan" + " (lihat <a href='#' data-gosub='siap'>Alur kesiapan</a>). Titik hijau = selesai, kuning = sedang dikerjakan, merah = belum. Langkah yang bisa diukur diisi otomatis dari data " + esc(A.atLabel || A.at) + "; " + (CANED ? "sebagai Pengelola, klik baris jurnal untuk mengubah status, catatan, rencana pengajuan, dan target." : "status manual diisi oleh Pengelola.") + " " + info2 + "</p>" +
+      "<div class='grid'><div class='kpi'><b>" + avg + "%</b><span>rata-rata progres</span></div><div class='kpi'><b>" + siap + "</b><span>jurnal siap diajukan (S1 & S2)</span></div><div class='kpi'><b>" + mendesak + "</b><span>masa berlaku berakhir ≤2026 atau sudah lewat</span></div><div class='kpi'><b>" + rows.filter(function (x) { return x.P.plan; }).length + "</b><span>jurnal punya rencana pengajuan</span></div></div>" +
+      "<div class='card'>" + chart + "</div><div class='wrapx'><table><thead>" + head + "</thead><tbody id='akrProgBody'>" + body + "</tbody></table></div><div id='akrProgDet'></div>";
+  }
+  function progDetail(k) {
+    var r = R.filter(function (x) { return x.kode === k; })[0], P = PROG[k] || {};
+    var h = "<div class='card'><h3>" + esc(r.nama) + "</h3><div class='wrapx'><table><thead><tr><th>Langkah</th><th>Otomatis</th><th>Status</th><th>Catatan</th></tr></thead><tbody>" +
+      STEPS.map(function (z) {
+        var auto = z[4] ? (z[4](r) ? "✔︎ terpenuhi" : "✘ belum") : "—", m = (P.steps || {})[z[0]] || {}, cur = stepState(r, z);
+        var sel = CANED ? "<select data-ps='" + z[0] + "'><option value=''>ikuti data</option>" + [["done", "selesai"], ["doing", "sedang dikerjakan"], ["todo", "belum"]].map(function (o) { return "<option value='" + o[0] + "'" + (m.s === o[0] ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select>" : "<span class='dot " + cur.s + "'></span> " + (cur.s === "done" ? "selesai" : cur.s === "doing" ? "proses" : "belum");
+        var note = CANED ? "<input data-pn='" + z[0] + "' value='" + esc(m.note || "") + "' maxlength='300' style='width:100%;font:inherit;font-size:12px;padding:3px 6px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)'>" : esc(m.note || "");
+        return "<tr><td><b>" + z[0] + "</b> " + esc(z[2]) + info(z[3]) + "</td><td class='note'>" + auto + "</td><td>" + sel + "</td><td>" + note + "</td></tr>";
+      }).join("") + "</tbody></table></div>";
+    if (CANED) h += "<p style='display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px'><label>Rencana ajukan <input id='akrPlan' type='month' value='" + esc(P.plan || "") + "'></label><label>Target <select id='akrTarget'>" + ["", "Peringkat 1", "Peringkat 2", "Peringkat 3", "Peringkat 4"].map(function (o) { return "<option" + (P.target === o ? " selected" : "") + ">" + o + "</option>"; }).join("") + "</select></label><button type='button' id='akrProgSave' data-k='" + esc(k) + "'>Simpan progres</button><span id='akrProgMsg' class='note'></span></p>";
+    return h + "</div>";
+  }
   sec.innerHTML = "<div class='sechead'><span class='secnum'>A</span><h2>Akreditasi 2026</h2></div>" +
     "<p class='pintro'>Panduan akreditasi jurnal ilmiah menurut aturan 2026, dibuat untuk pengelola jurnal UNMER, lengkap dengan contoh, simulasi kesiapan tiap jurnal, sitasi, dan masa berlaku peringkat. Data diperiksa " + esc(A.atLabel || A.at) + ".</p>" +
-    "<div class='akr-sub'>" + SUBNAV.map(function (x, i) { return "<button type='button' data-sub='" + x[0] + "'" + (i === 0 ? " class='on'" : "") + ">" + esc(x[1]) + "</button>"; }).join("") + "</div>" +
+    "<div class='akr-subg'>" + SUBG.map(function (g, gi) { return "<div class='akr-sub'><span class='sgl'>" + esc(g[0]) + "</span>" + g[1].map(function (x, i) { return "<button type='button' data-sub='" + x[0] + "'" + (gi === 0 && i === 0 ? " class='on'" : "") + ">" + esc(x[1]) + "</button>"; }).join("") + "</div>"; }).join("") + "</div>" +
     "<div class='akr-sec on' id='akrs-sim'>" + hSim() + "<div id='akrDet'></div></div>" +
     "<div class='akr-sec' id='akrs-sit'>" + hSitasi() + "</div>" +
     "<div class='akr-sec' id='akrs-status'>" + hStatus() + "</div>" +
@@ -417,11 +540,15 @@
     "<div class='akr-sec' id='akrs-unsur'><p>Klik setiap unsur untuk membuka subunsur, nilai, penjelasan, dan contoh. Bobot total 100.</p>" + hUnsur() + "</div>" +
     "<div class='akr-sec' id='akrs-dis'>" + hDis() + "</div>" +
     "<div class='akr-sec' id='akrs-laksana'>" + hLaksana() + "</div>" +
-    "<div class='akr-sec' id='akrs-kalk'>" + hKalk() + "</div>";
+    "<div class='akr-sec' id='akrs-kalk'>" + hKalk() + "</div>" +
+    "<div class='akr-sec' id='akrs-alur'>" + hAlur() + "</div>" +
+    "<div class='akr-sec' id='akrs-siap'>" + hSiap() + "</div>" +
+    "<div class='akr-sec' id='akrs-prog'>" + hProg() + "</div>";
 
   var KALK = {}; SUBS.forEach(function (s) { KALK[s.id] = s.lv[s.lv.length - 1][0]; }); KALK.H = 0;
   var showSub = function (id) { sec.querySelectorAll(".akr-sub button").forEach(function (b) { b.classList.toggle("on", b.dataset.sub === id); }); sec.querySelectorAll(".akr-sec").forEach(function (s) { s.classList.toggle("on", s.id === "akrs-" + id); }); };
   var goRef = function (id) {
+    if (id === "kalk") { showSub("kalk"); return; }
     var sub = /^(min)$/.test(id) ? "min" : /^(dis)$/.test(id) ? "dis" : /^(laksana)$/.test(id) ? "laksana" : "unsur";
     showSub(sub);
     var el = document.getElementById("akr-" + id) || document.getElementById("akr-" + id.charAt(0));
@@ -438,16 +565,31 @@
   sec.addEventListener("click", function (e) {
     var i = e.target.closest(".i[data-ref]"); if (i) { e.preventDefault(); e.stopPropagation(); goRef(i.dataset.ref); return; }
     var b = e.target.closest("[data-sub]"); if (b) { showSub(b.dataset.sub); return; }
+    var gs = e.target.closest("[data-gosub]"); if (gs) { e.preventDefault(); showSub(gs.dataset.gosub); return; }
+    var sv = e.target.closest("#akrProgSave"); if (sv) { saveProg(sv.dataset.k); return; }
+    if (e.target.closest("#akrProgDet")) return;
+    var pr = e.target.closest("#akrProgBody tr.pr"); if (pr) { var pd = document.getElementById("akrProgDet"), pk = pr.dataset.k; pd.innerHTML = pd.dataset.k === pk ? "" : progDetail(pk); pd.dataset.k = pd.dataset.k === pk ? "" : pk; if (pd.innerHTML) pd.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
     var rs = e.target.closest("[data-reset]"); if (rs) { var k0 = rs.dataset.reset, r0 = R.filter(function (x) { return x.kode === k0; })[0]; EDIT[k0] = JSON.parse(JSON.stringify(r0.sc)); document.getElementById("akrDet").innerHTML = detail(k0); refreshRow(k0); return; }
     if (e.target.closest("select")) return;
     var tr = e.target.closest("#akrSimBody tr.jr"); if (tr) { var box = document.getElementById("akrDet"), k = tr.dataset.k; box.innerHTML = box.dataset.k === k ? "" : detail(k); box.dataset.k = box.dataset.k === k ? "" : k; if (box.innerHTML) box.scrollIntoView({ behavior: "smooth", block: "start" }); }
   });
   sec.addEventListener("change", function (e) {
     var s = e.target;
+    if (s.dataset.ps || s.dataset.pn) return;
     if (s.dataset.s) { EDIT[s.dataset.k][s.dataset.s] = +s.value; refreshRow(s.dataset.k); var box = document.getElementById("akrDet"), k = s.dataset.k, sy = window.scrollY; box.innerHTML = detail(k); window.scrollTo(0, sy); return; }
     if (s.id === "akrKalkJ") { var r = R.filter(function (x) { return x.kode === s.value; })[0]; KALK = r ? JSON.parse(JSON.stringify(EDIT[r.kode])) : (function () { var o = {}; SUBS.forEach(function (q) { o[q.id] = q.lv[q.lv.length - 1][0]; }); return o; })(); KALK.H = 0; document.getElementById("akrKalkBody").innerHTML = kalkBody(KALK); return; }
     if (s.dataset.kalk) { KALK[s.dataset.kalk] = +s.value; document.getElementById("akrKalkBody").innerHTML = kalkBody(KALK); }
   });
   document.getElementById("akrKalkBody").innerHTML = kalkBody(KALK);
+  function saveProg(k) {
+    var det = document.getElementById("akrProgDet"), steps = {};
+    det.querySelectorAll("[data-ps]").forEach(function (el) { var id = el.dataset.ps, n = det.querySelector("[data-pn='" + id + "']"); if (el.value || (n && n.value)) steps[id] = { s: el.value, note: n ? n.value : "", d: new Date().toISOString().slice(0, 10) }; });
+    var body = { j: k, steps: steps, plan: (document.getElementById("akrPlan") || {}).value || "", target: (document.getElementById("akrTarget") || {}).value || "" };
+    var msg = document.getElementById("akrProgMsg"); msg.textContent = "Menyimpan…";
+    fetch((window.PT_JR.api || "") + "akr-progress", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json", "X-WP-Nonce": window.PT_JR.nonce || "" }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok || j.error) throw new Error(j.error || ("HTTP " + r.status)); return j; }); })
+      .then(function (j) { window.PT_AKRP = j.data; PROG = j.data.j || {}; document.getElementById("akrs-prog").innerHTML = hProg(); var pd = document.getElementById("akrProgDet"); pd.innerHTML = progDetail(k); pd.dataset.k = k; document.getElementById("akrProgMsg").textContent = "Tersimpan dan langsung terlihat oleh semua pengunjung."; })
+      .catch(function (e) { msg.textContent = "Gagal: " + e.message; });
+  }
   window.__AKR = { R: R, total: total, G: G };
 })();

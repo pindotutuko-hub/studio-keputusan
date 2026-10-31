@@ -170,5 +170,37 @@ function pt_jo_api( $ep ) {
 		update_option( 'pt_ojs_last_sync', $at, false );
 		pt_jr_json( array( 'ok' => true, 'n' => count( $j ), 'at' => $lbl ) );
 	}
+	if ( 'akr-progress' === $ep ) {
+		pt_jr_need_update();
+		$b = pt_jr_body();
+		$k = isset( $b['j'] ) ? sanitize_key( $b['j'] ) : '';
+		if ( '' === $k || ! pt_jr_path_ok( $k ) ) {
+			pt_jr_err( 'Kode jurnal tidak sah.' );
+		}
+		$cur = pt_jr_read( 'akr-progress.json', array( 'j' => array() ) );
+		if ( ! is_array( $cur ) || ! isset( $cur['j'] ) || ! is_array( $cur['j'] ) ) {
+			$cur = array( 'j' => array() );
+		}
+		$steps = array();
+		foreach ( (array) ( isset( $b['steps'] ) ? $b['steps'] : array() ) as $id => $v ) {
+			if ( ! preg_match( '/^S\d{1,2}$/', (string) $id ) || ! is_array( $v ) ) {
+				continue;
+			}
+			$st = isset( $v['s'] ) && in_array( $v['s'], array( 'done', 'doing', 'todo' ), true ) ? $v['s'] : '';
+			$nt = isset( $v['note'] ) ? mb_substr( sanitize_text_field( (string) $v['note'] ), 0, 300 ) : '';
+			if ( '' === $st && '' === $nt ) {
+				continue;
+			}
+			$steps[ $id ] = array( 's' => $st, 'note' => $nt, 'd' => current_time( 'Y-m-d' ) );
+		}
+		$plan   = isset( $b['plan'] ) && preg_match( '/^\d{4}-\d{2}$/', (string) $b['plan'] ) ? (string) $b['plan'] : '';
+		$target = isset( $b['target'] ) && preg_match( '/^Peringkat [1-4]$/', (string) $b['target'] ) ? (string) $b['target'] : '';
+		$cur['j'][ $k ] = array( 'steps' => (object) $steps, 'plan' => $plan, 'target' => $target );
+		$cur['at']      = current_time( 'c' );
+		$cur['by']      = wp_get_current_user()->display_name;
+		pt_jr_write( 'akr-progress.json', $cur );
+		@file_put_contents( PT_JR_DIRAPP . '/dir-akr-progress.js', 'window.PT_AKRP=' . wp_json_encode( $cur, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . ';' ); // phpcs:ignore
+		pt_jr_json( array( 'ok' => true, 'data' => $cur ) );
+	}
 	return false;
 }
