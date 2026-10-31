@@ -57,6 +57,15 @@ footer{margin-top:20px;color:var(--muted);font-size:12.5px;display:flex;justify-
 .hidden{display:none!important}
 .fs3dc{padding:14px;margin-bottom:12px}#fs3d{position:relative;width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;touch-action:none;background:#cfe3f2;margin-top:8px}
 .nav3d{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px;z-index:2}.nav3d button{width:36px;height:36px;border-radius:10px;border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.9);color:#1f1c18;font-size:17px;font-weight:700;display:grid;place-items:center}.nav3d button.on{background:#1f1c18;color:#fff}
+.lv.rnd{border-style:dashed;border-color:var(--accent);color:var(--accent)}
+</style>
+<style id="rsp-fix">/* tata letak responsif: ponsel, tablet, iPad mini (Safari & Chrome) */
+.grid>*,.intro>*,.side>*,.grid2>*{min-width:0}
+svg,canvas,img,video{max-width:100%}
+.intro svg{width:100%;height:auto;max-height:380px;display:block}
+#plan3d,#map3d,#kp3d,#fs3d{min-width:0;max-width:100%}
+#plan3d canvas,#map3d canvas,#kp3d canvas,#fs3d canvas{width:100%!important;height:100%!important;display:block}
+@media (max-width:1100px){.wrap{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}}
 </style>
 </head>
 <body>
@@ -100,7 +109,7 @@ var T={
   now:"sekarang: {v}",cost:"Biaya {c} / {b}",
   solved:"Terpenuhi!",s2:"★★ bila OTTV ≤ 30",s3:"★★★ bila juga biaya ≤ 85% anggaran",next:"Level berikutnya",level:"Level {n}",
   thSide:"Sisi",thSF:"SF",thCond:"Dinding",thSol:"Radiasi kaca",thCondG:"Konduksi kaca",thO:"OTTVᵢ",
-  h3d:"Tampilan 3D gedung · fasad berubah mengikuti pilihanmu",hour:"Jam",month:"Bulan",g0:"Bening 6 mm",g1:"Berwarna (tinted)",g2:"Reflektif",g3:"Ganda low-E",sh0:"Tanpa",sh1:"Sirip/overhang sedang",sh2:"Overhang dalam",w0:"Bata ringan 10 cm",w1:"Bata merah ½ bata",w2:"Beton 15 cm",p0:"Putih kilap",p1:"Putih semi kilap",p2:"Abu-abu tua",p3:"Hitam merata",
+  rnd:"Tantangan acak",rndS:"arah, luas, syarat baru",h3d:"Tampilan 3D gedung · fasad berubah mengikuti pilihanmu",hour:"Jam",month:"Bulan",g0:"Bening 6 mm",g1:"Berwarna (tinted)",g2:"Reflektif",g3:"Ganda low-E",sh0:"Tanpa",sh1:"Sirip/overhang sedang",sh2:"Overhang dalam",w0:"Bata ringan 10 cm",w1:"Bata merah ½ bata",w2:"Beton 15 cm",p0:"Putih kilap",p1:"Putih semi kilap",p2:"Abu-abu tua",p3:"Hitam merata",
   howTxt:"<p>OTTVᵢ = α·Uw·(1 − WWR)·TDek + SC·WWR·SF + Uf·WWR·ΔT; OTTV = Σ(OTTVᵢ·Aᵢ)/ΣAᵢ; ΔT = 5 K.</p><p>SF (W/m²) orientasi U 130, TL 113, T 112, TG 97, S 97, BD 176, B 243, BL 211 — tabel data radiasi Jakarta (SNI 03-6389-2000). TDek: 15 K (massa dinding < 125 kg/m²), 12 K (125–195), 10 K (> 195). α cat: tabel SNI 6389:2020.</p><p>Nilai SC/U kaca, faktor peneduh, U & massa dinding, dan biaya adalah <b>nilai contoh untuk latihan</b>, bukan data produk. Untuk desain nyata gunakan data pabrikan dan tabel SNI lengkap.</p>",
   ref:"Rumus & batas OTTV: SNI 6389:2020/SNI 6389:2011 (BSN); SF Jakarta: SNI 03-6389-2000. Nilai material = contoh latihan.",by:"Dikembangkan oleh: Pindo Tutuko ·",
   dir:{U:"Utara",TL:"Timur laut",T:"Timur",TG:"Tenggara",S:"Selatan",BD:"Barat daya",B:"Barat",BL:"Barat laut"}},
@@ -112,7 +121,7 @@ var T={
   now:"now: {v}",cost:"Cost {c} / {b}",
   solved:"Requirements met!",s2:"★★ if OTTV ≤ 30",s3:"★★★ if also cost ≤ 85% of budget",next:"Next level",level:"Level {n}",
   thSide:"Side",thSF:"SF",thCond:"Wall",thSol:"Glass solar",thCondG:"Glass conduction",thO:"OTTVᵢ",
-  h3d:"3D view · the facades follow your choices",hour:"Hour",month:"Month",g0:"Clear 6 mm",g1:"Tinted",g2:"Reflective",g3:"Double low-E",sh0:"None",sh1:"Medium fins/overhang",sh2:"Deep overhang",w0:"AAC block 10 cm",w1:"Half-brick clay wall",w2:"Concrete 15 cm",p0:"Gloss white",p1:"Semi-gloss white",p2:"Dark grey",p3:"Flat black",
+  rnd:"Random challenge",rndS:"new orientation & rules",h3d:"3D view · the facades follow your choices",hour:"Hour",month:"Month",g0:"Clear 6 mm",g1:"Tinted",g2:"Reflective",g3:"Double low-E",sh0:"None",sh1:"Medium fins/overhang",sh2:"Deep overhang",w0:"AAC block 10 cm",w1:"Half-brick clay wall",w2:"Concrete 15 cm",p0:"Gloss white",p1:"Semi-gloss white",p2:"Dark grey",p3:"Flat black",
   howTxt:"<p>OTTVᵢ = α·Uw·(1 − WWR)·TDek + SC·WWR·SF + Uf·WWR·ΔT; OTTV = Σ(OTTVᵢ·Aᵢ)/ΣAᵢ; ΔT = 5 K.</p><p>SF (W/m²) by orientation N 130, NE 113, E 112, SE 97, S 97, SW 176, W 243, NW 211 — Jakarta radiation table (SNI 03-6389-2000). TDek: 15 K (wall mass < 125 kg/m²), 12 K (125–195), 10 K (> 195). Paint α: SNI 6389:2020 table.</p><p>Glass SC/U, shading factors, wall U & mass, and costs are <b>example values for practice</b>, not product data. For real design use manufacturer data and the full SNI tables.</p>",
   ref:"OTTV formula & limit: SNI 6389:2020/SNI 6389:2011 (BSN); Jakarta SF: SNI 03-6389-2000. Material values are practice examples.",by:"Developed by: Pindo Tutuko ·",
   dir:{U:"North",TL:"North-east",T:"East",TG:"South-east",S:"South",BD:"South-west",B:"West",BL:"North-west"}}
@@ -148,6 +157,20 @@ function checks(L,R){var out=[{k:'r_ottv',ok:R.ottv<=LIMIT,now:fmt(R.ottv,1)+' W
   if(L.req.wwrMin!=null)out.push({k:'r_wwrMin',v:L.req.wwrMin,ok:R.wwrMin>=L.req.wwrMin,now:R.wwrMin+'%'});
   out.push({k:'r_budget',b:L.budget,ok:R.cost<=L.budget,now:R.cost});return out}
 function starsOf(L,R){if(!checks(L,R).every(function(c){return c.ok}))return 0;if(R.ottv>30)return 1;return R.cost<=.85*L.budget?3:2}
+/* ---------- Tantangan acak: orientasi, luas sisi, syarat WWR, anggaran (dijamin bisa bintang 3) ---------- */
+var NFIX=LEVELS.length,DIRS8=['U','TL','T','TG','S','BD','B','BL'];
+function rngS(seed){var a=seed>>>0;return function(){a=(a+0x6D2B79F5)>>>0;var t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296}}
+function genLevel(seed){var r=rngS(seed),rot=Math.floor(r()*8),Lg=360+40*Math.floor(r()*10),Sh=160+20*Math.floor(r()*11),longFirst=r()<.5;
+  var faces=[0,2,4,6].map(function(o,i){return [DIRS8[(rot+o)%8],(i%2===0)===longFirst?Lg:Sh]});
+  var req=r()<.7?{wwrAvg:25+5*Math.floor(r()*5)}:{wwrMin:40+5*Math.floor(r()*5)};
+  var L={faces:faces,req:req,budget:1e9},c35=Infinity,c30=Infinity;
+  for(var w=0;w<=90;w+=5)for(var g=0;g<4;g++)for(var sh=0;sh<3;sh++)for(var wl=0;wl<3;wl++)for(var p=0;p<4;p++){var c={wwr:w,g:g,sh:sh,w:wl,p:p},R=calc(L,[c,c,c,c]);
+    if(!checks(L,R).every(function(x){return x.ok}))continue;if(R.cost<c35)c35=R.cost;if(R.ottv<=30&&R.cost<c30)c30=R.cost}
+  if(!isFinite(c30))return null;
+  L.budget=Math.ceil(Math.max(c35*1.1,c30/.85)/10)*10;L.seed=seed;L.rand=true;
+  var nm=function(lg){return (lg==='en'?{U:'north',TL:'north-east',T:'east',TG:'south-east',S:'south',BD:'south-west',B:'west',BL:'north-west'}:{U:'utara',TL:'timur laut',T:'timur',TG:'tenggara',S:'selatan',BD:'barat daya',B:'barat',BL:'barat laut'})[faces[longFirst?0:1][0]]};
+  L.title={id:'Acak #'+seed+' · sisi panjang ke '+nm('id'),en:'Random #'+seed+' · long side to the '+nm('en')};return L}
+function playRandom(){for(var k=0;k<10;k++){var L=genLevel(1+Math.floor(Math.random()*999999));if(L){LEVELS.length=NFIX;LEVELS.push(L);load(NFIX);return}}}
 
 var st={i:+(store.get('fsLevel')||0),cfg:null,stars:{},sync:false};try{st.stars=JSON.parse(store.get('fsStars')||'{}')}catch(e){}
 if(!(st.i>=0&&st.i<LEVELS.length))st.i=0;
@@ -166,10 +189,11 @@ function elev(f,c,o){var w=c.wwr/100,W=200,H=110,floors=4,bays=6,fh=(H-14)/floor
   s+='<rect x="0" y="'+(H+6)+'" width="'+W+'" height="2" fill="var(--muted)"/></g></svg>';return s}
 function sel(name,i,val,n,pref){var o='';for(var k=0;k<n;k++)o+='<option value="'+k+'"'+(k===val?' selected':'')+'>'+t(pref+k)+'</option>';return '<select data-f="'+i+'" data-k="'+name+'">'+o+'</select>'}
 function render(){var L=LEVELS[st.i],R=calc(L,st.cfg),C=checks(L,R),s=starsOf(L,R);
-  if(s>(st.stars[st.i]||0)){st.stars[st.i]=s;store.set('fsStars',JSON.stringify(st.stars))}
-  var tot=0;for(var k in st.stars)tot+=st.stars[k];$('hS').textContent=tot+'/'+(LEVELS.length*3);$('hO').textContent=fmt(R.ottv,1);
+  if(st.i<NFIX&&s>(st.stars[st.i]||0)){st.stars[st.i]=s;store.set('fsStars',JSON.stringify(st.stars))}
+  var tot=0;for(var k in st.stars)if(+k<NFIX)tot+=st.stars[k];$('hS').textContent=tot+'/'+(NFIX*3);$('hO').textContent=fmt(R.ottv,1);
   $('levels').innerHTML=LEVELS.map(function(l,i){var x=st.stars[i]||0;return '<button class="lv'+(i===st.i?' on':'')+'" data-i="'+i+'">'+t('level',{n:i+1})+' <span class="st">'+'★★★'.slice(0,x)+'<span style="opacity:.25">'+'★★★'.slice(0,3-x)+'</span></span><small>'+l.title[lang]+'</small></button>'}).join('');
-  $('levels').querySelectorAll('button').forEach(function(b){b.onclick=function(){load(+b.getAttribute('data-i'))}});
+  $('levels').insertAdjacentHTML('beforeend','<button class="lv rnd" id="rndBtn">🎲 '+t('rnd')+'<small>'+t('rndS')+'</small></button>');
+  $('levels').querySelectorAll('button[data-i]').forEach(function(b){b.onclick=function(){load(+b.getAttribute('data-i'))}});$('rndBtn').onclick=playRandom;
   $('lvTitle').textContent=L.title[lang];
   $('faces').innerHTML=L.faces.map(function(f,i){var c=st.cfg[i],o=R.rows[i].o;return '<div class="card face"><div class="fh"><h3>'+t('dir')[f[0]]+'</h3><span class="v" style="color:'+(o>LIMIT?'var(--bad)':'var(--ok)')+'">'+fmt(o,1)+' W/m²</span></div><div class="hint">SF '+SF[f[0]]+' W/m² · '+t('area',{a:f[1]})+'</div>'+elev(f[0],c,o)+
     '<div class="ctl"><label>'+t('wwr')+' '+c.wwr+'%</label><input type="range" min="0" max="90" step="5" value="'+c.wwr+'" data-f="'+i+'" data-k="wwr"><label>'+t('glass')+'</label>'+sel('g',i,c.g,4,'g')+'<label>'+t('shade')+'</label>'+sel('sh',i,c.sh,3,'sh')+'<label>'+t('wall')+'</label>'+sel('w',i,c.w,3,'w')+'<label>'+t('paint')+'</label>'+sel('p',i,c.p,4,'p')+'</div></div>'}).join('');
@@ -189,7 +213,7 @@ $('sync').onchange=function(){st.sync=this.checked;if(st.sync){var c0=st.cfg[0];
 $('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('fsLang',lang);applyStatic();render()};
 applyStatic();load(st.i);
 var _r0=render;render=function(){_r0();window.dispatchEvent(new Event('fs-render'))};
-window.__FS={LEVELS:LEVELS,calc:calc,checks:checks,starsOf:starsOf,st:function(){return st},load:load,render:render,lang:function(){return lang},dirName:function(k){return t('dir')[k]}};
+window.__FS={gen:genLevel,LEVELS:LEVELS,calc:calc,checks:checks,starsOf:starsOf,st:function(){return st},load:load,render:render,lang:function(){return lang},dirName:function(k){return t('dir')[k]}};
 })();
 </script>
 <script src="/gim/inspirasi.js" defer></script>

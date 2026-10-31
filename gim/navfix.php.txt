@@ -1,0 +1,4 @@
+add_action( 'wp_footer', function () { ?>
+<script id="pt-navfix">(function(){function fix(){var W=document.documentElement.clientWidth;document.querySelectorAll('.wp-block-navigation__submenu-container').forEach(function(s){s.style.transform='';s.style.maxWidth='calc(100vw - 16px)';var r=s.getBoundingClientRect();if(!r.width)return;var dx=0;if(r.left<8)dx=8-r.left;else if(r.right>W-8)dx=W-8-r.right;if(dx)s.style.transform='translateX('+Math.round(dx)+'px)'})}
+['load','resize','orientationchange'].forEach(function(e){window.addEventListener(e,function(){setTimeout(fix,60)})});document.addEventListener('mouseover',function(e){if(e.target.closest&&e.target.closest('.has-child'))fix()},true);document.addEventListener('focusin',fix,true);document.addEventListener('click',function(){setTimeout(fix,30)},true);fix()})();</script>
+<?php }, 99 );

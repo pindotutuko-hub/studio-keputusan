@@ -45,6 +45,11 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16p
 .planhead h2{font-size:18px}
 .planhead span{color:var(--muted);font-size:13px}
 #planSvg{width:100%;height:auto;display:block;touch-action:manipulation;max-height:70vh}
+.vt{display:inline-flex;gap:0;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:0 4px 8px;align-items:center}.vt button{border:0;background:transparent;padding:5px 12px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;color:inherit}.vt button.on{background:var(--ink);color:var(--card)}.vt .chip{border-left:1px solid var(--line)}
+.planwrap{position:relative}#plan3d{width:100%;aspect-ratio:4/3;max-height:70vh;border-radius:12px;overflow:hidden;position:relative;touch-action:none;background:#cfe3f2}
+#plan3d .tourHud{position:absolute;left:10px;top:10px;background:rgba(20,18,15,.72);color:#fff;border-radius:10px;padding:6px 10px;font-size:13px;font-weight:600;pointer-events:none}
+.nav3d{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px;z-index:2}.nav3d button{width:36px;height:36px;border-radius:10px;border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.9);color:#1f1c18;font-size:17px;font-weight:700;display:grid;place-items:center}.nav3d button.on{background:#1f1c18;color:#fff}
+
 .room{cursor:pointer;transition:fill .25s}
 .room:hover{fill:var(--roomh)}
 .revealed .room{cursor:pointer}
@@ -117,6 +122,17 @@ footer a{color:var(--muted)}
 @media (max-width:860px){.mobLock.show{display:block}.wrap{padding-bottom:90px}}
 .sumtab td:nth-child(2){text-align:left}
 </style>
+<script src="/gim/denah.js"></script>
+<script src="/gim/inspirasi.js" defer></script>
+<script type="importmap">{"imports":{"three":"/lensa3d/three/three.module.min.js","three/addons/":"/lensa3d/three/addons/"}}</script>
+<style id="rsp-fix">/* tata letak responsif: ponsel, tablet, iPad mini (Safari & Chrome) */
+.grid>*,.intro>*,.side>*,.grid2>*{min-width:0}
+svg,canvas,img,video{max-width:100%}
+.intro svg{width:100%;height:auto;max-height:380px;display:block}
+#plan3d,#map3d,#kp3d,#fs3d{min-width:0;max-width:100%}
+#plan3d canvas,#map3d canvas,#kp3d canvas,#fs3d canvas{width:100%!important;height:100%!important;display:block}
+@media (max-width:1100px){.wrap{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -181,7 +197,9 @@ footer a{color:var(--muted)}
   <section class="grid hidden" id="game">
     <div class="card plan">
       <div class="planhead"><h2 id="lvTitle"></h2><span id="lvSub"></span></div>
-      <svg id="planSvg" role="img"></svg>
+      <div class="vt" role="tablist"><button id="v2d" class="on" type="button" data-t="vPlan"></button><button id="v3d" class="hidden" type="button">3D</button><button id="tourBtn" class="chip hidden" type="button" data-t="tour"></button></div>
+      <div class="planwrap"><svg id="planSvg" role="img"></svg><div id="plan3d" class="hidden"></div></div>
+      <div id="drInsp" style="margin-top:12px"></div>
       <div class="legend hidden" id="legend"><span data-t="seg"></span><div class="bar" id="legendBar"></div><span data-t="int"></span></div>
     </div>
     <div class="card side" id="side"></div>
@@ -244,7 +262,7 @@ var T={
   clsSending:"Mengirim jawaban…",clsFail:"Gagal mengirim: {e}. Coba lagi.",retry:"Kirim ulang",inClass:"Kelas: {t}",
   err_not_found:"Kode sesi tidak ditemukan.",err_closed:"Sesi sudah ditutup dosen.",err_name_required:"Nama wajib diisi.",err_bad_code:"Kode harus 6 karakter.",
   err_forbidden:"Anda tidak berhak membuka sesi ini.",err_login_required:"Silakan masuk ke situs terlebih dahulu.",err_bad_nonce:"Sesi login kedaluwarsa; muat ulang halaman.",err_rate_limited:"Terlalu banyak sesi dibuat hari ini.",err_full:"Sesi sudah penuh.",err_already_submitted:"Jawaban sudah terkirim.",err_net:"Koneksi bermasalah.",
-  home:"Beranda",steps:"langkah",sumCase:"Kasus",sumPick:"Pilihan",sumPts:"Poin"
+  home:"Beranda",vPlan:"Denah",tour:"🚶 Telusuri ke ruang terpilih",depthNow:"Kedalaman {d} · {r}",arrive:"Tiba di {r} · kedalaman {d}",inspH:"Foto inspirasi untuk kasus ini",steps:"langkah",sumCase:"Kasus",sumPick:"Pilihan",sumPts:"Poin"
  },
  en:{tag:"A spatial-configuration guessing game · space syntax",score:"Score",
   introH:"Where do people pass by and gather most?",
@@ -289,7 +307,7 @@ var T={
   clsSending:"Sending answers…",clsFail:"Sending failed: {e}. Try again.",retry:"Resend",inClass:"Class: {t}",
   err_not_found:"Session code not found.",err_closed:"The session has been closed.",err_name_required:"Name is required.",err_bad_code:"The code must be 6 characters.",
   err_forbidden:"You are not allowed to open this session.",err_login_required:"Please sign in to the site first.",err_bad_nonce:"Login session expired; reload the page.",err_rate_limited:"Too many sessions created today.",err_full:"The session is full.",err_already_submitted:"Answers already submitted.",err_net:"Connection problem.",
-  home:"Home",steps:"steps",sumCase:"Case",sumPick:"Pick",sumPts:"Points"
+  home:"Home",vPlan:"Plan",tour:"🚶 Walk to the selected room",depthNow:"Depth {d} · {r}",arrive:"Arrived at {r} · depth {d}",inspH:"Inspiration photos for this case",steps:"steps",sumCase:"Case",sumPick:"Pick",sumPts:"Points"
  }
 };
 function t(k,v){var s=(T[lang][k]!=null?T[lang][k]:k);if(v)for(var p in v)s=s.split('{'+p+'}').join(v[p]);return s}
@@ -407,51 +425,13 @@ function dots(){var d=$('dots');d.innerHTML='';(st.R.length?st.R:LEVELS.slice(0,
 
 /* ---------- Plan drawing ---------- */
 function drawPlan(){
-  var L=st.R[st.i],A=st.A,svg=$('planSvg'),rev=st.phase==='reveal';
-  svg.innerHTML='';svg.setAttribute('viewBox',(-0.6)+' '+(-0.6)+' '+(L.W+1.2)+' '+(L.H+1.9));
-  svg.setAttribute('aria-label',L.title[lang]);
-  svg.classList.toggle('revealed',rev);
-  if(L.bg==='blocks'){
-    el('rect',{x:0,y:0,width:L.W,height:L.H,fill:'var(--block)',rx:0.15},svg);
-    for(var gx=0;gx<L.W;gx+=1)for(var gy=0;gy<L.H-1;gy+=1){el('rect',{x:gx+0.12,y:gy+0.12,width:0.76,height:0.76,fill:'none',stroke:'var(--blockline)','stroke-width':0.04,rx:0.08},svg)}
-  }
-  var gR=el('g',{},svg),gD=el('g',{},svg),gL=el('g',{'pointer-events':'none'},svg);
-  L.rooms.forEach(function(r){
-    var fill=r.ty==='gang'?'var(--gang)':(r.ty==='open'?'var(--card)':'var(--room)'),c=null;
-    if(rev){c=heat(heatT(A,r.k));fill=rgb(c)}
-    var isSel=st.sel===r.k,isFocus=rev&&st.focus===r.k;
-    var rect=el('rect',{x:r.x,y:r.y,width:r.w,height:r.h,fill:fill,stroke:'var(--ink)','stroke-width':0.07,'class':'room',tabindex:0,role:'button','aria-label':r.n[lang]},gR);
-    if(r.ty==='open'&&!rev)rect.setAttribute('stroke-dasharray','0.25 0.15');
-    rect.addEventListener('click',function(){onRoom(r.k)});
-    rect.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();onRoom(r.k)}});
-    if(isSel||isFocus){el('rect',{x:r.x+0.12,y:r.y+0.12,width:Math.max(0.05,r.w-0.24),height:Math.max(0.05,r.h-0.24),fill:'none',stroke:isSel?'var(--accent)':'var(--ink)','stroke-width':0.14,'stroke-dasharray':isFocus&&!isSel?'0.3 0.18':'none','pointer-events':'none',rx:0.08},gL)}
-    // label
-    var name=r.n[lang],vert=r.h>r.w*1.6&&r.w<2.2,span=(vert?r.h:r.w)-0.3,thick=vert?r.w:r.h;
-    var fs=Math.min(0.5,thick*0.42,span/(name.length*0.56));
-    var cx=r.x+r.w/2,cy=r.y+r.h/2,showVal=rev&&thick>=1.6;
-    var ink=rev?inkOn(c):'var(--ink)';
-    var tx=el('text',{x:cx,y:cy+(showVal?-0.12:fs*0.36),'text-anchor':'middle','font-size':fs,'font-weight':600,fill:ink,'font-family':'Inter,sans-serif'},gL);
-    if(vert)tx.setAttribute('transform','rotate(-90 '+cx+' '+cy+')');
-    tx.textContent=name;
-    if(rev){
-      var I=A.res[r.k].I,vtxt=fmt(I,2);
-      if(showVal){var v=el('text',{x:cx,y:cy+0.48,'text-anchor':'middle','font-size':Math.min(0.42,fs*0.95),fill:ink,'font-family':'Space Grotesk,sans-serif','font-weight':700},gL);v.textContent=vtxt}
-      if(isFocus){var d=el('text',{x:r.x+0.18,y:r.y+0.5,'font-size':0.32,fill:ink,'font-weight':700},gL);d.textContent='●'}
-      else if(st.focus&&!vert&&thick>=1){var dd=el('text',{x:r.x+0.18,y:r.y+0.48,'font-size':0.3,fill:ink,opacity:0.85,'font-family':'Space Grotesk,sans-serif'},gL);dd.textContent=A.res[st.focus].dep[r.k]}
-    }
-  });
-  var byK={};L.rooms.forEach(function(r){byK[r.k]=r});
-  L.doors.forEach(function(d){
-    var s=sharedEdge(byK[d[0]],byK[d[1]]);if(!s){console.warn('No shared wall',d);return}
-    var len=Math.min((s.hi-s.lo)*0.6,1.0),mid=(s.lo+s.hi)/2;
-    var a=s.v?{x1:s.x,y1:mid-len/2,x2:s.x,y2:mid+len/2}:{x1:mid-len/2,y1:s.y,x2:mid+len/2,y2:s.y};
-    a.stroke='var(--door)';a['stroke-width']=0.22;a['stroke-linecap']='round';a['pointer-events']='none';el('line',a,gD);
-  });
-  // entrance arrow
-  var ex=L.entry[0],ey=L.entry[1];
-  el('path',{d:'M'+ex+' '+(ey+1.05)+' L'+ex+' '+(ey+0.25)+' M'+(ex-0.3)+' '+(ey+0.55)+' L'+ex+' '+(ey+0.25)+' L'+(ex+0.3)+' '+(ey+0.55),stroke:'var(--accent)','stroke-width':0.12,fill:'none','stroke-linecap':'round','stroke-linejoin':'round'},svg);
-  var en=el('text',{x:ex+0.45,y:ey+0.95,'font-size':0.36,fill:'var(--accent)','font-weight':700},svg);en.textContent=lang==='id'?'Masuk':'Entry';
+  var L=st.R[st.i],A=st.A,svg=$('planSvg'),rev=st.phase==='reveal',tint=null,labels=null;
+  svg.setAttribute('aria-label',L.title[lang]);svg.classList.toggle('revealed',rev);
+  if(rev){tint={};labels={};L.rooms.forEach(function(r){tint[r.k]=heat(heatT(A,r.k));labels[r.k]=st.focus&&st.focus!==r.k?String(A.res[st.focus].dep[r.k]):fmt(A.res[r.k].I,2)})}
+  st.model={rooms:L.rooms,W:L.W,H:L.H,entry:L.entry,doors:L.doors.map(function(d){return [d[0],d[1],1]}),tint:tint,labels:labels,sel:st.sel,blocks:L.bg==='blocks',root:L.rooms[0].k};
+  if(window.Denah)Denah.draw(svg,{rooms:L.rooms,W:L.W,H:L.H,entry:L.entry,doors:st.model.doors,lang:lang,tint:tint,labels:labels,onRoom:onRoom,sel:st.sel,focus:rev?st.focus:null,blocks:L.bg==='blocks'});
   $('legend').classList.toggle('hidden',!rev);
+  window.dispatchEvent(new Event('dr-plan'));
 }
 
 /* ---------- Justified graph ---------- */
@@ -655,8 +635,31 @@ $('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('drLang',la
   if(!$('hostBox').classList.contains('hidden')){if(st.host&&!$('dash').classList.contains('hidden')&&st.host.data)renderDash();else renderMySess()}};
 $('startBtn').onclick=start;$('mobLock').onclick=function(){lockAnswer()};
 applyStatic();dots();drawIntroArt();initApi();
-window.__DR={LEVELS:LEVELS,analyze:analyze,sharedEdge:sharedEdge};
+window.__DR={LEVELS:LEVELS,analyze:analyze,sharedEdge:sharedEdge,st:function(){return st},onRoom:function(k){onRoom(k)},lang:function(){return lang},t:t};
 })();
+</script>
+<script>
+(function(){var K=window.__DR;if(!K)return;var $=function(i){return document.getElementById(i)};
+var INSP=[{cats:['perumahan','putih'],re:/rumah|teras|pintu/i,album:{re:/interior rumah|rumah contoh|rumah kolonial: ruang|ruang tamu|kamar/i}},
+ {cats:['kayutangan','moriyama'],re:/tradisional|kayu|rumah/i,album:{re:/rumah kayu lama|rumah lama|tradisional|gassho|pendopo|joglo/i}},
+ {cats:['urban'],re:/kampus|gedung|koridor/i,album:{re:/bangunan kampus|fakultas|orange hall|kampus|koridor/i}},
+ {cats:['kayutangan','jodipan','tridi','putih','sanan','keramik'],re:/gang|lorong|tangga|ruang terbuka|lapangan|mushola/i},
+ {cats:['moriyama','jpkampung','tiongkok'],re:/pekarangan|halaman|taman|rumah/i,album:{re:/halaman|taman|rumah kayu|rumah lama/i},ids:['moriyama-06']},
+ {cats:['urban','keramik','kayutangan','sanan'],re:/pasar|warung|pedagang|kios|toko|jajan/i,album:{re:/pasar|pedagang|kios|warung|los/i}}];
+var last=null;function insp(){if(!window.Inspirasi)return;var S=K.st(),L=S.R&&S.R[S.i];if(!L)return;var key=L.lv+':'+K.lang();if(key===last)return;last=key;var o=INSP[L.lv]||INSP[0];
+ var opt={cats:o.cats,re:o.re,album:o.album,ids:o.ids||[],n:4,seed:31+L.lv*13,lang:K.lang,title:{id:K.t('inspH'),en:K.t('inspH')}};var el=$('drInsp');if(!el.__insp)Inspirasi.mount(el,opt);else Inspirasi.update(el,Object.assign(opt,{albumData:el.__insp.albumData}))}
+var v3=null,on3=false;function setView(b){on3=b;try{localStorage.setItem('dr3d',b?'1':'0')}catch(e){}$('v2d').classList.toggle('on',!b);$('v3d').classList.toggle('on',b);$('planSvg').classList.toggle('hidden',b);$('plan3d').classList.toggle('hidden',!b);$('tourBtn').classList.toggle('hidden',!b);
+ if(b&&window.DR3D){if(!v3)v3=DR3D($('plan3d'));v3.update();v3.frame()}}
+$('v2d').onclick=function(){want=false;setView(false)};$('tourBtn').onclick=function(){var S=K.st();if(v3&&S.sel)v3.tour(S.sel);else if(v3&&S.focus)v3.tour(S.focus)};
+var lastLv=null;window.addEventListener('dr-plan',function(){insp();if(want&&!on3&&window.DR3D){want=false;setView(true)}if(on3&&v3){var S=K.st(),cur=S.i+'/'+(S.R&&S.R[S.i]&&S.R[S.i].lv);v3.update();if(cur!==lastLv){lastLv=cur;v3.stopTour();v3.frame()}}});
+var want=false;window.addEventListener('dr3d-ready',function(){$('v3d').classList.remove('hidden');$('v3d').onclick=function(){setView(true)};var p=null;try{p=localStorage.getItem('dr3d')}catch(e){}want=p!=='0';if(want&&K.st().model)setView(true)});
+})();
+</script>
+<script type="module">
+import {create} from '/gim/denah3d.js';
+const K=window.__DR;
+window.DR3D=el=>create(el,{model:()=>K.st().model,onRoom:k=>K.onRoom(k),lang:K.lang,t:{id:{depthNow:K.t('depthNow'),arrive:K.t('arrive')},en:{depthNow:'Depth {d} · {r}',arrive:'Arrived at {r} · depth {d}'}}});
+window.dispatchEvent(new Event('dr3d-ready'));
 </script>
 <!-- homefab: tombol Beranda melayang -->
 <style>.homefab{position:fixed!important;top:calc(10px + env(safe-area-inset-top,0px));left:calc(10px + env(safe-area-inset-left,0px));z-index:2147483000;box-shadow:0 4px 14px rgba(0,0,0,.18);opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .2s,transform .2s}.homefab.on{opacity:1;transform:none;pointer-events:auto}@media print{.homefab{display:none!important}}</style>

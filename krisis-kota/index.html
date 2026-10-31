@@ -95,6 +95,16 @@ footer a{color:var(--muted)}
 .steps span{font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px;background:var(--soft);color:var(--muted)}
 .steps span.on{background:var(--accent);color:#fff}
 input[type=text]{padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg)}
+.critph{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:6px 0 14px}.critph figure{margin:0}.critph .ph{aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:var(--line)}.critph img{width:100%;height:100%;object-fit:cover;display:block}.critph figcaption{font-size:12px;font-weight:600;margin-top:4px;text-align:center}
+@media (max-width:600px){.critph{grid-template-columns:repeat(3,1fr)}}
+</style>
+<style id="rsp-fix">/* tata letak responsif: ponsel, tablet, iPad mini (Safari & Chrome) */
+.grid>*,.intro>*,.side>*,.grid2>*{min-width:0}
+svg,canvas,img,video{max-width:100%}
+.intro svg{width:100%;height:auto;max-height:380px;display:block}
+#plan3d,#map3d,#kp3d,#fs3d{min-width:0;max-width:100%}
+#plan3d canvas,#map3d canvas,#kp3d canvas,#fs3d canvas{width:100%!important;height:100%!important;display:block}
+@media (max-width:1100px){.wrap{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}}
 </style>
 </head>
 <body>
@@ -255,9 +265,17 @@ function renderIntro(m){
   if(!st.cls&&window.Kelas)Kelas.remount();
   $('go').onclick=function(){resetPlay();if(st.cls)st.order=st.cls.params.order.slice();st.players.forEach(function(p){p.pw=PAIRS.map(function(){return 0})});st.cur=0;st.phase='ahp';render();window.scrollTo(0,0)}}
 function strengthText(p,a,b){if(p===0)return t('eq');var s=Math.abs(p)+1;var who=p<0?[a,b]:[b,a];return t('more',{a:who[0],s:t('s'+s),b:who[1]})}
+var CRITQ={env:{cats:['putih','kayutangan','jodipan'],re:/pohon|taman|hijau|sungai|tanaman/i,album:{th:['lanskap','flora'],re:/taman|sungai|pohon|hutan|danau/i}},
+ eco:{cats:['urban','keramik','sanan'],re:/pasar|toko|ruko|usaha|warung|kerajinan|tempe|keramik/i,album:{re:/pasar|toko|ruko|pertokoan|pedagang/i}},
+ soc:{cats:['rusun','permukiman','jodipan','tridi'],re:/rusun|warga|kampung|rumah|anak|bermain/i},
+ her:{cats:['kayutangan','belanda','tiongkok'],re:/kolonial|lama|bersejarah|heritage|tua/i,album:{th:['pusaka','kolonialmlg'],re:/./}},
+ cost:{cats:['permukiman','kayutangan','tridi'],re:/gang|jalan|perbaikan|bangun|swadaya/i}};
+function critPhotos(){var box=document.getElementById('critPh');if(!box||!window.Inspirasi)return;box.innerHTML=CRIT.map(function(c){return '<figure data-k="'+c.k+'"><div class="ph"></div><figcaption>'+esc(c[lang])+'</figcaption></figure>'}).join('');
+  CRIT.forEach(function(c,i){var q=CRITQ[c.k]||{};Inspirasi._pick({cats:q.cats,re:q.re,album:q.album,n:1,seed:97+i*31},function(l){var x=l[0],f=box.querySelector('[data-k="'+c.k+'"] .ph');if(!x||!f)return;var src=x.id.indexOf('al:')===0?'/wp-content/uploads/album/t2/'+x.id.slice(3)+'.jpg':'/preseden/img/'+x.id+'-t.jpg';f.innerHTML='<img loading="lazy" alt="'+esc(x.title)+'" title="'+esc(x.title)+(x.city?' · '+esc(x.city):'')+'" src="'+src+'">'})})}
 function renderAHP(m){var p=st.players[st.cur];
-  m.innerHTML='<section class="card pad">'+steps('stepAHP')+'<h2>'+t('ahpH',{who:roleName(p)})+'</h2><p class="hint">'+t('ahpP')+'</p><div class="grid2"><div id="pws"></div><div><h3 style="font-size:15px">'+t('weightsH')+'</h3><div id="wv"></div></div></div>'+
+  m.innerHTML='<section class="card pad">'+steps('stepAHP')+'<h2>'+t('ahpH',{who:roleName(p)})+'</h2><p class="hint">'+t('ahpP')+'</p><div class="critph" id="critPh"></div><div class="grid2"><div id="pws"></div><div><h3 style="font-size:15px">'+t('weightsH')+'</h3><div id="wv"></div></div></div>'+
    '<div class="row" style="margin-top:14px"><button class="btn ghost" id="bk">'+t('back')+'</button><button class="btn" id="nx">'+t('next')+'</button></div></section>';
+  critPhotos();
   $('pws').innerHTML=PAIRS.map(function(pr,k){var a=L(CRIT[pr[0]]),b=L(CRIT[pr[1]]);return '<div class="pw"><div class="l">'+esc(a)+'</div><input type="range" min="-8" max="8" step="1" value="'+p.pw[k]+'" data-k="'+k+'" aria-label="'+esc(a)+' – '+esc(b)+'"><div class="r">'+esc(b)+'</div><div class="v" id="pv'+k+'">'+esc(strengthText(p.pw[k],a,b))+'</div></div>'}).join('');
   m.querySelectorAll('input[type=range]').forEach(function(inp){inp.oninput=function(){var k=+inp.getAttribute('data-k');p.pw[k]=+inp.value;var pr=PAIRS[k];$('pv'+k).textContent=strengthText(p.pw[k],L(CRIT[pr[0]]),L(CRIT[pr[1]]));weights()}});
   function weights(){var r=ahp(matrix(p.pw.map(toVal)));p.res=r;$('wv').innerHTML=wbars(r.w)+'<div class="cr '+(r.CR<=0.1?'ok':'bad')+'">'+t(r.CR<=0.1?'crOk':'crBad',{cr:fmt(Math.max(0,r.CR),3)})+'</div>'}

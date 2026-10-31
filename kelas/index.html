@@ -44,6 +44,14 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;p
 .hidden{display:none!important}
 footer{margin-top:20px;color:var(--muted);font-size:12.5px}
 </style>
+<style id="rsp-fix">/* tata letak responsif: ponsel, tablet, iPad mini (Safari & Chrome) */
+.grid>*,.intro>*,.side>*,.grid2>*{min-width:0}
+svg,canvas,img,video{max-width:100%}
+.intro svg{width:100%;height:auto;max-height:380px;display:block}
+#plan3d,#map3d,#kp3d,#fs3d{min-width:0;max-width:100%}
+#plan3d canvas,#map3d canvas,#kp3d canvas,#fs3d canvas{width:100%!important;height:100%!important;display:block}
+@media (max-width:1100px){.wrap{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}}
+</style>
 </head>
 <body>
 <div class="wrap">

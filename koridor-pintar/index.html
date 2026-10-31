@@ -47,6 +47,15 @@ footer{margin-top:20px;color:var(--muted);font-size:12.5px;display:flex;justify-
 #kp3d{position:relative;width:100%;aspect-ratio:16/8;border-radius:12px;overflow:hidden;touch-action:none;margin-top:10px;background:#0d1626}
 @media (max-width:600px){#kp3d{aspect-ratio:4/3}}
 .nav3d{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px;z-index:2}.nav3d button{width:34px;height:34px;border-radius:10px;border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.9);color:#1f1c18;font-size:16px;font-weight:700;display:grid;place-items:center}
+.lv.rnd{border-style:dashed;border-color:var(--accent);color:var(--accent)}
+</style>
+<style id="rsp-fix">/* tata letak responsif: ponsel, tablet, iPad mini (Safari & Chrome) */
+.grid>*,.intro>*,.side>*,.grid2>*{min-width:0}
+svg,canvas,img,video{max-width:100%}
+.intro svg{width:100%;height:auto;max-height:380px;display:block}
+#plan3d,#map3d,#kp3d,#fs3d{min-width:0;max-width:100%}
+#plan3d canvas,#map3d canvas,#kp3d canvas,#fs3d canvas{width:100%!important;height:100%!important;display:block}
+@media (max-width:1100px){.wrap{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}}
 </style>
 </head>
 <body>
@@ -83,7 +92,7 @@ footer{margin-top:20px;color:var(--muted);font-size:12.5px;display:flex;justify-
 var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 var lang=store.get('kpLang')==='en'?'en':'id';
 var T={
- id:{home:"Beranda",tag:"Gim penempatan tiang lampu, sensor, dan pohon di koridor kota",budget:"Dana",starsT:"Bintang",
+ id:{home:"Beranda",rnd:"Tantangan acak",rndS:"koridor & syarat baru",tag:"Gim penempatan tiang lampu, sensor, dan pohon di koridor kota",budget:"Dana",starsT:"Bintang",
   introH:"Rancang koridor yang terang, terpantau, dan teduh",introP:"Koridor fiktif ini punya dua trotoar. Pasang tiang lampu (penerangan malam), sensor suhu pada tiang (pemantauan titik panas), dan pohon peneduh (menurunkan suhu permukaan) — dengan dana terbatas.",
   vNight:"Malam: cahaya",vHeat:"Siang: suhu",vSense:"Jangkauan sensor",
   t_lamp:"Tiang lampu",t_sens:"Sensor di tiang",t_tree:"Pohon peneduh",t_del:"Hapus",
@@ -95,7 +104,7 @@ var T={
   legHot:"titik panas",legNode:"simpul ramai (halte, pasar)",legHer:"fasad cagar budaya",legCool:"Sejuk",legHotT:"Panas",
   howTxt:"Lampu menerangi 3 petak ke kiri dan kanan pada trotoar yang sama. Sensor menjangkau 2 petak di sekitarnya (kedua trotoar bila berseberangan dekat). Pohon menurunkan suhu permukaan 2,5 °C di petaknya dan sekitarnya (jarak 1) dan 1 °C pada jarak 2. Angka suhu dan biaya adalah <b>model contoh untuk latihan</b>, bukan hasil ukur lapangan.",
   ref:"Koridor dan angka fiktif — model edukatif, terinspirasi aplikasi Urban Sensor.",by:"Dikembangkan oleh: Pindo Tutuko ·"},
- en:{home:"Home",tag:"A game of placing lamp posts, sensors and trees along a city corridor",budget:"Funds",starsT:"Stars",
+ en:{home:"Home",rnd:"Random challenge",rndS:"new corridor & rules",tag:"A game of placing lamp posts, sensors and trees along a city corridor",budget:"Funds",starsT:"Stars",
   introH:"Design a corridor that is lit, monitored and shaded",introP:"This fictional corridor has two pavements. Place lamp posts (night lighting), temperature sensors on posts (hot-spot monitoring) and shade trees (lower surface temperature) — on a limited budget.",
   vNight:"Night: light",vHeat:"Day: temperature",vSense:"Sensor reach",
   t_lamp:"Lamp post",t_sens:"Sensor on post",t_tree:"Shade tree",t_del:"Remove",
@@ -145,6 +154,28 @@ function checks(L,R){var o=[];o.push({k:'r_lit',v:L.req.lit,ok:R.litPct>=L.req.l
   if(L.req.mean)o.push({k:'r_mean',v:fmt(L.req.mean,1),ok:R.mean<=L.req.mean+1e-9,now:fmt(R.mean,2)+' °C'});
   o.push({k:'r_bud',v:L.budget,ok:R.cost<=L.budget,now:R.cost});return o}
 function starsOf(L,R){if(!checks(L,R).every(function(c){return c.ok}))return 0;var left=(L.budget-R.cost)/L.budget;return left>=.3?3:left>=.15?2:1}
+/* ---------- Tantangan acak: titik panas, halte, teduh, cagar budaya acak; anggaran dari solusi rakus (dijamin bisa bintang 3) ---------- */
+var NFIX=LEVELS.length;
+function rngS(seed){var a=seed>>>0;return function(){a=(a+0x6D2B79F5)>>>0;var t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296}}
+function genLevel(seed){var r=rngS(seed),ri=function(a,b){return a+Math.floor(r()*(b-a+1))},cell=function(){return [ri(0,W-1),SIDE[ri(0,1)]]},uniq={},take=function(n,ok){var o=[],g=0;while(o.length<n&&g++<200){var c=cell(),k=key(c[0],c[1]);if(uniq[k]||(ok&&!ok(c)))continue;uniq[k]=1;o.push(c)}return o};
+  var her=[];if(r()<.5){var hy=SIDE[ri(0,1)],hl=ri(4,6),hx=ri(2,W-hl-2);for(var i=0;i<hl;i++)her.push([hx+i,hy])}
+  var hot=take(ri(3,5),function(c){return !has(her,c[0],c[1])}),node=take(ri(0,3)),shade=take(ri(0,3));
+  var L={hot:hot,node:node,shade:shade,her:her,req:{lit:[80,85,90][ri(0,2)],mon:1},budget:999};
+  // 1) lampu: rakus menambah cakupan terbesar sampai target terang
+  var items={},R=compute(L,items),guard=0;
+  while(R.litPct<L.req.lit&&guard++<40){var best=null,bv=-1;SIDE.forEach(function(y){for(var x=0;x<W;x++){var k=key(x,y);if(items[k]||has(her,x,y))continue;items[k]='lamp';var v=compute(L,items).litPct;delete items[k];if(v>bv){bv=v;best=k}}});if(!best)return null;items[best]='lamp';R=compute(L,items)}
+  // 2) sensor: tiap titik panas harus terpantau
+  hot.forEach(function(h){R=compute(L,items);if(R.mon[key(h[0],h[1])])return;var done=false;
+    for(var d=0;d<=2&&!done;d++)[h[0]-d,h[0]+d].forEach(function(x){if(done||x<0||x>=W)return;SIDE.forEach(function(y){if(done)return;var k=key(x,y);if(items[k]==='lamp'){items[k]='sens';done=true}})});
+    for(var d2=0;d2<=2&&!done;d2++)[h[0]-d2,h[0]+d2].forEach(function(x){if(done||x<0||x>=W)return;SIDE.forEach(function(y){if(done)return;var k=key(x,y);if(!items[k]&&!has(her,x,y)){items[k]='sens';done=true}})})});
+  R=compute(L,items);if(R.hotMon<hot.length)return null;
+  // 3) pohon di samping simpul ramai
+  node.forEach(function(n){var c=[[n[0]-1,n[1]],[n[0]+1,n[1]],[n[0],n[1]]].filter(function(c){return c[0]>=0&&c[0]<W&&!items[key(c[0],c[1])]})[0];if(c)items[key(c[0],c[1])]='tree'});
+  R=compute(L,items);if(node.length)L.req.node=Math.ceil(R.nodeMax*2)/2;
+  if(r()<.4){for(var t2=0;t2<2;t2++){var bt=null,bm=1e9;SIDE.forEach(function(y){for(var x=0;x<W;x++){var k=key(x,y);if(items[k])continue;items[k]='tree';var m=compute(L,items).mean;delete items[k];if(m<bm){bm=m;bt=k}}});if(bt)items[bt]='tree'}R=compute(L,items);L.req.mean=Math.ceil(R.mean*10)/10}
+  if(!checks(L,R).every(function(c){return c.k==='r_bud'||c.ok}))return null;
+  L.budget=Math.ceil(R.cost/.7);L.seed=seed;L.rand=true;L.title={id:'Acak #'+seed+(her.length?' · ada zona cagar budaya':''),en:'Random #'+seed+(her.length?' · with a heritage zone':'')};return L}
+function playRandom(){for(var k=0;k<10;k++){var L=genLevel(1+Math.floor(Math.random()*999999));if(L){LEVELS.length=NFIX;LEVELS.push(L);load(NFIX);return}}}
 
 var st={i:+(store.get('kpLevel')||0),items:{},tool:'lamp',view:'night',stars:{}};try{st.stars=JSON.parse(store.get('kpStars')||'{}')}catch(e){}
 if(!(st.i>=0&&st.i<LEVELS.length))st.i=0;
@@ -159,10 +190,11 @@ function place(x,y){var L=LEVELS[st.i],k=key(x,y),cur=st.items[k];if(SIDE.indexO
 var STOPS=[[43,90,168],[74,163,196],[143,196,120],[240,200,70],[232,120,50],[190,40,40]];
 function heat(tt){tt=Math.max(0,Math.min(1,tt));var p=tt*(STOPS.length-1),i=Math.min(STOPS.length-2,Math.floor(p)),f=p-i,a=STOPS[i],b=STOPS[i+1];return 'rgb('+[0,1,2].map(function(j){return Math.round(a[j]+(b[j]-a[j])*f)}).join(',')+')'}
 function render(){var L=LEVELS[st.i],R=compute(L,st.items),C=checks(L,R),s=starsOf(L,R);
-  if(s>(st.stars[st.i]||0)){st.stars[st.i]=s;store.set('kpStars',JSON.stringify(st.stars))}
-  var tot=0;for(var k in st.stars)tot+=st.stars[k];$('hS').textContent=tot+'/'+(LEVELS.length*3);$('hB').textContent=(L.budget-R.cost);
+  if(st.i<NFIX&&s>(st.stars[st.i]||0)){st.stars[st.i]=s;store.set('kpStars',JSON.stringify(st.stars))}
+  var tot=0;for(var k in st.stars)if(+k<NFIX)tot+=st.stars[k];$('hS').textContent=tot+'/'+(NFIX*3);$('hB').textContent=(L.budget-R.cost);
   $('levels').innerHTML=LEVELS.map(function(l,i){var x=st.stars[i]||0;return '<button class="lv'+(i===st.i?' on':'')+'" data-i="'+i+'">'+t('level',{n:i+1})+' <span class="st">'+'★★★'.slice(0,x)+'<span style="opacity:.25">'+'★★★'.slice(0,3-x)+'</span></span><small>'+l.title[lang]+'</small></button>'}).join('');
-  $('levels').querySelectorAll('button').forEach(function(b){b.onclick=function(){load(+b.getAttribute('data-i'))}});
+  $('levels').insertAdjacentHTML('beforeend','<button class="lv rnd" id="rndBtn">🎲 '+t('rnd')+'<small>'+t('rndS')+'</small></button>');
+  $('levels').querySelectorAll('button[data-i]').forEach(function(b){b.onclick=function(){load(+b.getAttribute('data-i'))}});$('rndBtn').onclick=playRandom;
   $('lvTitle').textContent=L.title[lang];
   document.querySelectorAll('[data-v]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===st.view)});
   var svg=$('map'),night=st.view==='night';svg.innerHTML='';svg.setAttribute('viewBox','0 0 '+W+' 8');
@@ -196,7 +228,7 @@ document.querySelectorAll('[data-v]').forEach(function(b){b.onclick=function(){s
 $('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('kpLang',lang);applyStatic();render()};
 applyStatic();load(st.i);
 var _r0=render;render=function(){_r0();window.dispatchEvent(new Event('kp-render'))};
-window.__KP={LEVELS:LEVELS,compute:compute,checks:checks,starsOf:starsOf,st:function(){return st},load:load,render:render,place:place,COST:COST};
+window.__KP={gen:genLevel,LEVELS:LEVELS,compute:compute,checks:checks,starsOf:starsOf,st:function(){return st},load:load,render:render,place:place,COST:COST};
 })();
 </script>
 <script src="/gim/inspirasi.js" defer></script>
