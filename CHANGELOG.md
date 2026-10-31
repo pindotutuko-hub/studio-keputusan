@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.1.1
+- Versi Inggris dilengkapi: kartu tautan Javanese House & Ruang Syntax, tombol "Denah di Javanese House", dialog Bantu saya memilih, dialog Video tutorial, dan ±190 teks lain yang hanya tampil di situs web atau setelah interaksi. Diaudit di Chromium dengan alamat situs asli (`tools/i18n-audit-browser.js`): semua langkah, data contoh, menu atas, dan dialog — tidak ada teks Indonesia tersisa selain sitasi/judul resmi.
+
 ## 3.1.0
 - **Versi bahasa Inggris (English version)**: tombol **EN / ID** di bilah atas mengganti seluruh antarmuka ke bahasa Inggris dan kembali, pilihan diingat per perangkat. Kamus ±5.100 entri mencakup semua 111 langkah (audit otomatis: 13.571 teks, sisa 5 berupa sitasi dan judul resmi SNI/Kepmen yang sengaja tidak diubah).
 - Mode EN memakai format angka Inggris (0.25; 1,234,567). Salin ke Excel, ekspor .xlsx, dan CSV ikut berbahasa Inggris; CSV mode EN memakai pemisah koma. Berkas proyek .json tidak diubah sehingga tetap dapat dibuka di mode mana pun.
