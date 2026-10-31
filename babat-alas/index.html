@@ -120,6 +120,46 @@ body.ui-l #hud,body.ui-l #bar,body.ui-l #missions{zoom:1.15}body.ui-s #hud,body.
  #advisor{top:64px}
  .tool{width:56px}
 }
+
+/* ===== Responsif ponsel & tablet (iPhone, Android, iPad mini, tablet) ===== */
+.screen{overflow-y:auto;-webkit-overflow-scrolling:touch;align-items:flex-start}.screen>.box{margin:auto}
+@media (max-width:900px){
+ .cgrid{grid-template-columns:minmax(0,1fr)!important}
+ .screen{padding-top:max(60px,calc(env(safe-area-inset-top) + 52px))}
+ .styles{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+}
+@media (max-width:620px){
+ .box{padding:16px 14px 14px;border-radius:18px}.box h2{font-size:20px}.box p{font-size:14px}
+ .aved{grid-template-columns:minmax(0,1fr)!important;gap:10px}
+ .avprev{flex-direction:row!important;align-items:center;justify-content:center;gap:12px;position:static}
+ .av3d{width:150px!important;height:190px!important}
+ .avopts{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;max-height:none!important;overflow:visible}
+ .avr .avst b{font-size:12px}
+ .styles{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.styles button{font-size:13px;padding:7px}
+ #locMap{height:44vh}
+ .row .bigbtn{flex:1 1 auto}
+ .modal{padding:8px}.modal .box{max-height:92vh;width:100%}
+ .setr{grid-template-columns:1fr 96px 38px}
+ table.lb{font-size:12px}table.lb th:nth-child(4),table.lb td:nth-child(4){display:none}
+ .pztabs button,.pzt button{font-size:12.5px;padding:5px 9px}
+ #dlg{bottom:calc(env(safe-area-inset-bottom) + 92px)}#dlg .dl{padding:10px;gap:9px}#dlg .dlb{font-size:13px;padding:8px 10px}
+ .home{top:max(8px,env(safe-area-inset-top));left:8px}
+}
+@media (max-width:760px){
+ #hud{flex-wrap:wrap;gap:6px}
+ #hud .stats{order:3;flex-basis:100%}
+ .who{max-width:46vw}
+ .ctl{margin-left:auto}.ctl button{min-width:32px;height:32px;font-size:14px}
+ #missions{bottom:104px;max-height:30vh;font-size:12px}
+ #info{bottom:104px}
+ #advisor{top:112px;left:8px;right:8px;width:auto}
+ #bar{border-radius:14px;padding:4px;overflow-x:auto;justify-content:flex-start}
+ .tool{width:54px;flex:none}.tool i{font-size:20px}.tool span{font-size:10px}.tool em{font-size:9px}
+ #menu{right:8px;top:112px}
+}
+@media (min-width:600px) and (max-width:1100px) and (pointer:coarse){
+ .tool{width:62px}.ctl button{min-width:40px;height:40px}
+}
 </style>
 </head>
 <body>
@@ -209,6 +249,6 @@ body.ui-l #hud,body.ui-l #bar,body.ui-l #missions{zoom:1.15}body.ui-s #hud,body.
 <div id="toast"></div>
 <div id="modal" class="modal hidden"></div>
 
-<script type="module" src="game.js?v=11"></script>
+<script type="module" src="game.js?v=12"></script>
 </body>
 </html>

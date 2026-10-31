@@ -20,6 +20,17 @@ function pindotutuko_babat_feature() {
 			<span class="ba-feat__cta">Main sekarang · Play now <span aria-hidden="true">→</span></span>
 		</span>
 	</a>
+	<div class="ba-teaser">
+		<video controls preload="none" playsinline poster="<?php echo esc_url( home_url( '/babat-alas/teaser-poster.jpg' ) ); ?>" aria-label="Video teaser Babat Alas">
+			<source src="<?php echo esc_url( home_url( '/babat-alas/teaser.mp4' ) ); ?>" type="video/mp4">
+		</video>
+		<div class="ba-teaser__txt">
+			<b>▶ Tonton teaser · Watch the teaser <small>(1:52)</small></b>
+			<span>Dari lahan kosong di tanah Jawa: kampung joglo dan limasan, desa, perumahan dan real estate, sampai kota dengan apartemen, mal, rumah sakit, stasiun, dan balai kota.</span>
+			<span class="ba-teaser__en" lang="en">From empty land in Java to a kampung, a village, housing estates and a city.</span>
+			<a class="ba-teaser__cta" href="<?php echo $url; ?>" target="_blank" rel="noopener">Main sekarang · Play now →</a>
+		</div>
+	</div>
 </section>
 <style>
 .ba-feat{max-width:1200px;margin:28px auto 8px;padding:0 16px}
@@ -36,6 +47,11 @@ function pindotutuko_babat_feature() {
 .ba-feat__chips span{font:700 12px/1 system-ui,sans-serif;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:7px 10px;backdrop-filter:blur(4px)}
 .ba-feat__cta{align-self:flex-start;margin-top:8px;font:800 16px/1 system-ui,sans-serif;background:#2f8f6a;border-radius:14px;padding:15px 20px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.25),0 10px 24px rgba(47,143,106,.45);transition:transform .2s}
 .ba-feat__card:hover .ba-feat__cta{transform:translateY(-2px)}
+.ba-teaser{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:22px;align-items:center;margin-top:18px;background:#14211b;color:#f3efe6;border-radius:22px;padding:16px;box-shadow:0 16px 40px rgba(0,0,0,.2)}
+.ba-teaser video{width:100%;aspect-ratio:16/9;border-radius:14px;background:#000;display:block}
+.ba-teaser__txt{display:flex;flex-direction:column;gap:10px;font:500 15px/1.5 system-ui,sans-serif}.ba-teaser__txt b{font:800 19px/1.3 system-ui,sans-serif;color:#e0a526}.ba-teaser__txt small{color:#cfc8b8;font-weight:600}
+.ba-teaser__en{opacity:.75;font-size:13.5px}.ba-teaser__cta{align-self:flex-start;color:#fff;text-decoration:none;font:800 15px/1 system-ui,sans-serif;background:#2f8f6a;border-radius:12px;padding:13px 18px}
+@media (max-width:820px){.ba-teaser{grid-template-columns:minmax(0,1fr);padding:12px;gap:12px}}
 @media (max-width:640px){.ba-feat__card{min-height:460px}.ba-feat__shade{background:linear-gradient(0deg,rgba(10,20,14,.92) 0%,rgba(10,20,14,.65) 55%,rgba(10,20,14,.1) 100%)}.ba-feat__body{position:absolute;bottom:0;padding:22px}.ba-feat__lead{font-size:15px}}
 @media (prefers-reduced-motion:reduce){.ba-feat__img,.ba-feat__cta{transition:none}}
 </style>
