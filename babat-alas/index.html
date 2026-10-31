@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#14211b">
+<title>Babat Alas — simulasi permukiman 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<script type="importmap">{"imports":{"three":"/lensa3d/three/three.module.min.js","three/addons/":"/lensa3d/three/addons/"}}</script>
+<style>
+:root{--bg:#14211b;--panel:rgba(18,26,22,.86);--panel2:rgba(255,253,248,.96);--ink:#f3efe6;--ink2:#1f1c18;--muted:#a9b3aa;--acc:#e0a526;--acc2:#2f8f6a;--bad:#e2604a;--line:rgba(255,255,255,.14);--r:14px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,system-ui,sans-serif;overscroll-behavior:none}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+h1,h2,h3{font-family:"Space Grotesk",Inter,sans-serif;margin:0;letter-spacing:-.01em}
+.hidden{display:none!important}
+#view{position:fixed;inset:0;touch-action:none}
+#view canvas{display:block;width:100%!important;height:100%!important}
+/* ---- layar menu ---- */
+.screen{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));background:radial-gradient(1200px 700px at 70% 10%,rgba(224,165,38,.18),transparent 60%),linear-gradient(160deg,rgba(15,30,22,.82),rgba(10,16,13,.92));overflow:auto}
+.box{width:min(560px,100%);background:var(--panel2);color:var(--ink2);border-radius:22px;padding:22px 22px 18px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.box.wide{width:min(1000px,100%)}
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.logo .mk{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#2f8f6a,#14532d);display:grid;place-items:center;font-size:28px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.25)}
+.logo h1{font-size:30px}.logo small{display:block;color:#6d655a;font-size:12.5px;font-weight:600}
+.box p{color:#5d564c;margin:8px 0}
+.fld{display:grid;gap:4px;margin:10px 0}.fld label{font-size:12.5px;font-weight:700;color:#5d564c}
+.fld input,.fld select,.fld textarea{border:1px solid #ddd3c4;border-radius:10px;padding:10px 12px;background:#fffdf8;color:#1f1c18;width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bigbtn{border:0;border-radius:12px;padding:12px 18px;font-weight:800;font-size:15px;background:#1f6f4f;color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+.bigbtn.alt{background:#e9e1d3;color:#1f1c18}.bigbtn.gold{background:var(--acc);color:#1f1c18}
+.bigbtn:disabled{opacity:.5;cursor:default}
+.tabs{display:flex;gap:6px;margin:12px 0 4px}.tabs button{flex:1;border:1px solid #ddd3c4;background:#f6f0e5;border-radius:10px;padding:8px;font-weight:700}.tabs button.on{background:#1f1c18;color:#fff;border-color:#1f1c18}
+.err{color:#a33a2a;font-size:13px;min-height:18px;margin-top:6px}
+.note{font-size:12px;color:#7b7266}
+.home{position:fixed;left:max(10px,env(safe-area-inset-left));top:max(10px,env(safe-area-inset-top));z-index:40;display:inline-flex;align-items:center;gap:4px;text-decoration:none;color:#fff;background:rgba(0,0,0,.45);border:1px solid var(--line);border-radius:999px;padding:6px 12px 6px 8px;font-weight:700;font-size:12.5px;backdrop-filter:blur(6px)}
+.avs{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.avs button{border:2px solid transparent;border-radius:14px;background:#f1ebe0;padding:4px}.avs button.on{border-color:#1f6f4f;background:#e1f1e6}.avs svg{width:100%;height:auto;display:block}
+.styles{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}.styles button{border:2px solid #e3d9c8;border-radius:12px;background:#fffdf8;padding:8px;text-align:left;font-weight:700;font-size:12.5px;color:#1f1c18}.styles button small{display:block;font-weight:500;color:#7b7266;font-size:11px}.styles button.on{border-color:#1f6f4f;background:#e1f1e6}
+#locMap{width:100%;height:min(52vh,460px);border-radius:14px;overflow:hidden;background:#cfd8d2;margin-top:10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chips button{border:1px solid #ddd3c4;background:#fffdf8;border-radius:999px;padding:5px 10px;font-size:12.5px;font-weight:600;color:#1f1c18}.chips button.on{background:#1f6f4f;color:#fff;border-color:#1f6f4f}
+/* ---- HUD ---- */
+#hud{position:fixed;left:0;right:0;top:0;z-index:10;display:flex;gap:8px;align-items:center;padding:max(8px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left));pointer-events:none}
+#hud>*{pointer-events:auto}
+.who{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 4px;backdrop-filter:blur(8px);min-width:0}
+.who .av{width:38px;height:38px;border-radius:50%;background:#f1ebe0;overflow:hidden;flex:none}.who .av svg{width:100%;height:100%}
+.who b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}.who small{display:block;color:var(--acc);font-size:11px;font-weight:700;white-space:nowrap}
+.stats{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}.stats::-webkit-scrollbar{display:none}
+.st{flex:none;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px 10px;backdrop-filter:blur(8px);text-align:center;min-width:64px}
+.st small{display:block;color:var(--muted);font-size:10.5px;font-weight:600;white-space:nowrap}.st b{font-family:"Space Grotesk",Inter,sans-serif;font-size:16px}
+.st.warn b{color:var(--bad)}
+.ctl{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px;backdrop-filter:blur(8px)}
+.ctl button{width:36px;height:34px;border:0;border-radius:9px;background:transparent;color:var(--ink);font-size:16px}.ctl button.on{background:var(--acc);color:#1f1c18}
+.date{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px 10px;text-align:center;backdrop-filter:blur(8px)}.date b{display:block;font-size:13px}.date small{color:var(--acc);font-weight:800;font-size:11px;white-space:nowrap}
+/* ---- toolbar ---- */
+#bar{position:fixed;left:50%;transform:translateX(-50%);bottom:max(10px,env(safe-area-inset-bottom));z-index:10;max-width:calc(100vw - 20px);background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:6px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+#bar::-webkit-scrollbar{display:none}
+.tool{flex:none;width:62px;border:0;border-radius:12px;background:transparent;color:var(--ink);padding:5px 2px 4px;display:flex;flex-direction:column;align-items:center;gap:1px;position:relative}
+.tool i{font-style:normal;font-size:24px;line-height:1.1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+.tool span{font-size:10.5px;font-weight:700;white-space:nowrap}
+.tool em{font-style:normal;font-size:9.5px;color:var(--muted)}
+.tool.on{background:rgba(224,165,38,.22);box-shadow:inset 0 0 0 2px var(--acc)}
+.tool.lock{opacity:.38}.tool.lock::after{content:"🔒";position:absolute;right:4px;top:2px;font-size:11px}
+.sep{flex:none;width:1px;background:var(--line);margin:6px 2px}
+/* ---- panel samping ---- */
+.side{position:fixed;z-index:9;background:var(--panel);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(10px);padding:10px 12px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+#missions{left:max(10px,env(safe-area-inset-left));top:72px;width:260px;max-height:calc(100vh - 190px);overflow:auto}
+#missions h3,#info h3{font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+#missions h3 button,#info h3 button{border:0;background:transparent;color:var(--muted);font-size:16px}
+.ms{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:12.5px}.ms i{font-style:normal}.ms.done{color:var(--muted);text-decoration:line-through}
+#info{right:max(10px,env(safe-area-inset-right));top:72px;width:280px;max-height:calc(100vh - 190px);overflow:auto}
+.kv{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:3px 0;border-bottom:1px dashed var(--line)}.kv span{color:var(--muted)}
+#styleBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(max(10px,env(safe-area-inset-bottom)) + 84px);z-index:10;display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px;max-width:calc(100vw - 20px);overflow-x:auto;scrollbar-width:none;backdrop-filter:blur(10px)}
+#styleBar button{flex:none;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:10px;padding:6px 10px;font-weight:700;font-size:12px}#styleBar button.on{background:var(--acc);color:#1f1c18;border-color:var(--acc)}
+#advisor{position:fixed;left:50%;transform:translateX(-50%);top:78px;z-index:11;max-width:min(560px,calc(100vw - 24px));display:flex;gap:10px;align-items:flex-start;background:var(--panel2);color:var(--ink2);border-radius:16px;padding:10px 12px;box-shadow:0 12px 34px rgba(0,0,0,.35);transition:opacity .3s,transform .3s}
+#advisor.off{opacity:0;transform:translate(-50%,-10px);pointer-events:none}
+#advisor .face{font-size:28px;flex:none}#advisor b{display:block;font-size:12px;color:#1f6f4f}#advisor p{margin:2px 0 0;font-size:13px}
+#advisor .x{border:0;background:transparent;font-size:16px;color:#7b7266;margin-left:auto}
+#toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);z-index:30;background:rgba(0,0,0,.78);color:#fff;border-radius:12px;padding:8px 14px;font-weight:600;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center}
+#toast.on{opacity:1}
+#menu{right:max(10px,env(safe-area-inset-right));top:72px;width:260px}
+#menu button{display:block;width:100%;text-align:left;border:0;background:transparent;color:var(--ink);padding:9px 8px;border-radius:10px;font-weight:600}#menu button:hover{background:rgba(255,255,255,.08)}
+#saveDot{font-size:11px;color:var(--muted)}
+.modal{position:fixed;inset:0;z-index:25;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal .box{max-height:90vh;overflow:auto}
+.eraUp{text-align:center}.eraUp .big{font-size:56px}
+.nb{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid #e8e0d2;font-size:13px}.nb small{color:#7b7266}
+@media (max-width:760px){
+ #missions{top:auto;bottom:96px;left:8px;width:min(250px,60vw);max-height:34vh}
+ #info{top:auto;bottom:96px;right:8px;width:min(260px,62vw);max-height:40vh}
+ .who b{max-width:90px}.who small{display:none}
+ .st{min-width:54px;padding:3px 7px}.st b{font-size:14px}
+ .date{display:none}
+ #advisor{top:64px}
+ .tool{width:56px}
+}
+</style>
+</head>
+<body>
+<a class="home" href="https://pindotutuko.id/" id="homeLink"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span data-t="home">Beranda</span></a>
+<div id="view"></div>
+
+<!-- Layar: masuk / daftar -->
+<section class="screen" id="scAuth">
+  <div class="box">
+    <div class="logo"><div class="mk">🪓</div><div><h1>Babat Alas</h1><small data-t="tag"></small></div></div>
+    <p data-t="intro"></p>
+    <div class="tabs"><button id="tbLogin" class="on" data-t="login"></button><button id="tbReg" data-t="register"></button></div>
+    <form id="fAuth" autocomplete="on">
+      <div class="fld"><label for="aUser" data-t="user"></label><input id="aUser" autocomplete="username" required minlength="3" maxlength="32" pattern="[A-Za-z0-9_.\-]{3,32}"></div>
+      <div class="fld"><label for="aPass" data-t="pass"></label><input id="aPass" type="password" autocomplete="current-password" required minlength="6"></div>
+      <div id="regFields" class="hidden">
+        <div class="fld"><label for="aKampus" data-t="kampus"></label><input id="aKampus" maxlength="80"></div>
+        <div class="fld"><label for="aKelas" data-t="kelas"></label><input id="aKelas" maxlength="12" style="text-transform:uppercase"></div>
+      </div>
+      <div class="row" style="margin-top:12px"><button class="bigbtn" type="submit" id="aGo"></button><button class="bigbtn alt" type="button" id="aGuest" data-t="guest"></button><button class="bigbtn alt" type="button" id="langBtn">EN</button></div>
+      <div class="err" id="aErr"></div>
+      <p class="note" data-t="privacy"></p>
+    </form>
+  </div>
+</section>
+
+<!-- Layar: lanjutkan atau baru -->
+<section class="screen hidden" id="scHub">
+  <div class="box">
+    <div class="logo"><div class="mk">🏡</div><div><h1 id="hubHello"></h1><small id="hubSub"></small></div></div>
+    <div id="hubSave"></div>
+    <div class="row" style="margin-top:14px"><button class="bigbtn gold hidden" id="hubCont" data-t="continue"></button><button class="bigbtn" id="hubNew" data-t="newgame"></button><button class="bigbtn alt" id="hubOut" data-t="logout"></button></div>
+    <div class="err" id="hubErr"></div>
+  </div>
+</section>
+
+<!-- Layar: tokoh -->
+<section class="screen hidden" id="scChar">
+  <div class="box wide">
+    <h2 data-t="charH"></h2><p data-t="charP"></p>
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px" class="cgrid">
+      <div>
+        <div class="fld"><label for="cName" data-t="cName"></label><input id="cName" maxlength="40" required></div>
+        <div class="fld"><label data-t="cAvatar"></label><div class="avs" id="cAvs"></div></div>
+        <div class="fld"><label for="cOrigin" data-t="cOrigin"></label><input id="cOrigin" maxlength="60"></div>
+        <div class="fld"><label for="cMotto" data-t="cMotto"></label><input id="cMotto" maxlength="90"></div>
+      </div>
+      <div>
+        <div class="fld"><label data-t="cStyle"></label><div class="styles" id="cStyles"></div></div>
+        <p class="note" data-t="cStyleP"></p>
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="bigbtn" id="cNext" data-t="next"></button><button class="bigbtn alt" id="cBack" data-t="back"></button></div>
+    <div class="err" id="cErr"></div>
+  </div>
+</section>
+
+<!-- Layar: lokasi -->
+<section class="screen hidden" id="scLoc">
+  <div class="box wide">
+    <h2 data-t="locH"></h2><p data-t="locP"></p>
+    <div class="chips" id="locChips"></div>
+    <div id="locMap"></div>
+    <div class="row" style="margin-top:10px;justify-content:space-between">
+      <div class="fld" style="flex:1;min-width:220px;margin:0"><label for="lName" data-t="lName"></label><input id="lName" maxlength="50"></div>
+      <div class="note" id="lInfo" style="flex:1;min-width:220px"></div>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="bigbtn gold" id="lGo" data-t="start"></button><button class="bigbtn alt" id="lBack" data-t="back"></button></div>
+    <p class="note" data-t="osm"></p>
+    <div class="err" id="lErr"></div>
+  </div>
+</section>
+
+<!-- HUD gim -->
+<div id="hud" class="hidden">
+  <div class="who"><div class="av" id="hAv"></div><div><b id="hName"></b><small id="hTitle"></small></div></div>
+  <div class="date"><b id="hDate"></b><small id="hEra"></small></div>
+  <div class="stats" id="hStats"></div>
+  <div class="ctl"><button id="spP" title="Jeda">⏸</button><button id="sp1" class="on">▶</button><button id="sp2">⏩</button><button id="mBtn" title="Menu">☰</button></div>
+</div>
+<div class="side hidden" id="missions"></div>
+<div class="side hidden" id="info"></div>
+<div class="side hidden" id="menu"></div>
+<div id="styleBar" class="hidden"></div>
+<div id="bar" class="hidden"></div>
+<div id="advisor" class="off"></div>
+<div id="toast"></div>
+<div id="modal" class="modal hidden"></div>
+
+<script type="module" src="game.js?v=2"></script>
+</body>
+</html>
