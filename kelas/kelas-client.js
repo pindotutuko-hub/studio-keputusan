@@ -2,7 +2,7 @@
 (function(){
 "use strict";
 var API='/kelas/api/index.php?r=';
-var URLS={garis:'/garis-waktu/',pintu:'/arsitek-pintu/',krisis:'/krisis-kota/',kampung:'/kampung-brantas/'};
+var URLS={garis:'/garis-waktu/',pintu:'/arsitek-pintu/',krisis:'/krisis-kota/',kampung:'/tata-kampung/'};
 var TX={
  id:{join:"Gabung kuis kelas",h:"Gabung kuis kelas",p:"Masukkan kode sesi dari dosen. Skor dihitung ulang di server dari jawabanmu.",code:"Kode sesi",name:"Nama",nim:"NIM / ID (opsional)",go:"Gabung & mulai",cancel:"Batal",
   inClass:"Kelas: {t}",sending:"Mengirim jawaban ke kelas…",result:"Hasil kelas (dihitung server)",rank:"Peringkat sementara: {r} dari {n}",retry:"Kirim ulang",fail:"Gagal mengirim: {e}",
