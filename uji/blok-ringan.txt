@@ -1,0 +1,9 @@
+/* Jalur ringan (31-10-2026): rute mahasiswa yang sering dipanggil (heartbeat, kirim jawaban, bootstrap/status
+   tanpa login) memuat WordPress versi SHORTINIT agar 100 mahasiswa serentak tidak membebani server. */
+$__ptRoute = trim((string)($_GET['route'] ?? ''), '/');
+$__ptMethod = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+$__ptWpUser = false;
+foreach (array_keys($_COOKIE) as $__ptKey) { if (strpos((string)$__ptKey, 'wordpress_logged_in_') === 0) { $__ptWpUser = true; break; } }
+$__ptLight = ($__ptMethod === 'POST' && in_array($__ptRoute, ['sessions', 'reports', 'reports/mine'], true))
+    || ($__ptMethod === 'GET' && in_array($__ptRoute, ['bootstrap', 'admin/status'], true) && empty($_COOKIE['ta_admin']) && !$__ptWpUser);
+if ($__ptLight && !defined('SHORTINIT')) define('SHORTINIT', true);
