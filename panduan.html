@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buku Panduan Direktori Jurnal UNMER</title>
+<style>@font-face{font-family:'Big Shoulders Display';font-weight:700;src:url(/wp-content/themes/pindotutuko/assets/fonts/beton/big-shoulders-display-latin.woff2)}@font-face{font-family:'Big Shoulders Display';font-weight:800;src:url(/wp-content/themes/pindotutuko/assets/fonts/beton/big-shoulders-display-latin.woff2)}@font-face{font-family:'Big Shoulders Display';font-weight:900;src:url(/wp-content/themes/pindotutuko/assets/fonts/beton/big-shoulders-display-latin.woff2)}@font-face{font-family:'Space Grotesk';font-weight:400;src:url(/wp-content/themes/pindotutuko/assets/fonts/beton/space-grotesk-latin.woff2)}@font-face{font-family:'Space Grotesk';font-weight:500;src:url(/wp-content/themes/pindotutuko/assets/fonts/beton/space-grotesk-latin.woff2)}@font-face{font-family:'Space Grotesk';font-weight:600;src:url(/wp-content/themes/pindotutuko/assets/fonts/beton/space-grotesk-latin.woff2)}@font-face{font-family:'Space Grotesk';font-weight:700;src:url(/wp-content/themes/pindotutuko/assets/fonts/beton/space-grotesk-latin.woff2)}@font-face{font-family:'JetBrains Mono';font-weight:400;src:url(/wp-content/themes/pindotutuko/assets/fonts/beton/jetbrains-mono-latin.woff2)}@font-face{font-family:'JetBrains Mono';font-weight:500;src:url(/wp-content/themes/pindotutuko/assets/fonts/beton/jetbrains-mono-latin.woff2)}@font-face{font-family:'JetBrains Mono';font-weight:600;src:url(/wp-content/themes/pindotutuko/assets/fonts/beton/jetbrains-mono-latin.woff2)}</style>
+<style>
+:root{--bk:#141017;--ink2:#3A333F;--mu:#5E5663;--bg:#F5F1F2;--paper:#FFFFFF;--q1:#7A1E33;--q2:#B23A55;--q3:#D7A1AE;--q4:#F3E1E6;--line:#D9CFD3;--soft:#FBF2F4}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--bk);font:16px/1.65 "Space Grotesk",system-ui,sans-serif;-webkit-font-smoothing:auto}
+a{color:var(--q1)}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+.disp{font-family:"Big Shoulders Display","Arial Narrow",sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:-.01em;line-height:.9}
+.lbl{font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
+/* sampul */
+.cover{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);background:var(--paper);border-bottom:3px solid var(--bk)}
+.cover .l{padding:56px 6vw;display:flex;flex-direction:column;justify-content:space-between;background-image:radial-gradient(#d9cfd3 1px,transparent 1px);background-size:18px 18px}
+.cover .r{background:var(--q1);color:#fff;padding:56px 5vw;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.cover .r::after{content:"";position:absolute;right:-60px;bottom:-60px;width:320px;height:320px;border:2px solid rgba(255,255,255,.25);border-radius:50%}
+.cover h1{font-size:clamp(56px,9vw,132px);margin:18px 0 0}
+.cover h1 .ol{color:transparent;-webkit-text-stroke:2px var(--bk)}
+.cover h1 em{font-style:normal;color:var(--q1)}
+.cover .sub{font-size:20px;max-width:34ch;margin:18px 0 0;color:var(--ink2)}
+.cover .meta{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:14px;margin-top:40px}
+.cover .meta b{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mu);font-weight:600;padding-top:3px}
+.cover .r .big{font-size:clamp(70px,10vw,150px);color:#fff}
+.cover .r .lbl{color:rgba(255,255,255,.75)}
+.cover .r ul{list-style:none;padding:0;margin:24px 0 0;font-size:15px}
+.cover .r li{padding:8px 0;border-top:1px solid rgba(255,255,255,.25);display:flex;justify-content:space-between;gap:12px}
+.cover .r li span:last-child{font-family:"JetBrains Mono",monospace;font-size:13px}
+/* tata letak */
+.wrap{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1320px;margin:0 auto}
+nav.toc{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;padding:28px 18px 28px 24px;border-right:2px solid var(--bk);background:var(--paper)}
+nav.toc ol{list-style:none;padding:0;margin:14px 0 0;counter-reset:b}
+nav.toc li{margin:0}
+nav.toc a{display:grid;grid-template-columns:34px 1fr;gap:6px;padding:8px 6px;text-decoration:none;color:var(--bk);font-size:14px;border-bottom:1px dashed var(--line)}
+nav.toc a:hover,nav.toc a.on{background:var(--soft);box-shadow:inset 3px 0 0 var(--q1)}
+nav.toc a span{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--q1);padding-top:3px}
+nav.toc .app{display:block;margin-top:18px;padding:10px;border:2px solid var(--bk);text-align:center;text-decoration:none;font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--q1)}
+main{padding:0 0 80px;min-width:0}
+section.bab{padding:64px 6vw 24px;border-bottom:2px solid var(--bk);background:var(--bg)}
+section.bab:nth-of-type(even){background:var(--paper)}
+.babhd{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:end;margin-bottom:28px}
+.babno{font-family:"Big Shoulders Display",sans-serif;font-weight:900;font-size:clamp(90px,12vw,170px);line-height:.8;color:transparent;-webkit-text-stroke:2px var(--q1)}
+.babhd h2{font-size:clamp(38px,5vw,64px);margin:0}
+.babhd p{margin:10px 0 0;font-size:18px;color:var(--ink2);max-width:60ch}
+h3{font-family:"Big Shoulders Display",sans-serif;font-weight:800;text-transform:uppercase;font-size:26px;letter-spacing:.01em;margin:36px 0 10px;display:flex;align-items:center;gap:12px}
+h3 .tag{font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:600;border:1.5px solid var(--bk);padding:2px 6px;letter-spacing:.06em}
+p{max-width:75ch}
+figure{margin:22px 0 30px;max-width:1060px}
+.shot{border:2px solid var(--bk);background:#fff;box-shadow:10px 10px 0 var(--q3)}
+.shot .bar{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:2px solid var(--bk);background:var(--soft)}
+.shot .bar i{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--bk);display:inline-block}
+.shot .bar span{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--mu);margin-left:8px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.shot img{display:block;width:100%;height:auto}
+figcaption{margin-top:14px;font-size:14px;color:var(--ink2);display:grid;grid-template-columns:auto 1fr;gap:12px;max-width:80ch}
+figcaption b{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--q1);padding:3px 8px;height:fit-content;white-space:nowrap}
+.duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:26px;max-width:1060px}
+.duo figure{margin:10px 0 20px}
+ol.steps{list-style:none;padding:0;margin:14px 0;counter-reset:s;max-width:80ch}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:44px 1fr;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+ol.steps>li::before{content:counter(s,decimal-leading-zero);font-family:"Big Shoulders Display",sans-serif;font-weight:900;font-size:28px;line-height:1;color:var(--q1)}
+.box{border:2px solid var(--bk);background:#fff;padding:16px 18px;margin:18px 0;max-width:80ch;position:relative}
+.box::before{position:absolute;top:-11px;left:14px;background:var(--bk);color:#fff;font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.12em;padding:2px 8px;text-transform:uppercase}
+.box.tip::before{content:"Tips"}
+.box.pen{border-color:var(--q1);background:var(--soft)}.box.pen::before{content:"Penting";background:var(--q1)}
+.box.con::before{content:"Contoh"}
+.box p{margin:6px 0}
+table{border-collapse:collapse;width:100%;max-width:980px;font-size:14.5px;margin:14px 0;background:#fff;border:2px solid var(--bk)}
+th{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;text-align:left;padding:9px 10px;border-bottom:2px solid var(--bk);background:var(--soft);color:var(--mu)}
+td{padding:9px 10px;border-bottom:1px solid #E6DDE1;vertical-align:top}
+.chip{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:11.5px;border:1.5px solid var(--bk);padding:1px 7px;margin:0 2px;white-space:nowrap;background:#fff}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:2px solid var(--bk);max-width:1060px;margin:18px 0;background:#fff}
+.kpis div{padding:14px 16px;border-right:1.5px solid var(--bk)}.kpis div:last-child{border-right:0}
+.kpis b{display:block;font-family:"Big Shoulders Display",sans-serif;font-weight:900;font-size:44px;line-height:1;margin:6px 0 2px;color:var(--q1)}
+.kpis small{font-size:13px;color:var(--ink2)}
+.ref{font-size:12px;vertical-align:super;font-family:"JetBrains Mono",monospace;text-decoration:none;color:var(--q1);margin-left:1px}
+ol.refs{padding-left:0;list-style:none;counter-reset:r;max-width:90ch}
+ol.refs li{counter-increment:r;display:grid;grid-template-columns:44px 1fr;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:15px}
+ol.refs li::before{content:"[" counter(r) "]";font-family:"JetBrains Mono",monospace;color:var(--q1);font-weight:600}
+ol.refs li:target{background:var(--soft);outline:2px solid var(--q2)}
+.colophon{padding:36px 6vw;background:var(--soft);color:var(--ink2);font-size:13.5px;border-top:2px solid var(--bk)}
+.colophon a{color:var(--q1)}
+.top{position:fixed;right:18px;bottom:18px;background:var(--q1);color:#fff;border:2px solid var(--bk);font-family:"JetBrains Mono",monospace;font-size:12px;padding:8px 12px;text-decoration:none}
+@media screen and (max-width:960px){.wrap{grid-template-columns:1fr}nav.toc{position:static;height:auto;border-right:0;border-bottom:2px solid var(--bk)}.cover{grid-template-columns:1fr}.babhd{grid-template-columns:1fr;gap:6px}.duo{grid-template-columns:1fr}}
+@media print{nav.toc,.top{display:none}.wrap{display:block}section.bab{break-before:page}.shot{box-shadow:none}}
+
+@page{size:A4;margin:14mm 12mm 16mm}
+@page:first{margin:0}
+@media print{
+ body{background:#fff;font-size:12.5px}
+ .cover{min-height:0;height:297mm;break-after:page;grid-template-columns:1.1fr .9fr!important;overflow:hidden}
+ .babhd{grid-template-columns:auto 1fr!important;break-inside:avoid;break-after:avoid}
+ .babno{-webkit-text-stroke:1.5px var(--q1)}
+ .cover h1{font-size:92px}.cover .r .big{font-size:120px}
+ .cover .l,.cover .r{padding:22mm 14mm}
+ nav.toc,.top{display:none!important}
+ .wrap{display:block;max-width:none}
+ section.bab{padding:0 0 10mm;background:#fff!important;border-bottom:0;break-before:page}
+ .babno{font-size:110px}.babhd h2{font-size:46px}
+ figure,.box,table,.kpis,ol.steps>li{break-inside:avoid}
+ .duo{grid-template-columns:1fr 1fr;gap:16px}
+ .shot{box-shadow:6px 6px 0 var(--q3)}
+ h3{break-after:avoid}
+ .colophon{break-inside:avoid}
+ #toc-print{display:block!important}
+}
+#toc-print{display:none}
+.pbar{position:fixed;top:14px;right:18px;z-index:50;display:flex;gap:8px}.pbar a,.pbar button{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;border:2px solid #141017;background:#fff;color:#141017;padding:8px 12px;text-decoration:none;cursor:pointer}.pbar button{background:#7A1E33;color:#fff}@media print{.noprint{display:none!important}}
+</style>
+</head>
+<body><div class="pbar noprint"><a href="./">← Kembali ke aplikasi</a><button type="button" onclick="window.print()">Unduh / cetak PDF</button></div>
+
+<header class="cover" id="sampul">
+  <div class="l">
+    <div>
+      <span class="lbl">Universitas Merdeka Malang · LPPM / PJPI · Edisi 1 · 31 Oktober 2026</span>
+      <h1 class="disp">Buku<br><span class="ol">Panduan</span><br><em>Direktori Jurnal</em></h1>
+      <p class="sub">Petunjuk lengkap memakai aplikasi Direktori Jurnal dan Network Publikasi UNMER — untuk pengelola jurnal, pimpinan, dan pembina jurnal.</p>
+    </div>
+    <div class="meta">
+      <b>Aplikasi</b><span><a href="https://pindotutuko.id/khusus/direktori/">pindotutuko.id/khusus/direktori</a></span>
+      <b>Data</b><span>Cuplikan 31 Oktober 2026</span>
+      <b>Penyusun</b><span>Prof. Pindo Tutuko</span>
+      <b>Isi</b><span>10 bab · 27 gambar tangkapan layar · rujukan</span>
+    </div>
+  </div>
+  <div class="r">
+    <div><span class="lbl">Sekilas angka</span><div class="disp big">32</div><div style="font-size:18px">jurnal UNMER dalam satu aplikasi</div></div>
+    <ul>
+      <li><span>Mitra bestari & editor</span><span>537 · 31 negara</span></li>
+      <li><span>Institusi mitra</span><span>228</span></li>
+      <li><span>Lolos syarat minimum & nilai ≥60</span><span>8 / 32</span></li>
+      <li><span>Dokumen Scopus pengutip</span><span>664</span></li>
+      <li><span>Naskah OJS dengan peringatan kritis</span><span>779</span></li>
+    </ul>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="toc" aria-label="Daftar isi">
+  <span class="lbl">Daftar isi</span>
+  <ol>
+    <li><a href="#bab-1"><span>01</span>Mengenal aplikasi</a></li>
+    <li><a href="#bab-2"><span>02</span>Halaman awal & menu</a></li>
+    <li><a href="#bab-3"><span>03</span>Peta jaringan & cluster</a></li>
+    <li><a href="#bab-4"><span>04</span>Jurnal & jaringan</a></li>
+    <li><a href="#bab-5"><span>05</span>Profil jurnal</a></li>
+    <li><a href="#bab-6"><span>06</span>Akreditasi 2026</a></li>
+    <li><a href="#bab-7"><span>07</span>Simulator otomatis & manual</a></li>
+    <li><a href="#bab-8"><span>08</span>Citedness Scopus</a></li>
+    <li><a href="#bab-9"><span>09</span>Peringatan OJS & pembaruan</a></li>
+    <li><a href="#bab-10"><span>10</span>Skenario kerja & tanya jawab</a></li>
+    <li><a href="#rujukan"><span>R</span>Rujukan</a></li>
+  </ol>
+  <a class="app" href="https://pindotutuko.id/khusus/direktori/">Buka aplikasi ↗</a>
+</nav>
+
+<main><section id="toc-print" style="break-after:page"><span class="lbl">Isi buku</span><h2 class="disp" style="font-size:64px;margin:8px 0 22px">Daftar isi</h2><table style="font-size:16px"><tr><td style="width:90px"><span class="disp" style="font-size:34px;color:var(--q1)">01</span></td><td style="vertical-align:middle">Mengenal aplikasi</td></tr><tr><td style="width:90px"><span class="disp" style="font-size:34px;color:var(--q1)">02</span></td><td style="vertical-align:middle">Halaman awal & menu</td></tr><tr><td style="width:90px"><span class="disp" style="font-size:34px;color:var(--q1)">03</span></td><td style="vertical-align:middle">Peta jaringan & cluster</td></tr><tr><td style="width:90px"><span class="disp" style="font-size:34px;color:var(--q1)">04</span></td><td style="vertical-align:middle">Jurnal & jaringan</td></tr><tr><td style="width:90px"><span class="disp" style="font-size:34px;color:var(--q1)">05</span></td><td style="vertical-align:middle">Profil jurnal</td></tr><tr><td style="width:90px"><span class="disp" style="font-size:34px;color:var(--q1)">06</span></td><td style="vertical-align:middle">Akreditasi 2026</td></tr><tr><td style="width:90px"><span class="disp" style="font-size:34px;color:var(--q1)">07</span></td><td style="vertical-align:middle">Simulator otomatis & manual</td></tr><tr><td style="width:90px"><span class="disp" style="font-size:34px;color:var(--q1)">08</span></td><td style="vertical-align:middle">Citedness Scopus</td></tr><tr><td style="width:90px"><span class="disp" style="font-size:34px;color:var(--q1)">09</span></td><td style="vertical-align:middle">Peringatan OJS & pembaruan</td></tr><tr><td style="width:90px"><span class="disp" style="font-size:34px;color:var(--q1)">10</span></td><td style="vertical-align:middle">Skenario kerja & tanya jawab</td></tr><tr><td style="width:90px"><span class="disp" style="font-size:34px;color:var(--q1)">R</span></td><td style="vertical-align:middle">Rujukan</td></tr></table></section>
+
+<!-- BAB 1 -->
+<section class="bab" id="bab-1">
+  <div class="babhd"><div class="babno">01</div><div><span class="lbl">Bab satu</span><h2 class="disp">Mengenal aplikasi</h2><p>Satu tempat untuk melihat semua jurnal UNMER: siapa yang mengelola, seberapa luas jaringannya, seberapa siap diakreditasi, seberapa sering dikutip, dan naskah mana yang tertahan.</p></div></div>
+  <p>Direktori Jurnal dan Network Publikasi UNMER dibuka lewat peramban di <a href="https://pindotutuko.id/khusus/direktori/">pindotutuko.id/khusus/direktori</a>, tanpa instalasi. Semua menu terbuka untuk umum; hanya fitur yang mengubah data (menyimpan progres akreditasi, memperbarui data dari OJS) yang memerlukan akun pengelola.</p>
+  <table>
+    <thead><tr><th>Pengguna</th><th>Yang paling sering dipakai</th></tr></thead>
+    <tbody>
+      <tr><td><b>Pengelola jurnal</b> (editor in chief, managing editor)</td><td>Profil jurnal, Simulator akreditasi, Peringatan OJS, Citedness Scopus</td></tr>
+      <tr><td><b>Pimpinan</b> fakultas dan universitas</td><td>Kartu “Mulai dari sini”, Kesiapan tiap jurnal, peta jaringan</td></tr>
+      <tr><td><b>LPPM dan PJPI</b></td><td>Pantauan progres, Peringatan OJS, pembaruan data, matriks Wilayah × SINTA</td></tr>
+    </tbody>
+  </table>
+  <div class="box pen"><p>Angka di aplikasi adalah <b>cuplikan per tanggal data</b> (saat ini 31 Oktober 2026) dari sumber terbuka. Untuk dokumen pengajuan akreditasi, selalu pakai angka resmi dari SINTA, ARJUNA, dan Scopus.</p></div>
+</section>
+
+<!-- BAB 2 -->
+<section class="bab" id="bab-2">
+  <div class="babhd"><div class="babno">02</div><div><span class="lbl">Bab dua</span><h2 class="disp">Halaman awal & menu</h2><p>Mulai dari kartu ringkasan, lalu pindah bagian lewat bilah menu berkelompok.</p></div></div>
+  <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>pindotutuko.id/khusus/direktori/</span></div><img src="panduan-s01.png" alt="Halaman awal Direktori Jurnal dengan kartu Mulai dari sini" ></div>
+  <figcaption><b>Gambar 2.1</b><span>Halaman awal. Di bawah judul ada cuplikan tanggal data dan tautan “apa yang berubah”. Kartu “Mulai dari sini” merangkum tujuh angka; klik kartu untuk membuka bagiannya.</span></figcaption></figure>
+  <ol class="steps">
+    <li><div>Buka alamat aplikasi. Tunggu 2–4 detik sampai menu tampil; kotak abu-abu yang bergerak berarti data sedang dimuat.</div></li>
+    <li><div>Baca kartu ringkasan: jumlah jurnal, jurnal yang lolos syarat minimum dan bernilai ≥60, naskah dengan peringatan kritis, dokumen Scopus pengutip, sitasi DOI, jaringan negara, dan jurnal sasaran.</div></li>
+    <li><div>Arahkan kursor (atau ketuk) ke menu bertanda ▾ untuk membuka sub-menu beserta keterangannya.</div></li>
+  </ol>
+  <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Menu Jaringan ▾</span></div><img src="panduan-s02.png" alt="Menu Jaringan terbuka" ></div>
+  <figcaption><b>Gambar 2.2</b><span>Bilah menu berkelompok: Ringkasan · Jurnal ▾ · Jaringan ▾ · Akreditasi 2026 · Citedness Scopus · Peringatan OJS · Data ▾. Setiap sub-menu diberi keterangan singkat.</span></figcaption></figure>
+  <div class="box tip"><p>Tombol menu yang tampak redup berarti isinya belum selesai dimuat; tombol itu aktif sendiri dalam beberapa detik.</p></div>
+</section>
+
+<!-- BAB 3 -->
+<section class="bab" id="bab-3">
+  <div class="babhd"><div class="babno">03</div><div><span class="lbl">Bab tiga</span><h2 class="disp">Peta jaringan & cluster</h2><p>Dari mana saja mitra bestari dan dewan editor jurnal UNMER berasal — untuk semua jurnal atau satu jurnal saja.</p></div></div>
+  <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Ringkasan · Peta jaringan</span></div><img src="panduan-s03.png" alt="Peta jaringan dengan filter cluster di kolom kiri" ></div>
+  <figcaption><b>Gambar 3.1</b><span>Dasbor peta. Kolom kiri berisi filter; bagian kanan berisi empat angka pokok (K-1 sampai K-4) dan peta dunia. Angka kecil di setiap tombol filter adalah jumlah orang bila tombol itu dipilih.</span></figcaption></figure>
+  <table>
+    <thead><tr><th>Filter</th><th>Pilihan</th></tr></thead>
+    <tbody>
+      <tr><td>Peta per jurnal</td><td>Semua jurnal UNMER, atau satu jurnal</td></tr>
+      <tr><td>Cluster wilayah</td><td>Indonesia · Luar negeri · ASEAN · Asia · Asia Pasifik · Asia Timur · Asia Selatan · Timur Tengah · Oseania · Eropa · Amerika · Afrika</td></tr>
+      <tr><td>Peran</td><td>Mitra bestari · Dewan editor</td></tr>
+      <tr><td>Peringkat SINTA jurnal</td><td>S1–S2 · S3 · S4 · S5–S6 · Belum</td></tr>
+      <tr><td>Tahun akreditasi (mulai)</td><td>≤2021 · 2022–23 · 2024–26 · Tak tercatat</td></tr>
+      <tr><td>Tampilan peta</td><td>Titik negara · Gelembung cluster</td></tr>
+    </tbody>
+  </table>
+  <h3><span class="tag">3.1</span>Klik bulatan negara</h3>
+  <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Panel info · Malaysia</span></div><img src="panduan-s04.png" alt="Panel info negara Malaysia" ></div>
+  <figcaption><b>Gambar 3.2</b><span>Panel info muncul di bawah peta: label cluster, jumlah orang, institusi, mitra bestari, editor, jurnal UNMER yang dilayani, dan institusi teratas. Nama jurnal bisa diklik untuk membuka profilnya; tombol hitam membuka daftar institusi negara itu.</span></figcaption></figure>
+  <h3><span class="tag">3.2</span>Gelembung cluster & peta per jurnal</h3>
+  <div class="duo">
+    <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Tampilan: gelembung cluster</span></div><img src="panduan-s05.png" alt="Peta gelembung cluster" ></div>
+    <figcaption><b>Gambar 3.3</b><span>Negara digabung per wilayah; ukuran gelembung = jumlah orang. Klik gelembung untuk ringkasan wilayah.</span></figcaption></figure>
+    <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Peta per jurnal: JMDK</span></div><img src="panduan-s06.png" alt="Peta jaringan khusus JMDK" ></div>
+    <figcaption><b>Gambar 3.4</b><span>Memilih JMDK: 31 orang dari 9 negara. Negara di luar jaringan jurnal ini memudar.</span></figcaption></figure>
+  </div>
+  <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Peringkat · Wilayah × SINTA</span></div><img src="panduan-s07.png" alt="Peringkat per jurnal dan matriks wilayah SINTA" ></div>
+  <figcaption><b>Gambar 3.5</b><span>Di bawah peta: peringkat per Negara, Cluster, atau Jurnal (dengan persentase luar negeri), dan matriks Wilayah × SINTA — makin pekat warnanya, makin banyak orangnya.</span></figcaption></figure>
+  <div class="box pen"><p>ASEAN dihitung 11 negara termasuk Timor-Leste. Turki dimasukkan ke Timur Tengah. Satu orang yang bertugas di dua jurnal dihitung dua kali.</p></div>
+</section>
+
+<!-- BAB 4 -->
+<section class="bab" id="bab-4">
+  <div class="babhd"><div class="babno">04</div><div><span class="lbl">Bab empat</span><h2 class="disp">Jurnal & jaringan</h2><p>Daftar rujukan: data tiap jurnal dan orang-orang di belakangnya.</p></div></div>
+  <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Jurnal ▸ Jurnal UNMER · Tangga SINTA</span></div><img src="panduan-s08.png" alt="Tangga SINTA jurnal UNMER" ></div>
+  <figcaption><b>Gambar 4.1</b><span>Tangga SINTA (menu Jurnal ▸ Jurnal UNMER) mengelompokkan jurnal per peringkat. Tanda ✓ = daftar mitra bestari sudah dipanen. <b style="background:none;color:var(--q1);padding:0">Klik nama jurnal untuk membuka profilnya.</b></span></figcaption></figure>
+  <table>
+    <thead><tr><th>Menu</th><th>Isi</th><th>Kapan dipakai</th></tr></thead>
+    <tbody>
+      <tr><td>Jurnal ▸ Jurnal UNMER</td><td>Profil seluruh jurnal dan Tangga SINTA</td><td>Mencari data dasar jurnal</td></tr>
+      <tr><td>Jurnal ▸ Temuan</td><td>Temuan utama pemetaan</td><td>Bahan rapat pimpinan</td></tr>
+      <tr><td>Jurnal ▸ Tautan & Indeksasi</td><td>SINTA, Garuda, dan indeks lain</td><td>Memeriksa indeksasi</td></tr>
+      <tr><td>Jurnal ▸ Per Prodi</td><td>Jurnal per program studi</td><td>Pembagian tanggung jawab</td></tr>
+      <tr><td>Jaringan ▸ Mitra Bestari</td><td>Registri mitra bestari luar UNMER</td><td>Keberagaman mitra bestari (B.1)</td></tr>
+      <tr><td>Jaringan ▸ Dewan Editor</td><td>Editor dari luar UNMER</td><td>Keberagaman editor (B.3)</td></tr>
+      <tr><td>Jaringan ▸ Afiliasi</td><td>228 institusi asal mitra</td><td>Menyusun kerja sama</td></tr>
+      <tr><td>Jaringan ▸ Sasaran Publikasi</td><td>44 jurnal sasaran</td><td>Rencana publikasi dosen</td></tr>
+      <tr><td>Jaringan ▸ Jembatan</td><td>Jalur dari mitra ke jurnal sasaran</td><td>Mencari penulis bersama</td></tr>
+    </tbody>
+  </table>
+  <div class="duo">
+    <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Jaringan ▸ Mitra Bestari</span></div><img src="panduan-s12.png" alt="Registri mitra bestari" ></div>
+    <figcaption><b>Gambar 4.2</b><span>Cari nama/institusi, saring per jurnal, negara, atau Scopus ID, lalu unduh CSV.</span></figcaption></figure>
+    <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Jaringan ▸ Afiliasi</span></div><img src="panduan-s13.png" alt="Daftar institusi afiliasi" ></div>
+    <figcaption><b>Gambar 4.3</b><span>Institusi diurutkan menurut jumlah orang; kolom peran memisahkan mitra bestari dan editor.</span></figcaption></figure>
+  </div>
+</section>
+
+<!-- BAB 5 -->
+<section class="bab" id="bab-5">
+  <div class="babhd"><div class="babno">05</div><div><span class="lbl">Bab lima</span><h2 class="disp">Profil jurnal</h2><p>Satu halaman per jurnal yang merangkum semuanya: identitas, akreditasi, jaringan, sitasi, dan OJS.</p></div></div>
+  <ol class="steps">
+    <li><div>Klik nama jurnal di Tangga SINTA, di panel info peta, atau di rincian Citedness Scopus.</div></li>
+    <li><div>Atau ketik alamat langsung <span class="chip">#jurnal/&lt;kode&gt;</span>, misalnya <a href="./#jurnal/jmdk">…/direktori/#jurnal/jmdk</a>. Alamat ini bisa dikirim ke pengelola jurnal.</div></li>
+    <li><div>Pindah jurnal lewat pilihan “Jurnal lain”; kembali dengan tombol <span class="chip">← Kembali</span>.</div></li>
+  </ol>
+  <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>…/direktori/#jurnal/jmdk</span></div><img src="panduan-s09.png" alt="Bagian atas profil jurnal JMDK" ></div>
+  <figcaption><b>Gambar 5.1</b><span>Kepala profil: akronim, nama, pengelola, tombol ke laman jurnal/SINTA/Garuda, dan lima angka pokok P-1 sampai P-5. Di bawahnya identitas jurnal dan garis waktu riwayat SINTA beserta hasil simulasi 2026.</span></figcaption></figure>
+  <div class="duo">
+    <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Profil · Jaringan</span></div><img src="panduan-s10.png" alt="Bagian jaringan profil jurnal" ></div>
+    <figcaption><b>Gambar 5.2</b><span>Sebaran per negara, institusi teratas, dan daftar lengkap mitra beserta Scopus ID. Tombol “Lihat di peta” membuka peta yang tersaring ke jurnal ini.</span></figcaption></figure>
+    <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Profil · Sitasi & OJS</span></div><img src="panduan-s11.png" alt="Bagian sitasi dan peringatan OJS profil jurnal" ></div>
+    <figcaption><b>Gambar 5.3</b><span>Sitasi DOI per tahun terbit, Citedness Scopus dengan artikel teratas, dan jumlah naskah per jenis peringatan OJS (■ = kritis).</span></figcaption></figure>
+  </div>
+</section>
+
+<!-- BAB 6 -->
+<section class="bab" id="bab-6">
+  <div class="babhd"><div class="babno">06</div><div><span class="lbl">Bab enam</span><h2 class="disp">Akreditasi 2026</h2><p>Aturan baru, kesiapan tiap jurnal, dan langkah menuju pengajuan.</p></div></div>
+  <p>Menu ini menerapkan Permendiktisaintek Nomor 9 Tahun 2026<a class="ref" href="#r1">[1]</a> dan petunjuk teknisnya, Kepdirjen Saintek 374/DST/D.D1/HM.01.01/2026<a class="ref" href="#r2">[2]</a>. Hasil akreditasi kini hanya Peringkat 1–4; peringkat lama (5 dan 6) tetap berlaku sampai masa berlakunya habis.</p>
+  <div class="kpis">
+    <div><span class="lbl">Peringkat 1</span><b>≥90</b><small>nilai 90–100</small></div>
+    <div><span class="lbl">Peringkat 2</span><b>80</b><small>80 – &lt;90</small></div>
+    <div><span class="lbl">Peringkat 3</span><b>70</b><small>70 – &lt;80</small></div>
+    <div><span class="lbl">Peringkat 4</span><b>60</b><small>60 – &lt;70</small></div>
+    <div><span class="lbl">Bobot</span><b>46/54</b><small>tata kelola / mutu artikel</small></div>
+  </div>
+  <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Akreditasi 2026 ▸ Kesiapan tiap jurnal</span></div><img src="panduan-s14.png" alt="Sub-menu Akreditasi 2026 dan grafik kesiapan" ></div>
+  <figcaption><b>Gambar 6.1</b><span>Sub-menu dua baris: <i>Jurnal UNMER</i> (kesiapan, progres, sitasi, masa berlaku) dan <i>Panduan 2026</i> (alur, kesiapan, aturan pokok, syarat minimum, unsur A–G, disinsentif, pengajuan ulang, simulator).</span></figcaption></figure>
+  <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Tabel kesiapan</span></div><img src="panduan-s15.png" alt="Tabel nilai per unsur dan syarat minimum" ></div>
+  <figcaption><b>Gambar 6.2</b><span>Tabel kesiapan: perkiraan nilai dan rentangnya, peringkat, nilai per unsur A–G, dan jumlah syarat minimum yang belum terpenuhi. Klik baris untuk rincian dan langkah perbaikan; ikon ⓘ membuka kriteria di panduan.</span></figcaption></figure>
+  <div class="duo">
+    <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Panduan 2026 ▸ Alur akreditasi</span></div><img src="panduan-s16.png" alt="Diagram alur akreditasi" ></div>
+    <figcaption><b>Gambar 6.3</b><span>Alur resmi: pengajuan lewat ARJUNA → Pemeriksaan Awal → Pemeriksaan Kelayakan → penilaian paralel → disinsentif → rapat pleno asesor.</span></figcaption></figure>
+    <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Jurnal UNMER ▸ Pantauan progres</span></div><img src="panduan-s17.png" alt="Grafik pantauan progres akreditasi" ></div>
+    <figcaption><b>Gambar 6.4</b><span>Progres 15 langkah kesiapan per jurnal. Pengelola yang login dapat mengisi status, catatan, rencana bulan pengajuan, dan target peringkat.</span></figcaption></figure>
+  </div>
+  <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Panduan 2026 ▸ Unsur A–G</span></div><img src="panduan-s18.png" alt="Penjelasan unsur B dengan tingkat nilai dan contoh" ></div>
+  <figcaption><b>Gambar 6.5</b><span>Setiap subunsur dijelaskan lengkap: tingkat nilai, contoh memenuhi, contoh kurang, dan langkah perbaikan.</span></figcaption></figure>
+  <div class="box pen"><p>Jurnal yang gagal di <b>Pemeriksaan Awal</b> (15 butir syarat minimum) tidak dinilai sama sekali. Periksa syarat minimum lebih dulu sebelum mengejar nilai.</p></div>
+</section>
+
+<!-- BAB 7 -->
+<section class="bab" id="bab-7">
+  <div class="babhd"><div class="babno">07</div><div><span class="lbl">Bab tujuh</span><h2 class="disp">Simulator otomatis & manual</h2><p>Hitung perkiraan nilai akreditasi dari data, lalu coba skenario perbaikan sendiri.</p></div></div>
+  <p>Buka <b>Akreditasi 2026 ▸ Simulator otomatis & manual</b>, atau tombol <span class="chip">Buka di simulator →</span> di profil jurnal.</p>
+  <h3><span class="tag">7.1</span>Mode otomatis</h3>
+  <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Simulator · Otomatis · AFRE</span></div><img src="panduan-s19.png" alt="Simulator mode otomatis untuk AFRE" ></div>
+  <figcaption><b>Gambar 7.1</b><span>Mode otomatis untuk AFRE: total 66,5 (Peringkat 4), rentang 46–91, 6 dari 9 syarat minimum terpenuhi. Skala P4–P1 menunjukkan posisi nilai; batang per unsur menunjukkan nilai terhadap bobot.</span></figcaption></figure>
+  <ol class="steps">
+    <li><div>Pilih jurnal di kolom kiri.</div></li>
+    <li><div>Pilih skenario untuk subunsur bertanda <i>asumsi</i>: <span class="chip">Pesimis</span> nilai terendah, <span class="chip">Tengah</span>, atau <span class="chip">Optimis</span> nilai tertinggi. Subunsur bertanda <i>data</i> tidak berubah.</div></li>
+    <li><div>Gulir ke “Rincian nilai otomatis” untuk melihat temuan data tiap subunsur.</div></li>
+  </ol>
+  <h3><span class="tag">7.2</span>Mode manual</h3>
+  <div class="duo">
+    <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Simulator · Manual</span></div><img src="panduan-s20.png" alt="Simulator mode manual dengan selisih terhadap otomatis" ></div>
+    <figcaption><b>Gambar 7.2</b><span>Setelah B.2 dinaikkan, total menjadi 68,5 dan selisih terhadap otomatis +2. Garis hitam tipis pada batang = nilai otomatis.</span></figcaption></figure>
+    <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Lembar penilaian manual</span></div><img src="panduan-s21.png" alt="Lembar penilaian manual per subunsur" ></div>
+    <figcaption><b>Gambar 7.3</b><span>Klik angka tingkat di setiap subunsur; keterangan tingkat dari instrumen 2026 tampil di bawahnya, selisih tampil di kanan.</span></figcaption></figure>
+  </div>
+  <ol class="steps">
+    <li><div>Klik <span class="chip">Manual</span>, atau <span class="chip">Lanjut ubah manual →</span> untuk membawa nilai otomatis ke lembar manual.</div></li>
+    <li><div>Pilih isi awal bila perlu: dari otomatis, semua terendah, tengah, atau tertinggi. Untuk calon jurnal, pilih “lembar kosong”.</div></li>
+    <li><div>Isi tingkat setiap subunsur sesuai hasil evaluasi diri tim, dan isi disinsentif bila ada temuan.</div></li>
+    <li><div>Bandingkan total, peringkat, dan selisihnya terhadap hasil otomatis.</div></li>
+  </ol>
+  <div class="box con"><p>Tim AFRE yakin komentar mitra bestarinya substantif. Di mode Manual, B.2 dinaikkan dari 2 ke 4: total naik dari 66,5 menjadi 68,5. Namun 3 syarat minimum masih belum terpenuhi, jadi prioritas pertama tetap melengkapi syarat itu.</p></div>
+  <div class="box pen"><p>Hasil simulator adalah perkiraan untuk persiapan. Nilai resmi ditetapkan asesor lewat ARJUNA.</p></div>
+</section>
+
+<!-- BAB 8 -->
+<section class="bab" id="bab-8">
+  <div class="babhd"><div class="babno">08</div><div><span class="lbl">Bab delapan</span><h2 class="disp">Citedness Scopus</h2><p>Berapa dokumen terindeks Scopus yang mengutip artikel jurnal UNMER — dihitung seragam untuk semua jurnal.</p></div></div>
+  <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Citedness Scopus</span></div><img src="panduan-s22.png" alt="Halaman Citedness Scopus dengan grafik per tahun" ></div>
+  <figcaption><b>Gambar 8.1</b><span>664 dokumen Scopus mengutip 27 dari 30 jurnal; 60% dari sumber Q1–Q2. Grafik per tahun dibagi menurut kuartil sumber pengutip. Filter di kiri: SINTA, kuartil, jenis sumber, tahun.</span></figcaption></figure>
+  <div class="duo">
+    <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Peringkat jurnal UNMER</span></div><img src="panduan-s23.png" alt="Peringkat jurnal menurut citedness" ></div>
+    <figcaption><b>Gambar 8.2</b><span>Peringkat jurnal; warna batang menunjukkan kuartil sumber. Klik jurnal untuk rinciannya.</span></figcaption></figure>
+    <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Rincian · artikel & pengutipnya</span></div><img src="panduan-s24.png" alt="Artikel yang dikutip dengan daftar dokumen pengutip" ></div>
+    <figcaption><b>Gambar 8.3</b><span>Klik judul artikel (▸) untuk melihat dokumen Scopus yang mengutipnya, lengkap dengan kuartil, sumber, jenis, tahun, dan DOI.</span></figcaption></figure>
+  </div>
+  <div class="box pen"><p>Angka ini perkiraan terbuka: karya pengutip diambil dari OpenAlex<a class="ref" href="#r6">[6]</a> lalu dicocokkan lewat ISSN dengan daftar sumber Scopus di SCImago Journal Rank 2025<a class="ref" href="#r7">[7]</a>. Untuk angka resmi, periksa lewat akun Scopus institusi. Jurnal yang tidak ditemukan lewat ISSN (ABDIKATA) atau belum punya karya tercatat (ARCHITENSA) belum bisa dihitung.</p></div>
+  <div class="box tip"><p>Supaya sitasi jurnal tercatat: pastikan ISSN terdaftar benar, setiap artikel ber-DOI, dan daftar referensi disetor ke Crossref<a class="ref" href="#r5">[5]</a>.</p></div>
+</section>
+
+<!-- BAB 9 -->
+<section class="bab" id="bab-9">
+  <div class="babhd"><div class="babno">09</div><div><span class="lbl">Bab sembilan</span><h2 class="disp">Peringatan OJS & pembaruan</h2><p>Naskah yang tertahan di alur editorial, dan cara menjaga data tetap mutakhir.</p></div></div>
+  <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Peringatan OJS</span></div><img src="panduan-s25.png" alt="Ringkasan peringatan OJS per kategori" ></div>
+  <figcaption><b>Gambar 9.1</b><span>Kartu per jenis peringatan dan tabel per jurnal. Merah = kritis, kuning = perlu tindakan. Klik baris jurnal untuk daftar naskahnya (hanya nomor ID, tahap, dan umur — tanpa judul atau nama).</span></figcaption></figure>
+  <table>
+    <thead><tr><th>Peringatan</th><th>Tingkat</th><th>Artinya</th></tr></thead>
+    <tbody>
+      <tr><td>Belum ada editor</td><td>Kritis</td><td>Naskah masuk tetapi belum ditugaskan ke editor</td></tr>
+      <tr><td>Belum ada reviewer</td><td>Kritis</td><td>Sudah di tahap review, belum ada reviewer diundang</td></tr>
+      <tr><td>Reviewer belum merespons</td><td>Kritis</td><td>Undangan review lewat batas jawaban</td></tr>
+      <tr><td>Review terlambat</td><td>Kritis</td><td>Hasil review lewat tenggat</td></tr>
+      <tr><td>Menunggu keputusan editor</td><td>Perlu tindakan</td><td>Review/revisi sudah masuk</td></tr>
+      <tr><td>Menunggu pemeriksaan awal</td><td>Perlu tindakan</td><td>Lebih dari 14 hari tanpa keputusan awal</td></tr>
+      <tr><td>Menunggu revisi penulis</td><td>Perlu tindakan</td><td>Revisi diminta lebih dari 30 hari lalu</td></tr>
+      <tr><td>Tertahan di penyuntingan/produksi</td><td>Perlu tindakan</td><td>Lebih dari 60 hari tanpa aktivitas</td></tr>
+      <tr><td>Menunggu hasil review</td><td>Pantau</td><td>Reviewer masih dalam tenggat</td></tr>
+    </tbody>
+  </table>
+  <h3><span class="tag">9.1</span>Memperbarui data (khusus pengelola)</h3>
+  <div class="duo">
+    <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Pembaruan dari OJS</span></div><img src="panduan-s27.png" alt="Jendela Pembaruan dari OJS" ></div>
+    <figcaption><b>Gambar 9.2</b><span>Tombol bulat “Pembaruan dari OJS” (kanan bawah) membandingkan data dengan laman mitra bestari dan dewan editor; centang perubahan yang benar lalu simpan.</span></figcaption></figure>
+    <figure><div class="shot"><div class="bar"><i></i><i></i><i></i><span>Pembaruan lewat API OJS</span></div><img src="panduan-s26.png" alt="Panel pembaruan lewat API OJS" ></div>
+    <figcaption><b>Gambar 9.3</b><span>Setelah PUSIM mengaktifkan API OJS<a class="ref" href="#r4">[4]</a> dan memberi token, pengelola menempel token, menekan “Simpan & uji”, lalu “Perbarui sekarang”.</span></figcaption></figure>
+  </div>
+</section>
+
+<!-- BAB 10 -->
+<section class="bab" id="bab-10">
+  <div class="babhd"><div class="babno">10</div><div><span class="lbl">Bab sepuluh</span><h2 class="disp">Skenario kerja & tanya jawab</h2><p>Urutan kerja yang disarankan untuk tiap peran.</p></div></div>
+  <h3><span class="tag">A</span>Pengelola jurnal — menyiapkan akreditasi ulang</h3>
+  <ol class="steps">
+    <li><div>Buka profil jurnal (Tangga SINTA ▸ klik nama jurnal); catat masa berlaku dan syarat minimum yang belum terpenuhi.</div></li>
+    <li><div>Buka di simulator; bandingkan skenario Pesimis dan Optimis.</div></li>
+    <li><div>Pindah ke Manual; isi hasil evaluasi diri dan cari subunsur yang paling mudah dinaikkan.</div></li>
+    <li><div>Catat langkah di Pantauan progres (login pengelola).</div></li>
+    <li><div>Bersihkan naskah bermasalah di Peringatan OJS sebelum mengajukan lewat ARJUNA.</div></li>
+  </ol>
+  <h3><span class="tag">B</span>Pengelola jurnal — memperkuat jaringan</h3>
+  <ol class="steps">
+    <li><div>Di peta Ringkasan, pilih jurnal Anda di “Peta per jurnal”.</div></li>
+    <li><div>Bandingkan dengan jurnal sebidang yang SINTA-nya lebih tinggi.</div></li>
+    <li><div>Cari calon mitra bestari atau editor luar negeri lewat Afiliasi dan Jembatan.</div></li>
+  </ol>
+  <h3><span class="tag">C</span>Pimpinan, LPPM dan PJPI</h3>
+  <ol class="steps">
+    <li><div>Pantau kartu “Mulai dari sini” dan Kesiapan tiap jurnal setiap bulan.</div></li>
+    <li><div>Kirim alamat profil (<span class="chip">#jurnal/&lt;kode&gt;</span>) ke pengelola sebagai bahan rapat pembinaan.</div></li>
+    <li><div>Gunakan matriks Wilayah × SINTA dan Citedness Scopus untuk program kerja sama dan target dampak.</div></li>
+  </ol>
+  <h3><span class="tag">?</span>Tanya jawab</h3>
+  <table>
+    <tbody>
+      <tr><td style="width:36%"><b>Mengapa angka berbeda dengan SINTA atau Scopus?</b></td><td>Aplikasi memakai cuplikan per tanggal data dari sumber terbuka; SINTA dan Scopus diperbarui dengan jadwal sendiri.</td></tr>
+      <tr><td><b>Apakah nilai simulator sama dengan nilai asesor?</b></td><td>Tidak. Subunsur bertanda <i>asumsi</i> menyangkut mutu isi artikel yang hanya bisa dinilai asesor.</td></tr>
+      <tr><td><b>Data jurnal saya keliru.</b></td><td>Perbaiki di laman jurnal (OJS), lalu minta pengelola menjalankan Pembaruan dari OJS. Butir yang perlu dikoreksi ada di Data ▸ Perbaikan Data.</td></tr>
+      <tr><td><b>Jurnal saya tidak bisa diklik.</b></td><td>Jurnal itu belum tercatat lengkap di data aplikasi (misalnya EMBS). Hubungi PJPI.</td></tr>
+      <tr><td><b>Bisa dibuka di ponsel?</b></td><td>Bisa; filter berpindah ke atas konten pada layar sempit.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- RUJUKAN -->
+<section class="bab" id="rujukan">
+  <div class="babhd"><div class="babno">R</div><div><span class="lbl">Rujukan</span><h2 class="disp">Rujukan</h2><p>Dasar aturan dan sumber data yang dipakai aplikasi dan buku ini.</p></div></div>
+  <h3>Aturan akreditasi</h3>
+  <ol class="refs">
+    <li id="r1"><span>Peraturan Menteri Pendidikan Tinggi, Sains, dan Teknologi Nomor 9 Tahun 2026 tentang Akreditasi Jurnal Ilmiah (ditetapkan 29 Juni 2026, diundangkan 7 Juli 2026).</span></li>
+    <li id="r2"><span>Keputusan Direktur Jenderal Sains dan Teknologi Nomor 374/DST/D.D1/HM.01.01/2026 tentang Petunjuk Teknis Akreditasi Jurnal Ilmiah (ditetapkan 6 Agustus 2026), disampaikan dengan surat pengantar Nomor 922/DST/D.D1/HM.01.01/2026 tanggal 10 Agustus 2026. Mencabut Kepdirjen Nomor 134/E/KPT/2021.</span></li>
+    <li id="r3"><span>Tabel Juknis Penilaian Akreditasi Jurnal Ilmiah Tahun 2026 (ringkasan tabel penilaian, diakses 31 Oktober 2026). <a href="https://nuris.ac.id/tabel-juknis-penilaian-akreditasi-jurnal-ilmiah-tahun-2026/">nuris.ac.id/tabel-juknis-penilaian-akreditasi-jurnal-ilmiah-tahun-2026</a></span></li>
+  </ol>
+  <h3>Sumber data</h3>
+  <ol class="refs" style="counter-reset:r 3">
+    <li id="r4"><span>Public Knowledge Project. OJS 3.3 REST API; data naskah, terbitan, dan statistik editorial dibaca dari <a href="https://jurnal.unmer.ac.id/">jurnal.unmer.ac.id</a>.</span></li>
+    <li id="r5"><span>Crossref REST API — jumlah sitasi berbasis DOI (<i>is-referenced-by-count</i>). <a href="https://www.crossref.org/">crossref.org</a></span></li>
+    <li id="r6"><span>Priem, J., Piwowar, H., &amp; Orr, R. (2022). OpenAlex: A fully-open index of scholarly works, authors, venues, institutions, and concepts. arXiv:2205.01833. <a href="https://openalex.org/">openalex.org</a></span></li>
+    <li id="r7"><span>SCImago. SCImago Journal &amp; Country Rank — daftar sumber dan kuartil (data 2025). <a href="https://www.scimagojr.com/">scimagojr.com</a></span></li>
+    <li id="r8"><span>SINTA — Science and Technology Index, Kemdiktisaintek; profil dan riwayat peringkat jurnal. <a href="https://sinta.kemdiktisaintek.go.id/">sinta.kemdiktisaintek.go.id</a></span></li>
+    <li id="r9"><span>Laman About, Editorial Team, dan Peer Reviewers setiap jurnal UNMER di <a href="https://jurnal.unmer.ac.id/">jurnal.unmer.ac.id</a> — sumber daftar mitra bestari dan dewan editor.</span></li>
+  </ol>
+</section>
+
+<div class="colophon">
+  <b>Buku Panduan Direktori Jurnal UNMER</b> · Edisi 1, 31 Oktober 2026 · Disusun untuk pengelola jurnal Universitas Merdeka Malang.<br>
+  Aplikasi: <a href="https://pindotutuko.id/khusus/direktori/">pindotutuko.id/khusus/direktori</a> · Dikembangkan oleh Pindo Tutuko.
+</div>
+</main>
+</div>
+<a class="top" href="#sampul">↑ Sampul</a>
+<script>
+(function(){
+  var links=[].slice.call(document.querySelectorAll('nav.toc a[href^="#"]'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));});
+  var on=function(){var y=window.scrollY+120,cur=0;secs.forEach(function(s,i){if(s&&s.offsetTop<=y)cur=i;});links.forEach(function(a,i){a.classList.toggle('on',i===cur);});};
+  window.addEventListener('scroll',on,{passive:true});on();
+})();
+</script>
+</body>
+</html>

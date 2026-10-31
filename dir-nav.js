@@ -90,6 +90,18 @@
   });
   Object.keys(B).forEach(function (k) { if (!used[k]) frag.appendChild(B[k]); });
   nav.appendChild(frag);
+  /* Tautan Buku Panduan di menu Data dan di kaki halaman */
+  nav.querySelectorAll(".mg").forEach(function (m) {
+    if (!/Data/.test(m.querySelector(".mgh").textContent) || m.querySelector(".mglink")) return;
+    var a = document.createElement("a"); a.className = "mglink"; a.href = "panduan.html"; a.target = "_blank"; a.rel = "noopener";
+    a.innerHTML = "Buku panduan ↗<small>Cara memakai aplikasi, dengan gambar</small>";
+    m.querySelector(".mgd").appendChild(a);
+  });
+  var lk = document.createElement("style");
+  lk.textContent = "#tabs.mgnav .mgd a.mglink{display:block;padding:10px 12px;border-top:1px dashed var(--line);margin-top:4px;color:var(--patina);text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}#tabs.mgnav .mgd a.mglink:hover{background:var(--surface-2)}#tabs.mgnav .mgd a.mglink small{display:block;margin-top:4px;font-size:10.5px;letter-spacing:.02em;text-transform:none;color:var(--muted);font-weight:400}";
+  document.head.appendChild(lk);
+  var ft = document.querySelector("footer .wrap");
+  if (ft && !ft.querySelector(".pfg")) { var p = document.createElement("div"); p.className = "pfg"; p.style.marginTop = "8px"; p.innerHTML = "<a href='panduan.html' target='_blank' rel='noopener' style='color:var(--patina);font-weight:600'>Buku panduan aplikasi ↗</a>"; ft.insertBefore(p, ft.querySelector(".credit")); }
   var closeAll = function (except) { nav.querySelectorAll(".mg.open").forEach(function (m) { if (m !== except) { m.classList.remove("open"); m.querySelector(".mgh").setAttribute("aria-expanded", "false"); } }); };
   nav.addEventListener("click", function (e) {
     var h = e.target.closest(".mgh");
