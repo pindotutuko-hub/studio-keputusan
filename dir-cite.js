@@ -12,6 +12,7 @@
     var s = SEM[j.id] || {}, c = P.j[j.id] || { src: null };
     return { id: j.id, ak: j.akronim || j.id.toUpperCase(), nama: j.nama || s.nama || "", sinta: j.sinta || s.sinta || 0, bid: j.bidang || s.bidang || "", url: j.url || s.url || "", c: c };
   });
+  J.forEach(function (j) { (j.c.docs || []).forEach(function (d) { d._j = j.id; if (!/^Q[1-4]$/.test(d.q || "")) d.q = ""; }); });
   var QC = { Q1: "var(--q1)", Q2: "var(--q2)", Q3: "var(--q3)", Q4: "var(--q4)", "": "var(--q0)" };
   var QS = ["Q1", "Q2", "Q3", "Q4", ""];
   var QL = function (q) { return q || "tanpa Q"; };
@@ -78,13 +79,13 @@
     var y0 = Math.min(ys[0], 2018), y1 = Math.max(ys[ys.length - 1], 2026), all = [];
     for (var y = y0; y <= y1; y++) all.push(y);
     var mx = Math.max.apply(null, all.map(function (y) { var o = by[y] || {}; return QS.reduce(function (a, q) { return a + (o[q] || 0); }, 0); })) || 1;
-    var W = 720, H = 210, L = 34, Bt = 24, bw = (W - L - 10) / all.length;
+    var W = 720, H = 226, L = 34, Bt = 24, bw = (W - L - 10) / all.length;
     var s = "<svg viewBox='0 0 " + W + " " + H + "' width='100%' role='img' aria-label='Dokumen Scopus pengutip per tahun'>";
     var step = mx > 60 ? 20 : mx > 25 ? 10 : 5;
-    for (var g = 0; g <= mx; g += step) { var gy = H - Bt - (H - Bt - 10) * g / mx; s += "<line x1='" + L + "' x2='" + W + "' y1='" + gy + "' y2='" + gy + "' stroke='#E6DDE1'/><text x='" + (L - 6) + "' y='" + (gy + 3) + "' text-anchor='end'>" + g + "</text>"; }
+    for (var g = 0; g <= mx; g += step) { var gy = H - Bt - (H - Bt - 26) * g / mx; s += "<line x1='" + L + "' x2='" + W + "' y1='" + gy + "' y2='" + gy + "' stroke='#E6DDE1'/><text x='" + (L - 6) + "' y='" + (gy + 3) + "' text-anchor='end'>" + g + "</text>"; }
     all.forEach(function (y, i) {
       var o = by[y] || {}, acc = 0, x = L + i * bw + 3;
-      QS.forEach(function (q) { var v = o[q] || 0; if (!v) return; var h = (H - Bt - 10) * v / mx; acc += h; s += "<rect x='" + x + "' y='" + (H - Bt - acc) + "' width='" + (bw - 6) + "' height='" + h + "' fill='" + QC[q].replace("var(", "").replace(")", "") + "' style='fill:" + QC[q] + "' stroke='#141017' stroke-width='.6'><title>" + y + " · " + QL(q) + ": " + v + "</title></rect>"; });
+      QS.forEach(function (q) { var v = o[q] || 0; if (!v) return; var h = (H - Bt - 26) * v / mx; acc += h; s += "<rect x='" + x + "' y='" + (H - Bt - acc) + "' width='" + (bw - 6) + "' height='" + h + "' fill='" + QC[q].replace("var(", "").replace(")", "") + "' style='fill:" + QC[q] + "' stroke='#141017' stroke-width='.6'><title>" + y + " · " + QL(q) + ": " + v + "</title></rect>"; });
       var tot = QS.reduce(function (a, q) { return a + (o[q] || 0); }, 0);
       if (tot) s += "<text x='" + (x + (bw - 6) / 2) + "' y='" + (H - Bt - acc - 4) + "' text-anchor='middle' style='fill:#141017;font-weight:600'>" + tot + "</text>";
       s += "<text x='" + (x + (bw - 6) / 2) + "' y='" + (H - 8) + "' text-anchor='middle'>" + y + "</text>";
@@ -130,8 +131,7 @@
       top.map(function (k, i) { var o = sn[k]; return "<tr><td>" + (i + 1) + "</td><td>" + esc(k) + "</td><td>" + (TY[o.ty] || esc(o.ty || "")) + "</td><td><span class='q " + (o.q || "") + "'>" + (o.q || "–") + "</span></td><td>" + Object.keys(o.js).map(function (x) { var jj = J.filter(function (y) { return y.id === x; })[0]; return jj ? esc(jj.ak) : ""; }).join(", ") + "</td><td class='r'>" + o.n + "</td></tr>"; }).join("") + "</tbody></table></div>" : "<p class='note'>Tidak ada dokumen untuk filter ini.</p>";
     if (sel) detail(sel, true);
   };
-  J.forEach(function (j) { (j.c.docs || []).forEach(function (d) { d._j = j.id; }); });
-
+  
   var detail = function (id, quiet) {
     var j = J.filter(function (x) { return x.id === id; })[0]; if (!j) return;
     sel = id; $("ciDw").hidden = false;

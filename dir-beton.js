@@ -46,7 +46,7 @@
     ".bt .x{font-family:'JetBrains Mono',monospace;font-size:12px;border:1.5px solid var(--bk);background:#fff;padding:4px 10px;cursor:pointer;color:var(--bk)}.bt .x:hover{background:var(--bk);color:#fff}" +
     ".bt .btn{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;border:1.5px solid var(--bk);background:var(--bk);color:#fff;padding:7px 12px;cursor:pointer}.bt .btn.ghost{background:#fff;color:var(--bk)}" +
     ".bt svg text{font-family:'JetBrains Mono',monospace;font-size:10px;fill:#47404C}" +
-    ".bt .scroll{max-height:420px;overflow:auto}" +
+    ".bt tr:hover td{background:#FBF2F4}.bt .scroll{max-height:420px;overflow:auto}" +
     "@media (max-width:900px){.bt .dash{grid-template-columns:1fr}.bt .side{border-right:0;border-bottom:2px solid var(--bk)}.bt .side .sticky{position:static}.bt .rk{grid-template-columns:22px 90px minmax(0,1fr) 44px}}";
   document.head.appendChild(css);
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };

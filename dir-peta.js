@@ -101,7 +101,7 @@
     var clu = document.createElementNS("http://www.w3.org/2000/svg", "g"); clu.setAttribute("id", "ppClu"); inner.appendChild(clu);
     var sty = document.createElement("style");
     sty.textContent = "#geoSvg.ppc .geo-node,#geoSvg.ppc .geo-lbl,#geoSvg.ppc .geo-arc{display:none}#geoSvg .geo-node,#geoSvg .geo-lbl{cursor:pointer}#geoSvg .geo-node,#geoSvg .geo-arc,#geoSvg .geo-lbl{transition:opacity .2s}" +
-      "#ppClu circle{fill:#7A1E33;fill-opacity:.85;stroke:#fff;stroke-width:2;cursor:pointer}#ppClu circle:hover{fill:#B23A55}#ppClu text{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;fill:#141017;paint-order:stroke;stroke:#fff;stroke-width:4px;cursor:pointer}#ppClu path{fill:none;stroke:#B23A55;stroke-opacity:.45;stroke-width:1.6}" +
+      "#ppClu circle{fill:#7A1E33;fill-opacity:.85;stroke:#fff;stroke-width:2;cursor:pointer}#ppClu circle:hover{fill:#B23A55}#ppClu text{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;fill:#141017;paint-order:stroke;stroke:#fff;stroke-width:4px;cursor:pointer}#ppClu path{fill:none;stroke:#B23A55;stroke-opacity:.45;stroke-width:1.6}" +
       "#geoSvg .geo-node.ppsel{stroke:#141017;stroke-width:3}";
     document.head.appendChild(sty);
 
@@ -148,7 +148,7 @@
           var v = 0, wx = 0, wy = 0, w = 0;
           REG[rk].c.forEach(function (k) { var nd = nodes[k]; if (!nd) return; var g = (GEO[k] || {}).n || 1; wx += nd.x * g; wy += nd.y * g; w += g; v += A.k[k] || 0; });
           if (!w || !v) return;
-          var x = wx / w, y = wy / w, r = 6 + 1.25 * Math.sqrt(v);
+          var x = wx / w, y = wy / w, r = 9 + 2.1 * Math.sqrt(v);
           if (hub && rk !== "id") s += "<path d='M " + hub.x + " " + hub.y + " Q " + ((hub.x + x) / 2) + " " + (Math.min(hub.y, y) - 60) + " " + x + " " + y + "'/>";
           s += "<circle data-r='" + rk + "' cx='" + x.toFixed(1) + "' cy='" + y.toFixed(1) + "' r='" + r.toFixed(1) + "'><title>" + esc(REG[rk].l) + ": " + v + " orang</title></circle>";
           s += "<text data-r='" + rk + "' x='" + (x + r + 5).toFixed(1) + "' y='" + (y + 4).toFixed(1) + "'>" + esc(REG[rk].s || REG[rk].l) + " " + v + "</text>";
