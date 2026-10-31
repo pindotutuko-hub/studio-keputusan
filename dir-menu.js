@@ -10,7 +10,8 @@
     { t: "ringkasan" },
     { l: "Jurnal", items: [["jurnal", "Profil seluruh jurnal UNMER"], ["temuan", "Temuan utama pemetaan"], ["tautan", "SINTA, Garuda, dan indeksasi"], ["prodi", "Jurnal per program studi"]] },
     { l: "Jaringan", items: [["bestari", "Mitra bestari setiap jurnal"], ["editor", "Dewan editor dari luar UNMER"], ["afiliasi", "Institusi dan negara mitra"], ["sasaran", "Jurnal sasaran publikasi"], ["pintu", "Jembatan ke jurnal sasaran"]] },
-    { t: "akr", badge: "Baru" },
+    { t: "akr" },
+    { t: "cite", badge: "Baru" },
     { t: "ojs" },
     { l: "Data", items: [["koreksi", "Butir perbaikan data jurnal"], ["update", "Daftar periksa pembaruan"], ["catatan", "Riwayat perubahan dan sumber"]] }
   ];
@@ -20,13 +21,13 @@
     "#tabs.mgnav .mg{position:relative}" +
     "#tabs.mgnav .mgh{display:flex;align-items:center;gap:6px;height:100%}" +
     "#tabs.mgnav .mg.open .mgh{color:var(--ink)}" +
-    "#tabs.mgnav .mg.on>.mgh{color:var(--ink);border-bottom-color:var(--patina);background:rgba(194,84,26,.07)}" +
+    "#tabs.mgnav .mg.on>.mgh{color:var(--ink);border-bottom-color:var(--patina);background:rgba(122,30,51,.07)}" +
     "#tabs.mgnav .mgh .car{font-size:.8em;transition:transform .15s}#tabs.mgnav .mg.open .mgh .car{transform:rotate(180deg)}" +
     "#tabs.mgnav .mgd{display:none;position:absolute;top:100%;left:0;min-width:290px;padding:8px;background:#fff;border:1px solid var(--line);border-top:3px solid var(--patina);box-shadow:0 18px 40px rgba(14,26,43,.14);border-radius:0 0 10px 10px}" +
     "#tabs.mgnav .mg.open .mgd{display:block}" +
     "#tabs.mgnav .mgd button[data-t]{display:block;width:100%;text-align:left;margin:0;padding:10px 12px!important;border:0!important;border-radius:6px;background:none;white-space:normal}" +
     "#tabs.mgnav .mgd button[data-t]{color:var(--ink)!important}#tabs.mgnav .mgd button[data-t]:hover{background:var(--surface-2)}" +
-    "#tabs.mgnav .mgd button[aria-selected=true]{background:rgba(194,84,26,.08);box-shadow:inset 3px 0 0 var(--patina)}" +
+    "#tabs.mgnav .mgd button[aria-selected=true]{background:rgba(122,30,51,.08);box-shadow:inset 3px 0 0 var(--patina)}" +
     "#tabs.mgnav .mgd small{display:block;margin-top:4px;font-size:10.5px;letter-spacing:.02em;text-transform:none;color:var(--muted)}" +
     "#tabs.mgnav .bdg{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:999px;background:var(--patina);color:#fff;font-size:9px;letter-spacing:.08em;vertical-align:2px}" +
     "@media (max-width:760px){#tabs.mgnav .mgd{position:fixed;left:12px;right:12px;top:auto;min-width:0}}";
@@ -93,6 +94,11 @@
   }
   var pb = document.querySelectorAll("#p-ojs .pintro b");
   if (pb.length >= 3) K.push({ k: "Peringatan OJS", v: pb[2].textContent, l: "naskah dengan peringatan kritis", d: "dari " + pb[1].textContent + " naskah aktif · dibaca " + pb[0].textContent, go: "ojs", warn: 1 });
+  var PC = window.PT_CITE;
+  if (PC && PC.j) {
+    var cd = 0, cj = 0; Object.keys(PC.j).forEach(function (k) { var n = (PC.j[k].docs || []).length; cd += n; if (n) cj++; });
+    K.push({ k: "Citedness Scopus", v: cd, l: "dokumen Scopus mengutip jurnal UNMER", d: cj + " jurnal dikutip · data " + PC.atLabel, go: "cite", hot: 1 });
+  }
   var P = window.PT_AKR;
   if (P && P.cr) {
     var c = 0, n = 0; Object.keys(P.cr).forEach(function (k) { c += P.cr[k].c3 || 0; n += P.cr[k].n3 || 0; });
@@ -128,16 +134,16 @@
   sync();
 })();
 
-/* Tema terang: kepala halaman & menu cerah, aksen oranye. */
+/* Tema terang: kepala halaman & menu cerah, aksen burgundy. */
 (function () {
   var css = document.createElement("style");
   css.textContent =
-    "header.mast{background:linear-gradient(180deg,#FFFFFF 0%,#FFF7F1 100%)!important;color:var(--ink)!important;border-bottom:1px solid var(--line)}" +
+    "header.mast{background:linear-gradient(180deg,#FFFFFF 0%,#FBF2F4 100%)!important;color:var(--ink)!important;border-bottom:1px solid var(--line)}" +
     "header.mast h1{color:var(--ink)!important}header.mast h1 em{color:var(--patina)!important}" +
     "header.mast .eyebrow{color:var(--patina)!important}header.mast .lede{color:var(--muted)!important}" +
     "header.mast .snap{color:var(--ink)!important;background:#fff!important;border-color:var(--line)!important}header.mast .snap b{color:var(--ink)!important}header.mast .snap .lnk{color:var(--patina)!important}" +
     "header.mast .tabs button{color:var(--muted)!important}header.mast .tabs button:hover{color:var(--ink)!important}" +
-    "header.mast .tabs button[aria-selected=true]{color:var(--ink)!important;border-bottom-color:var(--patina)!important;background:rgba(194,84,26,.07)!important}" +
+    "header.mast .tabs button[aria-selected=true]{color:var(--ink)!important;border-bottom-color:var(--patina)!important;background:rgba(122,30,51,.07)!important}" +
     "main table thead th{background:var(--surface-2)!important;color:var(--muted)!important}";
   document.head.appendChild(css);
 })();
