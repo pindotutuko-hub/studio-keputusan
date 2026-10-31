@@ -18,17 +18,17 @@
   css.textContent =
     "#tabs.mgnav{display:flex;flex-wrap:wrap;align-items:stretch;gap:2px 6px;overflow:visible!important;position:relative;z-index:30}" +
     "#tabs.mgnav .mg{position:relative}" +
-    "#tabs.mgnav .mgh{display:flex;align-items:center;gap:6px;height:100%;cursor:pointer;background:none;border:0;border-bottom:3px solid transparent;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit;padding:inherit;opacity:.82}" +
-    "#tabs.mgnav .mgh:hover,#tabs.mgnav .mg.open .mgh{opacity:1}" +
-    "#tabs.mgnav .mg.on>.mgh{opacity:1;border-bottom-color:var(--patina)}" +
+    "#tabs.mgnav .mgh{display:flex;align-items:center;gap:6px;height:100%}" +
+    "#tabs.mgnav .mg.open .mgh{color:#E7EEF2}" +
+    "#tabs.mgnav .mg.on>.mgh{color:#fff;border-bottom-color:#FFA35C;background:rgba(255,255,255,.06)}" +
     "#tabs.mgnav .mgh .car{font-size:.8em;transition:transform .15s}#tabs.mgnav .mg.open .mgh .car{transform:rotate(180deg)}" +
-    "#tabs.mgnav .mgd{display:none;position:absolute;top:100%;left:0;min-width:290px;padding:8px;background:var(--ink);border:1px solid rgba(255,255,255,.12);border-top:3px solid var(--patina);box-shadow:0 18px 40px rgba(0,0,0,.35);border-radius:0 0 10px 10px}" +
+    "#tabs.mgnav .mgd{display:none;position:absolute;top:100%;left:0;min-width:290px;padding:8px;background:var(--ink);border:1px solid rgba(255,255,255,.12);border-top:3px solid #FFA35C;box-shadow:0 18px 40px rgba(0,0,0,.35);border-radius:0 0 10px 10px}" +
     "#tabs.mgnav .mg.open .mgd{display:block}" +
-    "#tabs.mgnav .mgd button[data-t]{display:block;width:100%;text-align:left;margin:0;padding:10px 12px;border:0;border-radius:6px;background:none;white-space:normal}" +
+    "#tabs.mgnav .mgd button[data-t]{display:block;width:100%;text-align:left;margin:0;padding:10px 12px!important;border:0!important;border-radius:6px;background:none;white-space:normal}" +
     "#tabs.mgnav .mgd button[data-t]:hover{background:rgba(255,255,255,.07)}" +
-    "#tabs.mgnav .mgd button[aria-selected=true]{background:rgba(255,255,255,.1);box-shadow:inset 3px 0 0 var(--patina)}" +
-    "#tabs.mgnav .mgd small{display:block;margin-top:3px;font-family:inherit;font-size:11px;letter-spacing:.02em;text-transform:none;opacity:.6}" +
-    "#tabs.mgnav .bdg{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:999px;background:var(--patina);color:#fff;font-size:9px;letter-spacing:.08em;vertical-align:2px}" +
+    "#tabs.mgnav .mgd button[aria-selected=true]{background:rgba(255,255,255,.1);box-shadow:inset 3px 0 0 #FFA35C}" +
+    "#tabs.mgnav .mgd small{display:block;margin-top:4px;font-size:10.5px;letter-spacing:.02em;text-transform:none;color:#93A6B6}#tabs.mgnav .mgd button[data-t]:hover small{color:#C9D5DE}" +
+    "#tabs.mgnav .bdg{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:999px;background:#FFA35C;color:#111;font-size:9px;letter-spacing:.08em;vertical-align:2px}" +
     "@media (max-width:760px){#tabs.mgnav .mgd{position:fixed;left:12px;right:12px;top:auto;min-width:0}}";
   document.head.appendChild(css);
   nav.classList.add("mgnav");
@@ -70,4 +70,60 @@
   var mark = function () { nav.querySelectorAll(".mg").forEach(function (m) { m.classList.toggle("on", !!m.querySelector("button[aria-selected=true]")); }); };
   new MutationObserver(mark).observe(nav, { subtree: true, attributes: true, attributeFilter: ["aria-selected"] });
   mark();
+})();
+
+/* Dasbor "Mulai dari sini": ringkasan lintas bagian di atas tab Ringkasan, tiap kartu membuka bagian terkait. */
+(function () {
+  "use strict";
+  var main = document.querySelector("main.wrap"), pr = document.getElementById("p-ringkasan");
+  if (!main || !pr || document.getElementById("ptDash")) return;
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  var D = typeof DATA !== "undefined" ? DATA : {};
+  var K = [];
+  var semua = D.semua || [];
+  if (semua.length) {
+    var s12 = semua.filter(function (j) { return j.sinta === 1 || j.sinta === 2; }).length, s34 = semua.filter(function (j) { return j.sinta === 3 || j.sinta === 4; }).length;
+    K.push({ k: "Jurnal UNMER", v: semua.length, l: "jurnal terdata", d: s12 + " SINTA 1–2 · " + s34 + " SINTA 3–4 · 0 Scopus", go: "jurnal" });
+  }
+  var A = window.__AKR;
+  if (A && A.R) {
+    var ok = 0, low = 0, best = null;
+    A.R.forEach(function (r) { var t = A.total(r).t; if (r.ok && t >= 60) ok++; if (t < 60) low++; if (!best || t > best.t) best = { t: t, n: r.nama }; });
+    K.push({ k: "Akreditasi 2026", v: ok + "/" + A.R.length, l: "jurnal lolos syarat minimum & nilai ≥60", d: low + " jurnal diperkirakan <60 · tertinggi " + (best ? String(Math.round(best.t * 10) / 10).replace(".", ",") : "–"), go: "akr", sub: "sim", hot: 1 });
+  }
+  var pb = document.querySelectorAll("#p-ojs .pintro b");
+  if (pb.length >= 3) K.push({ k: "Peringatan OJS", v: pb[2].textContent, l: "naskah dengan peringatan kritis", d: "dari " + pb[1].textContent + " naskah aktif · dibaca " + pb[0].textContent, go: "ojs", warn: 1 });
+  var P = window.PT_AKR;
+  if (P && P.cr) {
+    var c = 0, n = 0; Object.keys(P.cr).forEach(function (k) { c += P.cr[k].c3 || 0; n += P.cr[k].n3 || 0; });
+    K.push({ k: "Sitasi (DOI)", v: c, l: "sitasi artikel 3 tahun terakhir", d: n + " artikel ber-DOI · sumber Crossref", go: "akr", sub: "sit" });
+  }
+  if (D.geo || D.institusi) K.push({ k: "Jaringan", v: (D.geo || []).length + " negara", l: (D.institusi || []).length + " institusi mitra", d: "mitra bestari & dewan editor", go: "afiliasi" });
+  if (D.sasaran) K.push({ k: "Sasaran publikasi", v: D.sasaran.length, l: "jurnal sasaran", d: D.sasaran.filter(function (x) { return x.tier === "A"; }).length + " Scopus · " + D.sasaran.filter(function (x) { return x.tier === "B"; }).length + " SINTA 1–2", go: "sasaran" });
+  var css = document.createElement("style");
+  css.textContent =
+    "#ptDash{margin:22px 0 6px}#ptDash .dk{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}" +
+    "#ptDash .dg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}" +
+    "#ptDash a.dc{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px 12px;position:relative;transition:transform .12s,box-shadow .12s}" +
+    "#ptDash a.dc:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(14,26,43,.12)}" +
+    "#ptDash a.dc::before{content:'';position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:3px;background:var(--line)}" +
+    "#ptDash a.dc.hot::before{background:var(--patina)}#ptDash a.dc.warn::before{background:var(--rust)}" +
+    "#ptDash .ck{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}" +
+    "#ptDash .cv{display:block;font-size:28px;font-weight:700;line-height:1.1;margin:6px 0 2px}#ptDash a.hot .cv{color:var(--patina)}#ptDash a.warn .cv{color:var(--rust)}" +
+    "#ptDash .cl{display:block;font-size:13px}#ptDash .cd{display:block;font-size:12px;color:var(--muted);margin-top:6px}#ptDash .ca{position:absolute;right:14px;top:12px;color:var(--muted);font-size:14px}";
+  document.head.appendChild(css);
+  var box = document.createElement("section");
+  box.id = "ptDash";
+  box.innerHTML = "<p class='dk'>Mulai dari sini — pilih kartu untuk membuka bagiannya</p><div class='dg'>" + K.map(function (x) {
+    return "<a href='#' class='dc" + (x.hot ? " hot" : "") + (x.warn ? " warn" : "") + "' data-dash='" + esc(x.go) + "'" + (x.sub ? " data-sub2='" + esc(x.sub) + "'" : "") + "><span class='ck'>" + esc(x.k) + "</span><span class='ca'>→</span><span class='cv'>" + esc(x.v) + "</span><span class='cl'>" + esc(x.l) + "</span><span class='cd'>" + esc(x.d) + "</span></a>";
+  }).join("") + "</div>";
+  main.insertBefore(box, main.firstChild);
+  box.addEventListener("click", function (e) {
+    var a = e.target.closest("a[data-dash]"); if (!a) return; e.preventDefault();
+    var b = document.querySelector('#tabs button[data-t="' + a.dataset.dash + '"]'); if (b) b.click();
+    if (a.dataset.sub2) setTimeout(function () { var s = document.querySelector('#p-akr [data-sub="' + a.dataset.sub2 + '"]'); if (s) s.click(); }, 60);
+  });
+  var sync = function () { box.style.display = pr.classList.contains("on") ? "" : "none"; };
+  new MutationObserver(sync).observe(pr, { attributes: true, attributeFilter: ["class"] });
+  sync();
 })();
