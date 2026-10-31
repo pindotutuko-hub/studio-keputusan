@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jejak Foto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css">
+<script src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js"></script>
+<style>
+:root{--bg:#0f1115;--card:#171a21;--ink:#f3eee6;--muted:#a7a196;--line:#2b2f38;--accent:#f0a33a;--accent2:#e2643a;--ok:#5cc28a;--bad:#ef7a66;--glass:rgba(17,19,25,.72)}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:14.5px/1.5 Inter,system-ui,sans-serif;height:100%}
+h1,h2,h3{font-family:"Space Grotesk",Inter,system-ui,sans-serif;margin:0;letter-spacing:-.01em}
+button,select{font:inherit;color:inherit;cursor:pointer}
+.app{position:fixed;inset:0;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}
+@media (max-width:860px){.app{grid-template-columns:1fr;grid-template-rows:46vh 1fr}}
+.photo{position:relative;overflow:hidden;background:#000}
+.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.04);transition:opacity .5s,transform 12s ease-out;opacity:0}
+.photo img.on{opacity:1;transform:scale(1.14)}
+.photo .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55),transparent 28%,transparent 62%,rgba(0,0,0,.75));pointer-events:none}
+.topbar{position:absolute;left:14px;right:14px;top:12px;display:flex;align-items:center;gap:10px;z-index:3;flex-wrap:wrap}
+.home{display:inline-flex;align-items:center;gap:4px;text-decoration:none;color:var(--ink);border:1px solid rgba(255,255,255,.18);background:var(--glass);backdrop-filter:blur(8px);border-radius:999px;padding:7px 12px 7px 8px;font-weight:700;font-size:13px}
+.brand{display:flex;align-items:center;gap:8px;background:var(--glass);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:5px 12px 5px 6px}
+.brand i{width:28px;height:28px;border-radius:50%;background:var(--accent);display:grid;place-items:center;font-style:normal}
+.brand b{font-family:"Space Grotesk",Inter,sans-serif;font-size:16px}
+.hud{margin-left:auto;display:flex;gap:6px}
+.pill{background:var(--glass);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:600}
+.pill b{font-family:"Space Grotesk",Inter,sans-serif;font-size:15px;color:var(--accent)}
+.lang{background:var(--glass);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:5px 11px;font-weight:700;font-size:13px}
+.caption{position:absolute;left:16px;right:16px;bottom:14px;z-index:3}
+.caption .q{font-family:"Space Grotesk",Inter,sans-serif;font-size:24px;font-weight:700;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.caption .h{color:#ddd5c8;font-size:13px}
+.zoom{position:absolute;right:14px;bottom:14px;z-index:4;background:var(--glass);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:6px 10px;font-size:12.5px;font-weight:600}
+.mapwrap{position:relative}
+#map{position:absolute;inset:0}
+.panel{position:absolute;left:12px;right:12px;bottom:12px;z-index:5;background:var(--glass);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px 14px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{background:var(--accent);color:#1b1206;border:0;border-radius:12px;padding:10px 16px;font-weight:800;font-size:15px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid rgba(255,255,255,.25);font-weight:700}
+.opts{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.opt{border:1px solid rgba(255,255,255,.22);background:transparent;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600}
+.opt.on{background:#fff;color:#111}.opt.good{background:var(--ok);color:#06210f;border-color:var(--ok)}.opt.bad{background:var(--bad);color:#2a0a05;border-color:var(--bad)}
+.hint{color:var(--muted);font-size:12.5px}
+.result b{font-family:"Space Grotesk",Inter,sans-serif}
+.big{font-family:"Space Grotesk",Inter,sans-serif;font-size:30px;font-weight:700;color:var(--accent)}
+.overlay{position:fixed;inset:0;z-index:20;background:rgba(8,9,12,.82);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.dlg{background:var(--card);border:1px solid var(--line);border-radius:22px;max-width:860px;width:100%;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.dlg h2{font-size:30px;line-height:1.1}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0}
+.mode{border:1px solid var(--line);border-radius:14px;padding:12px;background:transparent;text-align:left}
+.mode.on{border-color:var(--accent);background:rgba(240,163,58,.12)}
+.mode b{display:block;font-family:"Space Grotesk",Inter,sans-serif;font-size:16px}.mode small{color:var(--muted)}
+.strip{display:flex;gap:6px;overflow:hidden;border-radius:12px;height:90px;margin:10px 0}
+.strip img{height:90px;width:auto;flex:none;border-radius:8px;object-fit:cover;filter:saturate(1.1)}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--muted);font-weight:600;font-size:12px}td.r,th.r{text-align:right}
+.thumb{width:56px;height:40px;object-fit:cover;border-radius:6px}
+.err{color:var(--bad)}
+.marker-guess{width:22px;height:22px;border-radius:50%;background:var(--accent);border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.5)}
+.marker-true{width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--ok);box-shadow:0 2px 12px rgba(0,0,0,.5);display:grid;place-items:center;font-size:12px}
+.lightbox{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;cursor:zoom-out}
+.lightbox img{max-width:96vw;max-height:92vh;border-radius:8px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <section class="photo" id="photo">
+    <img id="imgA" alt=""><img id="imgB" alt="">
+    <div class="shade"></div>
+    <div class="topbar">
+      <a class="home" href="https://pindotutuko.id/"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span data-t="home"></span></a>
+      <div class="brand"><i><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#1b1206" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/></svg></i><b>Jejak Foto</b></div>
+      <div class="hud"><span class="pill"><span data-t="round"></span> <b id="hR">–</b></span><span class="pill"><span data-t="score"></span> <b id="hS">0</b></span><button class="lang" id="langBtn">EN</button></div>
+    </div>
+    <div class="caption"><div class="q" data-t="where"></div><div class="h" id="capHint"></div></div>
+    <button class="zoom" id="zoomBtn" data-t="zoom"></button>
+  </section>
+  <section class="mapwrap">
+    <div id="map"></div>
+    <div class="panel" id="panel"></div>
+  </section>
+</div>
+<div class="overlay" id="startBox"></div>
+<script>
+(function(){
+"use strict";
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+var lang=store.get('jfLang')==='en'?'en':'id';
+var DATA_URL='/preseden/data.json',PRE_URL='/preseden/';
+var STYLE='https://tiles.openfreemap.org/styles/liberty';
+var T={
+ id:{home:"Beranda",round:"Ronde",score:"Skor",where:"Di mana foto ini diambil?",zoom:"Perbesar foto",
+  introH:"Jejak Foto",introP:"Tebak lokasi foto-foto koleksi pribadi Pindo Tutuko — kampung kota, rusun, perumahan, dan kawasan bersejarah dari Malang sampai Kanazawa dan Rotterdam. Tandai di peta, lalu lihat seberapa dekat tebakanmu.",
+  modeH:"Pilih wilayah",m_all:"Seluruh koleksi",m_mlg:"Kota Malang",m_jp:"Jepang",m_nl:"Belanda & Belgia",m_id:"Indonesia",photos:"{n} foto",
+  roundsH:"Jumlah ronde",start:"Mulai bermain",loading:"Memuat koleksi foto…",loadErr:"Koleksi foto belum bisa dimuat. Gim ini berjalan di pindotutuko.id.",mapErr:"Peta belum bisa dimuat — periksa koneksi.",
+  place:"Ketuk peta untuk menaruh tebakan.",guess:"Tebak",next:"Foto berikutnya",finish:"Lihat hasil",
+  themeQ:"Bonus: foto ini termasuk tema apa?",themeOk:"Tema benar +500",themeNo:"Tema: {t}",
+  dist:"Tebakanmu meleset {d}",pts:"+{p} poin",exact:"Tepat sekali!",
+  meta:"{title} · {area}, {city} · {date}",open:"Buka di Lensa Preseden ↗",gm:"Google Maps ↗",
+  endH:"Hasil jelajahmu",total:"Skor total",of:"dari {m}",again:"Main lagi",copy:"Salin hasil",copied:"Tersalin ✓",copyFail:"Gagal menyalin",
+  thPhoto:"Foto",thPlace:"Lokasi",thDist:"Jarak",thPts:"Poin",best:"Skor terbaikmu di mode ini: {s}",
+  r0:"Turis baru",r1:"Penjelajah kampung",r2:"Pembaca kota",r3:"Ahli lapangan",
+  share:"Jejak Foto — {s} poin ({m}).",credit:"Foto: koleksi Pindo Tutuko. Peta: OpenFreeMap · © OpenStreetMap contributors.",
+  hintArea:"Petunjuk: {c}"},
+ en:{home:"Home",round:"Round",score:"Score",where:"Where was this photo taken?",zoom:"Enlarge photo",
+  introH:"Jejak Foto",introP:"Guess where Pindo Tutuko’s own photos were taken — urban kampung, social housing, neighbourhoods and historic districts from Malang to Kanazawa and Rotterdam. Drop a pin on the map and see how close you get.",
+  modeH:"Choose a region",m_all:"Whole collection",m_mlg:"Malang city",m_jp:"Japan",m_nl:"Netherlands & Belgium",m_id:"Indonesia",photos:"{n} photos",
+  roundsH:"Rounds",start:"Start playing",loading:"Loading the photo collection…",loadErr:"The photo collection could not be loaded. This game runs on pindotutuko.id.",mapErr:"The map could not be loaded — check your connection.",
+  place:"Tap the map to place your guess.",guess:"Guess",next:"Next photo",finish:"See results",
+  themeQ:"Bonus: which theme is this photo?",themeOk:"Right theme +500",themeNo:"Theme: {t}",
+  dist:"You were {d} off",pts:"+{p} points",exact:"Spot on!",
+  meta:"{title} · {area}, {city} · {date}",open:"Open in Lensa Preseden ↗",gm:"Google Maps ↗",
+  endH:"Your journey",total:"Total score",of:"of {m}",again:"Play again",copy:"Copy result",copied:"Copied ✓",copyFail:"Copy failed",
+  thPhoto:"Photo",thPlace:"Place",thDist:"Distance",thPts:"Points",best:"Your best in this mode: {s}",
+  r0:"New tourist",r1:"Kampung explorer",r2:"City reader",r3:"Field expert",
+  share:"Jejak Foto — {s} points ({m}).",credit:"Photos: Pindo Tutuko’s collection. Map: OpenFreeMap · © OpenStreetMap contributors.",
+  hintArea:"Hint: {c}"}
+};
+function t(k,v){var s=T[lang][k]!=null?T[lang][k]:k;if(v)for(var p in v)s=s.split('{'+p+'}').join(v[p]);return s}
+var $=function(id){return document.getElementById(id)};
+function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function fmt(n,d){return Number(n).toLocaleString(lang==='id'?'id-ID':'en-US',{minimumFractionDigits:d||0,maximumFractionDigits:d||0})}
+function imgUrl(id){if(id.indexOf('al:')===0)return '/wp-content/uploads/album/w/'+id.slice(3)+'.jpg';return PRE_URL+'img/'+id+'.jpg'}
+function thumbUrl(id){if(id.indexOf('al:')===0)return '/wp-content/uploads/album/t2/'+id.slice(3)+'.jpg';return PRE_URL+'img/'+id+'-t.jpg'}
+/* Haversine distance (km) */
+function hav(a,b,c,d){var R=6371,r=Math.PI/180,dl=(c-a)*r,dg=(d-b)*r,x=Math.sin(dl/2)*Math.sin(dl/2)+Math.cos(a*r)*Math.cos(c*r)*Math.sin(dg/2)*Math.sin(dg/2);return 2*R*Math.asin(Math.min(1,Math.sqrt(x)))}
+function distTxt(km){return km<1?fmt(km*1000)+' m':km<10?fmt(km,1)+' km':fmt(km)+' km'}
+var MODES={
+ all:{f:function(p){return true},center:[112.6,-7.98],zoom:1.3,scale:1500},
+ id:{f:function(p){return p.country==='Indonesia'},center:[112.7,-7.6],zoom:6.2,scale:60},
+ mlg:{f:function(p){return p.city==='Malang'},center:[112.632,-7.975],zoom:12.6,scale:1.2},
+ jp:{f:function(p){return p.country==='Jepang'},center:[137.5,36.2],zoom:4.6,scale:120},
+ nl:{f:function(p){return p.country==='Belanda'||p.country==='Belgia'},center:[4.6,52.0],zoom:7,scale:25}};
+var st={data:[],cats:{},mode:store.get('jfMode')||'all',rounds:+(store.get('jfRounds')||5),r:0,score:0,list:[],guess:null,phase:'start',hist:[],map:null,mk:[],flip:false,theme:null};
+if(!MODES[st.mode])st.mode='all';
+function maxPts(){return st.list.length*5500}
+/* ---------- Map ---------- */
+function initMap(){if(!window.maplibregl){$('panel').innerHTML='<span class="err">'+t('mapErr')+'</span>';return}
+  try{st.map=new maplibregl.Map({container:'map',style:STYLE,center:MODES[st.mode].center,zoom:MODES[st.mode].zoom,attributionControl:{compact:true}});
+    st.map.on('style.load',function(){try{st.map.setProjection({type:'globe'})}catch(e){}});
+    st.map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'top-right');
+    st.map.on('click',function(e){if(st.phase!=='guess')return;st.guess=[e.lngLat.lng,e.lngLat.lat];drawGuess();renderPanel()});
+    st.map.on('error',function(){});
+  }catch(e){$('panel').innerHTML='<span class="err">'+t('mapErr')+'</span>'}}
+function clearMarks(){st.mk.forEach(function(m){m.remove()});st.mk=[];if(st.map&&st.map.getLayer&&st.map.getLayer('jf-line')){st.map.removeLayer('jf-line');st.map.removeSource('jf-line')}}
+function marker(cls,ll,html){var el=document.createElement('div');el.className=cls;if(html)el.innerHTML=html;var m=new maplibregl.Marker({element:el}).setLngLat(ll).addTo(st.map);st.mk.push(m);return m}
+function drawGuess(){clearMarks();if(st.guess)marker('marker-guess',st.guess)}
+function drawLine(a,b){var src={type:'geojson',data:{type:'Feature',geometry:{type:'LineString',coordinates:[a,b]}}};
+  try{st.map.addSource('jf-line',src);st.map.addLayer({id:'jf-line',type:'line',source:'jf-line',paint:{'line-color':'#f0a33a','line-width':3,'line-dasharray':[2,1.5]}})}catch(e){}}
+/* ---------- Flow ---------- */
+function showPhoto(p){var a=$(st.flip?'imgA':'imgB'),b=$(st.flip?'imgB':'imgA');st.flip=!st.flip;b.classList.remove('on');a.classList.remove('on');a.onload=function(){a.classList.add('on')};a.src=imgUrl(p.id);a.alt=t('where');
+  $('capHint').textContent=st.mode==='all'||st.mode==='id'?'':t('hintArea',{c:p.city})}
+function start(){var pool=st.data.filter(MODES[st.mode].f);for(var i=pool.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=pool[i];pool[i]=pool[j];pool[j]=x}
+  st.list=pool.slice(0,st.rounds);st.r=0;st.score=0;st.hist=[];$('startBox').classList.add('hidden');next()}
+function next(){var p=st.list[st.r];st.guess=null;st.theme=null;st.phase='guess';clearMarks();showPhoto(p);
+  if(st.map)st.map.flyTo({center:MODES[st.mode].center,zoom:MODES[st.mode].zoom,pitch:0,bearing:0,duration:1400});
+  st.opts=themeOptions(p);hud();renderPanel()}
+function themeOptions(p){var keys=Object.keys(st.cats).filter(function(k){return k!==p.cat&&st.data.some(function(d){return d.cat===k})});for(var i=keys.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=keys[i];keys[i]=keys[j];keys[j]=x}
+  var o=[p.cat].concat(keys.slice(0,2));for(var a=o.length-1;a>0;a--){var b=Math.floor(Math.random()*(a+1));var y=o[a];o[a]=o[b];o[b]=y}return o}
+function catName(k){return st.cats[k]||k}
+function submit(){if(!st.guess)return;var p=st.list[st.r],km=hav(st.guess[1],st.guess[0],p.lat,p.lon),S=MODES[st.mode].scale,pts=Math.round(5000*Math.exp(-km/S));
+  var tb=st.theme===p.cat?500:0;st.score+=pts+tb;st.hist.push({p:p,km:km,pts:pts+tb,theme:st.theme===p.cat});st.phase='reveal';
+  clearMarks();marker('marker-guess',st.guess);marker('marker-true',[p.lon,p.lat],'📍');drawLine(st.guess,[p.lon,p.lat]);
+  var bounds=new maplibregl.LngLatBounds();bounds.extend(st.guess);bounds.extend([p.lon,p.lat]);
+  st.map.fitBounds(bounds,{padding:{top:70,bottom:230,left:60,right:60},maxZoom:16,duration:1600});
+  setTimeout(function(){if(st.phase==='reveal'&&km<3)st.map.easeTo({center:[p.lon,p.lat],zoom:16.2,pitch:58,bearing:-20,duration:2200})},1800);
+  hud();renderPanel()}
+function hud(){$('hR').textContent=st.list.length?Math.min(st.r+1,st.list.length)+'/'+st.list.length:'–';$('hS').textContent=fmt(st.score)}
+function renderPanel(){var P=$('panel'),p=st.list[st.r];if(!p){P.innerHTML='';return}
+  if(st.phase==='guess'){P.innerHTML='<div class="hint">'+t('themeQ')+'</div><div class="opts">'+st.opts.map(function(k){return '<button class="opt'+(st.theme===k?' on':'')+'" data-k="'+esc(k)+'">'+esc(catName(k))+'</button>'}).join('')+'</div>'+
+    '<div class="row"><button class="btn" id="gBtn" '+(st.guess?'':'disabled')+'>'+t('guess')+'</button><span class="hint">'+(st.guess?'':t('place'))+'</span></div>';
+    P.querySelectorAll('[data-k]').forEach(function(b){b.onclick=function(){st.theme=b.getAttribute('data-k');renderPanel()}});$('gBtn').onclick=submit}
+  else{var h=st.hist[st.hist.length-1],last=st.r>=st.list.length-1;
+    P.innerHTML='<div class="result"><div class="row" style="justify-content:space-between"><b style="font-size:18px">'+(h.km<.05?t('exact'):t('dist',{d:distTxt(h.km)}))+'</b><span class="big">'+t('pts',{p:fmt(h.pts)})+'</span></div>'+
+     '<div class="opts">'+st.opts.map(function(k){var cls=k===p.cat?' good':(k===st.theme?' bad':'');return '<span class="opt'+cls+'">'+esc(catName(k))+'</span>'}).join('')+'</div>'+
+     '<div class="hint" style="color:var(--ink)">'+esc(t('meta',{title:p.title,area:p.area||'',city:p.city,date:p.date||''}))+'</div><div class="hint">'+esc(p.credit||'')+'</div>'+
+     '<div class="row" style="margin-top:8px"><button class="btn" id="nBtn">'+t(last?'finish':'next')+'</button><a class="btn ghost" style="text-decoration:none" target="_blank" rel="noopener" href="'+PRE_URL+'">'+t('open')+'</a><a class="btn ghost" style="text-decoration:none" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+p.lat+','+p.lon+'">'+t('gm')+'</a></div></div>';
+    $('nBtn').onclick=function(){if(last)end();else{st.r++;next()}}}}
+function rating(f){return f>=.8?'r3':f>=.55?'r2':f>=.3?'r1':'r0'}
+function end(){st.phase='end';var m=maxPts(),k='jfBest_'+st.mode,b=+(store.get(k)||0);if(st.score>b)store.set(k,st.score);
+  var box=$('startBox');box.classList.remove('hidden');
+  box.innerHTML='<div class="dlg"><div class="row" style="justify-content:space-between"><h2>'+t('endH')+'</h2><span class="hint">'+t('m_'+st.mode)+'</span></div>'+
+   '<div class="row" style="gap:20px;margin:10px 0"><div><div class="hint">'+t('total')+'</div><div class="big" style="font-size:44px">'+fmt(st.score)+'</div><div class="hint">'+t('of',{m:fmt(m)})+'</div></div><div><b style="font-family:Space Grotesk,Inter,sans-serif;font-size:22px">'+t(rating(st.score/m))+'</b><div class="hint">'+t('best',{s:fmt(Math.max(b,st.score))})+'</div></div></div>'+
+   '<div style="overflow-x:auto"><table><thead><tr><th>'+t('thPhoto')+'</th><th>'+t('thPlace')+'</th><th class="r">'+t('thDist')+'</th><th class="r">'+t('thPts')+'</th></tr></thead><tbody>'+st.hist.map(function(h){return '<tr><td><img class="thumb" src="'+thumbUrl(h.p.id)+'" alt=""></td><td>'+esc(h.p.title)+'<div class="hint">'+esc(h.p.city)+(h.theme?' · ✓ '+esc(catName(h.p.cat)):'')+'</div></td><td class="r">'+distTxt(h.km)+'</td><td class="r"><b>'+fmt(h.pts)+'</b></td></tr>'}).join('')+'</tbody></table></div>'+
+   '<div class="row" style="margin-top:14px"><button class="btn" id="again">'+t('again')+'</button><button class="btn ghost" id="copy">'+t('copy')+'</button></div><p class="hint" style="margin-top:10px">'+t('credit')+'</p></div>';
+  $('again').onclick=intro;$('copy').onclick=function(){var bt=this;try{navigator.clipboard.writeText(t('share',{s:fmt(st.score),m:t('m_'+st.mode)})+' pindotutuko.id/jejak-foto/').then(function(){bt.textContent=t('copied')},function(){bt.textContent=t('copyFail')})}catch(e){bt.textContent=t('copyFail')}}}
+function intro(){st.phase='start';var box=$('startBox');box.classList.remove('hidden');
+  if(!st.data.length){box.innerHTML='<div class="dlg"><h2>'+t('introH')+'</h2><p class="hint">'+(st.loadErr?'<span class="err">'+t('loadErr')+'</span>':t('loading'))+'</p></div>';return}
+  var sample=st.data.slice().sort(function(){return Math.random()-.5}).slice(0,10);
+  box.innerHTML='<div class="dlg"><h2>'+t('introH')+'</h2><p class="hint" style="font-size:14px;margin:8px 0 0">'+t('introP')+'</p><div class="strip">'+sample.map(function(p){return '<img src="'+thumbUrl(p.id)+'" alt="" loading="lazy">'}).join('')+'</div>'+
+   '<div class="hint" style="font-weight:700;color:var(--ink)">'+t('modeH')+'</div><div class="modes">'+Object.keys(MODES).map(function(k){var n=st.data.filter(MODES[k].f).length;return '<button class="mode'+(st.mode===k?' on':'')+'" data-m="'+k+'"'+(n<3?' disabled':'')+'><b>'+t('m_'+k)+'</b><small>'+t('photos',{n:n})+'</small></button>'}).join('')+'</div>'+
+   '<div class="row"><span class="hint" style="font-weight:700;color:var(--ink)">'+t('roundsH')+'</span>'+[5,10].map(function(n){return '<button class="opt'+(st.rounds===n?' on':'')+'" data-r="'+n+'">'+n+'</button>'}).join('')+'<span style="flex:1"></span><button class="btn" id="go">'+t('start')+'</button></div><p class="hint" style="margin-top:12px">'+t('credit')+'</p></div>';
+  box.querySelectorAll('[data-m]').forEach(function(b){b.onclick=function(){st.mode=b.getAttribute('data-m');store.set('jfMode',st.mode);intro();if(st.map)st.map.jumpTo({center:MODES[st.mode].center,zoom:MODES[st.mode].zoom})}});
+  box.querySelectorAll('[data-r]').forEach(function(b){b.onclick=function(){st.rounds=+b.getAttribute('data-r');store.set('jfRounds',st.rounds);intro()}});
+  $('go').onclick=start}
+function applyStatic(){document.documentElement.lang=lang;document.querySelectorAll('[data-t]').forEach(function(n){n.textContent=t(n.getAttribute('data-t'))});$('langBtn').textContent=lang==='id'?'EN':'ID'}
+$('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('jfLang',lang);applyStatic();if(st.phase==='start')intro();else if(st.phase==='end')end();else{renderPanel();if(st.list[st.r])$('capHint').textContent=st.mode==='all'||st.mode==='id'?'':t('hintArea',{c:st.list[st.r].city})}};
+$('zoomBtn').onclick=function(){var p=st.list[st.r];if(!p)return;var lb=document.createElement('div');lb.className='lightbox';lb.innerHTML='<img src="'+imgUrl(p.id)+'" alt="">';lb.onclick=function(){lb.remove()};document.body.appendChild(lb)};
+applyStatic();intro();initMap();
+Promise.all([fetch(DATA_URL,{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json()}),fetch(PRE_URL).then(function(r){return r.ok?r.text():''}).catch(function(){return ''})]).then(function(res){
+  st.data=(res[0]||[]).filter(function(p){return typeof p.lat==='number'&&typeof p.lon==='number'&&p.id});
+  var re=/\{k:'([a-z0-9]+)',n:'((?:[^'\\]|\\.)*)'/g,m;while((m=re.exec(res[1]))){st.cats[m[1]]=m[2].replace(/\\'/g,"'")}
+  st.data.forEach(function(p){if(!st.cats[p.cat])st.cats[p.cat]=p.cat});intro()}).catch(function(){st.loadErr=true;intro()});
+window.__JF={st:function(){return st},hav:hav,start:start,submit:submit};
+})();
+</script>
+</body>
+</html>
