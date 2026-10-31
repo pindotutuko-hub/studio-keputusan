@@ -55,6 +55,8 @@ details{font-size:12.5px;color:var(--muted)}details summary{cursor:pointer;color
 footer{margin-top:20px;color:var(--muted);font-size:12.5px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}footer a{color:var(--muted)}
 .mbar{display:none}@media (max-width:900px){.mbar{display:flex;position:fixed;left:10px;right:10px;bottom:10px;z-index:5;background:var(--ink);color:var(--card);border-radius:14px;padding:10px 14px;justify-content:space-between;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.25)}.wrap{padding-bottom:80px}}
 .hidden{display:none!important}
+.fs3dc{padding:14px;margin-bottom:12px}#fs3d{position:relative;width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;touch-action:none;background:#cfe3f2;margin-top:8px}
+.nav3d{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px;z-index:2}.nav3d button{width:36px;height:36px;border-radius:10px;border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.9);color:#1f1c18;font-size:17px;font-weight:700;display:grid;place-items:center}.nav3d button.on{background:#1f1c18;color:#fff}
 </style>
 </head>
 <body>
@@ -68,7 +70,12 @@ footer{margin-top:20px;color:var(--muted);font-size:12.5px;display:flex;justify-
   <section class="card intro"><h2 data-t="introH"></h2><p class="hint" style="margin:6px 0 0" data-t="introP"></p></section>
   <div class="levels" id="levels"></div>
   <section class="grid">
-    <div><div class="row" style="justify-content:space-between;margin:0 2px 8px"><h2 id="lvTitle" style="font-size:18px"></h2><label class="hint"><input type="checkbox" id="sync"> <span data-t="sync"></span></label></div><div class="faces" id="faces"></div></div>
+    <div><div class="row" style="justify-content:space-between;margin:0 2px 8px"><h2 id="lvTitle" style="font-size:18px"></h2><label class="hint"><input type="checkbox" id="sync"> <span data-t="sync"></span></label></div><div class="card fs3dc"><div class="row" style="justify-content:space-between;gap:8px;flex-wrap:wrap"><h3 style="margin:0;font-size:15px" data-t="h3d"></h3><span class="hint" id="fsSunLab"></span></div>
+      <div id="fs3d"></div>
+      <div class="row" style="gap:10px;flex-wrap:wrap;margin-top:8px"><label class="hint"><span data-t="hour"></span> <b id="fsHourV"></b> <input type="range" id="fsHour" min="6" max="18" step="1" style="vertical-align:middle;width:150px"></label>
+      <label class="hint"><span data-t="month"></span> <select id="fsMonth"><option value="3">Mar</option><option value="6">Jun</option><option value="9">Sep</option><option value="12">Des/Dec</option></select></label></div>
+      <div id="fsInsp" style="margin-top:12px"></div></div>
+      <div class="faces" id="faces"></div></div>
     <div class="side">
       <div class="card panel"><h3 data-t="sumH"></h3><div class="gauge" id="gauge"></div><div class="gbar"><i id="gfill"></i><s id="gmark"></s></div><div class="hint" id="glab"></div>
         <div id="reqs" style="margin-top:8px"></div><div id="win"></div></div>
@@ -93,7 +100,7 @@ var T={
   now:"sekarang: {v}",cost:"Biaya {c} / {b}",
   solved:"Terpenuhi!",s2:"★★ bila OTTV ≤ 30",s3:"★★★ bila juga biaya ≤ 85% anggaran",next:"Level berikutnya",level:"Level {n}",
   thSide:"Sisi",thSF:"SF",thCond:"Dinding",thSol:"Radiasi kaca",thCondG:"Konduksi kaca",thO:"OTTVᵢ",
-  g0:"Bening 6 mm",g1:"Berwarna (tinted)",g2:"Reflektif",g3:"Ganda low-E",sh0:"Tanpa",sh1:"Sirip/overhang sedang",sh2:"Overhang dalam",w0:"Bata ringan 10 cm",w1:"Bata merah ½ bata",w2:"Beton 15 cm",p0:"Putih kilap",p1:"Putih semi kilap",p2:"Abu-abu tua",p3:"Hitam merata",
+  h3d:"Tampilan 3D gedung · fasad berubah mengikuti pilihanmu",hour:"Jam",month:"Bulan",g0:"Bening 6 mm",g1:"Berwarna (tinted)",g2:"Reflektif",g3:"Ganda low-E",sh0:"Tanpa",sh1:"Sirip/overhang sedang",sh2:"Overhang dalam",w0:"Bata ringan 10 cm",w1:"Bata merah ½ bata",w2:"Beton 15 cm",p0:"Putih kilap",p1:"Putih semi kilap",p2:"Abu-abu tua",p3:"Hitam merata",
   howTxt:"<p>OTTVᵢ = α·Uw·(1 − WWR)·TDek + SC·WWR·SF + Uf·WWR·ΔT; OTTV = Σ(OTTVᵢ·Aᵢ)/ΣAᵢ; ΔT = 5 K.</p><p>SF (W/m²) orientasi U 130, TL 113, T 112, TG 97, S 97, BD 176, B 243, BL 211 — tabel data radiasi Jakarta (SNI 03-6389-2000). TDek: 15 K (massa dinding < 125 kg/m²), 12 K (125–195), 10 K (> 195). α cat: tabel SNI 6389:2020.</p><p>Nilai SC/U kaca, faktor peneduh, U & massa dinding, dan biaya adalah <b>nilai contoh untuk latihan</b>, bukan data produk. Untuk desain nyata gunakan data pabrikan dan tabel SNI lengkap.</p>",
   ref:"Rumus & batas OTTV: SNI 6389:2020/SNI 6389:2011 (BSN); SF Jakarta: SNI 03-6389-2000. Nilai material = contoh latihan.",by:"Dikembangkan oleh: Pindo Tutuko ·",
   dir:{U:"Utara",TL:"Timur laut",T:"Timur",TG:"Tenggara",S:"Selatan",BD:"Barat daya",B:"Barat",BL:"Barat laut"}},
@@ -105,7 +112,7 @@ var T={
   now:"now: {v}",cost:"Cost {c} / {b}",
   solved:"Requirements met!",s2:"★★ if OTTV ≤ 30",s3:"★★★ if also cost ≤ 85% of budget",next:"Next level",level:"Level {n}",
   thSide:"Side",thSF:"SF",thCond:"Wall",thSol:"Glass solar",thCondG:"Glass conduction",thO:"OTTVᵢ",
-  g0:"Clear 6 mm",g1:"Tinted",g2:"Reflective",g3:"Double low-E",sh0:"None",sh1:"Medium fins/overhang",sh2:"Deep overhang",w0:"AAC block 10 cm",w1:"Half-brick clay wall",w2:"Concrete 15 cm",p0:"Gloss white",p1:"Semi-gloss white",p2:"Dark grey",p3:"Flat black",
+  h3d:"3D view · the facades follow your choices",hour:"Hour",month:"Month",g0:"Clear 6 mm",g1:"Tinted",g2:"Reflective",g3:"Double low-E",sh0:"None",sh1:"Medium fins/overhang",sh2:"Deep overhang",w0:"AAC block 10 cm",w1:"Half-brick clay wall",w2:"Concrete 15 cm",p0:"Gloss white",p1:"Semi-gloss white",p2:"Dark grey",p3:"Flat black",
   howTxt:"<p>OTTVᵢ = α·Uw·(1 − WWR)·TDek + SC·WWR·SF + Uf·WWR·ΔT; OTTV = Σ(OTTVᵢ·Aᵢ)/ΣAᵢ; ΔT = 5 K.</p><p>SF (W/m²) by orientation N 130, NE 113, E 112, SE 97, S 97, SW 176, W 243, NW 211 — Jakarta radiation table (SNI 03-6389-2000). TDek: 15 K (wall mass < 125 kg/m²), 12 K (125–195), 10 K (> 195). Paint α: SNI 6389:2020 table.</p><p>Glass SC/U, shading factors, wall U & mass, and costs are <b>example values for practice</b>, not product data. For real design use manufacturer data and the full SNI tables.</p>",
   ref:"OTTV formula & limit: SNI 6389:2020/SNI 6389:2011 (BSN); Jakarta SF: SNI 03-6389-2000. Material values are practice examples.",by:"Developed by: Pindo Tutuko ·",
   dir:{U:"North",TL:"North-east",T:"East",TG:"South-east",S:"South",BD:"South-west",B:"West",BL:"North-west"}}
@@ -181,7 +188,79 @@ function applyStatic(){document.documentElement.lang=lang;document.querySelector
 $('sync').onchange=function(){st.sync=this.checked;if(st.sync){var c0=st.cfg[0];st.cfg=st.cfg.map(function(){return {wwr:c0.wwr,g:c0.g,sh:c0.sh,w:c0.w,p:c0.p}});render()}};
 $('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('fsLang',lang);applyStatic();render()};
 applyStatic();load(st.i);
-window.__FS={LEVELS:LEVELS,calc:calc,checks:checks,starsOf:starsOf,st:function(){return st},load:load,render:render};
+var _r0=render;render=function(){_r0();window.dispatchEvent(new Event('fs-render'))};
+window.__FS={LEVELS:LEVELS,calc:calc,checks:checks,starsOf:starsOf,st:function(){return st},load:load,render:render,lang:function(){return lang},dirName:function(k){return t('dir')[k]}};
+})();
+</script>
+<script src="/gim/inspirasi.js" defer></script>
+<script>window.addEventListener('load',function(){if(!window.Inspirasi)return;var el=document.getElementById('fsInsp');var o={cats:['urban','rusun'],re:/gedung|kantor|kaca|fasad|menara|apartemen|blok/i,album:{th:['metropolis','eropa','jepang','tokyo'],re:/gedung|kantor|kaca|fasad|menara|perkantoran|apartemen|pencakar|tower/i},n:4,lang:function(){return __FS.lang()},seed:5,title:{id:'Inspirasi fasad dari koleksi foto',en:'Facade inspiration from the photo collection'}};Inspirasi.mount(el,o);document.getElementById('langBtn').addEventListener('click',function(){Inspirasi.refresh(el)})});</script>
+<script type="importmap">{"imports":{"three":"/lensa3d/three/three.module.min.js","three/addons/":"/lensa3d/three/addons/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+(function(){
+const K=window.__FS;if(!K)return;
+const host=document.getElementById('fs3d');if(!host)return;
+let renderer,scene,camera,controls,root,sun,sunBall,hour=+(localStorage.getItem('fsHour')||10),month=+(localStorage.getItem('fsMonth')||6);
+const FH=3.6,FLOORS=4,H=FH*FLOORS,LAT=-6.2;
+const DIRAZ={U:0,TL:45,T:90,TG:135,S:180,BD:225,B:270,BL:315};
+const PAINT=['#f6f3ec','#ebe6dc','#6b6b6b','#2b2b2b'],GLASSC=[['#a9cde6',.05,.35],['#6f9a96',.1,.45],['#9fb3c8',.85,.2],['#b9d8cf',.2,.4]];
+const M={};function mat(c,o){const k=c+JSON.stringify(o||{});if(!M[k])M[k]=new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.8},o||{}));return M[k]}
+const box=new THREE.BoxGeometry(1,1,1);
+function B(m,x,y,z,sx,sy,sz,p){const o=new THREE.Mesh(box,m);o.scale.set(sx,sy,sz);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;(p||root).add(o);return o}
+function lbl(t1,t2,ok){const c=document.createElement('canvas'),g=c.getContext('2d');c.width=512;c.height=170;g.fillStyle='rgba(255,253,248,.93)';g.beginPath();g.roundRect(16,8,480,154,30);g.fill();g.textAlign='center';g.fillStyle='#1f1c18';g.font='700 50px Inter,system-ui,sans-serif';g.fillText(t1,256,68);g.fillStyle=ok?'#2f7d4f':'#a33a2a';g.font='800 54px Inter,system-ui,sans-serif';g.fillText(t2,256,136);
+ const tx=new THREE.CanvasTexture(c);tx.colorSpace=THREE.SRGBColorSpace;const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,depthTest:false,transparent:true}));s.scale.set(13,4.3,1);s.renderOrder=9;return s}
+/* fasad: dinding + jendela + peneduh di bidang lokal (x sepanjang fasad, z keluar) */
+function face(len,c,grp){const w=c.wwr/100,bays=Math.max(3,Math.round(len/6)),bw=len/bays,wall=mat(PAINT[c.p]),G=GLASSC[c.g],glass=mat(G[0],{metalness:G[1],roughness:G[2],transparent:true,opacity:.88});
+ const gw=bw*Math.sqrt(w),gh=(FH-.5)*Math.sqrt(w);
+ // dinding sebagai panel di antara jendela (lapisan tipis di depan inti bangunan)
+ for(let f=0;f<FLOORS;f++){const y0=f*FH,yc=y0+.25+(FH-.5)/2;
+  for(let b=0;b<bays;b++){const x0=-len/2+b*bw,xc=x0+bw/2;
+   if(w<=0){B(wall,xc,y0+FH/2,0,bw,FH,.2,grp);continue}
+   const side=(bw-gw)/2,top=y0+FH-(yc+gh/2),bot=(yc-gh/2)-y0;
+   if(side>.01){B(wall,x0+side/2,y0+FH/2,0,side,FH,.2,grp);B(wall,x0+bw-side/2,y0+FH/2,0,side,FH,.2,grp)}
+   if(top>.01)B(wall,xc,y0+FH-top/2,0,gw,top,.2,grp);if(bot>.01)B(wall,xc,y0+bot/2,0,gw,bot,.2,grp);
+   const gl=B(glass,xc,yc,-.02,gw,gh,.06,grp);gl.castShadow=false;
+   B(mat('#4b5560',{metalness:.6,roughness:.4}),xc,yc,.02,.06,gh,.08,grp);
+   if(c.sh>0){const d=c.sh===1?.7:1.4;B(mat('#7a6a58'),xc,yc+gh/2+.08,d/2,gw+.3,.1,d,grp);if(c.sh===2){B(mat('#7a6a58'),xc-gw/2-.1,yc,.5,.08,gh,1,grp);B(mat('#7a6a58'),xc+gw/2+.1,yc,.5,.08,gh,1,grp)}}}}
+ for(let f=1;f<=FLOORS;f++)B(mat('#d8d2c6'),0,f*FH-.06,.12,len+.2,.12,.12,grp)}
+function build(){root.clear();const L=K.LEVELS[K.st().i],cfg=K.st().cfg,R=K.calc(L,cfg);
+ const fs=L.faces,lenNS=fs[0][1]/H,lenEW=fs[1][1]/H,X=lenNS,Z=lenEW;// fasad U/S panjang X, T/B panjang Z
+ const bld=new THREE.Group();root.add(bld);B(mat('#cfc8bb'),0,H/2,0,X-.4,H,Z-.4,bld);B(mat('#9b958a'),0,H+.3,0,X+.2,.6,Z+.2,bld);
+ // rotasi: fasad pertama menghadap arah fs[0][0]
+ bld.rotation.y=-THREE.MathUtils.degToRad(DIRAZ[fs[0][0]]);
+ const spec=[[0,-Z/2,Math.PI,X],[X/2,0,Math.PI/2,Z],[0,Z/2,0,X],[-X/2,0,-Math.PI/2,Z]];// utara = -z (lokal), timur=+x, selatan=+z, barat=-x
+ fs.forEach((f,i)=>{const g=new THREE.Group(),sp=spec[i];g.position.set(sp[0],0,sp[1]);g.rotation.y=sp[2];bld.add(g);
+  const inner=g;face(sp[3],cfg[i],inner);
+  const o=R.rows[i].o,s=lbl(K.dirName(f[0]),o.toFixed(1)+' W/m²',o<=35);const out=new THREE.Vector3(0,H+3.2,0);s.position.copy(out);inner.add(s);s.position.z=4});
+ // konteks: pohon & tanah
+ [[-1,1],[1,1],[1,-1],[-1,-1]].forEach(([a,b],i)=>{const x=a*(X/2+8),z=b*(Z/2+7);B(mat('#6b4f3a'),x,1.2,z,.4,2.4,.4);const s=new THREE.Mesh(new THREE.IcosahedronGeometry(2.2,1),mat(i%2?'#4f8f4a':'#5e9e55'));s.position.set(x,3.8,z);s.castShadow=true;root.add(s)});
+ const mk=(t,x,z)=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');g.fillStyle='#1f1c18';g.font='800 80px Inter,sans-serif';g.textAlign='center';g.fillText(t,64,96);const tx=new THREE.CanvasTexture(c);const p=new THREE.Mesh(new THREE.PlaneGeometry(3,3),new THREE.MeshBasicMaterial({map:tx,transparent:true}));p.rotation.x=-Math.PI/2;p.position.set(x,.03,z);root.add(p)};
+ const RR=Math.max(X,Z)/2+12;mk(K.lang()==='en'?'N':'U',0,-RR);mk(K.lang()==='en'?'S':'S',0,RR);mk(K.lang()==='en'?'E':'T',RR,0);mk(K.lang()==='en'?'W':'B',-RR,0);
+ setSun()}
+/* posisi matahari sederhana (deklinasi per bulan, sudut jam) untuk lintang Jakarta */
+function sunPos(){const decl=23.44*Math.sin(2*Math.PI*(284+[0,17,47,75,105,135,162,198,228,258,288,318,344][month])/365)*Math.PI/180,lat=LAT*Math.PI/180,ha=(hour-12)*15*Math.PI/180;
+ const el=Math.asin(Math.sin(lat)*Math.sin(decl)+Math.cos(lat)*Math.cos(decl)*Math.cos(ha));
+ let az=Math.atan2(Math.sin(ha),Math.cos(ha)*Math.sin(lat)-Math.tan(decl)*Math.cos(lat));az=az+Math.PI;// dari utara searah jarum jam
+ return {el,az}}
+function setSun(){const p=sunPos(),r=60;const x=Math.sin(p.az)*Math.cos(p.el)*r,z=-Math.cos(p.az)*Math.cos(p.el)*r,y=Math.sin(p.el)*r;sun.position.set(x,Math.max(2,y),z);sunBall.position.copy(sun.position).multiplyScalar(.9);
+ sun.intensity=p.el>0?2.4:.1;const lab=document.getElementById('fsSunLab');if(lab)lab.textContent=(K.lang()==='en'?'Sun elevation ':'Ketinggian matahari ')+Math.round(p.el*180/Math.PI)+'° · '+(K.lang()==='en'?'azimuth ':'azimut ')+Math.round(((p.az*180/Math.PI)%360+360)%360)+'°'}
+function init(){renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(2,devicePixelRatio));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;
+ host.appendChild(renderer.domElement);renderer.domElement.style.display='block';scene=new THREE.Scene();scene.background=new THREE.Color('#cfe3f2');scene.fog=new THREE.Fog('#cfe3f2',120,260);
+ camera=new THREE.PerspectiveCamera(40,16/10,.5,600);camera.position.set(-48,34,58);controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,6,0);controls.enableDamping=true;controls.maxPolarAngle=1.5;controls.minDistance=15;controls.maxDistance=170;controls.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN};
+ scene.add(new THREE.HemisphereLight('#ffffff','#a49779',.9));sun=new THREE.DirectionalLight('#fff3df',2.4);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-50,right:50,top:50,bottom:-50,far:200});sun.shadow.bias=-.0005;scene.add(sun);
+ sunBall=new THREE.Mesh(new THREE.SphereGeometry(2.2,16,12),new THREE.MeshBasicMaterial({color:'#ffcc55'}));scene.add(sunBall);
+ const gr=new THREE.Mesh(new THREE.PlaneGeometry(400,400),mat('#bfc7a8'));gr.rotation.x=-Math.PI/2;gr.receiveShadow=true;scene.add(gr);
+ root=new THREE.Group();scene.add(root);
+ // kontrol jam & bulan
+ const hs=document.getElementById('fsHour'),ms=document.getElementById('fsMonth');hs.value=hour;ms.value=month;hs.oninput=()=>{hour=+hs.value;localStorage.setItem('fsHour',hour);document.getElementById('fsHourV').textContent=String(hour).padStart(2,'0')+'.00';setSun()};ms.onchange=()=>{month=+ms.value;localStorage.setItem('fsMonth',month);setSun()};document.getElementById('fsHourV').textContent=String(hour).padStart(2,'0')+'.00';
+ nav();build();new ResizeObserver(resize).observe(host);resize();(function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera)})()}
+function nav(){const bar=document.createElement('div');bar.className='nav3d';const en=()=>K.lang()==='en';const Bt=(l,tt,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.title=tt;b.setAttribute('aria-label',tt);b.onclick=fn;bar.appendChild(b);return b};
+ const rot=a=>{const o=camera.position.clone().sub(controls.target);o.applyAxisAngle(new THREE.Vector3(0,1,0),a);camera.position.copy(controls.target).add(o)};
+ Bt('⟲',en()?'Rotate left':'Putar kiri',()=>rot(Math.PI/8));Bt('⟳',en()?'Rotate right':'Putar kanan',()=>rot(-Math.PI/8));Bt('＋',en()?'Zoom in':'Perbesar',()=>camera.position.lerp(controls.target,.2));Bt('－',en()?'Zoom out':'Perkecil',()=>{const o=camera.position.clone().sub(controls.target).multiplyScalar(1.25);if(o.length()<170)camera.position.copy(controls.target).add(o)});
+ const ar=Bt('↻',en()?'Auto-rotate':'Putar otomatis',()=>{controls.autoRotate=!controls.autoRotate;ar.classList.toggle('on',controls.autoRotate)});Bt('⌂',en()?'Reset view':'Pandangan awal',()=>{controls.target.set(0,6,0);camera.position.set(-48,34,58)});host.appendChild(bar)}
+function resize(){const w=host.clientWidth,h=host.clientHeight||w*.6;if(!w)return;renderer.setSize(w,h,false);renderer.domElement.style.width='100%';renderer.domElement.style.height='100%';camera.aspect=w/h;camera.updateProjectionMatrix()}
+init();window.addEventListener('fs-render',build);
 })();
 </script>
 <!-- homefab: tombol Beranda melayang -->
