@@ -94,6 +94,7 @@ details{font-size:12.5px;color:var(--muted)}details summary{cursor:pointer;color
 @keyframes wave{from{transform:translateX(0)}to{transform:translateX(-1px)}}
 .waves{animation:wave 3s linear infinite}
 @media (prefers-reduced-motion:reduce){.waves{animation:none}}
+.nav3d{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:6px;z-index:2}.nav3d button{width:36px;height:36px;border-radius:10px;border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.88);color:#1f1c18;font-size:17px;font-weight:700;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.15)}.nav3d button.on{background:#1f1c18;color:#fff}.hint3d{position:absolute;left:8px;bottom:8px;right:52px;background:rgba(20,18,15,.7);color:#fff;font-size:12px;padding:5px 9px;border-radius:8px;pointer-events:none;transition:opacity .6s}
 </style>
 </head>
 <body>
@@ -141,6 +142,7 @@ details{font-size:12.5px;color:var(--muted)}details summary{cursor:pointer;color
       <div id="map3d" class="hidden" style="width:100%;aspect-ratio:16/11;border-radius:12px;overflow:hidden;position:relative;touch-action:none"></div>
       <div class="legend" id="legend"></div>
       <div class="info" id="info"></div>
+      <div id="inspGame" style="margin-top:12px"></div>
     </div>
     <div class="side">
       <div class="card panel">
@@ -158,7 +160,6 @@ details{font-size:12.5px;color:var(--muted)}details summary{cursor:pointer;color
         <div id="inds"></div>
         <details><summary data-t="how"></summary><div id="howTxt"></div></details>
       </div>
-      <div class="card panel"><div id="inspGame"></div></div>
     </div>
   </section>
 
@@ -517,7 +518,7 @@ window.addEventListener('kb3d-ready',function(){var b=$('v3d');b.classList.remov
 </script>
 <script type="module">
 import * as THREE from 'three';
-import {MapControls} from 'three/addons/controls/MapControls.js';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 (function(){
 const K=window.__KB;if(!K)return;
 const W=16,H=11;let host=null,renderer,scene,camera,controls,sun,hemi,root,water,wgrp,wtex,fplane,hl,clock=new THREE.Clock(),raf=0,tod=13,flood=0,floodT=0;
@@ -552,8 +553,9 @@ function setTime(t){tod=t;const night=t>=19,ang=(t-6)/12*Math.PI;const el=Math.m
 function mount(el){if(host===el&&renderer)return;host=el;
  renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(2,window.devicePixelRatio));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
  el.appendChild(renderer.domElement);renderer.domElement.style.display='block';
- scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(38,16/11,.1,200);camera.position.set(-2,13,14);
- controls=new MapControls(camera,renderer.domElement);controls.target.set(0,0,0);controls.maxPolarAngle=1.25;controls.minDistance=6;controls.maxDistance=30;controls.enableDamping=true;
+ scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(38,16/11,.1,200);camera.position.set(0,14,16);
+ controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,0,0);controls.maxPolarAngle=1.35;controls.minDistance=5;controls.maxDistance=32;controls.screenSpacePanning=false;controls.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN};
+ addNav(el);controls.enableDamping=true;
  hemi=new THREE.HemisphereLight('#ffffff','#8a7a5c',.85);scene.add(hemi);
  sun=new THREE.DirectionalLight('#ffffff',1.6);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);const sc=sun.shadow.camera;sc.left=-12;sc.right=12;sc.top=12;sc.bottom=-12;sc.far=60;sun.shadow.bias=-.0005;scene.add(sun);
  const gr=new THREE.Mesh(new THREE.PlaneGeometry(40,40),mat('#cdbb98'));gr.rotation.x=-Math.PI/2;gr.position.y=-.02;gr.receiveShadow=true;scene.add(gr);
@@ -568,6 +570,15 @@ function mount(el){if(host===el&&renderer)return;host=el;
  renderer.domElement.addEventListener('pointermove',e=>{const c=cell(e);if(c){const [px,pz]=wp(c[0],c[1]);hl.position.set(px,.12,pz);hl.visible=true;K.hover(c)}else{hl.visible=false}});
  renderer.domElement.addEventListener('pointerup',e=>{if(!down)return;const d=Math.hypot(e.clientX-down[0],e.clientY-down[1]);down=null;if(d>6)return;const c=cell(e);if(c)K.apply(c[0],c[1])});
  new ResizeObserver(resize).observe(el);resize();loop()}
+function addNav(el){const bar=document.createElement('div');bar.className='nav3d';
+ const B=(lbl,tt,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=lbl;b.title=tt;b.setAttribute('aria-label',tt);b.onclick=e=>{e.stopPropagation();fn()};b.addEventListener('pointerdown',e=>e.stopPropagation());b.addEventListener('pointerup',e=>e.stopPropagation());bar.appendChild(b);return b};
+ const en=()=>document.documentElement.lang==='en';
+ const rot=a=>{const o=camera.position.clone().sub(controls.target);o.applyAxisAngle(new THREE.Vector3(0,1,0),a);camera.position.copy(controls.target).add(o);controls.update()};
+ B('⟲',en()?'Rotate left':'Putar kiri',()=>rot(Math.PI/8));B('⟳',en()?'Rotate right':'Putar kanan',()=>rot(-Math.PI/8));
+ B('＋',en()?'Zoom in':'Perbesar',()=>{camera.position.lerp(controls.target,.2);controls.update()});B('－',en()?'Zoom out':'Perkecil',()=>{const o=camera.position.clone().sub(controls.target).multiplyScalar(1.25);if(o.length()<32)camera.position.copy(controls.target).add(o);controls.update()});
+ const ar=B('↻',en()?'Auto-rotate':'Putar otomatis',()=>{controls.autoRotate=!controls.autoRotate;controls.autoRotateSpeed=1.2;ar.classList.toggle('on',controls.autoRotate)});
+ B('⌂',en()?'Reset view':'Pandangan awal',()=>{controls.target.set(0,0,0);camera.position.set(0,14,16);controls.autoRotate=false;ar.classList.remove('on');controls.update()});
+ el.appendChild(bar);const h=document.createElement('div');h.className='hint3d';h.textContent=en()?'Drag to rotate · two fingers / right-drag to pan · scroll or pinch to zoom':'Seret untuk memutar · dua jari / klik kanan untuk menggeser · gulir atau cubit untuk zoom';el.appendChild(h);setTimeout(()=>h.style.opacity=0,6000)}
 function resize(){if(!host||!renderer)return;const w=host.clientWidth,h=host.clientHeight||w*11/16;if(!w)return;renderer.setSize(w,h,false);renderer.domElement.style.width='100%';renderer.domElement.style.height='100%';camera.aspect=w/h;camera.updateProjectionMatrix()}
 function loop(){raf=requestAnimationFrame(loop);const t=clock.getElapsedTime();
  if(wtex){wtex.offset.set(t*.03,t*.05);wgrp.position.y=Math.sin(t*1.4)*.008;
@@ -585,7 +596,7 @@ window.addEventListener('load',function(){if(!window.Inspirasi)return;
  tt={id:'Inspirasi dari kampung nyata',en:'Inspiration from real kampungs'};
  var a=document.getElementById('inspIntro'),b=document.getElementById('inspGame');
  Inspirasi.mount(a,{cats:K,re:/gang|lorong|sungai|taman|ruang terbuka|tangga|jembatan|pohon|tanaman/i,n:4,lang:lg,title:tt,seed:7});
- Inspirasi.mount(b,{cats:K,n:2,lang:lg,title:tt,seed:1});
+ Inspirasi.mount(b,{cats:K,n:4,lang:lg,title:tt,seed:1});
  window.addEventListener('kb-loc',function(){var L=window.__KB.loc();var nr=L?{near:{lat:L.lat,lon:L.lon,km:1.5}}:{near:null};Inspirasi.update(a,nr);Inspirasi.update(b,nr)});
  var y=1;document.getElementById('langBtn').addEventListener('click',function(){Inspirasi.refresh(a);Inspirasi.refresh(b)});
  document.getElementById('endYear').addEventListener('click',function(){y++;Inspirasi.update(b,{seed:y*31})});

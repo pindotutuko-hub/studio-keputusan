@@ -62,6 +62,12 @@ header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14p
 .gc{width:150px;flex:none;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;position:relative;z-index:1;scroll-snap-align:center;box-shadow:var(--shadow)}
 .gc.big{width:190px}
 .gc .art{height:82px;display:block;width:100%}
+.gc .art.ph{position:relative;height:96px;background:var(--mc);border-bottom:6px solid var(--mc)}.gc.big .art.ph{height:118px}
+.gc .art.ph img{width:100%;height:100%;object-fit:cover;display:block}.gc .art.ph.noimg img{display:none}
+.ph-zoom{position:absolute;right:5px;top:5px;width:26px;height:26px;border-radius:8px;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:14px;line-height:1;cursor:zoom-in}
+.gw-lb{position:fixed;inset:0;z-index:2147483100;background:rgba(10,10,10,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}
+.gw-lb img{max-width:100%;max-height:78vh;border-radius:8px}.gw-lb p{color:#eee;text-align:center;font-size:14px;margin:10px 0 0;max-width:760px}.gw-lb a{color:#cde;font-size:12.5px}
+
 .gc .tx{padding:8px 10px 10px}
 .gc .nm{font-weight:700;font-size:13px;line-height:1.25}
 .gc .ar{font-size:11.5px;color:var(--muted);margin-top:2px}
@@ -146,7 +152,7 @@ var T={
   endWin:"Semua kartu tersusun!",endLose:"Nyawa habis",endTotal:"Skor",again:"Main lagi",copy:"Salin hasil",copied:"Tersalin ✓",copyFail:"Gagal menyalin",backMenu:"Kembali",
   placed:"Kartu benar",tabYear:"Tahun",tabWork:"Karya",tabArch:"Arsitek",tabMov:"Aliran",
   shareTxt:"Garis Waktu Arsitektur — skor {s} ({c} kartu benar).",klRes:"Skor {s} · {c} kartu benar dari {p} yang ditempatkan",
-  ref:"Tahun = tahun selesai/diresmikan menurut sumber umum; beberapa karya dibangun bertahun-tahun.",by:"Dikembangkan oleh: Pindo Tutuko ·"},
+  ref:"Tahun = tahun selesai/diresmikan menurut sumber umum; beberapa karya dibangun bertahun-tahun. Foto: koleksi Pindo Tutuko dan Wikimedia Commons (pemotret & lisensi tercantum; ketuk ⤢).",by:"Dikembangkan oleh: Pindo Tutuko ·"},
  en:{home:"Home",title:"Architecture Timeline",tag:"A game of ordering modern architecture by year",lives:"Lives",score:"Score",streak:"Streak",
   introH:"Order 150 years of modern architecture",introP:"Each card is one work of architecture. Its year stays hidden until you place it on the timeline.",
   i1:"Look at the drawn card: the work, the architect and the city.",i2:"Tap a + on the timeline, between the two works you think bracket its year.",i3:"Right: the card stays and you score. Wrong: the card moves to its correct place and you lose a life. Three lives.",
@@ -158,7 +164,7 @@ var T={
   endWin:"Every card placed!",endLose:"Out of lives",endTotal:"Score",again:"Play again",copy:"Copy result",copied:"Copied ✓",copyFail:"Copy failed",backMenu:"Back",
   placed:"Correct cards",tabYear:"Year",tabWork:"Work",tabArch:"Architect",tabMov:"Movement",
   shareTxt:"Architecture Timeline — score {s} ({c} correct cards).",klRes:"Score {s} · {c} correct of {p} placed",
-  ref:"Year = year completed/opened according to common sources; some works took years to build.",by:"Developed by: Pindo Tutuko ·"}
+  ref:"Year = year completed/opened according to common sources; some works took years to build. Photos: Pindo Tutuko collection and Wikimedia Commons (photographer & licence listed; tap ⤢).",by:"Developed by: Pindo Tutuko ·"}
 };
 function t(k,v){var s=T[lang][k]!=null?T[lang][k]:k;if(v)for(var p in v)s=s.split('{'+p+'}').join(v[p]);return s}
 var $=function(id){return document.getElementById(id)};
@@ -260,8 +266,17 @@ var NOTE={
 function L(s){var p=String(s).split('|');return lang==='en'&&p[1]?p[1]:p[0]}
 function card(k){var c=CARDS.filter(function(x){return x[0]===k})[0];return {k:c[0],name:L(c[1]),arch:L(c[2]),year:c[3],city:L(c[4]),mov:c[5],glyph:c[6],reg:c[7]}}
 
+/* Foto bangunan: koleksi Pindo Tutuko (album) atau Wikimedia Commons (lisensi bebas, kredit dicantumkan). */
+var PHOTO={"crys":{"f":"Crystal_Palace_General_view_from_Water_Temple.jpg","l":"Public domain","a":"Philip Henry Delamotte (1821–1889)"},"eiff":{"al":"10210850561848200"},"laws":{"al":"10205175217808146"},"robi":{"f":"Frederick_C._Robie_House.JPG","l":"CC BY-SA 3.0","a":"Teemu08"},"mila":{"f":"Casa_Milà,_general_view.jpg","l":"CC BY-SA 4.0","a":"Thomas Ledl"},"eins":{"f":"Potsdam_Telegrafenberg_asv2023-09_img4.jpg","l":"FAL","a":"A.Savin"},"riet":{"f":"Rietveld_Schröderhuis_HayKranen-20.JPG","l":"CC BY 3.0","a":"User:Husky"},"bauh":{"f":"Dessau_Bauhaus-Gebäude_asv2024-06_img1.jpg","l":"FAL","a":"A.Savin"},"barc":{"f":"The_Barcelona_Pavilion,_Barcelona,_2010.jpg","l":"CC BY 3.0","a":"Ashley Pomeroy at English Wikipedia"},"chry":{"f":"Chrysler_Building_Midtown_Manhattan_New_York_City_1932.jpg","l":"Public domain","a":"Samuel Gottscho"},"isol":{"f":"COLLECTIE_TROPENMUSEUM_Villa_Isola_aan_de_Lembangweg_bij_Bandoeng_TMnr_60026636.jpg","l":"CC BY-SA 3.0","a":"P.J. van Baarda"},"glas":{"f":"Glass_House_2006.jpg","l":"Public domain","a":"Carol M. Highsmith"},"farn":{"f":"Farnsworth_House_by_Mies_Van_Der_Rohe_-_exterior-8.jpg","l":"CC BY-SA 3.0","a":"Victor Grigas"},"leve":{"f":"Lever_House_390_Park_Avenue.jpg","l":"CC BY-SA 4.0","a":"Beyond My Ken"},"ronc":{"f":"Chapelle_Notre-Dame-du_Haut_de_Ronchamp_60000_41.jpg","l":"CC BY-SA 4.0","a":"FrDr"},"seag":{"f":"Seagram_Building_(35098307116).jpg","l":"CC BY-SA 2.0","a":"Ken OHYAMA"},"gugn":{"f":"Solomon_R._Guggenheim_Museum_(48059131351).jpg","l":"CC BY 2.0","a":"Ajay Suresh"},"vann":{"f":"VVenturi_House_Highsmith.jpeg","l":"Public domain","a":"Carol M. Highsmith"},"salk":{"f":"Salk_Institute_2.jpg","l":"CC BY-SA 4.0","a":"Codera23"},"sydn":{"al":"10208741788130175"},"mona":{"f":"Monumen_Nasional,_Jakarta,_Indonesia.jpg","l":"CC BY-SA 4.0","a":"Ramayoni"},"pomp":{"f":"Lüftungsrohre_Place_George_Pompidou_Paris.jpg","l":"CC BY 4.0","a":"Stefan Drößler"},"istq":{"f":"Jakarta_-_Istiqlal_Mosque,_interior.jpg","l":"CC BY 4.0","a":"P. Hughes"},"dhak":{"f":"National_Assembly_of_Bangladesh_(10).jpg","l":"CC BY-SA 3.0","a":"Saiful Aopu & Nahid Sultan"},"port":{"f":"Portland_Building_1982.jpg","l":"CC BY-SA 3.0","a":"Steve Morgan"},"hsbc":{"f":"HK_HSBC_Main_Building_2008.jpg","l":"CC BY 3.0","a":"WiNG"},"lloy":{"f":"Lloyds_building_taken_2011.jpg","l":"CC BY-SA 2.0","a":"Stephen Richards"},"louv":{"al":"10210850559768148"},"bilb":{"f":"Museo_Guggenheim,_Bilbao_(31273245344).jpg","l":"CC BY 2.0","a":"Naotake Murayama"},"seat":{"f":"Seattle_Library_01.jpg","l":"CC BY-SA 4.0","a":"Ɱ"},"bird":{"f":"Beijing_China_Beijing-National-Stadium-01.jpg","l":"CC BY-SA 3.0","a":"CEphoto, Uwe Aranas"},"burj":{"f":"Burj_Khalifa_(worlds_tallest_building)_and_the_Dubai_skyline_(25781049892).jpg","l":"CC BY 2.0","a":"imran shahabuddin"},"heyd":{"f":"Heydar_Aliyev_Center,_Yoga_Day.jpg","l":"CC BY-SA 4.0","a":"Nigar2nigarnigar"}};
+function phSrc(p,w){return p.al?'/wp-content/uploads/album/'+(w>500?'w':'t2')+'/'+p.al+'.jpg':'https://commons.wikimedia.org/wiki/Special:FilePath/'+encodeURIComponent(p.f)+'?width='+(w||400)}
+function phCredit(p){return p.al?(lang==='en'?'Photo: Pindo Tutuko collection':'Foto: koleksi Pindo Tutuko'):(p.a+' · '+p.l+' · Wikimedia Commons')}
+function phHref(p){return p.al?'/album/':'https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(p.f)}
+function lightbox(k){var p=PHOTO[k],c=card(k);if(!p)return;var lb=document.createElement('div');lb.className='gw-lb';
+  lb.innerHTML='<img alt="'+esc(c.name)+'" src="'+phSrc(p,1200)+'"><p><b>'+esc(c.name)+'</b> · '+esc(c.city)+'<br><a href="'+phHref(p)+'" target="_blank" rel="noopener">'+esc(phCredit(p))+'</a></p>';
+  function close(){lb.remove();document.removeEventListener('keydown',kd)}function kd(e){if(e.key==='Escape')close()}lb.onclick=function(e){if(e.target.tagName!=='A')close()};document.addEventListener('keydown',kd);document.body.appendChild(lb)}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.ph-zoom');if(b){e.preventDefault();e.stopPropagation();lightbox(b.getAttribute('data-k'))}},true);
 /* Card art: era band + building glyph (SVG, no photos) */
-function art(c,hide){var m=MOV[c.mov],col=m.c;var g={
+function art(c,hide){var m=MOV[c.mov],col=m.c;var P=PHOTO[c.k];if(P)return '<div class="art ph" style="--mc:'+col+'"><img loading="lazy" alt="'+esc(c.name)+'" src="'+phSrc(P,400)+'" onerror="this.parentNode.classList.add(\'noimg\')"><button type="button" class="ph-zoom" data-k="'+c.k+'" aria-label="Perbesar foto" title="'+esc(phCredit(P))+'">⤢</button></div>';var g={
   tower:'<rect x="66" y="14" width="18" height="58" fill="#fff" opacity=".9"/><rect x="72" y="6" width="6" height="10" fill="#fff" opacity=".9"/>',
   hall:'<rect x="30" y="38" width="90" height="34" fill="#fff" opacity=".9"/><path d="M30 38 L75 18 L120 38Z" fill="#fff" opacity=".7"/>',
   house:'<rect x="44" y="40" width="62" height="32" fill="#fff" opacity=".9"/><rect x="36" y="34" width="78" height="7" fill="#fff" opacity=".75"/>',

@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="/kelas/kelas-client.js" defer></script>
+<script src="/gim/inspirasi.js" defer></script>
 <style>
 :root{
   --bg:#f3efe7;--card:#fffdf9;--ink:#1f1c18;--muted:#6d655a;--line:#ddd3c4;--soft:#efe8dc;
@@ -184,7 +185,7 @@ var ROLES=[
  {k:'act',id:'Pegiat lingkungan & budaya',en:'Environment & heritage activist',d:{id:'Menjaga sungai, pohon, dan bangunan bersejarah.',en:'Protects the river, trees and historic buildings.'}}];
 /* effects: env, eco, soc, her (−3..+3); cost (negative = income) */
 var SCEN=[
- {k:'flood',title:{id:'Banjir di bantaran sungai',en:'Floods on the riverbank'},desc:{id:'Setiap musim hujan, kampung di bantaran Brantas tergenang. Ribuan warga tinggal di sempadan sungai.',en:'Every rainy season the riverbank kampung floods. Thousands of residents live inside the river buffer.'},
+ {k:'flood',title:{id:'Banjir di bantaran sungai',en:'Floods on the riverbank'},desc:{id:'Setiap musim hujan, kampung di bantaran sungai tergenang. Ribuan warga tinggal di sempadan sungai.',en:'Every rainy season the riverbank kampung floods. Thousands of residents live inside the river buffer.'},
   o:[{t:{id:'Tanggul beton + relokasi ke pinggir kota',en:'Concrete embankment + relocation to the city edge'},e:[-1,1,-3,-1],c:30},
      {t:{id:'Konsolidasi lahan, rusun di tempat, taman sempadan',en:'Land consolidation, on-site walk-ups, riverside park'},e:[3,-1,2,1],c:45},
      {t:{id:'Bantuan darurat saat banjir saja',en:'Emergency aid during floods only'},e:[-2,-1,-1,0],c:8}]},
@@ -278,8 +279,15 @@ function stake(){var c=st.city,fis=Math.max(0,Math.min(100,50+(st.cash-120)/2));
 function cityPanel(preview){var c=preview?{env:50,eco:50,soc:50,her:50}:st.city;var keys=['env','eco','soc','her'];
   return '<div class="card pad city" style="box-shadow:none"><h3 style="font-size:15px">'+t('cityH')+'</h3>'+keys.map(function(k,i){var v=Math.round(c[k]);return '<div class="ind"><div class="top"><span>'+esc(L(CRIT[i]))+'</span><span>'+v+'</span></div><div class="bar"><i style="width:'+v+'%;background:'+CCOL[i]+'"></i></div></div>'}).join('')+
    (preview?'':'<h3 style="font-size:15px;margin-top:12px">'+t('standH')+'</h3><div class="faces">'+stake().map(function(s){var v=Math.max(0,Math.min(100,s[1]));return '<div class="face"><span>'+esc(s[0])+'</span><b>'+(v>=60?'🙂':v>=40?'😐':'🙁')+' '+v+'</b></div>'}).join('')+'</div>')+'</div>'}
+var INSPK={flood:{cats:['jodipan','kayutangan','permukiman'],re:/sungai|bantaran|jembatan|tepi/i,album:{re:/sungai|kali|banjir|tepi sungai/i}},
+ heri:{cats:['kayutangan','urban'],re:/kolonial|lama|heritage|bersejarah|gedung|ruko/i,album:{th:['pusaka','kolonialmlg'],re:/./}},
+ traf:{cats:['urban','keramik'],re:/jalan|koridor|lalu lintas|trem|bus|sepeda|trotoar/i,album:{re:/jalan|trem|bus|stasiun|sepeda|trotoar|lalu lintas/i}},
+ wast:{cats:['permukiman','tridi','jodipan'],re:/sampah|bersih|daur|tanaman|kebun/i,album:{re:/sampah|daur|kompos|bersih/i}},
+ heat:{cats:['putih','kayutangan','urban'],re:/pohon|taman|hijau|tanaman|teduh|pergola/i,album:{th:['flora','lanskap'],re:/pohon|taman|hutan|kebun/i}},
+ vend:{cats:['urban','keramik','kayutangan'],re:/pasar|warung|pedagang|alun|toko|jajan/i,album:{re:/alun|pasar|pedagang|warung|kaki lima/i}}};
+function inspScen(s){var el=document.getElementById('kkInsp');if(!el||!window.Inspirasi)return;var o=INSPK[s.k]||{};Inspirasi.mount(el,{cats:o.cats,re:o.re,album:o.album,n:4,seed:7+st.r,lang:function(){return lang},title:{id:'Foto kasus serupa dari koleksi',en:'Similar cases from the photo collection'}})}
 function renderPlay(m){var s=SCEN[st.order[st.r]],scores=s.o.map(optScore),best=scores.indexOf(Math.max.apply(null,scores)),dec=st.picked!=null;
-  m.innerHTML='<section class="card pad">'+steps('stepPlay')+'<div class="scen"><div><div class="hint">'+t('scenH',{n:st.r+1,t:SCEN.length})+'</div><h2 style="font-size:24px">'+esc(L(s.title))+'</h2><p>'+esc(L(s.desc))+'</p>'+
+  m.innerHTML='<section class="card pad">'+steps('stepPlay')+'<div class="scen"><div><div class="hint">'+t('scenH',{n:st.r+1,t:SCEN.length})+'</div><h2 style="font-size:24px">'+esc(L(s.title))+'</h2><p>'+esc(L(s.desc))+'</p>'+'<div id="kkInsp" style="margin:10px 0 12px"></div>'+
    '<label class="hint"><input type="checkbox" id="sr" '+(st.showReco||dec?'checked':'')+' '+(dec?'disabled':'')+'> '+t('showReco')+'</label>'+
    '<div class="opts">'+s.o.map(function(o,i){var e=effVec(o),aff=o.c<=st.cash;return '<div class="oc'+(dec&&st.picked===i?' pick':'')+((st.showReco||dec)&&i===best?' reco':'')+'"><h4>'+String.fromCharCode(65+i)+'. '+esc(L(o.t))+'</h4>'+
      '<div class="eff">'+e.map(function(v,j){return '<span class="'+(v>0?'p':v<0?'n':'')+'">'+esc(L(CRIT[j]))+' '+(v>0?'+'+v:v)+'</span>'}).join('')+'</div>'+
@@ -289,6 +297,7 @@ function renderPlay(m){var s=SCEN[st.order[st.r]],scores=s.o.map(optScore),best=
    '</div><div>'+cityPanel(false)+'</div></div></section>';
   var sr=$('sr');if(sr&&!dec)sr.onchange=function(){st.showReco=sr.checked;render()};
   m.querySelectorAll('[data-o]').forEach(function(b){b.onclick=function(){decide(+b.getAttribute('data-o'),best)}});
+  inspScen(s);
   var nx=$('nx');if(nx)nx.onclick=function(){st.picked=null;if(st.r<SCEN.length-1){st.r++;render()}else{st.phase='end';render()}window.scrollTo(0,0)}}
 function decide(i,best){var s=SCEN[st.order[st.r]],o=s.o[i];if(o.c>st.cash)return;st.cash-=o.c;var keys=['env','eco','soc','her'];keys.forEach(function(k,j){st.city[k]=Math.max(0,Math.min(100,st.city[k]+o.e[j]*5))});
   st.cash+=10;st.picked=i;st.log.push({s:st.order[st.r],pick:i,best:best});render()}
