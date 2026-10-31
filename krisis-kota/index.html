@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Krisis Kota</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3efe7;--card:#fffdf9;--ink:#1f1c18;--muted:#6d655a;--line:#ddd3c4;--soft:#efe8dc;
+  --accent:#b4432c;--accentSoft:#f7e3dc;--ok:#2f7d4f;--okSoft:#e1f1e6;--bad:#a33a2a;--warn:#b7791f;--warnSoft:#fbf0d9;
+  --c0:#2f7d4f;--c1:#b7791f;--c2:#2f6f8f;--c3:#7c3aed;--c4:#57534e;
+  --shadow:0 1px 2px rgba(40,30,20,.06),0 8px 24px rgba(40,30,20,.08);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#15130f;--card:#1f1c17;--ink:#f2ece2;--muted:#a69d8f;--line:#38322a;--soft:#2a261f;
+  --accent:#f0937a;--accentSoft:#3a2420;--ok:#6cc58f;--okSoft:#1c3326;--bad:#ef8a78;--warn:#e3b45c;--warnSoft:#3a3020;
+  --c0:#6cc58f;--c1:#e3b45c;--c2:#6fb3d6;--c3:#b79cf5;--c4:#b8b0a4;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14.5px/1.5 Inter,system-ui,sans-serif}
+h1,h2,h3,h4{font-family:"Space Grotesk",Inter,system-ui,sans-serif;margin:0;letter-spacing:-.01em}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{max-width:1180px;margin:0 auto;padding:16px 16px 40px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.home{display:inline-flex;align-items:center;gap:4px;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 12px 7px 8px;font-weight:700;font-size:13px}
+.home:hover{border-color:var(--accent);color:var(--accent)}
+.logo{width:42px;height:42px;border-radius:12px;background:#b4432c;display:grid;place-items:center;flex:none}
+.brand h1{font-size:22px}.brand p{margin:0;color:var(--muted);font-size:13px}
+.hud{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;display:flex;gap:6px;align-items:center}
+.pill b{font-family:"Space Grotesk",Inter,sans-serif;font-size:15px}
+.lang{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.pad{padding:22px}
+.hint{color:var(--muted);font-size:13px}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:12px;padding:11px 16px;font-weight:700;font-size:15px}
+@media (prefers-color-scheme:dark){.btn{color:#1a120f}}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1.1fr 1fr;gap:22px;align-items:start}
+@media (max-width:880px){.grid2{grid-template-columns:1fr}}
+.intro h2{font-size:30px;line-height:1.15}
+.choice{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:10px 0}
+.opt{border:1px solid var(--line);border-radius:14px;padding:12px;background:transparent;text-align:left}
+.opt.on{border-color:var(--accent);background:var(--accentSoft)}
+.opt b{display:block;font-family:"Space Grotesk",Inter,sans-serif}
+.opt small{color:var(--muted)}
+.pw{display:grid;grid-template-columns:1fr minmax(160px,2fr) 1fr;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.pw .l{text-align:right;font-weight:600}.pw .r{font-weight:600}
+.pw input{width:100%;accent-color:var(--accent)}
+.pw .v{grid-column:1/-1;text-align:center;font-size:12px;color:var(--muted);margin-top:-4px}
+@media (max-width:560px){.pw{grid-template-columns:1fr 1fr}.pw input{grid-column:1/-1;grid-row:2}.pw .l{text-align:left}.pw .r{text-align:right}}
+.wbar{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:13px}
+.wbar .nm{width:130px;flex:none}
+.wbar .tr{flex:1;height:10px;background:var(--soft);border-radius:6px;overflow:hidden}
+.wbar .tr i{display:block;height:100%;border-radius:6px}
+.wbar .val{width:46px;text-align:right;font-family:"Space Grotesk",Inter,sans-serif;font-weight:700}
+.cr{border-radius:12px;padding:8px 12px;font-size:13px;margin-top:8px}
+.cr.ok{background:var(--okSoft)}.cr.bad{background:var(--warnSoft)}
+.scen{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start}
+@media (max-width:880px){.scen{grid-template-columns:1fr}}
+.opts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+@media (max-width:760px){.opts{grid-template-columns:1fr}}
+.oc{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--card);text-align:left;display:flex;flex-direction:column;gap:6px}
+.oc.pick{outline:3px solid var(--accent)}
+.oc.reco{border-color:var(--ok)}
+.oc h4{font-size:15px}
+.eff{display:flex;flex-wrap:wrap;gap:4px}
+.eff span{font-size:11.5px;border-radius:999px;padding:1px 8px;background:var(--soft);font-weight:600}
+.eff .p{color:var(--ok)}.eff .n{color:var(--bad)}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:1px 8px;background:var(--okSoft);color:var(--ok)}
+.city .ind{margin:7px 0}
+.city .top{display:flex;justify-content:space-between;font-size:13px;font-weight:600}
+.city .bar{height:8px;border-radius:5px;background:var(--soft);overflow:hidden;margin-top:3px}
+.city .bar i{display:block;height:100%;border-radius:5px;transition:width .4s}
+.faces{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px}
+.face{border:1px solid var(--line);border-radius:10px;padding:6px 8px;font-size:12.5px;display:flex;justify-content:space-between}
+.out{border-radius:14px;padding:12px 14px;background:var(--soft);margin-top:12px;font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:12px}
+.big{font-family:"Space Grotesk",Inter,sans-serif;font-size:48px;font-weight:700;color:var(--accent);line-height:1}
+footer{margin-top:20px;color:var(--muted);font-size:12.5px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--muted)}
+.hidden{display:none!important}
+.steps{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.steps span{font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px;background:var(--soft);color:var(--muted)}
+.steps span.on{background:var(--accent);color:#fff}
+input[type=text]{padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="home" href="https://pindotutuko.id/" title="pindotutuko.id"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span data-t="home"></span></a>
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10l4-3v13M10 20V5l5-2v17M16 20v-8l4 2v6M2 20h20"/><path d="M18 3l1.5 3"/></svg></div>
+    <div class="brand"><h1>Krisis Kota</h1><p data-t="tag"></p></div>
+    <div class="hud">
+      <div class="pill"><span data-t="round"></span> <b id="hRound">–</b></div>
+      <div class="pill"><span data-t="cash"></span> <b id="hCash">–</b></div>
+      <button class="lang" id="langBtn">EN</button>
+    </div>
+  </header>
+  <main id="main"></main>
+  <footer>
+    <span data-t="ref"></span>
+    <span><span data-t="by"></span> <a href="https://pindotutuko.id" target="_blank" rel="noopener">pindotutuko.id</a></span>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+var lang=store.get('kkLang')==='en'?'en':'id';
+var T={
+ id:{home:"Beranda",tag:"Gim keputusan dewan kota · peran, prioritas AHP, dan dilema perencanaan",round:"Krisis",cash:"Kas",
+  introH:"Kota Brantas sedang diuji enam krisis",introP:"Kamu duduk di dewan kota fiktif. Sebelum memutuskan, tetapkan dulu apa yang paling penting bagimu dengan perbandingan berpasangan AHP (Analytic Hierarchy Process). Lalu hadapi krisis demi krisis: banjir, cagar budaya, kemacetan, sampah, panas, dan pedagang kaki lima.",
+  modeH:"Mode",mSolo:"Sendiri",mSoloD:"Satu peran, satu set prioritas",mGroup:"Kelompok (satu perangkat)",mGroupD:"2–4 peran mengisi prioritas bergiliran; prioritas digabung",
+  roleH:"Peran",playersH:"Peserta kelompok",addP:"+ Tambah peran",rmP:"Hapus",nameP:"Nama (opsional)",
+  start:"Mulai",next:"Lanjut",back:"Kembali",
+  stepAHP:"1 · Prioritas",stepAgg:"2 · Gabung",stepPlay:"3 · Krisis",stepEnd:"4 · Laporan",
+  ahpH:"Prioritas {who}",ahpP:"Geser ke arah kriteria yang menurutmu lebih penting. Tengah = sama penting. Skala Saaty 1–9.",
+  eq:"sama penting",more:"{a} {s} daripada {b}",s3:"sedikit lebih penting",s5:"lebih penting",s7:"jauh lebih penting",s9:"mutlak lebih penting",s2:"antara sama dan sedikit",s4:"antara sedikit dan lebih",s6:"antara lebih dan jauh",s8:"antara jauh dan mutlak",
+  weightsH:"Bobot hasil",crOk:"Rasio konsistensi CR = {cr} (≤ 0,10: konsisten).",crBad:"CR = {cr} > 0,10: penilaianmu kurang konsisten. Periksa lagi, misalnya bila A > B dan B > C, maka A seharusnya > C.",
+  aggH:"Prioritas gabungan kelompok",aggP:"Penilaian tiap peran digabung dengan rerata geometrik per pasangan (Aczél & Saaty, 1983), lalu bobotnya dihitung ulang. Bandingkan perbedaan antarperan — itulah bahan negosiasi.",
+  groupW:"Gabungan",
+  scenH:"Krisis {n} dari {t}",reco:"Rekomendasi AHP",showReco:"Tampilkan skor AHP",scoreL:"skor {s}",cost:"biaya {c}",income:"pemasukan {c}",
+  decide:"Putuskan",noCash:"Kas tidak cukup",
+  cityH:"Kondisi kota",standH:"Kepuasan pemangku kepentingan",
+  outPick:"Dewan memilih: {o}.",outReco:" Pilihan ini sama dengan rekomendasi AHP.",outDiff:" Rekomendasi AHP sebenarnya: {o}.",
+  endH:"Laporan dewan kota",cityScore:"Indeks kota",align:"Keselarasan dengan prioritas",alignD:"{a} dari {n} keputusan sama dengan pilihan teratas AHP",
+  tabScen:"Krisis",tabPick:"Keputusan",tabReco:"Rekomendasi AHP",
+  reflH:"Bahan diskusi",refl1:"Di krisis mana kelompok menyimpang dari rekomendasi AHP? Apa alasannya — dan apakah alasan itu seharusnya masuk sebagai kriteria?",refl2:"Kelompok pemangku mana yang paling tidak puas? Bagaimana kebijakan bisa memberi kompensasi?",refl3:"Ubah bobot prioritas lalu main lagi: apakah rekomendasinya berubah?",
+  again:"Main lagi",copy:"Salin ringkasan",copied:"Tersalin ✓",copyFail:"Gagal menyalin",
+  ref:"Model edukatif; kota dan angka fiktif. AHP: Saaty (1980), The Analytic Hierarchy Process, McGraw-Hill; agregasi kelompok: Aczél & Saaty (1983), Journal of Mathematical Psychology 27(1).",
+  by:"Dikembangkan oleh: Pindo Tutuko ·",
+  shareTxt:"Krisis Kota — indeks kota {s}/100; keselarasan AHP {a}/{n}.",
+  you:"kamu"},
+ en:{home:"Home",tag:"A city council decision game · roles, AHP priorities and planning dilemmas",round:"Crisis",cash:"Funds",
+  introH:"Kota Brantas faces six crises",introP:"You sit on a fictional city council. Before deciding, set what matters most to you through AHP (Analytic Hierarchy Process) pairwise comparisons. Then face crisis after crisis: floods, heritage, congestion, waste, heat and street vendors.",
+  modeH:"Mode",mSolo:"Solo",mSoloD:"One role, one set of priorities",mGroup:"Group (one device)",mGroupD:"2–4 roles enter priorities in turn; priorities are combined",
+  roleH:"Role",playersH:"Group participants",addP:"+ Add role",rmP:"Remove",nameP:"Name (optional)",
+  start:"Start",next:"Next",back:"Back",
+  stepAHP:"1 · Priorities",stepAgg:"2 · Combine",stepPlay:"3 · Crises",stepEnd:"4 · Report",
+  ahpH:"Priorities of {who}",ahpP:"Slide towards the criterion you think matters more. Centre = equally important. Saaty scale 1–9.",
+  eq:"equally important",more:"{a} {s} than {b}",s3:"slightly more important",s5:"more important",s7:"much more important",s9:"extremely more important",s2:"between equal and slight",s4:"between slight and more",s6:"between more and much",s8:"between much and extreme",
+  weightsH:"Resulting weights",crOk:"Consistency ratio CR = {cr} (≤ 0.10: consistent).",crBad:"CR = {cr} > 0.10: your judgements are not very consistent. Check again — e.g. if A > B and B > C, then A should be > C.",
+  aggH:"Combined group priorities",aggP:"Each role’s judgements are combined by the geometric mean per pair (Aczél & Saaty, 1983), then weights are recomputed. Compare the differences between roles — that is what you negotiate over.",
+  groupW:"Combined",
+  scenH:"Crisis {n} of {t}",reco:"AHP recommendation",showReco:"Show AHP scores",scoreL:"score {s}",cost:"cost {c}",income:"income {c}",
+  decide:"Decide",noCash:"Not enough funds",
+  cityH:"City condition",standH:"Stakeholder satisfaction",
+  outPick:"The council chose: {o}.",outReco:" This matches the AHP recommendation.",outDiff:" The AHP recommendation was: {o}.",
+  endH:"City council report",cityScore:"City index",align:"Alignment with priorities",alignD:"{a} of {n} decisions matched the top AHP option",
+  tabScen:"Crisis",tabPick:"Decision",tabReco:"AHP recommendation",
+  reflH:"For discussion",refl1:"In which crisis did the group depart from the AHP recommendation? Why — and should that reason have been a criterion?",refl2:"Which stakeholder group is least satisfied? How could policy compensate them?",refl3:"Change the priority weights and play again: does the recommendation change?",
+  again:"Play again",copy:"Copy summary",copied:"Copied ✓",copyFail:"Copy failed",
+  ref:"Educational model; the city and numbers are fictional. AHP: Saaty (1980), The Analytic Hierarchy Process, McGraw-Hill; group aggregation: Aczél & Saaty (1983), Journal of Mathematical Psychology 27(1).",
+  by:"Developed by: Pindo Tutuko ·",
+  shareTxt:"Krisis Kota — city index {s}/100; AHP alignment {a}/{n}.",
+  you:"you"}
+};
+function t(k,v){var s=T[lang][k]!=null?T[lang][k]:k;if(v)for(var p in v)s=s.split('{'+p+'}').join(v[p]);return s}
+function L(o){return o[lang]||o.id}
+var $=function(id){return document.getElementById(id)};
+function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function fmt(n,d){return Number(n).toLocaleString(lang==='id'?'id-ID':'en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
+
+/* ---------- Criteria, roles, scenarios ---------- */
+var CRIT=[{k:'env',id:'Lingkungan',en:'Environment'},{k:'eco',id:'Ekonomi',en:'Economy'},{k:'soc',id:'Keadilan sosial',en:'Social equity'},{k:'her',id:'Warisan budaya',en:'Cultural heritage'},{k:'fis',id:'Hemat anggaran',en:'Fiscal prudence'}];
+var CCOL=['var(--c0)','var(--c1)','var(--c2)','var(--c3)','var(--c4)'];
+var ROLES=[
+ {k:'mayor',id:'Wali kota',en:'Mayor',d:{id:'Menjaga kas dan stabilitas kota.',en:'Keeps the budget and the city stable.'}},
+ {k:'dev',id:'Pengembang',en:'Developer',d:{id:'Mengejar investasi dan pertumbuhan.',en:'Pursues investment and growth.'}},
+ {k:'res',id:'Perwakilan warga',en:'Residents’ representative',d:{id:'Membela warga kampung dan pedagang kecil.',en:'Speaks for kampung residents and small traders.'}},
+ {k:'act',id:'Pegiat lingkungan & budaya',en:'Environment & heritage activist',d:{id:'Menjaga sungai, pohon, dan bangunan bersejarah.',en:'Protects the river, trees and historic buildings.'}}];
+/* effects: env, eco, soc, her (−3..+3); cost (negative = income) */
+var SCEN=[
+ {k:'flood',title:{id:'Banjir di bantaran sungai',en:'Floods on the riverbank'},desc:{id:'Setiap musim hujan, kampung di bantaran Brantas tergenang. Ribuan warga tinggal di sempadan sungai.',en:'Every rainy season the riverbank kampung floods. Thousands of residents live inside the river buffer.'},
+  o:[{t:{id:'Tanggul beton + relokasi ke pinggir kota',en:'Concrete embankment + relocation to the city edge'},e:[-1,1,-3,-1],c:30},
+     {t:{id:'Konsolidasi lahan, rusun di tempat, taman sempadan',en:'Land consolidation, on-site walk-ups, riverside park'},e:[3,-1,2,1],c:45},
+     {t:{id:'Bantuan darurat saat banjir saja',en:'Emergency aid during floods only'},e:[-2,-1,-1,0],c:8}]},
+ {k:'heri',title:{id:'Gedung tua vs. mal baru',en:'Old building vs. new mall'},desc:{id:'Investor menawar lahan gedung kolonial di pusat kota untuk dijadikan mal.',en:'An investor bids for a colonial-era building in the centre to build a mall.'},
+  o:[{t:{id:'Bongkar, bangun mal (investor membayar)',en:'Demolish, build the mall (investor pays)'},e:[-1,3,-1,-3],c:-10},
+     {t:{id:'Alih fungsi gedung jadi pasar kreatif; mal kecil di lahan lain',en:'Reuse the building as a creative market; small mall elsewhere'},e:[1,1,1,2],c:15},
+     {t:{id:'Tolak investor, biarkan gedung apa adanya',en:'Reject the investor, leave the building as is'},e:[0,-1,0,1],c:5}]},
+ {k:'traf',title:{id:'Kemacetan koridor utama',en:'Congestion on the main corridor'},desc:{id:'Koridor pusat kota macet setiap jam sibuk; trotoar sempit dan pohon tua berjajar di tepinya.',en:'The central corridor jams at every peak; its pavements are narrow and lined with old trees.'},
+  o:[{t:{id:'Lebarkan jalan, potong trotoar dan pohon',en:'Widen the road, cut pavements and trees'},e:[-2,1,-1,-1],c:30},
+     {t:{id:'Jalur bus cepat + trotoar lebar + jalur sepeda',en:'Bus rapid transit + wide pavements + cycle lanes'},e:[2,1,1,0],c:45},
+     {t:{id:'Pembatasan ganjil-genap',en:'Odd–even plate restriction'},e:[1,-1,-1,0],c:5}]},
+ {k:'wast',title:{id:'TPA hampir penuh',en:'The landfill is nearly full'},desc:{id:'Tempat pembuangan akhir sampah akan penuh dalam dua tahun.',en:'The city landfill will be full within two years.'},
+  o:[{t:{id:'Buka TPA baru di desa pinggiran',en:'Open a new landfill in a peri-urban village'},e:[-2,0,-2,0],c:20},
+     {t:{id:'Bank sampah, kompos kampung, dan pengolahan terpadu',en:'Waste banks, kampung composting and integrated processing'},e:[3,-1,2,0],c:25},
+     {t:{id:'Insinerator besar',en:'A large incinerator'},e:[-1,1,-1,0],c:40}]},
+ {k:'heat',title:{id:'Panas perkotaan',en:'Urban heat'},desc:{id:'Suhu siang di kampung padat terasa makin menyengat; keluhan warga meningkat.',en:'Daytime heat in dense kampung is getting harsher; complaints are rising.'},
+  o:[{t:{id:'Gerakan pohon peneduh dan atap hijau',en:'Shade trees and green roofs programme'},e:[3,0,1,0],c:25},
+     {t:{id:'Subsidi pendingin ruangan hemat energi',en:'Subsidies for efficient air conditioners'},e:[-1,1,0,0],c:15},
+     {t:{id:'Tunda; dana dialihkan ke jalan',en:'Postpone; shift funds to roads'},e:[-2,0,-1,0],c:0}]},
+ {k:'vend',title:{id:'Pedagang kaki lima di alun-alun',en:'Street vendors in the town square'},desc:{id:'Ratusan pedagang memadati alun-alun; pejalan kaki terdesak, tetapi ekonomi warga bergantung padanya.',en:'Hundreds of vendors crowd the square; pedestrians are squeezed, yet many livelihoods depend on it.'},
+  o:[{t:{id:'Tertibkan dan larang berjualan',en:'Clear them out and ban trading'},e:[0,-2,-3,-1],c:5},
+     {t:{id:'Zona dan jadwal berjualan tertata',en:'Organised trading zones and hours'},e:[1,0,2,1],c:15},
+     {t:{id:'Biarkan seperti sekarang',en:'Leave things as they are'},e:[-1,1,1,-1],c:0}]}
+];
+function fisOf(c){return Math.max(-3,Math.min(3,Math.round((20-c)/10)))}
+function effVec(o){return o.e.concat([fisOf(o.c)])}
+
+/* ---------- AHP ---------- */
+var PAIRS=[];for(var i=0;i<5;i++)for(var j=i+1;j<5;j++)PAIRS.push([i,j]);
+var RI5=1.12; // Saaty random index for n = 5
+function toVal(p){return p<0?1-p:p>0?1/(1+p):1} // slider −8..8 → a_ij (left favoured when negative)
+function matrix(pw){var A=[];for(var i=0;i<5;i++){A.push([]);for(var j=0;j<5;j++)A[i].push(1)}PAIRS.forEach(function(pr,k){var v=pw[k];A[pr[0]][pr[1]]=v;A[pr[1]][pr[0]]=1/v});return A}
+function ahp(A){var n=A.length,w=new Array(n).fill(1/n);for(var it=0;it<200;it++){var x=A.map(function(r){return r.reduce(function(s,a,j){return s+a*w[j]},0)});var s=x.reduce(function(a,b){return a+b},0);w=x.map(function(v){return v/s})}
+  var Aw=A.map(function(r){return r.reduce(function(s,a,j){return s+a*w[j]},0)});var lam=Aw.reduce(function(s,v,i){return s+v/w[i]},0)/n;var CI=(lam-n)/(n-1);return {w:w,lam:lam,CI:CI,CR:CI/RI5}}
+function geoAgg(list){return PAIRS.map(function(_,k){var p=1;list.forEach(function(pw){p*=pw[k]});return Math.pow(p,1/list.length)})}
+
+/* ---------- State ---------- */
+var st={mode:'solo',players:[{role:'mayor',name:''}],cur:0,phase:'intro'};
+function resetPlay(){st.city={env:50,eco:50,soc:50,her:50};st.cash=120;st.r=0;st.order=SCEN.map(function(_,i){return i});for(var i=st.order.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=st.order[i];st.order[i]=st.order[j];st.order[j]=x}st.log=[];st.showReco=false;st.picked=null}
+function hud(){$('hRound').textContent=st.phase==='play'?(st.r+1)+'/'+SCEN.length:'–';$('hCash').textContent=st.cash!=null&&st.phase!=='intro'?st.cash:'–'}
+function steps(on){var a=['stepAHP','stepAgg','stepPlay','stepEnd'];if(st.mode==='solo')a=['stepAHP','stepPlay','stepEnd'];return '<div class="steps">'+a.map(function(k){return '<span class="'+(k===on?'on':'')+'">'+t(k)+'</span>'}).join('')+'</div>'}
+function roleName(p){var r=ROLES.filter(function(x){return x.k===p.role})[0];return (p.name?esc(p.name)+' · ':'')+esc(L(r))}
+
+/* ---------- Screens ---------- */
+function render(){hud();var m=$('main');
+  if(st.phase==='intro')return renderIntro(m);
+  if(st.phase==='ahp')return renderAHP(m);
+  if(st.phase==='agg')return renderAgg(m);
+  if(st.phase==='play')return renderPlay(m);
+  if(st.phase==='end')return renderEnd(m)}
+function renderIntro(m){
+  m.innerHTML='<section class="card pad intro grid2"><div><h2>'+t('introH')+'</h2><p class="hint">'+t('introP')+'</p>'+
+   '<h3 style="font-size:15px;margin-top:14px">'+t('modeH')+'</h3><div class="choice">'+
+   ['solo','group'].map(function(md){return '<button class="opt'+(st.mode===md?' on':'')+'" data-m="'+md+'"><b>'+t(md==='solo'?'mSolo':'mGroup')+'</b><small>'+t(md==='solo'?'mSoloD':'mGroupD')+'</small></button>'}).join('')+'</div>'+
+   '<h3 style="font-size:15px;margin-top:6px">'+(st.mode==='solo'?t('roleH'):t('playersH'))+'</h3><div id="plist"></div>'+
+   '<div class="row" style="margin-top:12px"><button class="btn" id="go">'+t('start')+'</button></div></div>'+
+   '<div>'+cityPanel(true)+'</div></section>';
+  m.querySelectorAll('[data-m]').forEach(function(b){b.onclick=function(){st.mode=b.getAttribute('data-m');if(st.mode==='solo')st.players=st.players.slice(0,1);else if(st.players.length<2)st.players.push({role:'res',name:''});render()}});
+  var pl=$('plist');
+  if(st.mode==='solo'){pl.innerHTML='<div class="choice">'+ROLES.map(function(r){return '<button class="opt'+(st.players[0].role===r.k?' on':'')+'" data-r="'+r.k+'"><b>'+esc(L(r))+'</b><small>'+esc(L(r.d))+'</small></button>'}).join('')+'</div>';
+    pl.querySelectorAll('[data-r]').forEach(function(b){b.onclick=function(){st.players[0].role=b.getAttribute('data-r');render()}})}
+  else{pl.innerHTML=st.players.map(function(p,i){return '<div class="row" style="margin:6px 0"><select data-i="'+i+'">'+ROLES.map(function(r){return '<option value="'+r.k+'"'+(p.role===r.k?' selected':'')+'>'+esc(L(r))+'</option>'}).join('')+'</select><input type="text" data-n="'+i+'" maxlength="30" placeholder="'+t('nameP')+'" value="'+esc(p.name)+'">'+(st.players.length>2?'<button class="btn ghost" data-x="'+i+'">'+t('rmP')+'</button>':'')+'</div>'}).join('')+(st.players.length<4?'<button class="btn ghost" id="addP">'+t('addP')+'</button>':'');
+    pl.querySelectorAll('select').forEach(function(s){s.onchange=function(){st.players[+s.getAttribute('data-i')].role=s.value}});
+    pl.querySelectorAll('[data-n]').forEach(function(s){s.oninput=function(){st.players[+s.getAttribute('data-n')].name=s.value}});
+    pl.querySelectorAll('[data-x]').forEach(function(b){b.onclick=function(){st.players.splice(+b.getAttribute('data-x'),1);render()}});
+    var ap=$('addP');if(ap)ap.onclick=function(){var used=st.players.map(function(p){return p.role});var r=ROLES.filter(function(x){return used.indexOf(x.k)<0})[0]||ROLES[0];st.players.push({role:r.k,name:''});render()}}
+  $('go').onclick=function(){resetPlay();st.players.forEach(function(p){p.pw=PAIRS.map(function(){return 0})});st.cur=0;st.phase='ahp';render();window.scrollTo(0,0)}}
+function strengthText(p,a,b){if(p===0)return t('eq');var s=Math.abs(p)+1;var who=p<0?[a,b]:[b,a];return t('more',{a:who[0],s:t('s'+s),b:who[1]})}
+function renderAHP(m){var p=st.players[st.cur];
+  m.innerHTML='<section class="card pad">'+steps('stepAHP')+'<h2>'+t('ahpH',{who:roleName(p)})+'</h2><p class="hint">'+t('ahpP')+'</p><div class="grid2"><div id="pws"></div><div><h3 style="font-size:15px">'+t('weightsH')+'</h3><div id="wv"></div></div></div>'+
+   '<div class="row" style="margin-top:14px"><button class="btn ghost" id="bk">'+t('back')+'</button><button class="btn" id="nx">'+t('next')+'</button></div></section>';
+  $('pws').innerHTML=PAIRS.map(function(pr,k){var a=L(CRIT[pr[0]]),b=L(CRIT[pr[1]]);return '<div class="pw"><div class="l">'+esc(a)+'</div><input type="range" min="-8" max="8" step="1" value="'+p.pw[k]+'" data-k="'+k+'" aria-label="'+esc(a)+' – '+esc(b)+'"><div class="r">'+esc(b)+'</div><div class="v" id="pv'+k+'">'+esc(strengthText(p.pw[k],a,b))+'</div></div>'}).join('');
+  m.querySelectorAll('input[type=range]').forEach(function(inp){inp.oninput=function(){var k=+inp.getAttribute('data-k');p.pw[k]=+inp.value;var pr=PAIRS[k];$('pv'+k).textContent=strengthText(p.pw[k],L(CRIT[pr[0]]),L(CRIT[pr[1]]));weights()}});
+  function weights(){var r=ahp(matrix(p.pw.map(toVal)));p.res=r;$('wv').innerHTML=wbars(r.w)+'<div class="cr '+(r.CR<=0.1?'ok':'bad')+'">'+t(r.CR<=0.1?'crOk':'crBad',{cr:fmt(Math.max(0,r.CR),3)})+'</div>'}
+  weights();
+  $('bk').onclick=function(){if(st.cur>0){st.cur--;render()}else{st.phase='intro';render()}};
+  $('nx').onclick=function(){if(st.cur<st.players.length-1){st.cur++;render()}else{finishAHP()}window.scrollTo(0,0)}}
+function wbars(w,ref){return w.map(function(v,i){return '<div class="wbar"><span class="nm">'+esc(L(CRIT[i]))+'</span><span class="tr"><i style="width:'+Math.round(v*100)+'%;background:'+CCOL[i]+'"></i></span><span class="val">'+fmt(v*100,1)+'%</span></div>'}).join('')}
+function finishAHP(){if(st.players.length>1){var agg=geoAgg(st.players.map(function(p){return p.pw.map(toVal)}));st.group=ahp(matrix(agg));st.phase='agg'}else{st.group=st.players[0].res;st.phase='play'}render()}
+function renderAgg(m){var g=st.group;
+  var rows='<table><thead><tr><th></th>'+CRIT.map(function(c){return '<th>'+esc(L(c))+'</th>'}).join('')+'<th>CR</th></tr></thead><tbody>'+
+   st.players.map(function(p){return '<tr><td>'+roleName(p)+'</td>'+p.res.w.map(function(v){return '<td>'+fmt(v*100,1)+'%</td>'}).join('')+'<td>'+fmt(Math.max(0,p.res.CR),3)+'</td></tr>'}).join('')+
+   '<tr><td><b>'+t('groupW')+'</b></td>'+g.w.map(function(v){return '<td><b>'+fmt(v*100,1)+'%</b></td>'}).join('')+'<td><b>'+fmt(Math.max(0,g.CR),3)+'</b></td></tr></tbody></table>';
+  m.innerHTML='<section class="card pad">'+steps('stepAgg')+'<h2>'+t('aggH')+'</h2><p class="hint">'+t('aggP')+'</p><div class="grid2"><div style="overflow-x:auto">'+rows+'</div><div>'+wbars(g.w)+'</div></div>'+
+   '<div class="row" style="margin-top:14px"><button class="btn ghost" id="bk">'+t('back')+'</button><button class="btn" id="nx">'+t('next')+'</button></div></section>';
+  $('bk').onclick=function(){st.cur=st.players.length-1;st.phase='ahp';render()};$('nx').onclick=function(){st.phase='play';render();window.scrollTo(0,0)}}
+function optScore(o){var e=effVec(o);return e.reduce(function(s,v,i){return s+st.group.w[i]*(v+3)/6},0)}
+function stake(){var c=st.city,fis=Math.max(0,Math.min(100,50+(st.cash-120)/2));return [
+  [L(ROLES[0]),Math.round(.5*fis+.25*c.eco+.25*c.soc)],[L(ROLES[1]),Math.round(.7*c.eco+.3*fis)],[L(ROLES[2]),Math.round(.6*c.soc+.2*c.env+.2*c.eco)],[L(ROLES[3]),Math.round(.5*c.env+.5*c.her)]]}
+function cityPanel(preview){var c=preview?{env:50,eco:50,soc:50,her:50}:st.city;var keys=['env','eco','soc','her'];
+  return '<div class="card pad city" style="box-shadow:none"><h3 style="font-size:15px">'+t('cityH')+'</h3>'+keys.map(function(k,i){var v=Math.round(c[k]);return '<div class="ind"><div class="top"><span>'+esc(L(CRIT[i]))+'</span><span>'+v+'</span></div><div class="bar"><i style="width:'+v+'%;background:'+CCOL[i]+'"></i></div></div>'}).join('')+
+   (preview?'':'<h3 style="font-size:15px;margin-top:12px">'+t('standH')+'</h3><div class="faces">'+stake().map(function(s){var v=Math.max(0,Math.min(100,s[1]));return '<div class="face"><span>'+esc(s[0])+'</span><b>'+(v>=60?'🙂':v>=40?'😐':'🙁')+' '+v+'</b></div>'}).join('')+'</div>')+'</div>'}
+function renderPlay(m){var s=SCEN[st.order[st.r]],scores=s.o.map(optScore),best=scores.indexOf(Math.max.apply(null,scores)),dec=st.picked!=null;
+  m.innerHTML='<section class="card pad">'+steps('stepPlay')+'<div class="scen"><div><div class="hint">'+t('scenH',{n:st.r+1,t:SCEN.length})+'</div><h2 style="font-size:24px">'+esc(L(s.title))+'</h2><p>'+esc(L(s.desc))+'</p>'+
+   '<label class="hint"><input type="checkbox" id="sr" '+(st.showReco||dec?'checked':'')+' '+(dec?'disabled':'')+'> '+t('showReco')+'</label>'+
+   '<div class="opts">'+s.o.map(function(o,i){var e=effVec(o),aff=o.c<=st.cash;return '<div class="oc'+(dec&&st.picked===i?' pick':'')+((st.showReco||dec)&&i===best?' reco':'')+'"><h4>'+String.fromCharCode(65+i)+'. '+esc(L(o.t))+'</h4>'+
+     '<div class="eff">'+e.map(function(v,j){return '<span class="'+(v>0?'p':v<0?'n':'')+'">'+esc(L(CRIT[j]))+' '+(v>0?'+'+v:v)+'</span>'}).join('')+'</div>'+
+     '<div class="hint">'+(o.c>=0?t('cost',{c:o.c}):t('income',{c:-o.c}))+((st.showReco||dec)?' · '+t('scoreL',{s:fmt(scores[i]*100,1)})+(i===best?' <span class="tag">'+t('reco')+'</span>':''):'')+'</div>'+
+     (dec?'':'<button class="btn'+(aff?'':' ghost')+'" data-o="'+i+'" '+(aff?'':'disabled')+'>'+(aff?t('decide'):t('noCash'))+'</button>')+'</div>'}).join('')+'</div>'+
+   (dec?'<div class="out">'+t('outPick',{o:String.fromCharCode(65+st.picked)})+(st.picked===best?t('outReco'):t('outDiff',{o:String.fromCharCode(65+best)}))+'</div><div class="row" style="margin-top:10px"><button class="btn" id="nx">'+t('next')+'</button></div>':'')+
+   '</div><div>'+cityPanel(false)+'</div></div></section>';
+  var sr=$('sr');if(sr&&!dec)sr.onchange=function(){st.showReco=sr.checked;render()};
+  m.querySelectorAll('[data-o]').forEach(function(b){b.onclick=function(){decide(+b.getAttribute('data-o'),best)}});
+  var nx=$('nx');if(nx)nx.onclick=function(){st.picked=null;if(st.r<SCEN.length-1){st.r++;render()}else{st.phase='end';render()}window.scrollTo(0,0)}}
+function decide(i,best){var s=SCEN[st.order[st.r]],o=s.o[i];if(o.c>st.cash)return;st.cash-=o.c;var keys=['env','eco','soc','her'];keys.forEach(function(k,j){st.city[k]=Math.max(0,Math.min(100,st.city[k]+o.e[j]*5))});
+  st.cash+=10;st.picked=i;st.log.push({s:st.order[st.r],pick:i,best:best});render()}
+function cityIndex(){var c=st.city;return Math.round((c.env+c.eco+c.soc+c.her)/4)}
+function renderEnd(m){var a=st.log.filter(function(l){return l.pick===l.best}).length,ci=cityIndex();
+  m.innerHTML='<section class="card pad">'+steps('stepEnd')+'<div class="grid2"><div><h2>'+t('endH')+'</h2>'+
+   '<div class="row" style="gap:28px;margin:12px 0"><div><div class="hint">'+t('cityScore')+'</div><div class="big">'+ci+'</div></div><div><div class="hint">'+t('align')+'</div><div class="big">'+a+'/'+st.log.length+'</div><div class="hint">'+t('alignD',{a:a,n:st.log.length})+'</div></div></div>'+
+   '<table><thead><tr><th>'+t('tabScen')+'</th><th>'+t('tabPick')+'</th><th>'+t('tabReco')+'</th></tr></thead><tbody>'+st.log.map(function(l){var s=SCEN[l.s];return '<tr><td>'+esc(L(s.title))+'</td><td>'+String.fromCharCode(65+l.pick)+'. '+esc(L(s.o[l.pick].t))+'</td><td>'+(l.pick===l.best?'✓':String.fromCharCode(65+l.best)+'. '+esc(L(s.o[l.best].t)))+'</td></tr>'}).join('')+'</tbody></table>'+
+   '<h3 style="font-size:15px;margin-top:16px">'+t('reflH')+'</h3><ol class="hint"><li>'+t('refl1')+'</li><li>'+t('refl2')+'</li><li>'+t('refl3')+'</li></ol>'+
+   '<div class="row" style="margin-top:12px"><button class="btn" id="again">'+t('again')+'</button><button class="btn ghost" id="copy">'+t('copy')+'</button></div></div>'+
+   '<div>'+cityPanel(false)+'<div class="card pad" style="box-shadow:none;margin-top:12px"><h3 style="font-size:15px">'+t('weightsH')+'</h3>'+wbars(st.group.w)+'</div></div></div></section>';
+  var b=+(store.get('kkBest')||0);if(ci>b)store.set('kkBest',ci);
+  $('again').onclick=function(){st.phase='intro';render();window.scrollTo(0,0)};
+  $('copy').onclick=function(){var bt=this;var txt=t('shareTxt',{s:ci,a:a,n:st.log.length})+' pindotutuko.id';try{navigator.clipboard.writeText(txt).then(function(){bt.textContent=t('copied')},function(){bt.textContent=t('copyFail')})}catch(e){bt.textContent=t('copyFail')}}}
+function applyStatic(){document.documentElement.lang=lang;document.querySelectorAll('[data-t]').forEach(function(n){n.innerHTML=t(n.getAttribute('data-t'))});$('langBtn').textContent=lang==='id'?'EN':'ID'}
+$('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('kkLang',lang);applyStatic();render()};
+applyStatic();render();
+window.__KK={ahp:ahp,matrix:matrix,toVal:toVal,geoAgg:geoAgg,PAIRS:PAIRS,st:function(){return st},SCEN:SCEN,optScore:optScore};
+})();
+</script>
+</body>
+</html>
