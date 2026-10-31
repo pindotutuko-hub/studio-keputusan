@@ -9,13 +9,13 @@ function pindotutuko_babat_feature() {
 	?>
 <section id="babat-alas" class="ba-feat" aria-labelledby="ba-feat-title">
 	<a class="ba-feat__card" href="<?php echo $url; ?>" target="_blank" rel="noopener">
-		<img class="ba-feat__img" src="<?php echo $cover; ?>" alt="Babat Alas — kampung 3D dengan rumah joglo, rumah gadang, tongkonan, sawah, sungai, dan warga yang beraktivitas" loading="lazy" decoding="async" width="1600" height="900">
+		<img class="ba-feat__img" src="<?php echo $cover; ?>" alt="Babat Alas — kampung Jawa 3D dengan rumah joglo dan limasan, pendapa, langgar, sawah, sungai, dan warga yang beraktivitas" loading="lazy" decoding="async" width="1600" height="900">
 		<span class="ba-feat__shade" aria-hidden="true"></span>
 		<span class="ba-feat__body">
 			<span class="ba-feat__tag">BARU · NEW · GIM 3D</span>
 			<span id="ba-feat-title" class="ba-feat__title">Babat Alas</span>
-			<span class="ba-feat__lead">Bangun kampungmu dari hutan di lokasi nyata mana pun di dunia — tumbuh menjadi dusun, desa, sampai kawasan pintar.</span>
-			<span class="ba-feat__en" lang="en">Found a settlement anywhere on Earth and grow it from forest clearing to a smart district.</span>
+			<span class="ba-feat__lead">Dari lahan kosong di lokasi nyata mana pun di dunia, bangun kampung/desa sampai kota — lengkap dengan perumahan, apartemen, dan fasilitas kota.</span>
+			<span class="ba-feat__en" lang="en">Start on empty land anywhere on Earth and grow a kampung into a village, an estate and a city.</span>
 			<span class="ba-feat__chips"><span>🌏 Lokasi nyata</span><span>🏠 11 gaya rumah</span><span>🧑🏽 Avatar 3D</span><span>🏆 Peringkat kelas</span><span>📚 Pustaka materi</span><span>🆓 Gratis</span></span>
 			<span class="ba-feat__cta">Main sekarang · Play now <span aria-hidden="true">→</span></span>
 		</span>

@@ -15,9 +15,9 @@ const TOKEN_DAYS = 45;
 const EULA_VER = '2026-11-01';
 const ERA_MAX = 7;            // era tertinggi di versi ini
 const START = ['coin' => 60, 'wood' => 25];
-const COST = ['house' => [2, 8], 'field' => [3, 2], 'well' => [4, 2], 'barn' => [6, 12], 'pond' => [5, 0], 'tree' => [1, 0], 'hall' => [20, 30], 'worship' => [15, 15], 'market' => [25, 20], 'rt' => [8, 10], 'taman' => [6, 4], 'kebun' => [6, 3], 'bengkel' => [10, 8], 'sekolah' => [30, 25], 'klinik' => [35, 15], 'kom' => [20, 10]];
-const SIZE = ['field' => 2, 'hall' => 2, 'market' => 2, 'kebun' => 2, 'sekolah' => 2];
-const ERA_OF = ['hall' => 2, 'worship' => 2, 'market' => 2, 'sekolah' => 2, 'klinik' => 2, 'kom' => 2];
+const COST = ['house' => [2, 8], 'field' => [3, 2], 'well' => [4, 2], 'barn' => [6, 12], 'pond' => [5, 0], 'tree' => [1, 0], 'hall' => [20, 30], 'worship' => [15, 15], 'market' => [25, 20], 'rt' => [8, 10], 'taman' => [6, 4], 'kebun' => [6, 3], 'bengkel' => [10, 8], 'sekolah' => [30, 25], 'klinik' => [35, 15], 'kom' => [20, 10], 'perum' => [120, 40], 'ruko' => [90, 30], 'rs' => [220, 40], 'tamkot' => [60, 5], 'apartemen' => [400, 60], 'mal' => [350, 50], 'stasiun' => [300, 40], 'balkot' => [500, 60]];
+const SIZE = ['field' => 2, 'hall' => 2, 'market' => 2, 'kebun' => 2, 'sekolah' => 2, 'perum' => 2, 'ruko' => 2, 'rs' => 2, 'tamkot' => 2, 'apartemen' => 2, 'mal' => 2, 'stasiun' => 2, 'balkot' => 2];
+const ERA_OF = ['hall' => 2, 'worship' => 2, 'market' => 2, 'sekolah' => 2, 'klinik' => 2, 'kom' => 2, 'ruko' => 4, 'perum' => 5, 'rs' => 5, 'tamkot' => 5, 'apartemen' => 6, 'mal' => 6, 'stasiun' => 6, 'balkot' => 7];
 const BADWORDS = ['anjing', 'bangsat', 'kontol', 'memek', 'ngentot', 'jancok', 'jancuk', 'goblok', 'fuck', 'shit', 'bitch', 'asshole', 'nigger', 'pussy', 'dick'];
 
 function out(array $a, int $code = 200): void { http_response_code($code); echo json_encode($a, JSON_UNESCAPED_UNICODE); exit; }
@@ -104,7 +104,7 @@ function audit(array $st, ?array $prev, int $prevAt): array {
 		$spentC += COST[$ty][0]; $spentW += COST[$ty][1]; $cnt[$ty] = ($cnt[$ty] ?? 0) + 1;
 	}
 	$houses = $cnt['house'] ?? 0; $barns = $cnt['barn'] ?? 0; $markets = $cnt['market'] ?? 0;
-	if ($kk > $houses + 6 || $kk < 0 || $kk > 2000) { $bad[] = 'kk'; }
+	if ($kk > $houses + 4 * ($cnt['perum'] ?? 0) + 16 * ($cnt['apartemen'] ?? 0) + 6 || $kk < 0 || $kk > 2000) { $bad[] = 'kk'; }
 	if ($era >= 2 && $barns < 1) { $bad[] = 'era2'; }
 	$eraKK = [3 => 40, 4 => 80, 5 => 160, 6 => 320, 7 => 640]; if (isset($eraKK[$era]) && $kk < $eraKK[$era] * 0.5) { $bad[] = 'eraKK'; }
 	$paths = substr_count(implode('', $land), 'P'); $spentC += $paths;
