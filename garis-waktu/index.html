@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Garis Waktu Arsitektur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3efe7;--card:#fffdf9;--ink:#1f1c18;--muted:#6d655a;--line:#ddd3c4;--soft:#efe8dc;
+  --accent:#5b3f8f;--accentSoft:#ece6f6;--ok:#2f7d4f;--okSoft:#e1f1e6;--bad:#a33a2a;--badSoft:#f6e1dc;
+  --shadow:0 1px 2px rgba(40,30,20,.06),0 8px 24px rgba(40,30,20,.08);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#15130f;--card:#1f1c17;--ink:#f2ece2;--muted:#a69d8f;--line:#38322a;--soft:#2a261f;
+  --accent:#b9a2e8;--accentSoft:#2c2540;--ok:#6cc58f;--okSoft:#1c3326;--bad:#ef8a78;--badSoft:#3a2420;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14.5px/1.5 Inter,system-ui,sans-serif}
+h1,h2,h3{font-family:"Space Grotesk",Inter,system-ui,sans-serif;margin:0;letter-spacing:-.01em}
+button{font:inherit;cursor:pointer;color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:16px 16px 40px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.home{display:inline-flex;align-items:center;gap:4px;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 12px 7px 8px;font-weight:700;font-size:13px}
+.home:hover{border-color:var(--accent);color:var(--accent)}
+.logo{width:42px;height:42px;border-radius:12px;background:#5b3f8f;display:grid;place-items:center;flex:none}
+.brand h1{font-size:22px}.brand p{margin:0;color:var(--muted);font-size:13px}
+.hud{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;display:flex;gap:6px;align-items:center}
+.pill b{font-family:"Space Grotesk",Inter,sans-serif;font-size:15px}
+.lives{letter-spacing:2px;color:var(--bad)}
+.lang{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.intro{padding:26px;display:grid;gap:22px;grid-template-columns:1.1fr 1fr;align-items:center}
+@media (max-width:900px){.intro{grid-template-columns:1fr}}
+.intro h2{font-size:30px;line-height:1.15}
+.intro ol{padding-left:20px}.intro li{margin:5px 0}
+.hint{color:var(--muted);font-size:13px}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:12px;padding:11px 16px;font-weight:700;font-size:15px}
+@media (prefers-color-scheme:dark){.btn{color:#17121f}}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.stage{padding:16px}
+.top{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start}
+@media (max-width:760px){.top{grid-template-columns:1fr}}
+.drawLabel{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.msg{border-radius:14px;padding:12px 14px;font-size:14px;min-height:64px}
+.msg.good{background:var(--okSoft)}.msg.bad{background:var(--badSoft)}.msg.neutral{background:var(--soft)}
+.msg b{font-family:"Space Grotesk",Inter,sans-serif}
+.msg .mv{display:inline-block;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:700;color:#fff;margin-left:4px}
+.tlwrap{margin-top:16px;overflow-x:auto;padding:10px 4px 14px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.tl{display:flex;align-items:stretch;gap:0;min-width:max-content;position:relative}
+.tl:before{content:"";position:absolute;left:0;right:0;top:50%;height:3px;background:var(--line);z-index:0}
+.slot{width:44px;flex:none;display:flex;align-items:center;justify-content:center;position:relative;z-index:1}
+.slot button{width:34px;height:34px;border-radius:50%;border:2px dashed var(--accent);background:var(--card);color:var(--accent);font-weight:800;font-size:18px;line-height:1;transition:transform .15s}
+.slot button:hover,.slot button:focus-visible{transform:scale(1.15);background:var(--accentSoft)}
+.slot button:disabled{opacity:0;pointer-events:none}
+.gc{width:150px;flex:none;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;position:relative;z-index:1;scroll-snap-align:center;box-shadow:var(--shadow)}
+.gc.big{width:190px}
+.gc .art{height:82px;display:block;width:100%}
+.gc .tx{padding:8px 10px 10px}
+.gc .nm{font-weight:700;font-size:13px;line-height:1.25}
+.gc .ar{font-size:11.5px;color:var(--muted);margin-top:2px}
+.gc .yr{font-family:"Space Grotesk",Inter,sans-serif;font-size:22px;font-weight:700;margin-top:4px}
+.gc .yr.q{color:var(--muted)}
+.gc.wrong{outline:3px solid var(--bad)}
+.gc.right{outline:3px solid var(--ok)}
+.gc.flash{animation:pop .5s ease}
+@keyframes pop{0%{transform:scale(.9)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.gc.flash{animation:none}}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:12px}
+td.r,th.r{text-align:right}
+.big{font-family:"Space Grotesk",Inter,sans-serif;font-size:52px;font-weight:700;color:var(--accent);line-height:1}
+footer{margin-top:20px;color:var(--muted);font-size:12.5px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--muted)}
+.hidden{display:none!important}
+.modes{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600}
+.chip.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="home" href="https://pindotutuko.id/" title="pindotutuko.id"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span data-t="home"></span></a>
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M3 12h18"/><circle cx="6" cy="12" r="2" fill="#fff"/><circle cx="12" cy="12" r="2" fill="#fff"/><circle cx="18" cy="12" r="2" fill="#fff"/><path d="M6 6v3M12 4v5M18 7v2"/></svg></div>
+    <div class="brand"><h1 data-t="title"></h1><p data-t="tag"></p></div>
+    <div class="hud">
+      <div class="pill"><span data-t="lives"></span> <b class="lives" id="hLives">♥♥♥</b></div>
+      <div class="pill"><span data-t="score"></span> <b id="hScore">0</b></div>
+      <div class="pill"><span data-t="streak"></span> <b id="hStreak">0</b></div>
+      <button class="lang" id="langBtn">EN</button>
+    </div>
+  </header>
+
+  <section class="card intro" id="intro">
+    <div>
+      <h2 data-t="introH"></h2>
+      <p class="hint" data-t="introP"></p>
+      <ol><li data-t="i1"></li><li data-t="i2"></li><li data-t="i3"></li></ol>
+      <div class="drawLabel" data-t="deckH"></div>
+      <div class="modes" id="modes"></div>
+      <div class="row" style="margin-top:8px"><button class="btn" id="startBtn" data-t="start"></button></div>
+      <p class="hint" id="bestLine" style="margin-top:8px"></p>
+    </div>
+    <div id="introCards" class="row" style="justify-content:center;gap:12px"></div>
+  </section>
+
+  <section class="card stage hidden" id="game">
+    <div class="top">
+      <div><div class="drawLabel" data-t="drawn"></div><div id="hand"></div></div>
+      <div><div class="drawLabel" id="progress"></div><div class="msg neutral" id="msg"></div></div>
+    </div>
+    <div class="tlwrap" id="tlwrap"><div class="tl" id="tl"></div></div>
+    <p class="hint" data-t="scrollHint"></p>
+  </section>
+
+  <section class="card intro hidden" id="endBox"></section>
+
+  <footer>
+    <span data-t="ref"></span>
+    <span><span data-t="by"></span> <a href="https://pindotutuko.id" target="_blank" rel="noopener">pindotutuko.id</a></span>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+var lang=store.get('gwLang')==='en'?'en':'id';
+var T={
+ id:{home:"Beranda",title:"Garis Waktu Arsitektur",tag:"Gim menyusun karya arsitektur modern menurut tahun",lives:"Nyawa",score:"Skor",streak:"Beruntun",
+  introH:"Susun 150 tahun arsitektur modern",introP:"Setiap kartu adalah satu karya arsitektur. Tahunnya tersembunyi sampai kamu menempatkannya di garis waktu.",
+  i1:"Lihat kartu yang ditarik: nama karya, arsitek, dan kota.",i2:"Ketuk tanda + di garis waktu, di antara dua karya yang menurutmu mengapit tahunnya.",i3:"Benar: kartu menetap dan skor bertambah. Salah: kartu pindah ke posisi yang benar dan kamu kehilangan satu nyawa. Tiga nyawa.",
+  deckH:"Pilih dek",d_all:"Semua karya",d_world:"Dunia",d_indo:"Fokus Indonesia + Asia",
+  start:"Mulai",best:"Skor terbaikmu: {s}",drawn:"Kartu ditarik",progress:"Kartu {n} dari {t}",
+  first:"Kartu pertama sudah di garis waktu. Tempatkan kartu yang ditarik.",
+  right:"Tepat!",wrong:"Belum tepat — {y}.",streakB:" Bonus beruntun +{b}.",
+  scrollHint:"Geser garis waktu ke samping bila kartunya banyak.",
+  endWin:"Semua kartu tersusun!",endLose:"Nyawa habis",endTotal:"Skor",again:"Main lagi",copy:"Salin hasil",copied:"Tersalin ✓",copyFail:"Gagal menyalin",backMenu:"Kembali",
+  placed:"Kartu benar",tabYear:"Tahun",tabWork:"Karya",tabArch:"Arsitek",tabMov:"Aliran",
+  shareTxt:"Garis Waktu Arsitektur — skor {s} ({c} kartu benar).",
+  ref:"Tahun = tahun selesai/diresmikan menurut sumber umum; beberapa karya dibangun bertahun-tahun.",by:"Dikembangkan oleh: Pindo Tutuko ·"},
+ en:{home:"Home",title:"Architecture Timeline",tag:"A game of ordering modern architecture by year",lives:"Lives",score:"Score",streak:"Streak",
+  introH:"Order 150 years of modern architecture",introP:"Each card is one work of architecture. Its year stays hidden until you place it on the timeline.",
+  i1:"Look at the drawn card: the work, the architect and the city.",i2:"Tap a + on the timeline, between the two works you think bracket its year.",i3:"Right: the card stays and you score. Wrong: the card moves to its correct place and you lose a life. Three lives.",
+  deckH:"Choose a deck",d_all:"All works",d_world:"World",d_indo:"Indonesia + Asia focus",
+  start:"Start",best:"Your best score: {s}",drawn:"Drawn card",progress:"Card {n} of {t}",
+  first:"The first card is already on the timeline. Place the drawn card.",
+  right:"Correct!",wrong:"Not quite — {y}.",streakB:" Streak bonus +{b}.",
+  scrollHint:"Scroll the timeline sideways when it gets long.",
+  endWin:"Every card placed!",endLose:"Out of lives",endTotal:"Score",again:"Play again",copy:"Copy result",copied:"Copied ✓",copyFail:"Copy failed",backMenu:"Back",
+  placed:"Correct cards",tabYear:"Year",tabWork:"Work",tabArch:"Architect",tabMov:"Movement",
+  shareTxt:"Architecture Timeline — score {s} ({c} correct cards).",
+  ref:"Year = year completed/opened according to common sources; some works took years to build.",by:"Developed by: Pindo Tutuko ·"}
+};
+function t(k,v){var s=T[lang][k]!=null?T[lang][k]:k;if(v)for(var p in v)s=s.split('{'+p+'}').join(v[p]);return s}
+var $=function(id){return document.getElementById(id)};
+function esc(x){return String(x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+/* Movements: label + colour */
+var MOV={
+ iron:{id:"Besi & kaca abad ke-19",en:"19th-c. iron & glass",c:"#6b7280"},
+ nouv:{id:"Art Nouveau / Modernisme Katalan",en:"Art Nouveau / Catalan Modernisme",c:"#a16207"},
+ prai:{id:"Prairie",en:"Prairie School",c:"#9a3412"},
+ expr:{id:"Ekspresionisme",en:"Expressionism",c:"#be123c"},
+ stijl:{id:"De Stijl",en:"De Stijl",c:"#1d4ed8"},
+ deco:{id:"Art Deco",en:"Art Deco",c:"#b45309"},
+ indis:{id:"Kolonial / Indis",en:"Dutch colonial (Indies)",c:"#7c5a3a"},
+ intl:{id:"Modernisme / Gaya Internasional",en:"Modernism / International Style",c:"#334155"},
+ brut:{id:"Modernisme beton / Brutalisme",en:"Concrete modernism / Brutalism",c:"#57534e"},
+ orgm:{id:"Modernisme organik/ekspresif",en:"Organic / expressive modernism",c:"#0f766e"},
+ idmod:{id:"Modernisme Indonesia",en:"Indonesian modernism",c:"#15803d"},
+ pomo:{id:"Pascamodern",en:"Postmodernism",c:"#c026d3"},
+ hitec:{id:"High-tech",en:"High-tech",c:"#0369a1"},
+ decon:{id:"Dekonstruktivisme",en:"Deconstructivism",c:"#7e22ce"},
+ cont:{id:"Kontemporer / parametrik",en:"Contemporary / parametric",c:"#4338ca"}
+};
+/* Cards: [key, name, architect, year (completed/opened), city & country, movement, glyph, region] */
+var CARDS=[
+ ['crys','Crystal Palace','Joseph Paxton',1851,'London, Inggris|London, UK','iron','hall','w'],
+ ['eiff','Menara Eiffel|Eiffel Tower','Gustave Eiffel (perusahaan Eiffel)|Gustave Eiffel (Eiffel company)',1889,'Paris, Prancis|Paris, France','iron','tower','w'],
+ ['laws','Lawang Sewu','J.F. Klinkhamer & B.J. Ouëndag (rancangan Cosman Citroen)|J.F. Klinkhamer & B.J. Ouëndag (design by Cosman Citroen)',1907,'Semarang, Indonesia','indis','hall','a'],
+ ['robi','Robie House','Frank Lloyd Wright',1910,'Chicago, AS|Chicago, USA','prai','house','w'],
+ ['mila','Casa Milà (La Pedrera)','Antoni Gaudí',1912,'Barcelona, Spanyol|Barcelona, Spain','nouv','house','w'],
+ ['eins','Menara Einstein|Einstein Tower','Erich Mendelsohn',1921,'Potsdam, Jerman|Potsdam, Germany','expr','tower','w'],
+ ['riet','Rumah Rietveld Schröder|Rietveld Schröder House','Gerrit Rietveld',1924,'Utrecht, Belanda|Utrecht, Netherlands','stijl','house','w'],
+ ['bauh','Gedung Bauhaus Dessau|Bauhaus Building, Dessau','Walter Gropius',1926,'Dessau, Jerman|Dessau, Germany','intl','hall','w'],
+ ['barc','Paviliun Barcelona|Barcelona Pavilion','Ludwig Mies van der Rohe & Lilly Reich',1929,'Barcelona, Spanyol|Barcelona, Spain','intl','pav','w'],
+ ['chry','Chrysler Building','William Van Alen',1930,'New York, AS|New York, USA','deco','tower','w'],
+ ['savo','Villa Savoye','Le Corbusier',1931,'Poissy, Prancis|Poissy, France','intl','house','w'],
+ ['isol','Villa Isola','C.P. Wolff Schoemaker',1933,'Bandung, Indonesia','deco','house','a'],
+ ['glas','Glass House','Philip Johnson',1949,'New Canaan, AS|New Canaan, USA','intl','pav','w'],
+ ['farn','Farnsworth House','Ludwig Mies van der Rohe',1951,'Plano, AS|Plano, USA','intl','pav','w'],
+ ['unit','Unité d’Habitation','Le Corbusier',1952,'Marseille, Prancis|Marseille, France','brut','block','w'],
+ ['leve','Lever House','SOM (Gordon Bunshaft & Natalie de Blois)',1952,'New York, AS|New York, USA','intl','tower','w'],
+ ['ronc','Kapel Notre-Dame du Haut|Notre-Dame du Haut Chapel','Le Corbusier',1955,'Ronchamp, Prancis|Ronchamp, France','orgm','dome','w'],
+ ['seag','Seagram Building','Ludwig Mies van der Rohe (dengan Philip Johnson)|Ludwig Mies van der Rohe (with Philip Johnson)',1958,'New York, AS|New York, USA','intl','tower','w'],
+ ['gugn','Museum Guggenheim New York|Guggenheim Museum, New York','Frank Lloyd Wright',1959,'New York, AS|New York, USA','orgm','spiral','w'],
+ ['vann','Vanna Venturi House','Robert Venturi',1964,'Philadelphia, AS|Philadelphia, USA','pomo','house','w'],
+ ['salk','Salk Institute','Louis I. Kahn',1965,'La Jolla, AS|La Jolla, USA','brut','block','w'],
+ ['sydn','Gedung Opera Sydney|Sydney Opera House','Jørn Utzon',1973,'Sydney, Australia','orgm','shell','a'],
+ ['mona','Monumen Nasional (Monas)|National Monument (Monas)','Friedrich Silaban & R.M. Soedarsono',1975,'Jakarta, Indonesia','idmod','tower','a'],
+ ['pomp','Centre Pompidou','Renzo Piano & Richard Rogers',1977,'Paris, Prancis|Paris, France','hitec','hall','w'],
+ ['istq','Masjid Istiqlal|Istiqlal Mosque','Friedrich Silaban',1978,'Jakarta, Indonesia','idmod','dome','a'],
+ ['dhak','Gedung Parlemen Bangladesh|National Parliament House of Bangladesh','Louis I. Kahn',1982,'Dhaka, Bangladesh','brut','block','a'],
+ ['port','Portland Building','Michael Graves',1982,'Portland, AS|Portland, USA','pomo','block','w'],
+ ['hsbc','Gedung HSBC Hong Kong|HSBC Building, Hong Kong','Norman Foster',1985,'Hong Kong','hitec','tower','a'],
+ ['lloy','Lloyd’s Building','Richard Rogers',1986,'London, Inggris|London, UK','hitec','tower','w'],
+ ['louv','Piramida Louvre|Louvre Pyramid','I.M. Pei',1989,'Paris, Prancis|Paris, France','cont','pyr','w'],
+ ['bilb','Museum Guggenheim Bilbao|Guggenheim Museum Bilbao','Frank Gehry',1997,'Bilbao, Spanyol|Bilbao, Spain','decon','shell','w'],
+ ['seat','Perpustakaan Pusat Seattle|Seattle Central Library','OMA (Rem Koolhaas) & LMN',2004,'Seattle, AS|Seattle, USA','cont','block','w'],
+ ['bird','Stadion Nasional Beijing|Beijing National Stadium','Herzog & de Meuron',2008,'Beijing, Tiongkok|Beijing, China','cont','stad','a'],
+ ['burj','Burj Khalifa','SOM (Adrian Smith)',2010,'Dubai, Uni Emirat Arab|Dubai, UAE','cont','tower','a'],
+ ['heyd','Heydar Aliyev Center','Zaha Hadid Architects',2012,'Baku, Azerbaijan','cont','shell','a']
+];
+var NOTE={
+ crys:["Bangunan pameran besi-kaca prafabrikasi untuk Pameran Besar 1851.","A prefabricated iron-and-glass exhibition hall for the Great Exhibition of 1851."],
+ eiff:["Menara besi tempa untuk Pameran Universal 1889.","A wrought-iron tower built for the 1889 Exposition Universelle."],
+ laws:["Kantor perusahaan kereta api NIS; gedung utama selesai 1907, seluruh kompleks 1919.","Head office of the NIS railway company; main building finished in 1907, the full complex in 1919."],
+ robi:["Contoh gaya Prairie: atap datar menjorok jauh dan garis horizontal kuat.","A Prairie School icon: deep cantilevered roofs and strong horizontals."],
+ mila:["Fasad batu bergelombang yang menopang dirinya sendiri; tanpa dinding pemikul sehingga dinding dalam bebas diatur; atap dengan cerobong berbentuk patung.","A self-supporting undulating stone façade; no load-bearing walls, so interior walls can be placed freely; a roof of sculpted chimneys."],
+ eins:["Observatorium surya berbentuk plastis — ikon ekspresionisme.","A sculptural solar observatory — an icon of Expressionism."],
+ riet:["Bidang dan garis lepas berwarna primer; denah lantai atas bisa diubah dengan panel geser.","Free planes and lines in primary colours; the upper floor reconfigures with sliding panels."],
+ bauh:["Gedung sekolah Bauhaus; blok bengkel berdinding tirai kaca.","The Bauhaus school building; its workshop wing has a glass curtain wall."],
+ barc:["Paviliun Jerman untuk pameran 1929, dibongkar 1930 dan dibangun ulang 1986; ruang mengalir di antara bidang dinding.","Germany’s 1929 exposition pavilion, dismantled in 1930 and rebuilt in 1986; space flows between free-standing planes."],
+ chry:["Pencakar langit art deco dengan mahkota baja tahan karat.","An Art Deco skyscraper crowned with stainless steel."],
+ savo:["Mewujudkan ‘lima poin arsitektur baru’ Le Corbusier: pilotis, taman atap, denah bebas, jendela pita, fasad bebas.","Embodies Le Corbusier’s ‘five points’: pilotis, roof garden, free plan, ribbon windows, free façade."],
+ isol:["Vila art deco di lereng utara Bandung, kini bagian kampus UPI.","An Art Deco villa on Bandung’s northern slope, now part of the UPI campus."],
+ glas:["Rumah berdinding kaca penuh di lanskap terbuka.","A house walled entirely in glass in an open landscape."],
+ farn:["Satu ruang berdinding kaca di atas lantai yang terangkat dari tanah.","A single glass-walled space on a floor lifted above the ground."],
+ unit:["Blok hunian beton dengan ‘jalan’ toko di tengah gedung dan fasilitas di atap.","A concrete housing block with an internal shopping ‘street’ and rooftop facilities."],
+ leve:["Menara kantor kaca dengan podium dan plaza terbuka di permukaan jalan.","A glass office tower with a podium and an open plaza at street level."],
+ ronc:["Kapel dengan dinding tebal melengkung dan atap beton seperti cangkang.","A chapel of thick curving walls under a shell-like concrete roof."],
+ seag:["Menara kantor baja-perunggu dan kaca dengan plaza di depannya.","A bronze-and-glass office tower set back behind a plaza."],
+ gugn:["Ramp spiral menerus mengelilingi atrium tengah.","A continuous spiral ramp wraps a central atrium."],
+ vann:["Fasad dengan atap pelana terbelah — salah satu karya awal pascamodern.","A split-gable façade — one of the early postmodern works."],
+ salk:["Dua blok laboratorium mengapit plaza travertin yang terbuka ke Samudra Pasifik.","Two laboratory wings frame a travertine plaza open to the Pacific."],
+ sydn:["Atap cangkang beton pracetak di tanjung pelabuhan Sydney; diresmikan 1973.","Precast concrete shells on a harbour point; opened in 1973."],
+ mona:["Tugu peringatan kemerdekaan setinggi ±132 m; dibuka untuk umum 1975.","A ~132 m independence monument; opened to the public in 1975."],
+ pomp:["Struktur, saluran utilitas, dan eskalator diletakkan di luar — ikon high-tech.","Structure, services and escalators placed outside — a high-tech icon."],
+ istq:["Masjid nasional Indonesia; kubah besar di atas ruang salat; diresmikan 1978.","Indonesia’s national mosque; a large dome over the prayer hall; inaugurated in 1978."],
+ dhak:["Kompleks parlemen dengan volume beton geometris dan bukaan besar berbentuk lingkaran dan segitiga.","A parliament of geometric concrete volumes with large circular and triangular openings."],
+ port:["Gedung pemerintahan kota berhias warna dan ornamen klasik yang disederhanakan — ikon pascamodern.","A municipal building with colour and simplified classical ornament — a postmodern icon."],
+ hsbc:["Lantai-lantai digantung dari rangka baja besar; ruang tengah tanpa kolom.","Floors hang from a giant steel frame, leaving a column-free interior."],
+ lloy:["Tangga, lift, dan utilitas dipasang di luar bangunan.","Stairs, lifts and services are mounted on the outside."],
+ louv:["Piramida kaca sebagai pintu masuk baru Museum Louvre.","A glass pyramid as the Louvre’s new entrance."],
+ bilb:["Selubung titanium berbentuk lengkung bebas di tepi sungai Nervión.","A free-form titanium skin on the bank of the Nervión."],
+ seat:["Lantai-lantai yang digeser di dalam jaring baja-kaca; ‘spiral buku’ menerus.","Shifted floor plates inside a steel-and-glass net; a continuous ‘book spiral’."],
+ bird:["Stadion Olimpiade 2008 dengan jalinan baja menyerupai sarang.","The 2008 Olympic stadium wrapped in a nest-like steel lattice."],
+ burj:["Gedung tertinggi di dunia saat dibuka (±828 m).","The world’s tallest building when it opened (~828 m)."],
+ heyd:["Selubung lengkung menerus tanpa sudut tajam — ikon arsitektur parametrik.","A continuous curving skin without sharp corners — an icon of parametric design."]
+};
+function L(s){var p=String(s).split('|');return lang==='en'&&p[1]?p[1]:p[0]}
+function card(k){var c=CARDS.filter(function(x){return x[0]===k})[0];return {k:c[0],name:L(c[1]),arch:L(c[2]),year:c[3],city:L(c[4]),mov:c[5],glyph:c[6],reg:c[7]}}
+
+/* Card art: era band + building glyph (SVG, no photos) */
+function art(c,hide){var m=MOV[c.mov],col=m.c;var g={
+  tower:'<rect x="66" y="14" width="18" height="58" fill="#fff" opacity=".9"/><rect x="72" y="6" width="6" height="10" fill="#fff" opacity=".9"/>',
+  hall:'<rect x="30" y="38" width="90" height="34" fill="#fff" opacity=".9"/><path d="M30 38 L75 18 L120 38Z" fill="#fff" opacity=".7"/>',
+  house:'<rect x="44" y="40" width="62" height="32" fill="#fff" opacity=".9"/><rect x="36" y="34" width="78" height="7" fill="#fff" opacity=".75"/>',
+  pav:'<rect x="34" y="34" width="82" height="5" fill="#fff"/><rect x="46" y="39" width="58" height="26" fill="#fff" opacity=".35" stroke="#fff"/><rect x="30" y="65" width="90" height="4" fill="#fff"/>',
+  block:'<rect x="34" y="26" width="82" height="46" fill="#fff" opacity=".9"/><path d="M40 34h70M40 44h70M40 54h70M40 64h70" stroke="'+col+'" stroke-width="3"/>',
+  dome:'<path d="M42 72V50a33 26 0 0 1 66 0v22Z" fill="#fff" opacity=".9"/><rect x="72" y="10" width="6" height="18" fill="#fff" opacity=".8"/>',
+  spiral:'<path d="M38 72h74l-6-14H44l-4-12h70l-6-14H48" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round"/>',
+  shell:'<path d="M30 72C40 40 58 28 74 26C66 40 64 56 66 72ZM60 72C72 44 90 34 108 34C98 46 94 60 96 72Z" fill="#fff" opacity=".9"/>',
+  pyr:'<path d="M35 72L75 22L115 72Z" fill="#fff" opacity=".85"/><path d="M75 22L75 72M55 47L95 47" stroke="'+col+'" stroke-width="1.5"/>',
+  stad:'<ellipse cx="75" cy="52" rx="48" ry="20" fill="#fff" opacity=".9"/><path d="M33 46L117 58M35 58L115 44M50 36L100 68M100 36L50 68" stroke="'+col+'" stroke-width="2"/>'
+ }[c.glyph]||'';
+ return '<svg class="art" viewBox="0 0 150 82" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="150" height="82" fill="'+col+'"/><circle cx="128" cy="16" r="26" fill="#fff" opacity=".08"/>'+g+'<rect y="72" width="150" height="10" fill="#000" opacity=".18"/></svg>'}
+function cardHTML(c,opts){opts=opts||{};return '<div class="gc'+(opts.big?' big':'')+(opts.cls?' '+opts.cls:'')+'" data-k="'+c.k+'">'+art(c)+'<div class="tx"><div class="nm">'+esc(c.name)+'</div><div class="ar">'+esc(c.arch)+'</div><div class="ar">'+esc(c.city)+'</div><div class="yr'+(opts.hide?' q':'')+'">'+(opts.hide?'????':c.year)+'</div></div></div>'}
+
+/* ---------- State ---------- */
+var DECKS={all:function(){return CARDS},world:function(){return CARDS.filter(function(c){return c[7]==='w'})},indo:function(){return CARDS.filter(function(c){return c[7]==='a'}).concat(CARDS.filter(function(c){return ['bauh','savo','seag','pomp','bilb','gugn','robi'].indexOf(c[0])>=0}))}};
+var st={deck:store.get('gwDeck')||'all'};if(!DECKS[st.deck])st.deck='all';
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=a[i];a[i]=a[j];a[j]=x}return a}
+function start(){var pool=shuffle(DECKS[st.deck]()).map(function(c){return c[0]});var n=Math.min(20,pool.length);
+  st.draw=pool.slice(0,n);st.line=[st.draw.shift()];st.total=n;st.lives=3;st.score=0;st.streak=0;st.correct=0;st.hist=[];st.last=null;st.phase='play';
+  show('game');$('msg').className='msg neutral';$('msg').textContent=t('first');render()}
+function hud(){$('hLives').textContent='♥♥♥'.slice(0,st.lives||0)+'♡♡♡'.slice(0,3-(st.lives||0));$('hScore').textContent=st.score||0;$('hStreak').textContent=st.streak||0}
+function render(){hud();var cur=st.draw[0];
+  $('progress').textContent=t('progress',{n:Math.min(st.total,st.total-st.draw.length+1),t:st.total});
+  $('hand').innerHTML=cur?cardHTML(card(cur),{big:true,hide:true}):'';
+  var tl=$('tl'),h='';
+  for(var i=0;i<=st.line.length;i++){h+='<div class="slot"><button data-i="'+i+'" aria-label="'+(i)+'" '+(cur?'':'disabled')+'>+</button></div>';
+    if(i<st.line.length){var k=st.line[i];h+=cardHTML(card(k),{cls:st.last&&st.last.k===k?(st.last.ok?'right flash':'wrong flash'):''})}}
+  tl.innerHTML=h;tl.querySelectorAll('.slot button').forEach(function(b){b.onclick=function(){place(+b.getAttribute('data-i'))}});
+  if(st.last){var el=tl.querySelector('[data-k="'+st.last.k+'"]');if(el)el.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'})}}
+function place(i){if(st.phase!=='play'||!st.draw.length)return;var k=st.draw.shift(),c=card(k),y=c.year;
+  var lo=i>0?card(st.line[i-1]).year:-Infinity,hi=i<st.line.length?card(st.line[i]).year:Infinity,ok=y>=lo&&y<=hi;
+  var pos=i;if(!ok){pos=0;while(pos<st.line.length&&card(st.line[pos]).year<=y)pos++}
+  st.line.splice(pos,0,k);var bonus=0;
+  if(ok){st.correct++;st.streak++;bonus=st.streak>=3?Math.min(5,st.streak-2):0;st.score+=10+bonus}else{st.lives--;st.streak=0}
+  st.hist.push({k:k,ok:ok});st.last={k:k,ok:ok};
+  var m=MOV[c.mov];$('msg').className='msg '+(ok?'good':'bad');
+  $('msg').innerHTML='<b>'+(ok?t('right'):t('wrong',{y:y}))+'</b>'+(bonus?t('streakB',{b:bonus}):'')+'<br><b>'+esc(c.name)+'</b> ('+y+') · '+esc(c.arch)+'<span class="mv" style="background:'+m.c+'">'+esc(m[lang])+'</span><br>'+esc(NOTE[k][lang==='en'?1:0]);
+  render();
+  if(st.lives<=0||!st.draw.length){st.phase='end';setTimeout(renderEnd,1400)}}
+function renderEnd(){var b=+(store.get('gwBest')||0);if(st.score>b)store.set('gwBest',st.score);show('endBox');var win=st.lives>0;
+  var rows=st.line.map(function(k){var c=card(k),h=st.hist.filter(function(x){return x.k===k})[0];return '<tr><td class="r"><b>'+c.year+'</b></td><td>'+esc(c.name)+(h?(h.ok?' <span style="color:var(--ok)">✓</span>':' <span style="color:var(--bad)">✗</span>'):'')+'</td><td>'+esc(c.arch)+'</td><td><span class="mv" style="display:inline-block;border-radius:999px;padding:1px 8px;font-size:11.5px;font-weight:700;color:#fff;background:'+MOV[c.mov].c+'">'+esc(MOV[c.mov][lang])+'</span></td></tr>'}).join('');
+  $('endBox').innerHTML='<div><h2>'+t(win?'endWin':'endLose')+'</h2><p class="hint">'+t('endTotal')+'</p><div class="big">'+st.score+'</div><p class="hint">'+t('placed')+': '+st.correct+' / '+st.hist.length+'</p>'+
+   '<div class="row" style="margin-top:14px"><button class="btn" id="againBtn">'+t('again')+'</button><button class="btn ghost" id="copyBtn">'+t('copy')+'</button><button class="btn ghost" id="menuBtn">'+t('backMenu')+'</button></div></div>'+
+   '<div style="max-height:460px;overflow:auto"><table><thead><tr><th class="r">'+t('tabYear')+'</th><th>'+t('tabWork')+'</th><th>'+t('tabArch')+'</th><th>'+t('tabMov')+'</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  $('againBtn').onclick=start;$('menuBtn').onclick=function(){st.phase='menu';show('intro');applyStatic()};
+  $('copyBtn').onclick=function(){var bt=this;try{navigator.clipboard.writeText(t('shareTxt',{s:st.score,c:st.correct})+' pindotutuko.id').then(function(){bt.textContent=t('copied')},function(){bt.textContent=t('copyFail')})}catch(e){bt.textContent=t('copyFail')}}}
+function show(id){['intro','game','endBox'].forEach(function(x){$(x).classList.toggle('hidden',x!==id)});window.scrollTo(0,0)}
+function renderModes(){$('modes').innerHTML=['all','world','indo'].map(function(d){return '<button class="chip'+(st.deck===d?' on':'')+'" data-d="'+d+'">'+t('d_'+d)+' ('+DECKS[d]().length+')</button>'}).join('');
+  $('modes').querySelectorAll('button').forEach(function(b){b.onclick=function(){st.deck=b.getAttribute('data-d');store.set('gwDeck',st.deck);renderModes()}})}
+function applyStatic(){document.documentElement.lang=lang;document.title=t('title');document.querySelectorAll('[data-t]').forEach(function(n){n.innerHTML=t(n.getAttribute('data-t'))});
+  $('langBtn').textContent=lang==='id'?'EN':'ID';var b=store.get('gwBest');$('bestLine').textContent=b?t('best',{s:b}):'';renderModes();
+  $('introCards').innerHTML=['savo','istq','bilb'].map(function(k){return cardHTML(card(k))}).join('')}
+$('startBtn').onclick=start;
+$('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('gwLang',lang);applyStatic();if(st.phase==='play'){render();$('msg').className='msg neutral';$('msg').textContent=t('first')}else if(st.phase==='end')renderEnd()};
+applyStatic();hud();
+window.__GW={CARDS:CARDS,NOTE:NOTE,MOV:MOV,st:function(){return st},place:place,card:card};
+})();
+</script>
+</body>
+</html>
