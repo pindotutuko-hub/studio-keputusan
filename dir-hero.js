@@ -9,9 +9,9 @@
     var st = document.createElement("style");
     st.textContent = "header.mast{position:relative;isolation:isolate;z-index:20}" +
       "#ptHeroBg{position:absolute;inset:0;z-index:-1;pointer-events:none;background:#F5F1F2;overflow:hidden}" +
-      "#ptHeroBg .ly{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.6s ease;transform:scale(1.02)}#ptHeroBg .ly.on{opacity:1}" +
-      "#ptHeroBg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.95) 0%,rgba(255,255,255,.9) 50%,rgba(255,255,255,.72) 75%,rgba(255,255,255,.5) 100%),linear-gradient(0deg,rgba(251,242,244,.95) 0,rgba(251,242,244,0) 70px)}" +
-      "header.mast{background:transparent!important}header.mast h1,header.mast .eyebrow,header.mast .lede,header.mast #tabs>*{text-shadow:0 0 14px rgba(255,255,255,.95),0 0 3px rgba(255,255,255,.9)}" +
+      "#ptHeroBg .ly{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.6s ease;transform:scale(1.02);filter:saturate(1.08) contrast(1.04)}#ptHeroBg .ly.on{opacity:1}" +
+      "#ptHeroBg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.9) 0%,rgba(255,255,255,.8) 36%,rgba(255,255,255,.42) 56%,rgba(255,255,255,.1) 78%,rgba(255,255,255,0) 100%),linear-gradient(0deg,rgba(251,242,244,.6) 0,rgba(251,242,244,0) 46px)}" +
+      "header.mast{background:transparent!important}header.mast #tabs{background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);margin-left:-12px;padding-left:12px;width:fit-content;max-width:100%}header.mast .snap{-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}header.mast h1,header.mast .eyebrow,header.mast .lede,header.mast #tabs>*{text-shadow:0 0 14px rgba(255,255,255,.95),0 0 3px rgba(255,255,255,.9)}" +
       "#ptHeroCap{position:absolute;right:20px;top:14px;z-index:2;font-family:'JetBrains Mono','IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#141017;background:rgba(255,255,255,.8);border:1.5px solid #141017;padding:3px 8px}" +
       "@media (max-width:820px){#ptHeroBg::after{background:linear-gradient(0deg,rgba(255,255,255,.9),rgba(255,255,255,.8))}}" +
       "@media (prefers-reduced-motion:reduce){#ptHeroBg .ly{transition:none}}";
