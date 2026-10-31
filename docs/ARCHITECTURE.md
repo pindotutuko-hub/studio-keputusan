@@ -52,6 +52,9 @@ Langkah menambah metode baru:
 4. Tambahkan ke `exportObj()`/`importText()`/reset “Proyek baru”, `statusA/B` (teks status kartu), dan bila relevan `SOURCES`, `METRICS`, `RES`.
 5. Tambahkan pemeriksaan angka di `tests/smoke.test.js`, jalankan `npm test`.
 
+## Bahasa Inggris (v3.1)
+Blok `<script>` terakhir `app.html` berisi `window.I18N_EN` (kamus: teks Indonesia → Inggris, angka diganti `{n}`) dan mesin i18n DOM (`window.skLang`: `get`, `set("en"|"id")`, `t`, `tsv`). Mesin menerjemahkan teks & atribut (`title`, `placeholder`, `aria-label`, `data-tip`) lewat MutationObserver, menyimpan teks asli agar bisa kembali ke ID, dan mengubah format angka. Elemen ber-kelas `no-i18n`, input dan textarea tidak disentuh. Setelah menambah teks antarmuka baru: `node tools/i18n-collect.js` → terjemahkan kunci baru ke `tools/i18n/en.json` → `node tools/i18n-embed.js` → `node tools/i18n-audit.js`.
+
 ## Konvensi
 
 - **Bahasa UI**: Indonesia; istilah teknis Inggris diikuti padanan Indonesia dalam kurung, mis. *Reachability matrix (Matriks keterjangkauan)*.

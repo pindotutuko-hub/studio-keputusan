@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.1.0
+- **Versi bahasa Inggris (English version)**: tombol **EN / ID** di bilah atas mengganti seluruh antarmuka ke bahasa Inggris dan kembali, pilihan diingat per perangkat. Kamus ±5.100 entri mencakup semua 111 langkah (audit otomatis: 13.571 teks, sisa 5 berupa sitasi dan judul resmi SNI/Kepmen yang sengaja tidak diubah).
+- Mode EN memakai format angka Inggris (0.25; 1,234,567). Salin ke Excel, ekspor .xlsx, dan CSV ikut berbahasa Inggris; CSV mode EN memakai pemisah koma. Berkas proyek .json tidak diubah sehingga tetap dapat dibuka di mode mana pun.
+- Rujukan/sitasi tidak diterjemahkan (kebijakan tanpa halusinasi). Alat: `tools/i18n-collect.js` (kumpulkan teks), `tools/i18n-embed.js` (tanam kamus), `tools/i18n-audit.js` (audit cakupan); uji `tests/i18n.test.js`.
+
 ## 3.0.1
 - Gelar pengembang di halaman Tentang dilengkapi: Prof. Pindo Tutuko, ST., MT., PhD., PgDip.
 
