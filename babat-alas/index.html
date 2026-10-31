@@ -7,6 +7,7 @@
 <title>Babat Alas — simulasi permukiman 3D</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="/gim/inspirasi.js" defer></script>
 <script type="importmap">{"imports":{"three":"/lensa3d/three/three.module.min.js","three/addons/":"/lensa3d/three/addons/"}}</script>
 <style>
 :root{--bg:#14211b;--panel:rgba(18,26,22,.86);--panel2:rgba(255,253,248,.96);--ink:#f3efe6;--ink2:#1f1c18;--muted:#a9b3aa;--acc:#e0a526;--acc2:#2f8f6a;--bad:#e2604a;--line:rgba(255,255,255,.14);--r:14px}
@@ -16,6 +17,30 @@ button,input,select,textarea{font:inherit}
 button{cursor:pointer}
 h1,h2,h3{font-family:"Space Grotesk",Inter,sans-serif;margin:0;letter-spacing:-.01em}
 .hidden{display:none!important}
+.eula{padding-left:20px;font-size:14px;line-height:1.5}.eula li{margin:6px 0}.agree{display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-weight:700;font-size:14px}.agree input{width:20px;height:20px;flex:none}
+table.lb{width:100%;border-collapse:collapse;font-size:13px}table.lb th,table.lb td{padding:6px 4px;border-bottom:1px solid #e8e0d2;text-align:left}table.lb tr.me td{background:#fff3cf}table.lb th{color:#7b7266;font-weight:700}
+.lbt{display:flex;gap:6px;margin:8px 0}.lbt button{border:1px solid #d9cfbf;background:#fff;border-radius:999px;padding:6px 12px;font-weight:700}.lbt button.on{background:#1f6f4f;color:#fff;border-color:#1f6f4f}
+.pz{padding:8px 0;border-bottom:1px solid #e8e0d2}.pz p{margin:2px 0 0;font-size:14px;line-height:1.45}.pz.lnk{display:block;color:inherit;text-decoration:none;font-size:14px}.pz.lnk:hover{background:#f6f0e4}
+.pzbox h2{display:flex;justify-content:space-between;align-items:center}.pzbox .x{border:0;background:none;font-size:20px}.pztabs,.pzt{flex-wrap:wrap}.pzbody{max-height:62vh;overflow:auto}
+#cAvs.avs{display:block}
+.rap{margin-top:8px;border-top:1px solid rgba(255,255,255,.14);padding-top:6px}.rap .r{display:grid;grid-template-columns:86px 1fr 26px;gap:6px;align-items:center;font-size:11.5px;margin:3px 0}.rap .bar{height:7px;border-radius:5px;background:rgba(255,255,255,.15);overflow:hidden}.rap .bar i{display:block;height:100%;background:linear-gradient(90deg,#e0a526,#2f8f6a)}.rap .sc{font-weight:800;font-size:14px;color:#e0a526}
+.setg{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px}.setg section{min-width:0}.setr{display:grid;grid-template-columns:1fr 120px 42px;gap:8px;align-items:center;font-size:13.5px;padding:5px 0}.setr.chk{grid-template-columns:1fr auto}.setr select{grid-column:2/4;padding:6px;border-radius:8px;border:1px solid #d9cfbf}.setr input[type=checkbox]{width:20px;height:20px}
+kbd{background:#f1ece2;border:1px solid #d9cfbf;border-bottom-width:2px;border-radius:5px;padding:1px 6px;font-size:12px;font-family:inherit;white-space:nowrap}table.keys td{padding:4px}
+body.ui-l #hud,body.ui-l #bar,body.ui-l #missions{zoom:1.15}body.ui-s #hud,body.ui-s #bar,body.ui-s #missions{zoom:.9}
+@media (max-width:720px){.setg{grid-template-columns:1fr}}
+#dlg{position:fixed;left:50%;bottom:max(96px,calc(env(safe-area-inset-bottom) + 96px));transform:translate(-50%,30px);width:min(760px,calc(100% - 20px));z-index:45;opacity:0;pointer-events:none;transition:.25s}#dlg.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#dlg .dl{display:flex;gap:12px;background:rgba(255,253,248,.97);color:#1f1c18;border-radius:18px;padding:14px;box-shadow:0 18px 50px rgba(0,0,0,.45);border:3px solid #e0a526}#dlg .dl.me{border-color:#2f8f6a}
+#dlg .pt{flex:none;width:76px;height:76px;border-radius:16px;background:#efe6d6;display:grid;place-items:center;font-size:46px;overflow:hidden}#dlg .pt svg{width:76px;height:76px}#dlg .bd{flex:1;min-width:0}#dlg .bd b{color:#7a5a12;font-size:14px}#dlg .dl.me .bd b{color:#1f6f4f}#dlg p{margin:4px 0 10px;font-size:15.5px;line-height:1.5;min-height:46px}
+#dlg .ch{display:flex;flex-direction:column;gap:6px}#dlg .dlb{text-align:left;border:1px solid #d9cfbf;background:#fff;border-radius:12px;padding:9px 12px;font-weight:700;font-size:14px;color:#1f1c18}#dlg .dlb:hover:not(:disabled){background:#fff3cf;border-color:#e0a526}#dlg .dlb:disabled{opacity:.45}#dlg .dlb small{display:block;font-weight:600;color:#7b7266;font-size:12px}#dlg .dlb.nx{align-self:flex-end;text-align:center;background:#1f6f4f;color:#fff;border:0}
+@media (max-width:620px){#dlg .pt{width:56px;height:56px;font-size:34px}#dlg .pt svg{width:56px;height:56px}#dlg p{font-size:14.5px}}
+.av3d{width:210px;height:270px;border-radius:20px;background:radial-gradient(circle at 50% 35%,#fffaf0,#e7dcc8);box-shadow:0 6px 18px rgba(0,0,0,.18);overflow:hidden;touch-action:none}.av2d{display:none}#hAv img{width:100%;height:100%;object-fit:cover;object-position:50% 12%;transform:scale(1.9);transform-origin:50% 10%}
+#sp3{font-size:12px;letter-spacing:-3px;padding:0 4px}.ctl{gap:4px}.ctl button{min-width:36px}
+.aved{display:grid;grid-template-columns:210px 1fr;gap:14px;align-items:start}.avprev{display:flex;flex-direction:column;gap:8px;position:sticky;top:0}.avprev svg{width:150px;height:150px;border-radius:20px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.avopts{min-width:0;overflow-x:hidden;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px 14px;max-height:340px;overflow:auto;padding-right:4px}.avr{min-width:0;display:flex;flex-direction:column;gap:3px;font-size:12px;color:#5f574c}.avr .avst{display:flex;align-items:center;gap:4px;background:#fff;border:1px solid #e3d9c8;border-radius:10px;padding:2px}.avr .avst b{flex:1;text-align:center;font-size:12.5px;color:#1f1c18;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.avr .avst button{width:28px;height:28px;border-radius:8px;border:0;background:#efe6d6;font-weight:800;color:#1f1c18;flex:none}
+.avr .sw{display:flex;gap:5px;flex-wrap:wrap}.avr .sw button{width:21px;height:21px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #cbbfae}.avr .sw button.on{box-shadow:0 0 0 3px #1f6f4f}
+@media (max-width:620px){.aved{grid-template-columns:1fr}.av3d{width:150px;height:190px}.avprev{flex-direction:row;align-items:center;position:static}.avprev svg{width:110px;height:110px}.avopts{grid-template-columns:1fr 1fr;max-height:none}}
+.modal h3{margin:10px 0 4px;font-size:15px}
+
 #view{position:fixed;inset:0;touch-action:none}
 #view canvas{display:block;width:100%!important;height:100%!important}
 /* ---- layar menu ---- */
@@ -184,6 +209,6 @@ h1,h2,h3{font-family:"Space Grotesk",Inter,sans-serif;margin:0;letter-spacing:-.
 <div id="toast"></div>
 <div id="modal" class="modal hidden"></div>
 
-<script type="module" src="game.js?v=2"></script>
+<script type="module" src="game.js?v=11"></script>
 </body>
 </html>

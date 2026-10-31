@@ -12,6 +12,13 @@ const DATA = __DIR__ . '/data';
 const GUARD = "<?php http_response_code(404); exit; ?>\n";
 const MAX_SAVE = 600000;      // bita JSON simpanan
 const TOKEN_DAYS = 45;
+const EULA_VER = '2026-11-01';
+const ERA_MAX = 7;            // era tertinggi di versi ini
+const START = ['coin' => 60, 'wood' => 25];
+const COST = ['house' => [2, 8], 'field' => [3, 2], 'well' => [4, 2], 'barn' => [6, 12], 'pond' => [5, 0], 'tree' => [1, 0], 'hall' => [20, 30], 'worship' => [15, 15], 'market' => [25, 20], 'rt' => [8, 10], 'taman' => [6, 4], 'kebun' => [6, 3], 'bengkel' => [10, 8], 'sekolah' => [30, 25], 'klinik' => [35, 15], 'kom' => [20, 10]];
+const SIZE = ['field' => 2, 'hall' => 2, 'market' => 2, 'kebun' => 2, 'sekolah' => 2];
+const ERA_OF = ['hall' => 2, 'worship' => 2, 'market' => 2, 'sekolah' => 2, 'klinik' => 2, 'kom' => 2];
+const BADWORDS = ['anjing', 'bangsat', 'kontol', 'memek', 'ngentot', 'jancok', 'jancuk', 'goblok', 'fuck', 'shit', 'bitch', 'asshole', 'nigger', 'pussy', 'dick'];
 
 function out(array $a, int $code = 200): void { http_response_code($code); echo json_encode($a, JSON_UNESCAPED_UNICODE); exit; }
 function fail(string $e, int $code = 400): void { out(['ok' => false, 'error' => $e], $code); }
@@ -59,22 +66,123 @@ function new_token(string $uid): string {
 		return ['__write' => $u, '__ret' => true]; });
 	return $uid . '.' . $sec;
 }
-function pub(array $u): array { return ['user' => $u['user'], 'name' => $u['name'] ?? $u['user'], 'kampus' => $u['kampus'] ?? '', 'kelas' => $u['kelas'] ?? '', 'created' => $u['created'] ?? 0]; }
+function pub(array $u): array { return ['user' => $u['user'], 'name' => $u['name'] ?? $u['user'], 'kampus' => $u['kampus'] ?? '', 'kelas' => $u['kelas'] ?? '', 'created' => $u['created'] ?? 0, 'eula' => ($u['eula'] ?? '') === EULA_VER]; }
+
+/** Semester akademik: Agustus–Januari = Ganjil, Februari–Juli = Genap. */
+function semester(?int $ts = null): string { $ts = $ts ?? time(); $m = (int) date('n', $ts); $y = (int) date('Y', $ts);
+	if ($m >= 8) { return $y . '-Ganjil'; } if ($m === 1) { return ($y - 1) . '-Ganjil'; } return $y . '-Genap'; }
+function rude(string $s): bool { $t = mb_strtolower(preg_replace('/[^a-z0-9]/i', '', strtr($s, ['0' => 'o', '1' => 'i', '3' => 'e', '4' => 'a', '5' => 's', '@' => 'a'])) ?? ''); foreach (BADWORDS as $w) { if (str_contains($t, $w)) { return true; } } return false; }
+function check_origin(): void { $o = (string) ($_SERVER['HTTP_ORIGIN'] ?? ''); if ($o === '') { return; } $h = (string) parse_url($o, PHP_URL_HOST);
+	if (!in_array($h, ['pindotutuko.id', 'www.pindotutuko.id', 'localhost', '127.0.0.1'], true)) { fail('origin', 403); } }
+/**
+ * Pemeriksaan kewajaran simpanan (anti-curang). Mengembalikan [skor server, daftar pelanggaran].
+ * Simpanan tetap disimpan agar pemain tidak kehilangan permainan, tetapi yang melanggar tidak masuk peringkat.
+ */
+function audit(array $st, ?array $prev, int $prevAt): array {
+	$bad = []; $n = 128;
+	$land = $st['land'] ?? null;
+	if (!is_array($land) || count($land) !== $n) { return [0, ['land']]; }
+	foreach ($land as $row) { if (!is_string($row) || !preg_match('/^[FGWP]{128}$/', $row)) { return [0, ['land']]; } }
+	$o = $st['own'] ?? null; $ex = (int) ($st['exp'] ?? 0);
+	if (!is_array($o) || !isset($o['x0'], $o['y0'], $o['x1'], $o['y1']) || $o['x0'] < 0 || $o['y0'] < 0 || $o['x1'] > $n || $o['y1'] > $n || ($o['x1'] - $o['x0']) + ($o['y1'] - $o['y0']) > 80 + 8 * $ex || $ex < 0 || $ex > 60) { $bad[] = 'own'; $o = ['x0' => 0, 'y0' => 0, 'x1' => $n, 'y1' => $n]; }
+	$era = (int) ($st['era'] ?? 1); $t = (int) ($st['t'] ?? 0); $kk = (int) ($st['kk'] ?? 0);
+	$happy = (int) ($st['happy'] ?? 0); $coh = (int) ($st['coh'] ?? 0);
+	$coin = (float) ($st['res']['coin'] ?? 0); $wood = (float) ($st['res']['wood'] ?? 0); $food = (float) ($st['res']['food'] ?? 0);
+	if ($era < 1 || $era > ERA_MAX) { $bad[] = 'era'; }
+	if ($t < 0 || $t > 100000) { $bad[] = 'time'; }
+	if ($happy < 0 || $happy > 100 || $coh < 0 || $coh > 100) { $bad[] = 'meter'; }
+	if ($coin < -1 || $wood < -1 || $food < -1) { $bad[] = 'neg'; }
+	$occ = []; $spentC = 0; $spentW = 0; $cnt = []; $houses = 0; $barns = 0; $markets = 0;
+	$bs = $st['b'] ?? []; if (!is_array($bs) || count($bs) > 1600) { $bad[] = 'blds'; $bs = []; }
+	foreach ($bs as $b) {
+		$ty = (string) ($b['t'] ?? ''); if (!isset(COST[$ty])) { $bad[] = 'btype'; continue; }
+		$w = SIZE[$ty] ?? 1; $x = (int) ($b['x'] ?? -1); $y = (int) ($b['y'] ?? -1);
+		if ((int) ($b['w'] ?? 0) !== $w || (int) ($b['h'] ?? 0) !== $w || $x < 0 || $y < 0 || $x + $w > $n || $y + $w > $n) { $bad[] = 'bpos'; continue; }
+		if (($ERA = ERA_OF[$ty] ?? 1) > $era) { $bad[] = 'bera'; }
+		for ($dy = 0; $dy < $w; $dy++) { for ($dx = 0; $dx < $w; $dx++) { $k = ($x + $dx) . ',' . ($y + $dy);
+			if (isset($occ[$k])) { $bad[] = 'overlap'; } if ($x + $dx < $o['x0'] || $y + $dy < $o['y0'] || $x + $dx >= $o['x1'] || $y + $dy >= $o['y1']) { $bad[] = 'outside'; } $occ[$k] = 1; if ($land[$y + $dy][$x + $dx] !== 'G') { $bad[] = 'bland'; } } }
+		$spentC += COST[$ty][0]; $spentW += COST[$ty][1]; $cnt[$ty] = ($cnt[$ty] ?? 0) + 1;
+	}
+	$houses = $cnt['house'] ?? 0; $barns = $cnt['barn'] ?? 0; $markets = $cnt['market'] ?? 0;
+	if ($kk > $houses + 6 || $kk < 0 || $kk > 2000) { $bad[] = 'kk'; }
+	if ($era >= 2 && $barns < 1) { $bad[] = 'era2'; }
+	$eraKK = [3 => 40, 4 => 80, 5 => 160, 6 => 320, 7 => 640]; if (isset($eraKK[$era]) && $kk < $eraKK[$era] * 0.5) { $bad[] = 'eraKK'; }
+	$paths = substr_count(implode('', $land), 'P'); $spentC += $paths;
+	$cleared = (int) ($st['stats']['cleared'] ?? 0); $spentC += $cleared;
+	for ($i = 0; $i < $ex; $i++) { $spentC += 40 + 30 * $i; $spentW += 15 + 10 * $i; }
+	if ($food > 40 + 120 * ($barns + 1) + 1) { $bad[] = 'food'; }
+	// batas atas pemasukan: kas awal + misi (11×15) + bonus era + iuran/pasar per bulan
+	$nDone = min(count($st['done'] ?? []), 11 + $ex + intdiv(max($kk, 0), 25) + 2);
+	$prodB = ($cnt['kebun'] ?? 0) + ($cnt['bengkel'] ?? 0) + ($cnt['pond'] ?? 0); $links = is_array($st['links'] ?? null) ? min(count($st['links']), 40) : 0;
+	$coinCap = START['coin'] + max(11, $nDone) * 15 + 40 * $era * $era + $t * (0.6 * max($kk, 1) + 4 + 6 * $markets + 10 * $prodB + 8 * $links) + 5;
+	if ($coin + $spentC > $coinCap * 1.15 + 20) { $bad[] = 'coin'; }
+	if ($wood + $spentW > 2 * (START['wood'] + 4 * $cleared) + 5) { $bad[] = 'wood'; }
+	if ($cleared > substr_count(implode('', $land), 'G') + $paths) { $bad[] = 'cleared'; }
+	if ($cleared > 1600) { $bad[] = 'cleared'; }
+	// waktu permainan: maks. 0,5 bulan per detik nyata (kecepatan ⏩)
+	if ($prev && ($prev['meta']['created'] ?? 0) === ($st['meta']['created'] ?? 0)) {
+		$pt = (int) ($prev['t'] ?? 0); $water0 = substr_count(implode('', $prev['land'] ?? []), 'W');
+		if ($t < $pt) { $bad[] = 'rewind'; }
+		if ($t - $pt > (time() - $prevAt) * 0.5 * 1.3 + 3) { $bad[] = 'speed'; }
+		if (substr_count(implode('', $land), 'W') !== $water0) { $bad[] = 'water'; }
+		if (array_intersect($prev['flagged'] ?? [], ['coin', 'wood', 'speed', 'rewind', 'water', 'land', 'btype', 'bpos', 'era', 'prior', 'own', 'outside'])) { $bad[] = 'prior'; }
+	} elseif ($t > 6) { $bad[] = 'fresh'; }
+	return [0, array_values(array_unique($bad))];
+}
+
+/**
+ * Indikator rapor permukiman (0–100), dasar peringkat:
+ * e ekonomi warga, n jejaring (jalan & tetangga), c kenyamanan, k kepuasan, p pertumbuhan.
+ */
+function indicators(array $st, int $nb): array {
+	$n = count($st['land']); $land = $st['land']; $bs = is_array($st['b'] ?? null) ? $st['b'] : []; $kk = max(1, (int) ($st['kk'] ?? 1));
+	$cnt = []; foreach ($bs as $b) { $cnt[$b['t']] = ($cnt[$b['t']] ?? 0) + 1; }
+	$c = fn($t) => $cnt[$t] ?? 0; $cl = fn($v) => max(0.0, min(1.0, (float) $v));
+	$prod = $c('field') * 6 + $c('pond') * 2; $coin = (float) ($st['res']['coin'] ?? 0);
+	$E = 100 * (0.5 * $cl($prod / ($kk * 2)) + 0.25 * $cl($c('market') * 15 / $kk) + 0.25 * $cl(min($coin, 500) / ($kk * 15)));
+	$comp = []; $id = 0; $size = [];
+	for ($y = 0; $y < $n; $y++) { for ($x = 0; $x < $n; $x++) { if ($land[$y][$x] !== 'P' || isset($comp["$x,$y"])) { continue; } $id++; $q = [[$x, $y]]; $comp["$x,$y"] = $id; $size[$id] = 0;
+		while ($q) { [$a, $bq] = array_pop($q); $size[$id]++; foreach ([[1, 0], [-1, 0], [0, 1], [0, -1]] as [$dx, $dy]) { $X = $a + $dx; $Y = $bq + $dy; if ($X >= 0 && $Y >= 0 && $X < $n && $Y < $n && $land[$Y][$X] === 'P' && !isset($comp["$X,$Y"])) { $comp["$X,$Y"] = $id; $q[] = [$X, $Y]; } } } } }
+	$big = $size ? array_search(max($size), $size, true) : 0; $tot = 0; $con = 0;
+	foreach ($bs as $b) { if ($b['t'] === 'tree') { continue; } $tot++; $w = (int) $b['w']; $ok = false;
+		for ($i = -1; $i <= $w && !$ok; $i++) { for ($j = -1; $j <= $w && !$ok; $j++) { $k = ($b['x'] + $i) . ',' . ($b['y'] + $j); if ($big && ($comp[$k] ?? 0) === $big) { $ok = true; } } } if ($ok) { $con++; } }
+	$N = 100 * (0.8 * ($tot ? $con / $tot : 0) + 0.2 * $cl($nb / 5));
+	$near = function ($h, $t, $r) use ($bs) { foreach ($bs as $b) { if ($b['t'] === $t && abs($b['x'] + ($b['w'] - 1) / 2 - $h['x']) <= $r && abs($b['y'] + ($b['h'] - 1) / 2 - $h['y']) <= $r) { return true; } } return false; };
+	$houses = array_values(array_filter($bs, fn($b) => $b['t'] === 'house')); $sum = 0;
+	foreach ($houses as $h) { $g = 0; $wet = false; $acc = false;
+		for ($dy = -3; $dy <= 3; $dy++) { for ($dx = -3; $dx <= 3; $dx++) { $X = $h['x'] + $dx; $Y = $h['y'] + $dy; if ($X < 0 || $Y < 0 || $X >= $n || $Y >= $n) { continue; } $l = $land[$Y][$X];
+			if ($l === 'F') { $g++; } if (abs($dx) <= 1 && abs($dy) <= 1) { if ($l === 'W') { $wet = true; } if ($l === 'P') { $acc = true; } } } }
+		foreach ($bs as $b) { if ($b['t'] === 'tree' && abs($b['x'] - $h['x']) <= 3 && abs($b['y'] - $h['y']) <= 3) { $g += 2; } }
+		$sum += 0.3 * ($near($h, 'well', 5) ? 1 : 0) + 0.2 * ($near($h, 'worship', 8) ? 1 : 0) + 0.2 * $cl($g / 8) + 0.15 * ($wet ? 0 : 1) + 0.15 * ($acc ? 1 : 0); }
+	$C = $houses ? 100 * $sum / count($houses) : 0;
+	$K = 0.6 * (int) ($st['happy'] ?? 0) + 0.4 * (int) ($st['coh'] ?? 0);
+	$P = 70 * $cl(((int) ($st['kk'] ?? 0)) / 50) + 30 * $cl(((int) ($st['era'] ?? 1) - 1) / 5);
+	$r = ['e' => (int) round($E), 'n' => (int) round($N), 'c' => (int) round($C), 'k' => (int) round($K), 'p' => (int) round($P)];
+	$r['score'] = (int) round(10 * (0.25 * $r['e'] + 0.2 * $r['n'] + 0.2 * $r['c'] + 0.25 * $r['k'] + 0.1 * $r['p']));
+	return $r;
+}
+function nb_count(string $me, array $m, array $u): int { $d = rd('dir.php') ?: []; $k = 0;
+	foreach ($d as $id => $x) { if ($id === $me) { continue; } $km = 6371 * 2 * asin(sqrt(sin(deg2rad($x['lat'] - $m['lat']) / 2) ** 2 + cos(deg2rad($m['lat'])) * cos(deg2rad($x['lat'])) * sin(deg2rad($x['lon'] - $m['lon']) / 2) ** 2));
+		if ($km < 25 || (($u['kelas'] ?? '') !== '' && ($x['kelas'] ?? '') === $u['kelas'])) { $k++; } if ($k >= 5) { break; } } return $k; }
 
 ensure_dir();
+check_origin();
 $a = (string) ($_GET['a'] ?? '');
 $b = $_SERVER['REQUEST_METHOD'] === 'POST' ? body() : [];
 
 switch ($a) {
-	case 'ping': out(['ok' => true, 'v' => '0.1']);
+	case 'ping': out(['ok' => true, 'v' => '0.2', 'eula' => EULA_VER, 'sem' => semester()]);
 	case 'register': {
 		rate('reg', 6, 3600);
 		$user = clean((string) ($b['user'] ?? ''), 32); $pass = (string) ($b['pass'] ?? '');
 		if (!preg_match('/^[A-Za-z0-9_.\-]{3,32}$/', $user)) { fail('bad_user'); }
 		if (strlen($pass) < 6 || strlen($pass) > 200) { fail('bad_pass'); }
+		if (($b['eula'] ?? '') !== EULA_VER) { fail('eula'); }
+		if (rude($user) || rude((string) ($b['name'] ?? ''))) { fail('rude'); }
+		$kc = strtoupper(clean((string) ($b['kelas'] ?? ''), 12)); if ($kc !== '' && !rd('k_' . preg_replace('/[^A-Z0-9]/', '', $kc) . '.php')) { fail('no_class'); }
 		$uid = uid_of($user);
 		$made = upd('u_' . $uid . '.php', function ($u) use ($user, $pass, $b) { if ($u) { return ['__ret' => false]; }
-			return ['__write' => ['user' => $user, 'hash' => password_hash($pass, PASSWORD_DEFAULT), 'name' => clean((string) ($b['name'] ?? $user), 60), 'kampus' => clean((string) ($b['kampus'] ?? ''), 80), 'kelas' => strtoupper(clean((string) ($b['kelas'] ?? ''), 12)), 'created' => time(), 'tokens' => []], '__ret' => true]; });
+			return ['__write' => ['user' => $user, 'hash' => password_hash($pass, PASSWORD_DEFAULT), 'name' => clean((string) ($b['name'] ?? $user), 60), 'kampus' => clean((string) ($b['kampus'] ?? ''), 80), 'kelas' => strtoupper(clean((string) ($b['kelas'] ?? ''), 12)), 'created' => time(), 'eula' => EULA_VER, 'eulaAt' => time(), 'tokens' => []], '__ret' => true]; });
 		if (!$made) { fail('user_taken', 409); }
 		$u = rd('u_' . $uid . '.php'); out(['ok' => true, 'token' => new_token($uid), 'me' => pub($u)]);
 	}
@@ -93,16 +201,55 @@ switch ($a) {
 		$j = json_decode($raw, true); if (!is_array($j) || !isset($j['state']) || !is_array($j['state'])) { fail('bad_save'); }
 		$meta = ['name' => clean((string) ($j['state']['meta']['name'] ?? ''), 60), 'era' => (int) ($j['state']['era'] ?? 1), 'month' => (int) ($j['state']['t'] ?? 0), 'kk' => (int) ($j['state']['kk'] ?? 0),
 			'loc' => clean((string) ($j['state']['loc']['name'] ?? ''), 80), 'lat' => (float) ($j['state']['loc']['lat'] ?? 0), 'lon' => (float) ($j['state']['loc']['lon'] ?? 0), 'score' => (int) ($j['state']['score'] ?? 0), 'at' => time()];
+		if (($u['eula'] ?? '') !== EULA_VER) { fail('eula', 403); }
 		$base = (int) ($j['base'] ?? 0);
-		$r = upd('s_' . $u['uid'] . '.php', function ($s) use ($j, $meta, $base) { $ver = (int) ($s['ver'] ?? 0);
+		$nbc = nb_count($u['uid'], $meta, $u);
+		$r = upd('s_' . $u['uid'] . '.php', function ($s) use ($j, &$meta, $base, $nbc) { $ver = (int) ($s['ver'] ?? 0);
 			if ($s && $base && $base !== $ver && empty($j['force'])) { return ['__ret' => ['conflict' => $ver]]; }
-			return ['__write' => ['ver' => $ver + 1, 'meta' => $meta, 'state' => $j['state']], '__ret' => ['ver' => $ver + 1]]; });
+			$prev = $s['state'] ?? null; if ($prev !== null) { $prev['flagged'] = $s['flagged'] ?? []; }
+			[$score, $bad] = audit($j['state'], $prev, (int) ($s['meta']['at'] ?? 0));
+			$ind = in_array('land', $bad, true) ? ['e' => 0, 'n' => 0, 'c' => 0, 'k' => 0, 'p' => 0, 'score' => 0] : indicators($j['state'], $nbc); $score = $ind['score']; $meta['ind'] = $ind;
+			if (($prev['meta']['created'] ?? 0) !== ($j['state']['meta']['created'] ?? 0)) { $bad = array_values(array_diff($bad, ['prior'])); }
+			$meta['score'] = $score; $meta['flag'] = $bad ? 1 : 0;
+			return ['__write' => ['ver' => $ver + 1, 'meta' => $meta, 'state' => $j['state'], 'flagged' => $bad], '__ret' => ['ver' => $ver + 1, 'bad' => $bad]]; });
 		if (isset($r['conflict'])) { out(['ok' => false, 'error' => 'conflict', 'ver' => $r['conflict']], 409); }
 		// direktori publik ringkas untuk tetangga (tanpa data pribadi selain nama tokoh)
 		upd('dir.php', function ($d) use ($u, $meta) { $d = $d ?: []; $d[$u['uid']] = $meta + ['who' => $u['name'] ?? $u['user'], 'kelas' => $u['kelas'] ?? '', 'kampus' => $u['kampus'] ?? ''];
 			if (count($d) > 5000) { uasort($d, fn($x, $y) => $y['at'] <=> $x['at']); $d = array_slice($d, 0, 5000, true); } return ['__write' => $d, '__ret' => true]; });
-		out(['ok' => true, 'ver' => $r['ver']]);
+		if (!$r['bad']) { $sem = semester(); $row = ['who' => $u['user'], 'name' => $meta['name'], 'kelas' => $u['kelas'] ?? '', 'kampus' => $u['kampus'] ?? '', 'score' => $meta['score'], 'era' => $meta['era'], 'kk' => $meta['kk'], 'month' => $meta['month'], 'loc' => $meta['loc'], 'ind' => $meta['ind'], 'at' => time()];
+			upd('lb_' . $sem . '.php', function ($d) use ($u, $row) { $d = $d ?: []; $old = $d[$u['uid']] ?? null; if ($row['score'] >= (int) ($old['best'] ?? 0)) { $row['best'] = $row['score']; $row['bestInd'] = $row['ind']; } else { $row['best'] = (int) $old['best']; $row['bestInd'] = $old['bestInd'] ?? $row['ind']; } $row['saves'] = (int) ($old['saves'] ?? 0) + 1; $row['first'] = $old['first'] ?? time(); $d[$u['uid']] = $row; return ['__write' => $d, '__ret' => true]; }); }
+		out(['ok' => true, 'ver' => $r['ver'], 'score' => $meta['score'], 'ind' => $meta['ind'], 'ranked' => !$r['bad'], 'flags' => $r['bad']]);
 	}
+	case 'eula': { $u = auth(); if (($b['ver'] ?? '') !== EULA_VER) { fail('eula'); }
+		upd('u_' . $u['uid'] . '.php', function ($x) { $x['eula'] = EULA_VER; $x['eulaAt'] = time(); return ['__write' => $x, '__ret' => true]; }); out(['ok' => true]); }
+	case 'board': {
+		$u = auth(); rate('board', 60, 300); $sem = preg_match('/^\d{4}-(Ganjil|Genap)$/', (string) ($_GET['sem'] ?? '')) ? (string) $_GET['sem'] : semester();
+		$scope = (string) ($_GET['scope'] ?? 'publik'); $d = rd('lb_' . $sem . '.php') ?: []; $rows = [];
+		foreach ($d as $id => $r) { if ($scope === 'kelas' && (($u['kelas'] ?? '') === '' || $r['kelas'] !== $u['kelas'])) { continue; } if ($scope === 'kampus' && (($u['kampus'] ?? '') === '' || mb_strtolower($r['kampus']) !== mb_strtolower($u['kampus']))) { continue; }
+			$rows[] = ['me' => $id === $u['uid'], 'who' => $r['who'], 'name' => $r['name'], 'kampus' => $scope === 'publik' ? $r['kampus'] : '', 'best' => $r['best'], 'ind' => $r['bestInd'] ?? null, 'era' => $r['era'], 'kk' => $r['kk']]; }
+		usort($rows, fn($a, $b) => $b['best'] <=> $a['best']); $mine = null; foreach ($rows as $i => $r) { if ($r['me']) { $mine = $i + 1; break; } }
+		out(['ok' => true, 'sem' => $sem, 'scope' => $scope, 'total' => count($rows), 'myRank' => $mine, 'list' => array_slice($rows, 0, 50)]);
+	}
+	case 'kelas_new': { $u = auth(); rate('kelasnew' . $u['uid'], 10, 86400); $nama = clean((string) ($b['nama'] ?? ''), 80); if (mb_strlen($nama) < 3 || rude($nama)) { fail('bad_name'); }
+		for ($i = 0; $i < 8; $i++) { $code = ''; $al = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; for ($k = 0; $k < 6; $k++) { $code .= $al[random_int(0, 31)]; }
+			$ok = upd('k_' . $code . '.php', function ($k) use ($u, $nama) { if ($k) { return ['__ret' => false]; } return ['__write' => ['owner' => $u['uid'], 'ownerUser' => $u['user'], 'nama' => $nama, 'created' => time()], '__ret' => true]; });
+			if ($ok) { upd('u_' . $u['uid'] . '.php', function ($x) use ($code) { $x['owns'] = array_values(array_unique(array_merge($x['owns'] ?? [], [$code]))); return ['__write' => $x, '__ret' => true]; }); out(['ok' => true, 'code' => $code]); } }
+		fail('storage', 500); }
+	case 'kelas_mine': { $u = auth(); $list = []; foreach (($u['owns'] ?? []) as $c) { $k = rd('k_' . $c . '.php'); if ($k) { $list[] = ['code' => $c, 'nama' => $k['nama'], 'created' => $k['created']]; } } out(['ok' => true, 'list' => $list]); }
+	case 'kelas_join': { $u = auth(); rate('join' . $u['uid'], 10, 3600); $c = preg_replace('/[^A-Z0-9]/', '', strtoupper((string) ($b['code'] ?? ''))); $k = $c ? rd('k_' . $c . '.php') : null; if (!$k) { fail('no_class', 404); }
+		upd('u_' . $u['uid'] . '.php', function ($x) use ($c) { $x['kelas'] = $c; return ['__write' => $x, '__ret' => true]; }); out(['ok' => true, 'kelas' => $c, 'nama' => $k['nama']]); }
+	case 'rekap': {
+		$u = auth(); $c = preg_replace('/[^A-Z0-9]/', '', strtoupper((string) ($_GET['code'] ?? ''))); $k = $c ? rd('k_' . $c . '.php') : null;
+		if (!$k || $k['owner'] !== $u['uid']) { fail('forbidden', 403); }
+		$sem = preg_match('/^\d{4}-(Ganjil|Genap)$/', (string) ($_GET['sem'] ?? '')) ? (string) $_GET['sem'] : semester(); $d = rd('lb_' . $sem . '.php') ?: []; $rows = [];
+		foreach ($d as $r) { if ($r['kelas'] === $c) { $rows[] = ['user' => $r['who'], 'permukiman' => $r['name'], 'lokasi' => $r['loc'], 'skor_terbaik' => $r['best'], 'skor_terakhir' => $r['score'], 'ekonomi' => $r['bestInd']['e'] ?? '', 'jejaring' => $r['bestInd']['n'] ?? '', 'kenyamanan' => $r['bestInd']['c'] ?? '', 'kepuasan' => $r['bestInd']['k'] ?? '', 'pertumbuhan' => $r['bestInd']['p'] ?? '', 'era' => $r['era'], 'kk' => $r['kk'], 'bulan_main' => $r['month'], 'jumlah_simpan' => $r['saves'], 'mulai' => date('Y-m-d', $r['first']), 'terakhir' => date('Y-m-d H:i', $r['at'])]; } }
+		usort($rows, fn($a, $b) => $b['skor_terbaik'] <=> $a['skor_terbaik']); out(['ok' => true, 'kelas' => $c, 'nama' => $k['nama'], 'sem' => $sem, 'rows' => $rows]);
+	}
+	case 'delete': { $u = auth(); rate('del', 5, 3600); $full = rd('u_' . $u['uid'] . '.php'); if (!$full || !password_verify((string) ($b['pass'] ?? ''), $full['hash'])) { fail('bad_login', 401); }
+		@unlink(DATA . '/s_' . $u['uid'] . '.php'); @unlink(DATA . '/u_' . $u['uid'] . '.php');
+		upd('dir.php', function ($d) use ($u) { $d = $d ?: []; unset($d[$u['uid']]); return ['__write' => $d, '__ret' => true]; });
+		foreach (glob(DATA . '/lb_*.php') ?: [] as $f) { upd(basename($f), function ($d) use ($u) { $d = $d ?: []; unset($d[$u['uid']]); return ['__write' => $d, '__ret' => true]; }); }
+		out(['ok' => true]); }
 	case 'load': { $u = auth(); $s = rd('s_' . $u['uid'] . '.php'); out(['ok' => true, 'save' => $s]); }
 	case 'neighbors': {
 		$u = auth(); $lat = (float) ($_GET['lat'] ?? 0); $lon = (float) ($_GET['lon'] ?? 0); $d = rd('dir.php') ?: []; $me = $u['uid']; $out = [];

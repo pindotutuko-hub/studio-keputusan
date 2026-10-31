@@ -1,0 +1,44 @@
+
+/* =========================================================================
+ * Babat Alas — sorotan gim di Beranda, tepat di bawah bagian Aplikasi (2026-11-01).
+ * ========================================================================= */
+function pindotutuko_babat_feature() {
+	$url   = esc_url( home_url( '/babat-alas/' ) );
+	$cover = esc_url( home_url( '/babat-alas/cover.jpg' ) );
+	ob_start();
+	?>
+<section id="babat-alas" class="ba-feat" aria-labelledby="ba-feat-title">
+	<a class="ba-feat__card" href="<?php echo $url; ?>" target="_blank" rel="noopener">
+		<img class="ba-feat__img" src="<?php echo $cover; ?>" alt="Babat Alas — kampung 3D dengan rumah joglo, rumah gadang, tongkonan, sawah, sungai, dan warga yang beraktivitas" loading="lazy" decoding="async" width="1600" height="900">
+		<span class="ba-feat__shade" aria-hidden="true"></span>
+		<span class="ba-feat__body">
+			<span class="ba-feat__tag">BARU · NEW · GIM 3D</span>
+			<span id="ba-feat-title" class="ba-feat__title">Babat Alas</span>
+			<span class="ba-feat__lead">Bangun kampungmu dari hutan di lokasi nyata mana pun di dunia — tumbuh menjadi dusun, desa, sampai kawasan pintar.</span>
+			<span class="ba-feat__en" lang="en">Found a settlement anywhere on Earth and grow it from forest clearing to a smart district.</span>
+			<span class="ba-feat__chips"><span>🌏 Lokasi nyata</span><span>🏠 11 gaya rumah</span><span>🧑🏽 Avatar 3D</span><span>🏆 Peringkat kelas</span><span>📚 Pustaka materi</span><span>🆓 Gratis</span></span>
+			<span class="ba-feat__cta">Main sekarang · Play now <span aria-hidden="true">→</span></span>
+		</span>
+	</a>
+</section>
+<style>
+.ba-feat{max-width:1200px;margin:28px auto 8px;padding:0 16px}
+.ba-feat__card{position:relative;display:block;border-radius:22px;overflow:hidden;min-height:340px;color:#fff;text-decoration:none;box-shadow:0 22px 60px rgba(0,0,0,.28);isolation:isolate;background:#14211b}
+.ba-feat__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1.2s ease}
+.ba-feat__card:hover .ba-feat__img{transform:scale(1.04)}
+.ba-feat__shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,20,14,.88) 0%,rgba(10,20,14,.6) 42%,rgba(10,20,14,0) 75%)}
+.ba-feat__body{position:relative;display:flex;flex-direction:column;gap:10px;max-width:560px;padding:34px 34px 30px}
+.ba-feat__tag{align-self:flex-start;font:800 11px/1 system-ui,sans-serif;letter-spacing:.14em;background:#e0a526;color:#1b1206;border-radius:999px;padding:7px 11px}
+.ba-feat__title{font:900 clamp(40px,6vw,72px)/.95 system-ui,sans-serif;letter-spacing:-.02em;text-shadow:0 4px 24px rgba(0,0,0,.5)}
+.ba-feat__lead{font:600 17px/1.45 system-ui,sans-serif}
+.ba-feat__en{font:500 14px/1.4 system-ui,sans-serif;opacity:.8}
+.ba-feat__chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.ba-feat__chips span{font:700 12px/1 system-ui,sans-serif;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:7px 10px;backdrop-filter:blur(4px)}
+.ba-feat__cta{align-self:flex-start;margin-top:8px;font:800 16px/1 system-ui,sans-serif;background:#2f8f6a;border-radius:14px;padding:15px 20px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.25),0 10px 24px rgba(47,143,106,.45);transition:transform .2s}
+.ba-feat__card:hover .ba-feat__cta{transform:translateY(-2px)}
+@media (max-width:640px){.ba-feat__card{min-height:460px}.ba-feat__shade{background:linear-gradient(0deg,rgba(10,20,14,.92) 0%,rgba(10,20,14,.65) 55%,rgba(10,20,14,.1) 100%)}.ba-feat__body{position:absolute;bottom:0;padding:22px}.ba-feat__lead{font-size:15px}}
+@media (prefers-reduced-motion:reduce){.ba-feat__img,.ba-feat__cta{transition:none}}
+</style>
+	<?php
+	return ob_get_clean();
+}
