@@ -274,14 +274,14 @@
 
   /* ---------- 4. Tab & panel ---------- */
   var tabs = document.getElementById("tabs"); if (!tabs) return;
-  var btn = document.createElement("button");
+  var btn = tabs.querySelector('button[data-t="akr"]') || document.createElement("button");
   btn.setAttribute("role", "tab"); btn.dataset.t = "akr"; btn.setAttribute("aria-selected", "false"); btn.textContent = "Akreditasi 2026";
-  tabs.insertBefore(btn, tabs.querySelector('button[data-t="ojs"]') || tabs.querySelector('button[data-t="update"]') || null);
+  if (!btn.parentNode) tabs.insertBefore(btn, tabs.querySelector('button[data-t="ojs"]') || tabs.querySelector('button[data-t="update"]') || null);
   var sec = document.createElement("section"); sec.className = "panel"; sec.id = "p-akr"; sec.setAttribute("role", "tabpanel");
   var ref = document.getElementById("p-ojs") || document.getElementById("p-update");
   ref.parentNode.insertBefore(sec, ref);
 
-  var SUBG = [["Jurnal UNMER", [["sim", "Kesiapan tiap jurnal"], ["prog", "Pantauan progres"], ["sit", "Sitasi & Scopus"], ["status", "Masa berlaku"]]], ["Panduan 2026", [["alur", "Alur akreditasi"], ["siap", "Alur kesiapan"], ["dasar", "Aturan pokok"], ["min", "Syarat minimum"], ["unsur", "Unsur A–G"], ["dis", "Disinsentif & larangan"], ["laksana", "Pengajuan ulang"], ["kalk", "Simulator"]]]];
+  var SUBG = [["Jurnal UNMER", [["sim", "Kesiapan tiap jurnal"], ["prog", "Pantauan progres"], ["sit", "Sitasi & Scopus"], ["status", "Masa berlaku"]]], ["Panduan 2026", [["alur", "Alur akreditasi"], ["siap", "Alur kesiapan"], ["dasar", "Aturan pokok"], ["min", "Syarat minimum"], ["unsur", "Unsur A–G"], ["dis", "Disinsentif & larangan"], ["laksana", "Pengajuan ulang"], ["kalk", "Simulator otomatis & manual"]]]];
   var SUBNAV = [].concat.apply([], SUBG.map(function (g) { return g[1]; }));
   var info = function (id) { return "<i class='i' data-ref='" + id + "' title='Lihat penjelasan " + id + " di panduan'>i</i>"; };
 
@@ -401,17 +401,71 @@
       [["Akreditasi baru", "Sudah terbit berkala minimal 3 tahun", "Seluruh nomor 3 tahun terakhir"], ["Akreditasi ulang sebelum berakhir", "Setelah menerbitkan minimal 3 nomor baru sejak nomor terakhir yang dinilai, paling lambat 6 bulan sebelum masa berlaku berakhir", "3 nomor terakhir"], ["Akreditasi ulang setelah berakhir", "Paling lambat 2 tahun sejak berakhir; lewat dari itu menjadi akreditasi baru", "3 nomor terakhir"], ["Tidak lolos Pemeriksaan Awal", "Periode berikutnya (kecuali gagal karena frekuensi/keberkalaan)", "Seluruh nomor 3 tahun terakhir"], ["Tidak lolos Pemeriksaan Kelayakan", "Paling cepat 2 tahun sejak penetapan", "Seluruh nomor 3 tahun terakhir"], ["Nilai <60 tanpa disinsentif", "Setelah 3 nomor baru", "3 nomor terakhir"], ["Nilai <60 setelah disinsentif", "Paling cepat 3 tahun", "Seluruh nomor 3 tahun terakhir"], ["Diturunkan peringkatnya", "Paling cepat 3 tahun", "Seluruh nomor 3 tahun terakhir"], ["Dibekukan", "Paling cepat 4 tahun", "Seluruh nomor 3 tahun terakhir"], ["Dicabut", "Paling cepat 5 tahun", "Seluruh nomor 3 tahun terakhir"]].map(function (x) { return "<tr><td><b>" + x[0] + "</b></td><td>" + x[1] + "</td><td>" + x[2] + "</td></tr>"; }).join("") + "</tbody></table></div>" +
       "<div class='card'><h3>Masa berlaku</h3><ul><li>5 tahun; tanggal mulai dan akhir ditetapkan di SK.</li><li>Akreditasi baru: berlaku sejak tanggal terbit nomor paling awal dalam rentang 3 tahun yang diajukan.</li><li>Akreditasi ulang yang diajukan tepat waktu tetapi belum ditetapkan saat masa lama habis: diberi perpanjangan sementara dengan peringkat terakhir.</li><li>Pengajuan ulang yang terlambat: tidak ada perpanjangan; nomor yang terbit selama status tidak terakreditasi tetap tidak terakreditasi.</li><li>Perubahan nama tanpa e-ISSN baru, perubahan URL, afiliasi, atau frekuensi tidak mengakhiri akreditasi; perubahan yang menghasilkan e-ISSN baru atau mengubah bidang secara mendasar dianggap jurnal baru. Setiap perubahan wajib dilaporkan.</li><li>Keberatan atas hasil dapat diajukan satu kali, hanya atas kekeliruan data/fakta atau proses; tidak bisa dipakai untuk menyerahkan perbaikan baru.</li></ul></div>";
   }
+  /* ---------- Simulator: mode Otomatis (dari data) & Manual (isi sendiri) ---------- */
+  var DISO = [[0, "Tidak ada"], [-3, "−3 · tanpa Ethical Clearance"], [-10, "−10 · 1 artikel melanggar"], [-13, "−13 · 1 artikel + EC"], [-15, "−15 · 2–3 artikel"], [-18, "−18 · 2–3 artikel + EC"], [-20, "−20 · >3 artikel"], [-23, "−23 · >3 artikel + EC"]];
+  var SIM = { mode: "auto", k: "", asm: "mid", dis: 0, man: null, base: "data" };
+  var lvMin = function (s) { var v = s.lv.map(function (l) { return l[0]; }).filter(function (x) { return x > 0; }); return v.length ? Math.min.apply(null, v) : 0; };
+  var lvMax = function (s) { return Math.max.apply(null, s.lv.map(function (l) { return l[0]; })); };
+  var lvDesc = function (s, v) { var l = s.lv.filter(function (x) { return +x[0] === +v; })[0]; return l ? l[1] : ""; };
+  var autoSc = function (r, asm) {
+    var o = {}; SUBS.forEach(function (q) { var v = +r.sc[q.id] || 0; if (r.src[q.id] === "asumsi") v = asm === "lo" ? lvMin(q) : asm === "hi" ? lvMax(q) : v; o[q.id] = v; }); return o;
+  };
+  var blank = function (how) { var o = {}; SUBS.forEach(function (q) { o[q.id] = how === "max" ? lvMax(q) : how === "min" ? lvMin(q) : q.lv[Math.floor((q.lv.length - 1) / 2)][0]; }); return o; };
+  var sumSc = function (sc) { var t = 0; SUBS.forEach(function (q) { t += +sc[q.id] || 0; }); return t; };
   function hKalk() {
-    return "<p>Isi nilai setiap subunsur untuk jurnal mana pun (misalnya saat evaluasi diri sebelum mengajukan). Ikon <i class='i' style='pointer-events:none'>i</i> membuka kriteria lengkapnya.</p><div class='card'><p><label>Mulai dari data jurnal: <select id='akrKalkJ'><option value=''>— kosong —</option>" + R.map(function (r) { return "<option value='" + esc(r.kode) + "'>" + esc(r.nama) + "</option>"; }).join("") + "</select></label></p><div id='akrKalkBody'></div></div>";
+    return "<p>Simulasikan penilaian akreditasi 2026 dengan dua cara. <b>Otomatis</b>: nilai dihitung dari data jurnal (metadata OJS, mitra bestari, dewan editor, laman kebijakan, sitasi DOI); unsur yang belum bisa diukur dari data memakai skenario asumsi pesimis, tengah, atau optimis. <b>Manual</b>: pilih sendiri tingkat setiap subunsur sesuai hasil evaluasi diri — keterangan tiap tingkat diambil dari instrumen 2026 — dan lihat selisihnya terhadap hasil otomatis. Ikon <i class='i' style='pointer-events:none'>i</i> membuka kriteria lengkap.</p><div class='bt' id='akrSim'></div>";
   }
-  function kalkBody(sc) {
-    var t = 0; SUBS.forEach(function (s) { t += +sc[s.id] || 0; });
-    var dis = +(sc.H || 0);
-    return "<div class='wrapx'><table><thead><tr><th>Subunsur</th><th>Nilai</th></tr></thead><tbody>" + SUBS.map(function (s) { return "<tr><td>" + s.id + " " + esc(s.t) + info(s.id) + "</td><td><select data-kalk='" + s.id + "'>" + s.lv.map(function (l) { return "<option value='" + l[0] + "'" + (+sc[s.id] === l[0] ? " selected" : "") + ">" + fmt(l[0]) + "</option>"; }).join("") + "</select> / " + fmt(s.max) + "</td></tr>"; }).join("") +
-      "<tr><td>Disinsentif" + info("dis") + "</td><td><select data-kalk='H'>" + [[0, "tidak ada"], [-3, "−3 (Ethical Clearance)"], [-10, "−10"], [-13, "−13"], [-15, "−15"], [-18, "−18"], [-20, "−20"], [-23, "−23"]].map(function (o) { return "<option value='" + o[0] + "'" + (dis === o[0] ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select></td></tr></tbody></table></div>" +
-      "<p style='font-size:18px'>Total <b>" + fmt(t + dis) + "</b> → <span class='pill " + pkKelas(t + dis) + "'>" + peringkat(t + dis) + "</span></p>";
+  function simRender() {
+    var box = document.getElementById("akrSim"); if (!box) return;
+    if (!SIM.k && R.length) SIM.k = R.slice().sort(function (a, b) { return total(b).t - total(a).t; })[0].kode;
+    var r = R.filter(function (x) { return x.kode === SIM.k; })[0] || null;
+    var au = r ? autoSc(r, SIM.asm) : null;
+    if (SIM.mode === "man" && !SIM.man) SIM.man = r ? JSON.parse(JSON.stringify(r.sc)) : blank("mid");
+    var sc = SIM.mode === "auto" ? au : SIM.man, sub = sumSc(sc || {}), tot = sub + SIM.dis;
+    var rg = r ? total(r) : null, ok = r ? r.min.filter(function (m) { return m[1]; }).length : 0;
+    var seg = function (k, opts, cur) { return "<div class='seg' data-sg='" + k + "'>" + opts.map(function (o) { return "<button type='button' data-v='" + o[0] + "'" + (String(cur) === String(o[0]) ? " class='on'" : "") + ">" + esc(o[1]) + "</button>"; }).join("") + "</div>"; };
+    var side = "<div class='fg'><span class='lbl'>Mode simulasi</span>" + seg("mode", [["auto", "Otomatis"], ["man", "Manual"]], SIM.mode) + "</div>" +
+      "<div class='fg'><span class='lbl'>Jurnal</span><select id='akrSimJ' style='width:100%;font:inherit;font-size:13px;padding:6px;border:1.5px solid var(--bk);border-radius:0;background:#fff'>" +
+      (SIM.mode === "man" ? "<option value=''" + (!SIM.k ? " selected" : "") + ">— lembar kosong (jurnal lain / calon jurnal) —</option>" : "") +
+      R.map(function (x) { return "<option value='" + esc(x.kode) + "'" + (x.kode === SIM.k ? " selected" : "") + ">" + esc(x.nama) + "</option>"; }).join("") + "</select></div>" +
+      (SIM.mode === "auto" ? "<div class='fg'><span class='lbl'>Skenario unsur asumsi</span>" + seg("asm", [["lo", "Pesimis"], ["mid", "Tengah"], ["hi", "Optimis"]], SIM.asm) + "<p class='note' style='margin:6px 0 0;font-size:11.5px'>Berlaku hanya untuk subunsur bertanda <i>asumsi</i>; subunsur dari data tetap.</p></div>"
+        : "<div class='fg'><span class='lbl'>Isi awal lembar</span>" + seg("base", [["data", "Dari otomatis"], ["min", "Semua terendah"], ["mid", "Semua tengah"], ["max", "Semua tertinggi"]], SIM.base) + "<p class='note' style='margin:6px 0 0;font-size:11.5px'>Mengganti semua nilai di lembar manual.</p></div>") +
+      "<div class='fg'><span class='lbl'>Disinsentif" + info("dis") + "</span><select id='akrSimDis' style='width:100%;font:inherit;font-size:13px;padding:6px;border:1.5px solid var(--bk);border-radius:0;background:#fff'>" + DISO.map(function (o) { return "<option value='" + o[0] + "'" + (SIM.dis === o[0] ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select></div>" +
+      (SIM.mode === "auto" && r ? "<button type='button' class='btn' id='akrSimToMan' style='width:100%'>Lanjut ubah manual →</button>" : "") +
+      (SIM.mode === "man" ? "<button type='button' class='btn ghost' id='akrSimReset' style='width:100%'>Kembalikan ke nilai otomatis</button>" : "");
+    var pk = peringkat(tot);
+    var dAuto = SIM.mode === "man" && au ? tot - (sumSc(au) + 0) : null;
+    var kp = "<div class='kpis'>" +
+      "<div class='kpi'><span class='no'>" + (SIM.mode === "auto" ? "OTO" : "MAN") + "</span><span class='lbl'>Total nilai</span><b>" + fmt(tot) + "</b><small>dari 100" + (SIM.dis ? " · disinsentif " + SIM.dis : "") + "</small></div>" +
+      "<div class='kpi'><span class='lbl'>Perkiraan</span><b style='font-size:30px'>" + esc(pk.replace("Tidak terakreditasi", "Tidak terakr.")) + "</b><small>" + (tot >= 90 ? "≥90" : tot >= 80 ? "80–<90" : tot >= 70 ? "70–<80" : tot >= 60 ? "60–<70" : "<60") + "</small></div>" +
+      (SIM.mode === "auto" ? "<div class='kpi'><span class='lbl'>Rentang</span><b style='font-size:32px'>" + (rg ? fmt(rg.lo + SIM.dis) + "–" + fmt(rg.hi + SIM.dis) : "–") + "</b><small>pesimis–optimis</small></div>"
+        : "<div class='kpi'><span class='lbl'>Selisih vs otomatis</span><b>" + (dAuto == null ? "–" : (dAuto > 0 ? "+" : "") + fmt(dAuto)) + "</b><small>" + (au ? "otomatis (tengah) " + fmt(sumSc(au)) : "lembar kosong") + "</small></div>") +
+      "<div class='kpi'><span class='lbl'>Syarat minimum" + info("min") + "</span><b>" + (r ? ok + "/" + r.min.length : "–") + "</b><small>" + (r ? (ok === r.min.length ? "semua terpenuhi" : (r.min.length - ok) + " belum → tidak dinilai") : "periksa sendiri") + "</small></div></div>";
+    var gx = function (v) { return Math.max(0, Math.min(100, v)); };
+    var gauge = "<div class='blk'><div class='hd'><h3>Posisi terhadap ambang peringkat</h3></div><div class='in'><svg viewBox='0 0 700 74' width='100%' role='img' aria-label='Posisi nilai'>" +
+      [[0, 60, "#EBD3D9", "Tidak terakreditasi"], [60, 70, "#D7A1AE", "P4"], [70, 80, "#B23A55", "P3"], [80, 90, "#8E2740", "P2"], [90, 100, "#5E1626", "P1"]].map(function (b) { var x = 10 + b[0] * 6.8, w = (b[1] - b[0]) * 6.8; return "<rect x='" + x + "' y='22' width='" + w + "' height='22' fill='" + b[2] + "' stroke='#141017' stroke-width='1'/><text x='" + (x + w / 2) + "' y='37' text-anchor='middle' style='fill:" + (b[0] >= 70 ? "#fff" : "#141017") + ";font-size:11px'>" + b[3] + "</text>"; }).join("") +
+      [60, 70, 80, 90].map(function (v) { return "<text x='" + (10 + v * 6.8) + "' y='60' text-anchor='middle'>" + v + "</text>"; }).join("") +
+      (SIM.mode === "auto" && rg ? "<rect x='" + (10 + gx(rg.lo + SIM.dis) * 6.8) + "' y='48' width='" + Math.max(2, (gx(rg.hi + SIM.dis) - gx(rg.lo + SIM.dis)) * 6.8) + "' height='4' fill='#141017' opacity='.35'/>" : "") +
+      "<path d='M " + (10 + gx(tot) * 6.8) + " 20 l -7 -12 h 14 z' fill='#141017'/><text x='" + (10 + gx(tot) * 6.8) + "' y='7' text-anchor='middle' style='fill:#141017;font-weight:700;font-size:12px'>" + fmt(tot) + "</text></svg></div></div>";
+    var un = "<div class='blk'><div class='hd'><h3>Nilai per unsur</h3><span class='lbl'>nilai / bobot</span></div><div class='in'>" + ORDER.map(function (k) {
+      var v = G[k].sub.reduce(function (a, q) { return a + (+sc[q.id] || 0); }, 0), w = G[k].w, va = au ? G[k].sub.reduce(function (a, q) { return a + (+au[q.id] || 0); }, 0) : null;
+      return "<div style='display:grid;grid-template-columns:200px minmax(0,1fr) 90px;gap:10px;align-items:center;margin:6px 0;font-size:13px'><span><b>" + k + "</b> " + esc(G[k].t) + info(k) + "</span><div class='sb' style='width:100%;position:relative'><i style='width:" + (100 * v / w) + "%;background:var(--q1)'></i>" + (SIM.mode === "man" && va != null ? "<span title='otomatis' style='position:absolute;top:-3px;bottom:-3px;width:2px;background:#141017;left:" + (100 * va / w) + "%'></span>" : "") + "</div><span style='text-align:right;font-family:JetBrains Mono,monospace'>" + fmt(v) + " / " + w + "</span></div>";
+    }).join("") + (SIM.mode === "man" && au ? "<p class='note' style='margin:6px 0 0'>Garis hitam tipis = nilai otomatis (skenario tengah).</p>" : "") + "</div></div>";
+    var rows = ORDER.map(function (k) {
+      return "<details class='u' open><summary>" + k + ". " + esc(G[k].t) + " — " + fmt(G[k].sub.reduce(function (a, q) { return a + (+sc[q.id] || 0); }, 0)) + " / " + G[k].w + "</summary><div class='in'>" + G[k].sub.map(function (q) {
+        var v = +sc[q.id] || 0, src = r ? r.src[q.id] : "", av = au ? +au[q.id] : null;
+        var head = "<div style='display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap'><span><b>" + q.id.replace(/(\w)(\d)/, "$1.$2") + "</b> " + esc(q.t) + info(q.id) + (src ? " <span class='" + (src === "data" ? "lbl" : "asm") + "' style='font-size:10px'>" + (src === "data" ? "data" : "asumsi") + "</span>" : "") + "</span><span style='font-family:JetBrains Mono,monospace;font-size:12px'>" + fmt(v) + " / " + fmt(q.max) + (SIM.mode === "man" && av != null && av !== v ? " <span style='color:" + (v > av ? "var(--q1)" : "#47404C") + "'>(" + (v > av ? "+" : "") + fmt(v - av) + ")</span>" : "") + "</span></div>";
+        var body = SIM.mode === "man"
+          ? "<div class='seg' style='margin:6px 0' data-man='" + q.id + "'>" + q.lv.map(function (l) { return "<button type='button' data-v='" + l[0] + "' title='" + esc(l[1]) + "'" + (+l[0] === v ? " class='on'" : "") + ">" + fmt(l[0]) + "</button>"; }).join("") + "</div>"
+          : "";
+        var desc = "<div class='note' style='margin-top:4px'>" + esc(lvDesc(q, v) || "") + (SIM.mode === "auto" && r && r.note[q.id] ? "<br><i>Temuan: " + esc(r.note[q.id]) + "</i>" : "") + "</div>";
+        return "<div class='sub'>" + head + body + desc + "</div>";
+      }).join("") + "</div></details>";
+    }).join("");
+    box.innerHTML = "<div class='dash'><aside class='side'><div class='sticky'>" + side + "</div></aside><div class='body'>" + kp + gauge + un +
+      (r && SIM.mode === "auto" && r.min.some(function (m) { return !m[1]; }) ? "<div class='blk' style='border-color:var(--rust)'><div class='hd'><h3>Syarat minimum belum terpenuhi</h3></div><div class='in'><ul style='margin:0'>" + r.min.filter(function (m) { return !m[1]; }).map(function (m) { return "<li><b>" + esc(m[0]) + "</b> — " + esc(m[2]) + "</li>"; }).join("") + "</ul><p class='note'>Selama ada syarat minimum yang gagal, jurnal tidak masuk tahap penilaian berapa pun nilainya.</p></div></div>" : "") +
+      "<div class='blk'><div class='hd'><h3>" + (SIM.mode === "auto" ? "Rincian nilai otomatis" : "Lembar penilaian manual") + "</h3><span class='lbl'>" + (SIM.mode === "man" ? "klik angka untuk memilih tingkat" : "dari data + asumsi") + "</span></div><div class='in'>" + rows + "</div></div></div></div>";
   }
-
   /* ---------- 5. Alur akreditasi, alur kesiapan, pantauan progres ---------- */
   function box(x, y, w, h, title, sub, kind) {
     var fill = kind === "ok" ? "var(--patina)" : kind === "bad" ? "var(--rust)" : kind === "soft" ? "var(--surface-2)" : "var(--surface)";
@@ -545,7 +599,6 @@
     "<div class='akr-sec' id='akrs-siap'>" + hSiap() + "</div>" +
     "<div class='akr-sec' id='akrs-prog'>" + hProg() + "</div>";
 
-  var KALK = {}; SUBS.forEach(function (s) { KALK[s.id] = s.lv[s.lv.length - 1][0]; }); KALK.H = 0;
   var showSub = function (id) { sec.querySelectorAll(".akr-sub button").forEach(function (b) { b.classList.toggle("on", b.dataset.sub === id); }); sec.querySelectorAll(".akr-sec").forEach(function (s) { s.classList.toggle("on", s.id === "akrs-" + id); }); };
   var goRef = function (id) {
     if (id === "kalk") { showSub("kalk"); return; }
@@ -577,10 +630,23 @@
     var s = e.target;
     if (s.dataset.ps || s.dataset.pn) return;
     if (s.dataset.s) { EDIT[s.dataset.k][s.dataset.s] = +s.value; refreshRow(s.dataset.k); var box = document.getElementById("akrDet"), k = s.dataset.k, sy = window.scrollY; box.innerHTML = detail(k); window.scrollTo(0, sy); return; }
-    if (s.id === "akrKalkJ") { var r = R.filter(function (x) { return x.kode === s.value; })[0]; KALK = r ? JSON.parse(JSON.stringify(EDIT[r.kode])) : (function () { var o = {}; SUBS.forEach(function (q) { o[q.id] = q.lv[q.lv.length - 1][0]; }); return o; })(); KALK.H = 0; document.getElementById("akrKalkBody").innerHTML = kalkBody(KALK); return; }
-    if (s.dataset.kalk) { KALK[s.dataset.kalk] = +s.value; document.getElementById("akrKalkBody").innerHTML = kalkBody(KALK); }
+    if (s.id === "akrSimJ") { SIM.k = s.value; SIM.man = null; if (SIM.mode === "man" && !s.value) SIM.man = blank("mid"); simRender(); return; }
+    if (s.id === "akrSimDis") { SIM.dis = +s.value; simRender(); return; }
   });
-  document.getElementById("akrKalkBody").innerHTML = kalkBody(KALK);
+  simRender();
+  sec.addEventListener("click", function (e) {
+    var root = document.getElementById("akrSim"); if (!root || !root.contains(e.target)) return;
+    var b = e.target.closest("[data-sg] button[data-v]");
+    if (b) { var g = b.parentNode.dataset.sg, v = b.dataset.v;
+      if (g === "mode") { SIM.mode = v; if (v === "man" && !SIM.man) { var r0 = R.filter(function (x) { return x.kode === SIM.k; })[0]; SIM.man = r0 ? autoSc(r0, "mid") : blank("mid"); } }
+      else if (g === "asm") SIM.asm = v;
+      else if (g === "base") { SIM.base = v; var r1 = R.filter(function (x) { return x.kode === SIM.k; })[0]; SIM.man = v === "data" ? (r1 ? autoSc(r1, "mid") : blank("mid")) : blank(v); }
+      var y = window.scrollY; simRender(); window.scrollTo(0, y); return; }
+    var m = e.target.closest("[data-man] button[data-v]");
+    if (m) { SIM.man[m.parentNode.dataset.man] = +m.dataset.v; var y2 = window.scrollY; simRender(); window.scrollTo(0, y2); return; }
+    if (e.target.closest("#akrSimToMan")) { var r2 = R.filter(function (x) { return x.kode === SIM.k; })[0]; SIM.man = autoSc(r2, SIM.asm); SIM.mode = "man"; SIM.base = "data"; simRender(); root.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+    if (e.target.closest("#akrSimReset")) { var r3 = R.filter(function (x) { return x.kode === SIM.k; })[0]; SIM.man = r3 ? autoSc(r3, "mid") : blank("mid"); SIM.base = "data"; var y3 = window.scrollY; simRender(); window.scrollTo(0, y3); return; }
+  });
   function saveProg(k) {
     var det = document.getElementById("akrProgDet"), steps = {};
     det.querySelectorAll("[data-ps]").forEach(function (el) { var id = el.dataset.ps, n = det.querySelector("[data-pn='" + id + "']"); if (el.value || (n && n.value)) steps[id] = { s: el.value, note: n ? n.value : "", d: new Date().toISOString().slice(0, 10) }; });
