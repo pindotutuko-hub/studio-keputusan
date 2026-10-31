@@ -19,16 +19,16 @@
     "#tabs.mgnav{display:flex;flex-wrap:wrap;align-items:stretch;gap:2px 6px;overflow:visible!important;position:relative;z-index:30}" +
     "#tabs.mgnav .mg{position:relative}" +
     "#tabs.mgnav .mgh{display:flex;align-items:center;gap:6px;height:100%}" +
-    "#tabs.mgnav .mg.open .mgh{color:#E7EEF2}" +
-    "#tabs.mgnav .mg.on>.mgh{color:#fff;border-bottom-color:#FFA35C;background:rgba(255,255,255,.06)}" +
+    "#tabs.mgnav .mg.open .mgh{color:var(--ink)}" +
+    "#tabs.mgnav .mg.on>.mgh{color:var(--ink);border-bottom-color:var(--patina);background:rgba(194,84,26,.07)}" +
     "#tabs.mgnav .mgh .car{font-size:.8em;transition:transform .15s}#tabs.mgnav .mg.open .mgh .car{transform:rotate(180deg)}" +
-    "#tabs.mgnav .mgd{display:none;position:absolute;top:100%;left:0;min-width:290px;padding:8px;background:var(--ink);border:1px solid rgba(255,255,255,.12);border-top:3px solid #FFA35C;box-shadow:0 18px 40px rgba(0,0,0,.35);border-radius:0 0 10px 10px}" +
+    "#tabs.mgnav .mgd{display:none;position:absolute;top:100%;left:0;min-width:290px;padding:8px;background:#fff;border:1px solid var(--line);border-top:3px solid var(--patina);box-shadow:0 18px 40px rgba(14,26,43,.14);border-radius:0 0 10px 10px}" +
     "#tabs.mgnav .mg.open .mgd{display:block}" +
     "#tabs.mgnav .mgd button[data-t]{display:block;width:100%;text-align:left;margin:0;padding:10px 12px!important;border:0!important;border-radius:6px;background:none;white-space:normal}" +
-    "#tabs.mgnav .mgd button[data-t]:hover{background:rgba(255,255,255,.07)}" +
-    "#tabs.mgnav .mgd button[aria-selected=true]{background:rgba(255,255,255,.1);box-shadow:inset 3px 0 0 #FFA35C}" +
-    "#tabs.mgnav .mgd small{display:block;margin-top:4px;font-size:10.5px;letter-spacing:.02em;text-transform:none;color:#93A6B6}#tabs.mgnav .mgd button[data-t]:hover small{color:#C9D5DE}" +
-    "#tabs.mgnav .bdg{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:999px;background:#FFA35C;color:#111;font-size:9px;letter-spacing:.08em;vertical-align:2px}" +
+    "#tabs.mgnav .mgd button[data-t]{color:var(--ink)!important}#tabs.mgnav .mgd button[data-t]:hover{background:var(--surface-2)}" +
+    "#tabs.mgnav .mgd button[aria-selected=true]{background:rgba(194,84,26,.08);box-shadow:inset 3px 0 0 var(--patina)}" +
+    "#tabs.mgnav .mgd small{display:block;margin-top:4px;font-size:10.5px;letter-spacing:.02em;text-transform:none;color:var(--muted)}" +
+    "#tabs.mgnav .bdg{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:999px;background:var(--patina);color:#fff;font-size:9px;letter-spacing:.08em;vertical-align:2px}" +
     "@media (max-width:760px){#tabs.mgnav .mgd{position:fixed;left:12px;right:12px;top:auto;min-width:0}}";
   document.head.appendChild(css);
   nav.classList.add("mgnav");
@@ -126,4 +126,18 @@
   var sync = function () { box.style.display = pr.classList.contains("on") ? "" : "none"; };
   new MutationObserver(sync).observe(pr, { attributes: true, attributeFilter: ["class"] });
   sync();
+})();
+
+/* Tema terang: kepala halaman & menu cerah, aksen oranye. */
+(function () {
+  var css = document.createElement("style");
+  css.textContent =
+    "header.mast{background:linear-gradient(180deg,#FFFFFF 0%,#FFF7F1 100%)!important;color:var(--ink)!important;border-bottom:1px solid var(--line)}" +
+    "header.mast h1{color:var(--ink)!important}header.mast h1 em{color:var(--patina)!important}" +
+    "header.mast .eyebrow{color:var(--patina)!important}header.mast .lede{color:var(--muted)!important}" +
+    "header.mast .snap{color:var(--ink)!important;background:#fff!important;border-color:var(--line)!important}header.mast .snap b{color:var(--ink)!important}header.mast .snap .lnk{color:var(--patina)!important}" +
+    "header.mast .tabs button{color:var(--muted)!important}header.mast .tabs button:hover{color:var(--ink)!important}" +
+    "header.mast .tabs button[aria-selected=true]{color:var(--ink)!important;border-bottom-color:var(--patina)!important;background:rgba(194,84,26,.07)!important}" +
+    "main table thead th{background:var(--surface-2)!important;color:var(--muted)!important}";
+  document.head.appendChild(css);
 })();
