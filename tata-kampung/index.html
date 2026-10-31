@@ -605,7 +605,7 @@ window.addEventListener('load',function(){if(!window.Inspirasi)return;
  var a=document.getElementById('inspIntro'),b=document.getElementById('inspGame');
  Inspirasi.mount(a,{cats:K,re:/gang|lorong|sungai|taman|ruang terbuka|tangga|jembatan|pohon|tanaman/i,n:4,lang:lg,title:tt,seed:7});
  Inspirasi.mount(b,{cats:K,n:4,lang:lg,title:tt,seed:1});
- window.addEventListener('kb-loc',function(){var L=window.__KB.loc();var nr=L?{near:{lat:L.lat,lon:L.lon,km:1.5}}:{near:null};Inspirasi.update(a,nr);Inspirasi.update(b,nr)});
+ window.addEventListener('kb-loc',function(){var L=window.__KB.loc();var nr=L&&L.lat!=null?{near:{lat:L.lat,lon:L.lon,km:1.5}}:{near:null};Inspirasi.update(a,nr);Inspirasi.update(b,nr)});
  var y=1;document.getElementById('langBtn').addEventListener('click',function(){Inspirasi.refresh(a);Inspirasi.refresh(b)});
  document.getElementById('endYear').addEventListener('click',function(){y++;Inspirasi.update(b,{seed:y*31})});
 });
@@ -656,17 +656,29 @@ return {bbox:bbox,raster:raster,fromMap:fromMap,CELL:CELL};
 })();
 </script>
 <script>
+/* Kampung fiktif acak (mode solo): jalan di atas, sungai di bawah yang berkelok, gang & lahan kosong acak */
+function genKampung(seed){var a=seed>>>0,r=function(){a=(a+0x6D2B79F5)>>>0;var t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296},ri=function(x,y){return x+Math.floor(r()*(y-x+1))};
+  var W2=16,H2=11,g=[];for(var y=0;y<H2;y++){g.push([]);for(var x=0;x<W2;x++)g[y].push('h')}
+  for(x=0;x<W2;x++)g[0][x]='R';
+  var lvl=ri(8,9);for(x=0;x<W2;x++){if(r()<.25)lvl=Math.max(7,Math.min(9,lvl+(r()<.5?-1:1)));for(y=lvl+1;y<H2;y++)g[y][x]='W'}
+  var cols=[],nc=ri(2,3);while(cols.length<nc){var c=ri(1,W2-2);if(cols.every(function(o){return Math.abs(o-c)>=3}))cols.push(c)}
+  cols.forEach(function(c){var end=ri(4,7);for(y=1;y<=end;y++)g[y][c]='g'});
+  var nh=ri(1,2);for(var i=0;i<nh;i++){var row=ri(3,6),x0=ri(0,6),x1=Math.min(W2-1,x0+ri(4,9));for(x=x0;x<=x1;x++)if(g[row][x]==='h')g[row][x]='g'}
+  var ne=ri(2,4);for(i=0;i<ne;i++){var ex=ri(0,W2-1),ey=ri(1,7);if(g[ey][ex]==='h')g[ey][ex]='e'}
+  var tx=ri(0,W2-1),ty=ri(2,7);if(g[ty][tx]==='h')g[ty][tx]='t';
+  if(r()<.6){var fx=cols[0]+(r()<.5?-1:1),fy=ri(2,5);if(fx>=0&&fx<W2&&g[fy][fx]==='h')g[fy][fx]='f'}
+  return g.map(function(rw){return rw.join('')})}
 /* ---------- Lokasi nyata dari OpenStreetMap (mode solo) ---------- */
 (function(){
 var K=window.__KB;if(!K||!window.KBOSM)return;
 var KSET=['kayutangan','jodipan','tridi','putih','sanan','keramik','jpkampung','moriyama'];
 var PRE=window.KB_PRESETS||{};
-var S={id:{fict:'Lokasi: kampung fiktif',real:'Lokasi nyata: {n}',btn:'Pilih lokasi nyata (peta)',reset:'Pakai kampung fiktif',h:'Pilih kampung nyata',
+var S={id:{fict:'Lokasi: kampung fiktif',rnd:'Kampung acak',rndName:'kampung acak #{n} (fiktif)',real:'Lokasi nyata: {n}',btn:'Pilih lokasi nyata (peta)',reset:'Pakai kampung fiktif',h:'Pilih kampung nyata',
   p:'Geser atau perbesar peta. Kotak oranye menandai area 192 × 132 m (16 × 11 petak, 12 m per petak) yang menjadi papan permainan. Jalan, gang, sungai, dan bangunan diambil dari OpenStreetMap.',
   use:'Gunakan area ini',cancel:'Batal',loading:'Membaca data OpenStreetMap…',err:'Data peta di area ini belum terbaca. Tunggu peta selesai dimuat lalu coba lagi, atau pilih area lain.',
   filled:'Data bangunan OSM di area ini belum lengkap; petak tanpa data dianggap rumah.',addR:'Tak ada jalan utama di area ini; tepi peta dijadikan jalan.',noW:'Tidak ada sungai di area ini; indikator Banjir hanya menghitung limpasan.',
   credit:'Data peta © kontributor OpenStreetMap (ODbL)',introReal:'Papan permainan ini dibuat dari peta nyata {n} (OpenStreetMap, petak 12 m). Rumah tanpa akses gang, sungai, dan jalan mengikuti data peta; warga dan dana tetap model latihan. Tata kampung tanpa menggusur warga keluar kampung.',cls:'Mode kelas selalu memakai kampung fiktif agar hasil antarmahasiswa sebanding.',pre:'Kampung dari koleksi foto:',area:'area pilihan',search:'Cari tempat…'},
- en:{fict:'Location: fictional kampung',real:'Real location: {n}',btn:'Choose a real location (map)',reset:'Use the fictional kampung',h:'Choose a real kampung',
+ en:{fict:'Location: fictional kampung',rnd:'Random kampung',rndName:'random kampung #{n} (fictional)',real:'Real location: {n}',btn:'Choose a real location (map)',reset:'Use the fictional kampung',h:'Choose a real kampung',
   p:'Pan or zoom the map. The orange box marks a 192 × 132 m area (16 × 11 tiles, 12 m per tile) that becomes the game board. Roads, alleys, rivers and buildings come from OpenStreetMap.',
   use:'Use this area',cancel:'Cancel',loading:'Reading OpenStreetMap data…',err:'Map data for this area is not ready. Wait for the map to load and try again, or choose another area.',
   filled:'OSM building data here is incomplete; tiles without data are treated as houses.',addR:'No main road in this area; the map edge was made a road.',noW:'No river in this area; the Flood score only counts runoff.',
@@ -683,10 +695,10 @@ function loadMeta(cb){if(Object.keys(centers).length)return cb();
    centers[k]=PRE[k]?{lat:PRE[k].lat,lon:PRE[k].lon}:{lat:med(p.map(function(x){return x.lat})),lon:med(p.map(function(x){return x.lon}))};
    centers[k].city=p.length?p[0].city:''});cb()})}
 /* --- bar under the intro buttons --- */
-function bar(){var el=document.getElementById('locBar');if(!el)return;var L=K.loc();var ip=document.querySelector('[data-t=introP]');if(ip&&L)ip.textContent=t('introReal',{n:L.name});
- el.innerHTML='<span class="hint">'+(L?t('real',{n:esc(L.name)}):t('fict'))+'</span> <button class="chip" id="locBtn">'+t('btn')+'</button>'+(L?' <button class="chip" id="locReset">'+t('reset')+'</button>':'')+
-  (L?'<div class="hint" style="margin-top:6px">'+[L.filled?t('filled'):'',L.addedR?t('addR'):'',L.noW?t('noW'):''].filter(Boolean).map(esc).join(' ')+' '+t('credit')+'</div>':'');
- document.getElementById('locBtn').onclick=open;var r=document.getElementById('locReset');if(r)r.onclick=function(){K.setLoc(null,null);bar();window.dispatchEvent(new CustomEvent('kb-loc'))}}
+function bar(){var el=document.getElementById('locBar');if(!el)return;var L=K.loc();var ip=document.querySelector('[data-t=introP]');if(ip&&L&&!L.fict)ip.textContent=t('introReal',{n:L.name});
+ el.innerHTML='<span class="hint">'+(L?(L.fict?esc(L.name):t('real',{n:esc(L.name)})):t('fict'))+'</span> <button class="chip" id="locBtn">'+t('btn')+'</button>'+' <button class="chip" id="locRnd">🎲 '+t('rnd')+'</button>'+(L?' <button class="chip" id="locReset">'+t('reset')+'</button>':'')+
+  (L&&!L.fict?'<div class="hint" style="margin-top:6px">'+[L.filled?t('filled'):'',L.addedR?t('addR'):'',L.noW?t('noW'):''].filter(Boolean).map(esc).join(' ')+' '+t('credit')+'</div>':'');
+ document.getElementById('locBtn').onclick=open;document.getElementById('locRnd').onclick=function(){var sd=1+Math.floor(Math.random()*999999);K.setLoc(genKampung(sd),{name:t('rndName').replace('{n}',sd),fict:true});bar();window.dispatchEvent(new CustomEvent('kb-loc'))};var r=document.getElementById('locReset');if(r)r.onclick=function(){K.setLoc(null,null);bar();window.dispatchEvent(new CustomEvent('kb-loc'))}}
 /* --- modal with map --- */
 var md=null,map=null,cur=null,busy=false;
 function lib(cb){if(window.maplibregl)return cb();var c=document.createElement('link');c.rel='stylesheet';c.href='https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css';document.head.appendChild(c);
