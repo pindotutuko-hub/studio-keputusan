@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arsitek Pintu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3efe7;--card:#fffdf9;--ink:#1f1c18;--muted:#6d655a;--line:#ddd3c4;--soft:#efe8dc;
+  --room:#efe6d7;--roomh:#e4d3b8;--door:#c9922e;--cand:#a8987d;
+  --accent:#1f6f6b;--accentSoft:#dcefed;--ok:#2f7d4f;--okSoft:#e1f1e6;--bad:#a33a2a;--badSoft:#f6e1dc;
+  --shadow:0 1px 2px rgba(40,30,20,.06),0 8px 24px rgba(40,30,20,.08);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#15130f;--card:#1f1c17;--ink:#f2ece2;--muted:#a69d8f;--line:#38322a;--soft:#2a261f;
+  --room:#2b2720;--roomh:#3b3428;--door:#e0ae4e;--cand:#5d554a;
+  --accent:#6fd0c8;--accentSoft:#173230;--ok:#6cc58f;--okSoft:#1c3326;--bad:#ef8a78;--badSoft:#3a2420;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14.5px/1.5 Inter,system-ui,sans-serif}
+h1,h2,h3{font-family:"Space Grotesk",Inter,system-ui,sans-serif;margin:0;letter-spacing:-.01em}
+button{font:inherit;cursor:pointer;color:inherit}
+.wrap{max-width:1200px;margin:0 auto;padding:16px 16px 40px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.home{display:inline-flex;align-items:center;gap:4px;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 12px 7px 8px;font-weight:700;font-size:13px}
+.home:hover{border-color:var(--accent);color:var(--accent)}
+.logo{width:42px;height:42px;border-radius:12px;background:#1f6f6b;display:grid;place-items:center;flex:none}
+.brand h1{font-size:22px}.brand p{margin:0;color:var(--muted);font-size:13px}
+.hud{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;display:flex;gap:6px;align-items:center}
+.pill b{font-family:"Space Grotesk",Inter,sans-serif;font-size:15px}
+.lang{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.levels{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.lv{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:6px 10px;font-size:13px;font-weight:600;text-align:left}
+.lv.on{border-color:var(--accent);background:var(--accentSoft)}
+.lv small{display:block;color:var(--muted);font-weight:500;font-size:11.5px}
+.lv .st{color:#d29a1e;letter-spacing:1px}
+.grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(300px,1fr);gap:16px;align-items:start}
+@media (max-width:880px){.grid{grid-template-columns:1fr}}
+.plan{padding:14px}
+.planhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:2px 4px 8px;flex-wrap:wrap}
+.planhead h2{font-size:18px}
+#plan{width:100%;height:auto;display:block;touch-action:manipulation;max-height:66vh}
+.wall{cursor:pointer}
+.tools{display:flex;gap:8px;flex-wrap:wrap;padding:8px 4px 0;align-items:center}
+.chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:600}
+.chip.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.side{display:flex;flex-direction:column;gap:12px}
+.panel{padding:14px 16px}
+.panel h3{font-size:15px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline}
+.req{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.req i{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px;background:var(--badSoft);color:var(--bad)}
+.req.ok i{background:var(--okSoft);color:var(--ok)}
+.req small{display:block;color:var(--muted);font-size:12px}
+.win{border-radius:14px;padding:12px 14px;background:var(--okSoft)}
+.win b{font-family:"Space Grotesk",Inter,sans-serif;font-size:17px}
+.stars{color:#d29a1e;font-size:22px;letter-spacing:3px}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:12px;padding:10px 15px;font-weight:700;font-size:14.5px}
+@media (prefers-color-scheme:dark){.btn{color:#0f1f1e}}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.hint{color:var(--muted);font-size:13px}
+#jg{width:100%;height:auto;display:block}
+.intro{padding:24px;margin-bottom:12px}
+.intro h2{font-size:24px}
+footer{margin-top:20px;color:var(--muted);font-size:12.5px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--muted)}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="home" href="https://pindotutuko.id/" title="pindotutuko.id"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span data-t="home"></span></a>
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M12 3v7M12 14v7M3 12h5M12 12h9"/><path d="M8 12h4" stroke="#f2c66d" stroke-width="3"/></svg></div>
+    <div class="brand"><h1 data-t="title"></h1><p data-t="tag"></p></div>
+    <div class="hud">
+      <div class="pill"><span data-t="doors"></span> <b id="hDoors">0</b></div>
+      <div class="pill"><span data-t="starsT"></span> <b id="hStars">0</b></div>
+      <button class="lang" id="langBtn">EN</button>
+    </div>
+  </header>
+  <section class="card intro" id="introBox">
+    <h2 data-t="introH"></h2>
+    <p class="hint" style="margin:6px 0 0" data-t="introP"></p>
+  </section>
+  <div class="levels" id="levels"></div>
+  <section class="grid">
+    <div class="card plan">
+      <div class="planhead"><h2 id="lvTitle"></h2><span class="hint" id="lvNote"></span></div>
+      <svg id="plan" role="img"></svg>
+      <div class="tools">
+        <button class="chip" id="depthBtn" data-t="showDepth"></button>
+        <button class="chip" id="intBtn" data-t="showInt"></button>
+        <button class="chip" id="resetBtn" data-t="reset"></button>
+        <span class="hint" data-t="tapHint"></span>
+      </div>
+    </div>
+    <div class="side">
+      <div class="card panel"><h3><span data-t="reqH"></span><span class="hint" id="parLine"></span></h3><div id="reqs"></div><div id="winBox" style="margin-top:10px"></div></div>
+      <div class="card panel"><h3><span data-t="jgH"></span></h3><svg id="jg"></svg><p class="hint" data-t="jgP" style="margin:4px 0 0"></p></div>
+    </div>
+  </section>
+  <footer>
+    <span data-t="ref"></span>
+    <span><span data-t="by"></span> <a href="https://pindotutuko.id" target="_blank" rel="noopener">pindotutuko.id</a></span>
+  </footer>
+</div>
+<script>
+(function(){
+"use strict";
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+var lang=store.get('apLang')==='en'?'en':'id';
+var T={
+ id:{home:"Beranda",title:"Arsitek Pintu",tag:"Puzzle sintaksis ruang · rancang konfigurasi dengan memasang pintu",doors:"Pintu",starsT:"Bintang",
+  introH:"Dinding sudah berdiri — kamu yang menentukan pintunya",introP:"Ketuk dinding di antara dua ruang untuk memasang atau melepas pintu. Penuhi semua syarat konfigurasi (kedalaman dari pintu masuk, integrasi, cincin sirkulasi). Bintang 3 bila jumlah pintumu sama dengan solusi paling hemat.",
+  showDepth:"Tampilkan kedalaman",showInt:"Peta integrasi",reset:"Ulang",tapHint:"Ketuk dinding untuk pintu.",
+  reqH:"Syarat",par:"Solusi paling hemat: {n} pintu",jgH:"Graf terjustifikasi dari pintu masuk",jgP:"Baris = kedalaman (jumlah pintu yang dilewati dari luar).",
+  r_conn:"Semua ruang dapat dicapai",r_depthGe:"Kedalaman {r} ≥ {v}",r_depthLe:"Kedalaman {r} ≤ {v}",r_depthEq:"Kedalaman {r} = {v}",
+  r_most:"{r} paling terintegrasi",r_least:"{r} paling segregasi (paling dalam)",r_door:"Ada pintu {a} – {b}",r_nodoor:"Tanpa pintu {a} – {b}",r_ring:"Ada sirkulasi melingkar (cincin)",r_tree:"Tanpa cincin (satu jalur ke tiap ruang)",r_max:"Paling banyak {v} pintu",
+  now:"sekarang: {v}",unreach:"tak terjangkau",
+  solved:"Terpecahkan!",solvedP:"{n} pintu · solusi paling hemat {p} pintu.",next:"Level berikutnya",allDone:"Semua level selesai — coba raih 3 bintang di semuanya.",
+  entry:"Masuk",level:"Level {n}",
+  ref:"Kedalaman & integrasi: Hillier & Hanson (1984), The Social Logic of Space, Cambridge University Press. Denah skematik untuk latihan.",by:"Dikembangkan oleh: Pindo Tutuko ·"},
+ en:{home:"Home",title:"Door Architect",tag:"A space syntax puzzle · design configuration by placing doors",doors:"Doors",starsT:"Stars",
+  introH:"The walls are up — you decide where the doors go",introP:"Tap a wall between two spaces to add or remove a door. Meet every configuration requirement (depth from the entrance, integration, circulation rings). Three stars when your door count matches the most economical solution.",
+  showDepth:"Show depth",showInt:"Integration map",reset:"Reset",tapHint:"Tap a wall for a door.",
+  reqH:"Requirements",par:"Most economical solution: {n} doors",jgH:"Justified graph from the entrance",jgP:"Rows = depth (doors passed from outside).",
+  r_conn:"Every space is reachable",r_depthGe:"Depth of {r} ≥ {v}",r_depthLe:"Depth of {r} ≤ {v}",r_depthEq:"Depth of {r} = {v}",
+  r_most:"{r} is the most integrated",r_least:"{r} is the most segregated (deepest)",r_door:"Door between {a} – {b}",r_nodoor:"No door between {a} – {b}",r_ring:"A circulation ring exists",r_tree:"No rings (one route to each space)",r_max:"At most {v} doors",
+  now:"now: {v}",unreach:"unreachable",
+  solved:"Solved!",solvedP:"{n} doors · most economical solution {p} doors.",next:"Next level",allDone:"All levels done — try for three stars on each.",
+  entry:"Entry",level:"Level {n}",
+  ref:"Depth & integration: Hillier & Hanson (1984), The Social Logic of Space, Cambridge University Press. Schematic plans for practice.",by:"Developed by: Pindo Tutuko ·"}
+};
+function t(k,v){var s=T[lang][k]!=null?T[lang][k]:k;if(v)for(var p in v)s=s.split('{'+p+'}').join(v[p]);return s}
+var $=function(id){return document.getElementById(id)};
+var NS='http://www.w3.org/2000/svg';
+function el(tag,a,p){var e=document.createElementNS(NS,tag);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function fmt(n,d){if(!isFinite(n))return '∞';return n.toLocaleString(lang==='id'?'id-ID':'en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
+
+function R(k,id,en,x,y,w,h,ty){return {k:k,n:{id:id,en:en},x:x,y:y,w:w,h:h,ty:ty||'room'}}
+var HOUSE=[R('TRS','Teras','Terrace',0,8,6,2,'open'),R('TMU','R. Tamu','Living',0,5,6,3),R('KT1','K. Tidur 1','Bedroom 1',6,5,4,5),R('KEL','R. Keluarga','Family',0,2,6,3),R('KT2','K. Tidur 2','Bedroom 2',6,2,4,3),R('DPR','Dapur','Kitchen',0,0,6,2),R('KM','KM','Bath',6,0,4,2)];
+var JOGLO=[R('HAL','Halaman','Front yard',0,12,15,2,'open'),R('PEN','Pendopo','Pendopo',3,8,9,4,'open'),R('PRI','Pringgitan','Pringgitan',3,6,9,2),R('DAL','Dalem','Dalem',3,3,9,3),R('SKI','Senthong kiwa','Left senthong',3,0,3,3),R('STE','Senthong tengah','Middle senthong',6,0,3,3),R('STN','Senthong tengen','Right senthong',9,0,3,3),R('GKI','Gandok kiwa','Left gandok',0,0,3,8),R('GTE','Gandok tengen','Right gandok',12,3,3,5),R('PAW','Pawon','Pawon',12,0,3,3)];
+var SCHOOL=[R('LOB','Lobi','Lobby',6,7,4,3,'open'),R('R1','Kelas 1','Class 1',0,0,4,5),R('R2','Kelas 2','Class 2',4,0,4,5),R('R3','Kelas 3','Class 3',8,0,4,5),R('R4','Kelas 4','Class 4',12,0,4,5),R('KOR','Koridor','Corridor',0,5,16,2,'open'),R('DSN','R. Dosen','Staff room',0,7,3,3),R('ARS','R. Arsip','Archive',3,7,3,3),R('WC','Toilet','Toilet',10,7,3,3),R('TGA','Tangga','Stairs',13,7,3,3)];
+var COURT=[R('TRS','Teras','Terrace',4,10,4,2,'open'),R('FOY','Foyer','Foyer',4,8,4,2),R('TMU','R. Tamu','Living',0,6,4,6),R('KEL','R. Keluarga','Family',8,6,4,6),R('TAM','Taman dalam','Courtyard',4,4,4,4,'open'),R('MKN','R. Makan','Dining',0,2,4,4),R('DPR','Dapur','Kitchen',0,0,4,2),R('KTU','K. Utama','Main bed',8,2,4,4),R('KTA','K. Anak','Child bed',4,0,4,4),R('KM','KM','Bath',8,0,4,2)];
+var CLINIC=[R('TER','Teras','Porch',0,8,12,2,'open'),R('TGU','R. Tunggu','Waiting',3,4,6,4),R('PND','Pendaftaran','Registration',0,4,3,4),R('FAR','Farmasi','Pharmacy',9,4,3,4),R('PR1','R. Periksa 1','Exam 1',0,0,3,4),R('PR2','R. Periksa 2','Exam 2',3,0,3,4),R('LAB','Lab','Lab',6,0,3,4),R('STF','R. Staf','Staff',9,0,3,4)];
+var LEVELS=[
+ {par:6,title:{id:'Rumah kecil',en:'Small house'},plan:HOUSE,W:10,H:10,entry:[3,10],
+  reqs:[{t:'conn'},{t:'depthGe',r:'KM',v:3},{t:'most',r:'KEL'}]},
+ {par:6,title:{id:'Privasi kamar tidur',en:'Bedroom privacy'},plan:HOUSE,W:10,H:10,entry:[3,10],
+  reqs:[{t:'conn'},{t:'depthGe',r:'KT1',v:3},{t:'depthGe',r:'KT2',v:3},{t:'door',a:'DPR',b:'KEL'},{t:'tree'}]},
+ {par:9,title:{id:'Gedung kuliah',en:'Lecture building'},plan:SCHOOL,W:16,H:10,entry:[8,10],
+  reqs:[{t:'conn'},{t:'most',r:'KOR'},{t:'depthGe',r:'ARS',v:3},{t:'depthEq',r:'WC',v:2}]},
+ {par:7,title:{id:'Klinik kampung',en:'Kampung clinic'},plan:CLINIC,W:12,H:10,entry:[6,10],
+  reqs:[{t:'conn'},{t:'most',r:'TGU'},{t:'depthEq',r:'PND',v:1},{t:'depthGe',r:'STF',v:3},{t:'door',a:'FAR',b:'TGU'}]},
+ {par:10,title:{id:'Rumah taman dalam',en:'Courtyard house'},plan:COURT,W:12,H:12,entry:[6,12],
+  reqs:[{t:'conn'},{t:'ring'},{t:'most',r:'TAM'},{t:'least',r:'KM'}]},
+ {par:9,title:{id:'Omah Joglo (skema)',en:'Joglo house (schematic)'},plan:JOGLO,W:15,H:14,entry:[7.5,14],
+  reqs:[{t:'conn'},{t:'depthEq',r:'PEN',v:1},{t:'most',r:'DAL'},{t:'depthGe',r:'STE',v:4},{t:'depthGe',r:'PAW',v:4},{t:'door',a:'GTE',b:'PAW'},{t:'nodoor',a:'STN',b:'PAW'},{t:'tree'}]}
+];
+
+/* ---------- Geometry & graph ---------- */
+function sharedEdge(a,b){var e=1e-9,lo,hi;
+  if(Math.abs(a.x+a.w-b.x)<e||Math.abs(b.x+b.w-a.x)<e){var x=Math.abs(a.x+a.w-b.x)<e?b.x:a.x;lo=Math.max(a.y,b.y);hi=Math.min(a.y+a.h,b.y+b.h);if(hi-lo>e)return {v:true,x:x,lo:lo,hi:hi}}
+  if(Math.abs(a.y+a.h-b.y)<e||Math.abs(b.y+b.h-a.y)<e){var y=Math.abs(a.y+a.h-b.y)<e?b.y:a.y;lo=Math.max(a.x,b.x);hi=Math.min(a.x+a.w,b.x+b.w);if(hi-lo>e)return {v:false,y:y,lo:lo,hi:hi}}
+  return null}
+function walls(plan){var out=[];for(var i=0;i<plan.length;i++)for(var j=i+1;j<plan.length;j++){var s=sharedEdge(plan[i],plan[j]);if(s&&s.hi-s.lo>=.99)out.push({a:plan[i].k,b:plan[j].k,s:s})}return out}
+function analyze(plan,ws,on){var ids=plan.map(function(r){return r.k}),adj={},k=ids.length,m=0;ids.forEach(function(i){adj[i]=[]});
+  ws.forEach(function(w,i){if(on[i]){adj[w.a].push(w.b);adj[w.b].push(w.a);m++}});
+  function bfs(s){var d={};d[s]=0;var q=[s];for(var a=0;a<q.length;a++){adj[q[a]].forEach(function(v){if(d[v]==null){d[v]=d[q[a]]+1;q.push(v)}})}return d}
+  var dep=bfs(ids[0]),reach=ids.every(function(i){return dep[i]!=null});
+  var Dk=2*(k*(Math.log2((k+2)/3)-1)+1)/((k-1)*(k-2)),res={};
+  if(reach)ids.forEach(function(s){var d=bfs(s),TD=0;ids.forEach(function(i){TD+=d[i]});var MD=TD/(k-1),RA=2*(MD-1)/(k-2);res[s]={TD:TD,I:RA>0?Dk/RA:Infinity}});
+  return {ids:ids,adj:adj,dep:dep,reach:reach,res:res,doors:m,ring:reach&&m>k-1}}
+function check(L,A){return L.reqs.map(function(q){var ok=false,now='';
+  if(q.t==='conn')ok=A.reach;
+  else if(q.t==='depthGe'||q.t==='depthLe'||q.t==='depthEq'){var d=A.dep[q.r];now=d==null?t('unreach'):d;if(d!=null)ok=q.t==='depthGe'?d>=q.v:q.t==='depthLe'?d<=q.v:d===q.v}
+  else if(q.t==='most'||q.t==='least'){if(A.reach){var v=A.ids.map(function(i){return A.res[i].TD}),tg=q.t==='most'?Math.min.apply(null,v):Math.max.apply(null,v);ok=A.res[q.r].TD===tg;now=fmt(A.res[q.r].I,2)}}
+  else if(q.t==='door'||q.t==='nodoor'){var has=A.adj[q.a].indexOf(q.b)>=0;ok=q.t==='door'?has:!has}
+  else if(q.t==='ring')ok=A.ring;
+  else if(q.t==='tree')ok=A.reach&&!A.ring;
+  else if(q.t==='max'){ok=A.doors<=q.v;now=A.doors}
+  return {q:q,ok:ok,now:now}})}
+/* Most economical solution by exhaustive search over door subsets (walls ≤ 16 → ≤ 65 536 cases). */
+function par(L,ws){var n=ws.length,best=Infinity;for(var mask=0;mask<(1<<n);mask++){var c=0;for(var b=mask;b;b&=b-1)c++;if(c>=best)continue;var on=[];for(var i=0;i<n;i++)on.push(!!(mask&(1<<i)));if(c<L.plan.length-1)continue;var A=analyze(L.plan,ws,on);if(!A.reach)continue;if(check(L,A).every(function(r){return r.ok}))best=c}return best}
+
+/* ---------- State ---------- */
+var st={i:+(store.get('apLevel')||0),show:'',stars:{}};try{st.stars=JSON.parse(store.get('apStars')||'{}')}catch(e){}
+if(!(st.i>=0&&st.i<LEVELS.length))st.i=0;
+function nameOf(L,k){for(var i=0;i<L.plan.length;i++)if(L.plan[i].k===k)return L.plan[i].n[lang];return k}
+function load(i){st.i=i;store.set('apLevel',i);var L=LEVELS[i];st.ws=walls(L.plan);st.on=st.ws.map(function(){return false});if(L.par==null)L.par=par(L,st.ws);render()}
+var STOPS=[[43,90,168],[74,163,196],[143,196,120],[240,200,70],[232,120,50],[190,40,40]];
+function heat(tt){tt=Math.max(0,Math.min(1,tt));var p=tt*(STOPS.length-1),i=Math.min(STOPS.length-2,Math.floor(p)),f=p-i,a=STOPS[i],b=STOPS[i+1];return [0,1,2].map(function(j){return Math.round(a[j]+(b[j]-a[j])*f)})}
+function rgb(c){return 'rgb('+c.join(',')+')'}
+function inkOn(c){return (0.299*c[0]+0.587*c[1]+0.114*c[2])>150?'#1b1814':'#ffffff'}
+function render(){var L=LEVELS[st.i],A=analyze(L.plan,st.ws,st.on),C=check(L,A),done=C.every(function(r){return r.ok});
+  // levels bar
+  $('levels').innerHTML=LEVELS.map(function(l,i){var s=st.stars[i]||0;return '<button class="lv'+(i===st.i?' on':'')+'" data-i="'+i+'">'+t('level',{n:i+1})+' <span class="st">'+'★★★'.slice(0,s)+'<span style="opacity:.25">'+'★★★'.slice(0,3-s)+'</span></span><small>'+l.title[lang]+'</small></button>'}).join('');
+  $('levels').querySelectorAll('button').forEach(function(b){b.onclick=function(){load(+b.getAttribute('data-i'))}});
+  $('lvTitle').textContent=L.title[lang];$('lvNote').textContent=t('level',{n:st.i+1})+' / '+LEVELS.length;
+  $('hDoors').textContent=A.doors;var tot=0;for(var k in st.stars)tot+=st.stars[k];$('hStars').textContent=tot+'/'+(LEVELS.length*3);
+  $('parLine').textContent=t('par',{n:L.par});
+  // plan
+  var svg=$('plan');svg.innerHTML='';svg.setAttribute('viewBox','-0.6 -0.6 '+(L.W+1.2)+' '+(L.H+1.9));
+  var vals=A.reach?A.ids.map(function(i){return A.res[i].I}).filter(isFinite):[],mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);
+  L.plan.forEach(function(r){var fill=r.ty==='open'?'var(--card)':'var(--room)',c=null;
+    if(st.show==='int'&&A.reach){var I=A.res[r.k].I;c=heat(isFinite(I)?(mx>mn?(I-mn)/(mx-mn):.5):1);fill=rgb(c)}
+    var rect=el('rect',{x:r.x,y:r.y,width:r.w,height:r.h,fill:fill,stroke:'var(--ink)','stroke-width':.07},svg);if(r.ty==='open'&&!c)rect.setAttribute('stroke-dasharray','.25 .15');
+    var name=r.n[lang],vert=r.h>r.w*1.6&&r.w<2.2,span=(vert?r.h:r.w)-.3,thick=vert?r.w:r.h,fs=Math.min(.5,thick*.42,span/(name.length*.56)),cx=r.x+r.w/2,cy=r.y+r.h/2;
+    var ink=c?inkOn(c):'var(--ink)',show2=st.show&&thick>=1.4;
+    var tx=el('text',{x:cx,y:cy+(show2?-.12:fs*.36),'text-anchor':'middle','font-size':fs,'font-weight':600,fill:ink,'pointer-events':'none'},svg);if(vert)tx.setAttribute('transform','rotate(-90 '+cx+' '+cy+')');tx.textContent=name;
+    if(show2){var v=st.show==='depth'?(A.dep[r.k]==null?'×':String(A.dep[r.k])):(A.reach?fmt(A.res[r.k].I,2):'');var vt=el('text',{x:cx,y:cy+.5,'text-anchor':'middle','font-size':Math.min(.44,fs),'font-weight':700,fill:ink,'font-family':'Space Grotesk,Inter,sans-serif','pointer-events':'none'},svg);vt.textContent=v}});
+  st.ws.forEach(function(w,i){var s=w.s,len=Math.min((s.hi-s.lo)*.6,1.1),mid=(s.lo+s.hi)/2,a=s.v?{x1:s.x,y1:mid-len/2,x2:s.x,y2:mid+len/2}:{x1:mid-len/2,y1:s.y,x2:mid+len/2,y2:s.y};
+    var g=el('g',{'class':'wall',tabindex:0,role:'button','aria-label':nameOf(L,w.a)+' – '+nameOf(L,w.b)},svg);
+    var hit=s.v?{x:s.x-.45,y:s.lo+.05,width:.9,height:s.hi-s.lo-.1}:{x:s.lo+.05,y:s.y-.45,width:s.hi-s.lo-.1,height:.9};hit.fill='transparent';el('rect',hit,g);
+    var ln={};for(var k in a)ln[k]=a[k];ln.stroke=st.on[i]?'var(--door)':'var(--cand)';ln['stroke-width']=st.on[i]?.26:.14;ln['stroke-linecap']='round';if(!st.on[i])ln['stroke-dasharray']='.12 .12';el('line',ln,g);
+    function tog(){st.on[i]=!st.on[i];render()}
+    g.addEventListener('click',tog);g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tog()}})});
+  var ex=L.entry[0],ey=L.entry[1];el('path',{d:'M'+ex+' '+(ey+1.05)+' L'+ex+' '+(ey+.25)+' M'+(ex-.3)+' '+(ey+.55)+' L'+ex+' '+(ey+.25)+' L'+(ex+.3)+' '+(ey+.55),stroke:'var(--accent)','stroke-width':.12,fill:'none','stroke-linecap':'round','stroke-linejoin':'round'},svg);
+  var en=el('text',{x:ex+.45,y:ey+.95,'font-size':.36,fill:'var(--accent)','font-weight':700},svg);en.textContent=t('entry');
+  $('depthBtn').classList.toggle('on',st.show==='depth');$('intBtn').classList.toggle('on',st.show==='int');
+  // requirements
+  $('reqs').innerHTML=C.map(function(r){var q=r.q,txt=t('r_'+q.t,{r:q.r?nameOf(L,q.r):'',a:q.a?nameOf(L,q.a):'',b:q.b?nameOf(L,q.b):'',v:q.v});return '<div class="req'+(r.ok?' ok':'')+'"><i>'+(r.ok?'✓':'✕')+'</i><span>'+txt+(r.now!==''?'<small>'+t('now',{v:r.now})+'</small>':'')+'</span></div>'}).join('');
+  // win
+  if(done){var s=A.doors<=L.par?3:A.doors<=L.par+1?2:1;if((st.stars[st.i]||0)<s){st.stars[st.i]=s;store.set('apStars',JSON.stringify(st.stars));render();return}
+    var last=st.i===LEVELS.length-1;$('winBox').innerHTML='<div class="win"><b>'+t('solved')+'</b> <span class="stars">'+'★★★'.slice(0,s)+'<span style="opacity:.25">'+'★★★'.slice(0,3-s)+'</span></span><div class="hint">'+t('solvedP',{n:A.doors,p:L.par})+'</div>'+(last?'<p class="hint">'+t('allDone')+'</p>':'<div class="row" style="margin-top:8px"><button class="btn" id="nextBtn">'+t('next')+'</button></div>')+'</div>';
+    var nb=$('nextBtn');if(nb)nb.onclick=function(){load(st.i+1);window.scrollTo({top:0,behavior:'smooth'})}}
+  else $('winBox').innerHTML='';
+  drawJG(L,A)}
+function drawJG(L,A){var svg=$('jg');svg.innerHTML='';var lv=[],max=0;A.ids.forEach(function(i){var d=A.dep[i];if(d==null)return;max=Math.max(max,d);(lv[d]=lv[d]||[]).push(i)});
+  var unr=A.ids.filter(function(i){return A.dep[i]==null});var W=320,gap=44,top=18,bot=26,H=top+bot+max*gap+(unr.length?56:0),pos={};svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  lv.forEach(function(row,d){if(d>0)row.sort(function(a,b){function bc(n){var s=0,c=0;A.adj[n].forEach(function(m){if(A.dep[m]===d-1){s+=pos[m].x;c++}});return c?s/c:W/2}return bc(a)-bc(b)});row.forEach(function(n,j){pos[n]={x:W*(j+1)/(row.length+1),y:H-bot-(unr.length?56:0)-d*gap}})});
+  unr.forEach(function(n,j){pos[n]={x:W*(j+1)/(unr.length+1),y:H-30}});
+  for(var d=0;d<=max;d++){var y=H-bot-(unr.length?56:0)-d*gap;el('line',{x1:8,x2:W-8,y1:y,y2:y,stroke:'var(--line)','stroke-dasharray':'2 4'},svg);var lt=el('text',{x:4,y:y-4,'font-size':9,fill:'var(--muted)'},svg);lt.textContent=d}
+  st.ws.forEach(function(w,i){if(!st.on[i])return;var a=pos[w.a],b=pos[w.b];if(!a||!b)return;if(a.y===b.y)el('path',{d:'M'+a.x+' '+a.y+' Q'+((a.x+b.x)/2)+' '+(a.y-gap*.35)+' '+b.x+' '+b.y,stroke:'var(--muted)','stroke-width':1.4,fill:'none'},svg);else el('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:'var(--muted)','stroke-width':1.4},svg)});
+  A.ids.forEach(function(n){var p=pos[n],un=A.dep[n]==null;el('circle',{cx:p.x,cy:p.y,r:9,fill:un?'var(--card)':n===A.ids[0]?'var(--accent)':'var(--door)',stroke:un?'var(--bad)':'var(--card)','stroke-width':1.5,'stroke-dasharray':un?'2 2':'none'},svg);
+    var s=nameOf(LEVELS[st.i],n);var tx=el('text',{x:p.x,y:p.y+19,'text-anchor':'middle','font-size':8.5,fill:un?'var(--bad)':'var(--ink)','font-weight':600},svg);tx.textContent=s.length>12?s.slice(0,11)+'…':s})}
+function applyStatic(){document.documentElement.lang=lang;document.title=t('title');document.querySelectorAll('[data-t]').forEach(function(n){n.innerHTML=t(n.getAttribute('data-t'))});$('langBtn').textContent=lang==='id'?'EN':'ID'}
+$('depthBtn').onclick=function(){st.show=st.show==='depth'?'':'depth';render()};
+$('intBtn').onclick=function(){st.show=st.show==='int'?'':'int';render()};
+$('resetBtn').onclick=function(){st.on=st.ws.map(function(){return false});render()};
+$('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('apLang',lang);applyStatic();render()};
+applyStatic();load(st.i);
+window.__AP={LEVELS:LEVELS,walls:walls,analyze:analyze,check:check,par:par,st:function(){return st},load:load};
+})();
+</script>
+</body>
+</html>
