@@ -29,7 +29,7 @@ const TX={
   coin:'Kas',wood:'Kayu',food:'Pangan',kk:'KK',happy:'Bahagia',coh:'Kohesi',water:'Air',
   months:['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'],year:'Th',era:'Era {n}',
   eras:['Babat alas','Dusun','Kampung','Desa','Kelurahan','Kota kecil','Kota'],
-  missions:'Misi',info:'Info',menu:'Menu',save:'Simpan sekarang',saved:'Tersimpan',saving:'Menyimpan…',saveFail:'Gagal menyimpan — dicoba lagi otomatis',neighbors:'Tetangga',exit:'Keluar ke menu',lang:'English',help:'Cara bermain',
+  missions:'Misi',info:'Info',menu:'Menu',save:'Simpan sekarang',saved:'Tersimpan',saving:'Menyimpan…',saveFail:'Gagal menyimpan — dicoba lagi otomatis',neighbors:'Tetangga',exit:'Keluar ke menu',lang:'English',help:'Cara bermain',guidePdf:'Unduh panduan permainan (PDF)',
   noMoney:'Kas tidak cukup.',noWood:'Kayu tidak cukup — babat hutan dulu.',needClear:'Bersihkan hutan dulu (alat Babat).',onWater:'Tidak bisa di air.',occupied:'Petak sudah terisi.',locked:'Terbuka di era {n}.',outside:'Di luar wilayahmu — perluas wilayah dulu (Menu → Perluas wilayah).',expH:'Perluas wilayah',expP:'Wilayahmu {w} × {h} petak (±{m} m). Setiap perluasan menambah 8 petak (±80 m) ke satu arah. Tidak ada batas waktu — permukimanmu bisa terus tumbuh sampai seluruh lembah 128 × 128 petak.',expNeed:'Syarat: {kk} KK · biaya 💰{c} 🪵{w}',expDir:['⬆ Utara','➡ Timur','⬇ Selatan','⬅ Barat'],expDone:'Wilayah bertambah! Tanah baru siap dibuka.',expMax:'Sudah mencapai batas lembah ke arah ini.',expKK:'Butuh {kk} KK untuk memperluas.',
   tl:{perum:'Perumahan',ruko:'Ruko',rs:'Rumah sakit',tamkot:'Taman kota',apartemen:'Apartemen',mal:'Mal',stasiun:'Stasiun',balkot:'Balai kota',rt:'Balai RT',taman:'Taman',kebun:'Kebun',bengkel:'Bengkel',sekolah:'Sekolah',klinik:'Puskesmas',kom:'Kom.',info:'Info',babat:'Babat',path:'Jalan',house:'Rumah',field:'Ladang',well:'Sumur',barn:'Lumbung',pond:'Kolam',tree:'Pohon',hall:'Balai adat',worship:'Ibadah',market:'Pasar',bull:'Bongkar'},
   tlD:{perum:'Klaster rumah modern, 4 KK',ruko:'Rumah toko, lapangan kerja',rs:'Kesehatan kota',tamkot:'Ruang terbuka publik',apartemen:'Hunian vertikal, 16 KK',mal:'Pusat belanja, lapangan kerja',stasiun:'Transportasi massal, jaringan +',balkot:'Kantor wali kota',rt:'Kohesi lingkungan kecil',taman:'Bermain anak, bahagia',kebun:'Komoditas khas → dagang',bengkel:'Kerajinan khas → dagang',sekolah:'Pendidikan, pertumbuhan',klinik:'Kesehatan, warga tak pergi',kom:'Komunikasi, jaringan dagang +',info:'Lihat data petak',babat:'Buka hutan → kayu',path:'Jalan setapak',house:'1 KK, pakai gaya',field:'Pangan +6/bln, 2 pekerja',well:'Air bersih radius 5',barn:'Simpan pangan +120',pond:'Ikan, pangan +2',tree:'Teduh & hijau',hall:'Kohesi warga',worship:'Bahagia radius 8',market:'Jual surplus → kas',bull:'Hapus, kayu kembali 50%'},
@@ -52,7 +52,7 @@ const TX={
   coin:'Funds',wood:'Timber',food:'Food',kk:'Households',happy:'Happy',coh:'Cohesion',water:'Water',
   months:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],year:'Y',era:'Era {n}',
   eras:['Clearing','Hamlet','Kampung','Village','Urban ward','Town','City'],
-  missions:'Missions',info:'Info',menu:'Menu',save:'Save now',saved:'Saved',saving:'Saving…',saveFail:'Save failed — will retry',neighbors:'Neighbours',exit:'Exit to menu',lang:'Bahasa Indonesia',help:'How to play',
+  missions:'Missions',info:'Info',menu:'Menu',save:'Save now',saved:'Saved',saving:'Saving…',saveFail:'Save failed — will retry',neighbors:'Neighbours',exit:'Exit to menu',lang:'Bahasa Indonesia',help:'How to play',guidePdf:'Download the game guide (PDF, Indonesian)',
   noMoney:'Not enough funds.',noWood:'Not enough timber — clear forest first.',needClear:'Clear the forest first (Clear tool).',onWater:'Cannot build on water.',occupied:'Tile is taken.',locked:'Unlocks in era {n}.',outside:'Outside your territory — expand first (Menu → Expand territory).',expH:'Expand territory',expP:'Your territory is {w} × {h} tiles (±{m} m). Each expansion adds 8 tiles (±80 m) in one direction. There is no time limit — your settlement can keep growing until it fills the whole 128 × 128 valley.',expNeed:'Requires {kk} households · cost 💰{c} 🪵{w}',expDir:['⬆ North','➡ East','⬇ South','⬅ West'],expDone:'Territory expanded! New land is ready to open.',expMax:'Valley edge reached in this direction.',expKK:'Needs {kk} households to expand.',
   tl:{perum:'Housing estate',ruko:'Shophouses',rs:'Hospital',tamkot:'City park',apartemen:'Apartments',mal:'Mall',stasiun:'Station',balkot:'City hall',rt:'Neighbourhood hall',taman:'Playground',kebun:'Plantation',bengkel:'Workshop',sekolah:'School',klinik:'Clinic',kom:'Comms',info:'Info',babat:'Clear',path:'Path',house:'House',field:'Field',well:'Well',barn:'Granary',pond:'Fish pond',tree:'Tree',hall:'Hall',worship:'Worship',market:'Market',bull:'Demolish'},
   tlD:{perum:'Modern house cluster, 4 households',ruko:'Shophouses, jobs',rs:'City health care',tamkot:'Public open space',apartemen:'Vertical housing, 16 households',mal:'Shopping centre, jobs',stasiun:'Mass transit, network +',balkot:'Mayor’s office',rt:'Small-area cohesion',taman:'Children play, happiness',kebun:'Signature crop → trade',bengkel:'Signature craft → trade',sekolah:'Education, growth',klinik:'Health, fewer leave',kom:'Communication, trade network +',info:'Inspect a tile',babat:'Open forest → timber',path:'Footpath',house:'1 household, uses style',field:'Food +6/mo, 2 workers',well:'Clean water radius 5',barn:'Store food +120',pond:'Fish, food +2',tree:'Shade & green',hall:'Community cohesion',worship:'Happy radius 8',market:'Sell surplus → funds',bull:'Remove, 50% timber back'},
@@ -94,6 +94,7 @@ async function api(a,body,extra){const h={'Content-Type':'application/json'};if(
 
 /* ================= Alur layar ================= */
 let authMode='login';
+try{const hl=document.getElementById('homeLink');hl.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();location.href=hl.href},true)}catch(e){}
 function show(id){['scAuth','scHub','scChar','scLoc'].forEach(s=>$(s).classList.toggle('hidden',s!==id));const g=id==='game';['hud','bar','missions'].forEach(s=>$(s).classList.toggle('hidden',!g));if(!g){$('info').classList.add('hidden');$('menu').classList.add('hidden');$('styleBar').classList.add('hidden')}$('homeLink').classList.toggle('hidden',g)}
 $('tbLogin').onclick=()=>{authMode='login';$('tbLogin').classList.add('on');$('tbReg').classList.remove('on');$('regFields').classList.add('hidden');$('aPass').autocomplete='current-password';applyStatic()};
 $('tbReg').onclick=()=>{authMode='reg';$('tbReg').classList.add('on');$('tbLogin').classList.remove('on');$('regFields').classList.remove('hidden');$('aPass').autocomplete='new-password';applyStatic()};
@@ -118,21 +119,26 @@ async function hub(){show('scHub');let meta=null;$('hubErr').textContent='';
 /* ---------- Tokoh ---------- */
 const STYLES=['jawa','joglo','panggung','gadang','tongkonan','bali','honai','kolonial','modern','machiya','eropa'];
 /* ---------- Editor avatar (SVG berlapis; semua bagian bisa diatur) ---------- */
-const AVO={face:4,skin:7,eyes:5,brow:3,mouth:4,nose:3,hair:8,hairC:7,beard:4,hat:9,cloth:4,clothC:10,acc:4,bg:6};
+const AVO={sex:2,face:4,skin:7,eyes:5,brow:3,mouth:4,nose:3,hair:8,hairC:7,beard:4,hat:9,cloth:7,clothC:10,acc:4,bg:6};
 const AVP={skin:['#f1c9a5','#e0ac7e','#c68c5a','#b97a48','#a86b3d','#8d5a35','#6b4128'],hairC:['#1b1b1b','#3b2a1a','#5a3a22','#8a5a2b','#b9873a','#9a9a9a','#e8e2d6'],clothC:['#1f6f4f','#a33a2a','#2f4f7f','#e0a526','#7a3b6b','#efe6d6','#3b3b3b','#c25b8a','#5b3b25','#2f8f8f'],bg:['#e9f1e6','#f6e7cf','#dfe9f3','#f3dfe6','#e6e1f3','#2b3a33']};
-const AVN={id:{face:'Bentuk wajah',skin:'Warna kulit',eyes:'Mata',brow:'Alis',mouth:'Mulut',nose:'Hidung',hair:'Rambut',hairC:'Warna rambut',beard:'Kumis/jenggot',hat:'Penutup kepala',cloth:'Pakaian',clothC:'Warna pakaian',acc:'Aksesori',bg:'Latar',rnd:'🎲 Acak',
-  v:{face:['Oval','Bulat','Persegi','Hati'],eyes:['Titik','Bulat','Sipit','Besar','Teduh'],brow:['Tipis','Tebal','Melengkung'],mouth:['Senyum','Tertawa','Datar','Bicara'],nose:['Kecil','Sedang','Mancung'],hair:['Botak','Pendek','Belah samping','Keriting','Panjang','Sanggul','Jabrik','Kuncir'],beard:['Tanpa','Kumis','Jenggot','Brewok'],hat:['Tanpa','Blangkon','Peci','Udeng Bali','Caping','Kerudung','Iket','Topi','Mahkota adat'],cloth:['Kemeja','Beskap/surjan','Kaos','Jas'],acc:['Tanpa','Kacamata','Anting','Kalung']}},
- en:{face:'Face shape',skin:'Skin tone',eyes:'Eyes',brow:'Brows',mouth:'Mouth',nose:'Nose',hair:'Hair',hairC:'Hair colour',beard:'Moustache/beard',hat:'Headwear',cloth:'Clothing',clothC:'Clothing colour',acc:'Accessory',bg:'Background',rnd:'🎲 Random',
-  v:{face:['Oval','Round','Square','Heart'],eyes:['Dots','Round','Narrow','Big','Gentle'],brow:['Thin','Thick','Arched'],mouth:['Smile','Laugh','Neutral','Talking'],nose:['Small','Medium','Pointed'],hair:['Bald','Short','Side part','Curly','Long','Bun','Spiky','Ponytail'],beard:['None','Moustache','Beard','Full beard'],hat:['None','Blangkon','Peci','Balinese udeng','Caping','Headscarf','Iket','Cap','Ceremonial crown'],cloth:['Shirt','Beskap/surjan','T-shirt','Jacket'],acc:['None','Glasses','Earrings','Necklace']}}};
-const avDefault=()=>({face:0,skin:2,eyes:1,brow:0,mouth:0,nose:0,hair:1,hairC:0,beard:0,hat:1,cloth:1,clothC:0,acc:0,bg:0});
-function avRandom(){const a={};for(const k in AVO)a[k]=Math.floor(Math.random()*AVO[k]);a.bg=Math.floor(Math.random()*5);return a}
+const AVN={id:{sex:'Jenis kelamin',face:'Bentuk wajah',skin:'Warna kulit',eyes:'Mata',brow:'Alis',mouth:'Mulut',nose:'Hidung',hair:'Rambut',hairC:'Warna rambut',beard:'Kumis/jenggot',hat:'Penutup kepala',cloth:'Pakaian',clothC:'Warna pakaian',acc:'Aksesori',bg:'Latar',rnd:'🎲 Acak',
+  v:{face:['Oval','Bulat','Persegi','Hati'],eyes:['Titik','Bulat','Sipit','Besar','Teduh'],brow:['Tipis','Tebal','Melengkung'],mouth:['Senyum','Tertawa','Datar','Bicara'],nose:['Kecil','Sedang','Mancung'],hair:['Botak','Pendek','Belah samping','Keriting','Panjang','Sanggul','Jabrik','Kuncir'],beard:['Tanpa','Kumis','Jenggot','Brewok'],hat:['Tanpa','Blangkon','Peci','Udeng Bali','Caping','Kerudung','Iket','Topi','Mahkota adat'],cloth:['Kemeja','Beskap/surjan','Kaos','Jas','Kebaya & jarik','Baju kurung/gamis','Blus & rok'],sex:['Pria','Wanita'],acc:['Tanpa','Kacamata','Anting','Kalung']}},
+ en:{sex:'Sex',face:'Face shape',skin:'Skin tone',eyes:'Eyes',brow:'Brows',mouth:'Mouth',nose:'Nose',hair:'Hair',hairC:'Hair colour',beard:'Moustache/beard',hat:'Headwear',cloth:'Clothing',clothC:'Clothing colour',acc:'Accessory',bg:'Background',rnd:'🎲 Random',
+  v:{face:['Oval','Round','Square','Heart'],eyes:['Dots','Round','Narrow','Big','Gentle'],brow:['Thin','Thick','Arched'],mouth:['Smile','Laugh','Neutral','Talking'],nose:['Small','Medium','Pointed'],hair:['Bald','Short','Side part','Curly','Long','Bun','Spiky','Ponytail'],beard:['None','Moustache','Beard','Full beard'],hat:['None','Blangkon','Peci','Balinese udeng','Caping','Headscarf','Iket','Cap','Ceremonial crown'],cloth:['Shirt','Beskap/surjan','T-shirt','Jacket','Kebaya & batik skirt','Baju kurung/long dress','Blouse & skirt'],sex:['Male','Female'],acc:['None','Glasses','Earrings','Necklace']}}};
+const avDefault=()=>({sex:0,face:0,skin:2,eyes:1,brow:0,mouth:0,nose:0,hair:1,hairC:0,beard:0,hat:1,cloth:1,clothC:0,acc:0,bg:0});
+function avRandom(){const a={};for(const k in AVO)a[k]=Math.floor(Math.random()*AVO[k]);a.bg=Math.floor(Math.random()*5);if(a.sex){a.beard=0;a.hair=[4,5,7,1][a.hair%4];a.cloth=[4,5,6,0][a.cloth%4];if([1,2,3,6].includes(a.hat))a.hat=[0,5][a.hat%2]}else if(a.cloth>3)a.cloth%=4;return a}
+/* Ganti jenis kelamin: set bawaan yang wajar (tetap bisa diubah bebas). */
+function avSex(a){if(a.sex){a.beard=0;if(a.hair<4||a.hair===6)a.hair=4;if(a.cloth<4)a.cloth=4;if([1,2,3,6].includes(a.hat))a.hat=0;if(a.acc===0)a.acc=2}else{if(a.hair===4||a.hair===5)a.hair=1;if(a.cloth>3)a.cloth=1;if(a.acc===2)a.acc=0}}
 function avatarCustom(a,opt){const sk=AVP.skin[a.skin],hc=AVP.hairC[a.hairC],cc=AVP.clothC[a.clothC],dk='#2a1d14',cx=60,cy=58;
  const face=[`<ellipse cx="60" cy="58" rx="22" ry="27" fill="${sk}"/>`,`<circle cx="60" cy="59" r="25" fill="${sk}"/>`,`<rect x="37" y="33" width="46" height="52" rx="14" fill="${sk}"/>`,`<path d="M36 46q0-16 24-16t24 16q0 22-24 39q-24-17-24-39z" fill="${sk}"/>`][a.face];
- const body=`<path d="M14 120q2-26 46-28q44 2 46 28z" fill="${cc}"/><rect x="52" y="78" width="16" height="14" fill="${sk}"/>`+[
+ const fem=a.sex===1;const body=(fem?`<path d="M22 120q2-24 38-27q36 3 38 27z" fill="${cc}"/>`:`<path d="M14 120q2-26 46-28q44 2 46 28z" fill="${cc}"/>`)+`<rect x="53" y="78" width="${fem?14:16}" height="14" fill="${sk}"/>`+[
   `<path d="M50 92l10 10 10-10" fill="#fff" stroke="#00000022"/><path d="M60 102v18" stroke="#00000033" stroke-width="1.5"/>`,
   `<path d="M48 92l12 28M72 92l-8 18" stroke="#00000044" stroke-width="2" fill="none"/><circle cx="57" cy="106" r="1.4" fill="#c8a14b"/><circle cx="59" cy="113" r="1.4" fill="#c8a14b"/>`,
   `<path d="M50 92q10 8 20 0" stroke="#00000033" stroke-width="2" fill="none"/>`,
-  `<path d="M48 92l12 16 12-16" fill="#fff"/><path d="M48 92l8 28M72 92l-8 28" stroke="#00000055" stroke-width="2" fill="none"/><path d="M58 98l2 10 2-10z" fill="#a33a2a"/>`][a.cloth];
+  `<path d="M48 92l12 16 12-16" fill="#fff"/><path d="M48 92l8 28M72 92l-8 28" stroke="#00000055" stroke-width="2" fill="none"/><path d="M58 98l2 10 2-10z" fill="#a33a2a"/>`,
+  `<path d="M50 92l10 22 10-22" fill="${sk}"/><path d="M47 93l13 27M73 93l-13 27" stroke="#ffffff88" stroke-width="2.4" fill="none"/><circle cx="60" cy="112" r="2.2" fill="#e0a526"/><path d="M30 112q30 6 60 0" stroke="#ffffff55" stroke-width="1.4" fill="none" stroke-dasharray="2 3"/>`,
+  `<path d="M52 92q8 6 16 0" stroke="#00000033" stroke-width="2" fill="none"/><path d="M60 98v22" stroke="#00000022" stroke-width="1.5"/><circle cx="60" cy="100" r="1.5" fill="#e0a526"/>`,
+  `<path d="M50 92q10 10 20 0" fill="#fff" stroke="#00000022"/><path d="M40 106q20 5 40 0" stroke="#00000033" stroke-width="1.5" fill="none"/>`][a.cloth];
  const ears=`<ellipse cx="37" cy="60" rx="4" ry="6" fill="${sk}"/><ellipse cx="83" cy="60" rx="4" ry="6" fill="${sk}"/>`;
  const back=a.hair===4?`<path d="M34 50q-2 40 6 52h40q8-12 6-52z" fill="${hc}"/>`:a.hair===7?`<path d="M80 52q14 10 8 36q-4-14-10-20z" fill="${hc}"/>`:'';
  const ey=[`<circle cx="51" cy="58" r="2.4" fill="${dk}"/><circle cx="69" cy="58" r="2.4" fill="${dk}"/>`,
@@ -143,6 +149,7 @@ function avatarCustom(a,opt){const sk=AVP.skin[a.skin],hc=AVP.hairC[a.hairC],cc=
  const br=[`<path d="M45 51q6-3 12 0M63 51q6-3 12 0" stroke="${hc}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,`<path d="M44 51l13-2M63 49l13 2" stroke="${hc}" stroke-width="3.6" stroke-linecap="round"/>`,`<path d="M45 52q6-6 12-1M63 51q6-5 12 1" stroke="${hc}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`][a.brow];
  const no=[`<path d="M59 62q1 4 3 4" stroke="#00000044" stroke-width="1.6" fill="none"/>`,`<path d="M60 60q-3 7 0 8q3 0 4-1" stroke="#00000055" stroke-width="1.8" fill="none"/>`,`<path d="M60 56l-4 11h7" stroke="#00000055" stroke-width="1.8" fill="none" stroke-linejoin="round"/>`][a.nose];
  const mo=[`<path d="M52 72q8 6 16 0" stroke="#7a3a2a" stroke-width="2.2" fill="none" stroke-linecap="round"/>`,`<path d="M51 70q9 11 18 0z" fill="#7a2a22"/><path d="M53 71h14v2h-14z" fill="#fff"/>`,`<path d="M53 73h14" stroke="#7a3a2a" stroke-width="2.2" stroke-linecap="round"/>`,`<ellipse cx="60" cy="73" rx="4" ry="3" fill="#7a2a22"/>`][a.mouth];
+ const lips=fem&&a.beard===0?`<path d="M54 72.5q6 3.5 12 0q-6-2-12 0z" fill="#b5524a" opacity=".75"/>`:'',lash=fem?`<path d="M45 55l-2-2M75 55l2-2M47 54l-1-2.4M73 54l1-2.4" stroke="${dk}" stroke-width="1.3" stroke-linecap="round"/>`:'';
  const be=['',`<path d="M50 68q10-4 20 0q-10 2-20 0z" fill="${hc}"/>`,`<path d="M52 76q8 14 16 0q-8 4-16 0z" fill="${hc}"/>`,`<path d="M38 62q2 26 22 26t22-26q-6 14-22 14t-22-14z" fill="${hc}" opacity=".9"/><path d="M50 68q10-4 20 0q-10 2-20 0z" fill="${hc}"/>`][a.beard];
  const ha=['',`<path d="M38 46q22-20 44 0q-22-6-44 0z" fill="${hc}"/>`,`<path d="M36 52q0-24 24-24t24 24q-4-14-24-14t-20 12q-2-8-4 2z" fill="${hc}"/>`,
   [30,40,50,60,70,80,90].map((x,i)=>`<circle cx="${x/1.0*0.6+24}" cy="${36+(i%2)*4}" r="8" fill="${hc}"/>`).join('')+`<circle cx="38" cy="48" r="7" fill="${hc}"/><circle cx="82" cy="48" r="7" fill="${hc}"/>`,
@@ -155,21 +162,21 @@ function avatarCustom(a,opt){const sk=AVP.skin[a.skin],hc=AVP.hairC[a.hairC],cc=
   `<path d="M36 46q0-22 24-22t24 22z" fill="${cc}"/><path d="M60 46h34q-4 6-34 4z" fill="${cc}"/><circle cx="60" cy="24" r="2.4" fill="#fff"/>`,
   `<path d="M36 46l6-20 9 12 9-18 9 18 9-12 6 20z" fill="#e0a526"/><circle cx="60" cy="30" r="3" fill="#a33a2a"/><path d="M36 46h48" stroke="#a37a1e" stroke-width="3"/>`][a.hat];
  const acc=['',`<circle cx="51" cy="58" r="7" fill="none" stroke="#222" stroke-width="2"/><circle cx="69" cy="58" r="7" fill="none" stroke="#222" stroke-width="2"/><path d="M58 58h4M44 57l-6-2M76 57l6-2" stroke="#222" stroke-width="2"/>`,`<circle cx="37" cy="68" r="2.4" fill="#e0a526"/><circle cx="83" cy="68" r="2.4" fill="#e0a526"/>`,`<path d="M48 92q12 12 24 0" stroke="#e0a526" stroke-width="2.4" fill="none"/><circle cx="60" cy="100" r="3" fill="#2f8f8f"/>`][a.acc];
- if(opt&&opt.faceOnly)return `<svg viewBox="30 30 60 60" xmlns="http://www.w3.org/2000/svg">${ey}${br}${mo}${be}</svg>`;
+ if(opt&&opt.faceOnly)return `<svg viewBox="30 30 60 60" xmlns="http://www.w3.org/2000/svg">${ey}${lash}${br}${mo}${lips}${be}</svg>`;
  const hideHair=a.hat===5;
- return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="${AVP.bg[a.bg]}"/>${hideHair?'':back}${body}${a.hat===5?hats:''}${ears}${face}${ey}${br}${no}${mo}${be}${hideHair?'':ha}${a.hat===5?'':hats}${acc}</svg>`}
+ return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="${AVP.bg[a.bg]}"/>${hideHair?'':back}${body}${a.hat===5?hats:''}${ears}${face}${ey}${lash}${br}${no}${mo}${lips}${be}${hideHair?'':ha}${a.hat===5?'':hats}${acc}</svg>`}
 function avatarOf(c){return c&&c.ava?avatarCustom(c.ava):avatarSVG(c?c.av||0:0)}
-function renderAvEditor(){const c=draft.char;c.ava=c.ava||avDefault();const a=c.ava,T=AVN[lang];
+function renderAvEditor(){const c=draft.char;c.ava=c.ava||avDefault();const a=c.ava,T=AVN[lang];a.sex=a.sex||0;
  const row=k=>{const isCol=AVP[k],n=AVO[k];if(isCol)return `<div class="avr"><span>${T[k]}</span><div class="sw">${AVP[k].slice(0,n).map((col,i)=>`<button type="button" class="${i===a[k]?'on':''}" style="background:${col}" data-k="${k}" data-i="${i}" aria-label="${T[k]} ${i+1}"></button>`).join('')}</div></div>`;
   return `<div class="avr"><span>${T[k]}</span><div class="avst"><button type="button" data-k="${k}" data-d="-1">◀</button><b>${T.v[k][a[k]]}</b><button type="button" data-k="${k}" data-d="1">▶</button></div></div>`};
- $('cAvs').innerHTML=`<div class="aved"><div class="avprev"><div id="av3d" class="av3d"></div><div class="av2d">${avatarCustom(a)}</div><button type="button" class="bigbtn alt" id="avRnd">${T.rnd}</button></div><div class="avopts">${['face','skin','hair','hairC','eyes','brow','nose','mouth','beard','hat','cloth','clothC','acc','bg'].map(row).join('')}</div></div>`;
- $('cAvs').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const k=b.dataset.k;if(b.dataset.d)a[k]=(a[k]+(+b.dataset.d)+AVO[k])%AVO[k];else a[k]=+b.dataset.i;Snd.click();renderAvEditor()});
+ $('cAvs').innerHTML=`<div class="aved"><div class="avprev"><div id="av3d" class="av3d"></div><div class="av2d">${avatarCustom(a)}</div><button type="button" class="bigbtn alt" id="avRnd">${T.rnd}</button></div><div class="avopts">${['sex','face','skin','hair','hairC','eyes','brow','nose','mouth','beard','hat','cloth','clothC','acc','bg'].map(row).join('')}</div></div>`;
+ $('cAvs').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const k=b.dataset.k;if(b.dataset.d)a[k]=(a[k]+(+b.dataset.d)+AVO[k])%AVO[k];else a[k]=+b.dataset.i;if(k==='sex')avSex(a);Snd.click();renderAvEditor()});
  $('avRnd').onclick=()=>{c.ava=avRandom();Snd.click();renderAvEditor()};
  try{AvPrev.mount($('av3d'));AvPrev.set(a)}catch(e){$('av3d').remove()}}
 
 /* ================= Avatar 3D (prosedural; pola editor modular ala CharacterStudio M3-org, MIT) ================= */
 const faceTexCache={};
-function faceTexture(a){const key=JSON.stringify([a.eyes,a.brow,a.nose,a.mouth,a.beard,a.hairC,a.acc]);if(faceTexCache[key])return faceTexCache[key];
+function faceTexture(a){const key=JSON.stringify([a.sex,a.beard===0,a.eyes,a.brow,a.nose,a.mouth,a.beard,a.hairC,a.acc]);if(faceTexCache[key])return faceTexCache[key];
  const c=document.createElement('canvas');c.width=c.height=512;const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;const img=new Image();
  img.onload=()=>{const g=c.getContext('2d');g.clearRect(0,0,512,512);g.drawImage(img,0,0,512,512);tex.needsUpdate=true};
  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(avatarCustom(a,{faceOnly:true}));return faceTexCache[key]=tex}
@@ -178,7 +185,9 @@ function buildAvatar3D(a){a=a||avDefault();const M=(c,o)=>new THREE.MeshStandard
  const sk=M(AVP.skin[a.skin]),hc=M(AVP.hairC[a.hairC],{roughness:.9}),cc=M(AVP.clothC[a.clothC]),dark=M('#2b2b2b'),gold=M('#d4a32a',{metalness:.6,roughness:.35}),white=M('#f4f1ea');
  const g=new THREE.Group(),up=new THREE.Group();up.position.y=.78;g.add(up);const add=(m,p,x,y,z)=>{const o=new THREE.Mesh(m,p);o.position.set(x||0,y||0,z||0);o.castShadow=true;return o};
  // torso & pakaian
- const torso=add(new THREE.CylinderGeometry(.24,.2,.55,18),cc,0,.3);up.add(torso);up.add(add(new THREE.SphereGeometry(.24,18,10,0,Math.PI*2,0,Math.PI/2),cc,0,.56));
+ const fem=a.sex===1,sw=fem?.86:1;const torso=add(new THREE.CylinderGeometry(.24*sw,.2*(fem?.92:1),.55,18),cc,0,.3);up.add(torso);const sho=add(new THREE.SphereGeometry(.24,18,10,0,Math.PI*2,0,Math.PI/2),cc,0,.56);sho.scale.set(sw,1,sw);up.add(sho);
+ if(a.cloth===4){up.add(add(new THREE.BoxGeometry(.05,.4,.02),sk,0,.4,.2*sw+.005));up.add(add(new THREE.CylinderGeometry(.2*sw+.012,.2*sw+.012,.05,18),M('#e0a526'),0,.08))}
+ if(a.cloth===5||a.cloth===6)up.add(add(new THREE.SphereGeometry(.02,8,6),gold,0,.55,.2*sw));
  if(a.cloth===0){up.add(add(new THREE.BoxGeometry(.2,.05,.08),white,0,.6,.16));up.add(add(new THREE.BoxGeometry(.02,.42,.01),M('#00000033'),0,.33,.235))}
  if(a.cloth===1){for(let i=0;i<4;i++)up.add(add(new THREE.SphereGeometry(.018,8,6),gold,.06-i*.025,.5-i*.1,.215));up.add(add(new THREE.CylinderGeometry(.205,.205,.06,18),M('#5a3a22'),0,.1))}
  if(a.cloth===3){up.add(add(new THREE.BoxGeometry(.1,.4,.02),white,0,.38,.215));up.add(add(new THREE.ConeGeometry(.03,.25,4),M('#a33a2a'),0,.42,.23).rotateX(Math.PI))}
@@ -190,13 +199,16 @@ function buildAvatar3D(a){a=a||avDefault();const M=(c,o)=>new THREE.MeshStandard
  [-1,1].forEach(s=>head.add(add(new THREE.SphereGeometry(.045,10,8),sk,s*.205*hs[0],0,.0)));
  const nose=add(new THREE.SphereGeometry(a.nose===2?.032:.026,10,8),sk,0,-.03,.215*hs[2]);nose.scale.z=a.nose===2?1.5:1;head.add(nose);
  // rambut
- const cap=(sc,y)=>{const m=add(new THREE.SphereGeometry(.232,28,16,0,Math.PI*2,0,Math.PI*sc),hc,0,y||0);m.scale.set(...hs);return m};
+ /* rambut: bagian depan berhenti di dahi (≤0,34π) agar mata tidak tertutup; bagian belakang boleh lebih dalam */
+ const cap=(sc,y)=>{const top=Math.min(sc,.34);const m=add(new THREE.SphereGeometry(.232,28,16,0,Math.PI*2,0,Math.PI*top),hc,0,y||0);m.scale.set(...hs);if(sc>top){const b=add(new THREE.SphereGeometry(.232,20,10,Math.PI*1.08,Math.PI*.84,Math.PI*top,Math.PI*(sc-top)+.15),hc);b.material=b.material.clone();b.material.side=THREE.DoubleSide;m.add(b)}return m};
  const hairs=[()=>{},()=>head.add(cap(.42)),()=>{head.add(cap(.45));head.add(add(new THREE.BoxGeometry(.12,.05,.2),hc,.12,.17,.05))},
   ()=>{for(let i=0;i<26;i++){const t=i/26*Math.PI*2,r=.16+(i%3)*.03;head.add(add(new THREE.SphereGeometry(.07,10,8),hc,Math.cos(t)*r,.13+(i%2)*.05,Math.sin(t)*r-.03))}},
   ()=>{head.add(cap(.5));const b=add(new THREE.BoxGeometry(.4,.5,.12),hc,0,-.18,-.14);head.add(b)},()=>{head.add(cap(.45));head.add(add(new THREE.SphereGeometry(.1,14,10),hc,0,.1,-.22))},
   ()=>{head.add(cap(.4));for(let i=0;i<9;i++){const k=add(new THREE.ConeGeometry(.05,.16,6),hc,(i-4)*.045,.24,-.02+Math.abs(i-4)*-.01);k.rotation.z=(i-4)*-.15;head.add(k)}},
   ()=>{head.add(cap(.45));const p=add(new THREE.CylinderGeometry(.04,.02,.32,8),hc,0,-.02,-.25);p.rotation.x=.4;head.add(p)}];
  if(a.hat!==5){const covered=[1,2,3,6,7,8].includes(a.hat);hairs[covered&&[2,3,6].includes(a.hair)?1:a.hair]()}
+ // tokoh wanita: poni dan helai samping membingkai wajah (kecuali botak/keriting/berkerudung)
+ if(fem&&a.hat!==5&&![0,3].includes(a.hair)){const fr=add(new THREE.SphereGeometry(.236,24,10,Math.PI*.15,Math.PI*.7,Math.PI*.2,Math.PI*.13),hc);fr.scale.set(...hs);head.add(fr);[-1,1].forEach(sd=>{const l=add(new THREE.BoxGeometry(.07,a.hair===4?.42:.3,.1),hc,sd*.2*hs[0],a.hair===4?-.2:-.12,.02);l.rotation.z=sd*.08;head.add(l)})}
  // kumis/jenggot 3D tipis (detail di tekstur wajah)
  // penutup kepala
  const hats=[()=>{},
@@ -204,19 +216,22 @@ function buildAvatar3D(a){a=a||avDefault();const M=(c,o)=>new THREE.MeshStandard
   ()=>{head.add(add(new THREE.CylinderGeometry(.205,.21,.14,24),M('#151515'),0,.2))},
   ()=>{head.add(add(new THREE.TorusGeometry(.2,.04,8,24),white,0,.13).rotateX(Math.PI/2));head.add(add(new THREE.ConeGeometry(.06,.18,4),white,0,.25,.16).rotateX(-.4))},
   ()=>{head.add(add(new THREE.ConeGeometry(.52,.22,32),M('#d9b66a',{roughness:.95}),0,.22))},
-  ()=>{const h=add(new THREE.SphereGeometry(.25,28,18,0,Math.PI*2,0,Math.PI*.62),cc);h.scale.set(...hs);head.add(h);const d=add(new THREE.CylinderGeometry(.22,.3,.3,24,1,true),cc,0,-.28,-.01);head.add(d);face.position.z=.012},
+  ()=>{/* kerudung: bagian depan terbuka agar wajah terlihat */const h=add(new THREE.SphereGeometry(.25,28,18,Math.PI/2+.85,Math.PI*2-1.7,0,Math.PI*.66),cc);h.scale.set(...hs);h.material.side=THREE.DoubleSide;head.add(h);const fr=add(new THREE.SphereGeometry(.252,28,6,0,Math.PI*2,0,Math.PI*.2),cc);fr.scale.set(...hs);head.add(fr);const d=add(new THREE.CylinderGeometry(.21,.32,.32,24,1,true,.75,Math.PI*2-1.5),cc,0,-.3,-.01);d.material.side=THREE.DoubleSide;head.add(d);up.add(add(new THREE.CylinderGeometry(.25*sw,.3*sw,.16,24),cc,0,.6))},
   ()=>{head.add(add(new THREE.TorusGeometry(.212,.035,8,24),M('#7a3a2a'),0,.12).rotateX(Math.PI/2));head.add(add(new THREE.BoxGeometry(.03,.12,.12),M('#7a3a2a'),.15,.2,-.12))},
   ()=>{const c=add(new THREE.SphereGeometry(.236,24,12,0,Math.PI*2,0,Math.PI*.42),cc);c.scale.set(...hs);head.add(c);head.add(add(new THREE.BoxGeometry(.26,.02,.18),cc,0,.09,.22))},
   ()=>{head.add(add(new THREE.CylinderGeometry(.21,.22,.08,24),gold,0,.18));for(let i=0;i<8;i++){const t=i/8*Math.PI*2;head.add(add(new THREE.ConeGeometry(.035,.12,4),gold,Math.cos(t)*.2,.27,Math.sin(t)*.2))}}];
  hats[a.hat]();
  if(a.acc===1){[-1,1].forEach(s=>head.add(add(new THREE.TorusGeometry(.055,.008,6,18),dark,s*.075,0,.225)));head.add(add(new THREE.BoxGeometry(.05,.008,.008),dark,0,0,.228))}
- if(a.acc===2)[-1,1].forEach(s=>head.add(add(new THREE.SphereGeometry(.02,8,6),gold,s*.215,-.07,0)));
+ if(a.acc===2&&a.hat!==5)[-1,1].forEach(s=>head.add(add(new THREE.SphereGeometry(.02,8,6),gold,s*.215,-.07,0)));
  if(a.acc===3)up.add(add(new THREE.TorusGeometry(.12,.012,6,24),gold,0,.6,.06).rotateX(Math.PI/2.4));
  // lengan & kaki bersendi
  const limb=(x,y,len,r,mat,par,hand)=>{const j=new THREE.Group();j.position.set(x,y,0);const m=add(new THREE.CylinderGeometry(r,r*.85,len,10),mat,0,-len/2);j.add(m);if(hand)j.add(add(new THREE.SphereGeometry(r*1.05,10,8),sk,0,-len-.02));par.add(j);return j};
- const arms=[limb(-.265,.56,.46,.06,cc,up,1),limb(.265,.56,.46,.06,cc,up,1)];arms[0].rotation.z=-.12;arms[1].rotation.z=.12;up.add(add(new THREE.SphereGeometry(.075,12,10),cc,-.25,.56),add(new THREE.SphereGeometry(.075,12,10),cc,.25,.56));
+ const ax=.265*sw,ar=fem?.052:.06;const arms=[limb(-ax,.56,.46,ar,cc,up,1),limb(ax,.56,.46,ar,cc,up,1)];arms[0].rotation.z=-.12;arms[1].rotation.z=.12;up.add(add(new THREE.SphereGeometry(ar*1.25,12,10),cc,-ax+.015,.56),add(new THREE.SphereGeometry(ar*1.25,12,10),cc,ax-.015,.56));
  const pants=a.cloth===1?M('#6b4a2a'):dark;const legs=[limb(-.1,.8,.74,.08,pants,g),limb(.1,.8,.74,.08,pants,g)];
  legs.forEach(l=>{const f=add(new THREE.BoxGeometry(.11,.06,.2),M('#3a2a1f'),0,-.76,.04);l.add(f)});
+ // rok/jarik/gamis: kain tabung di pinggul, kaki tetap bergerak di dalamnya
+ if(a.cloth>=4){const skirtC=a.cloth===4?M('#6b4a2a',{roughness:.9}):a.cloth===5?cc:M(AVP.clothC[(a.clothC+2)%AVP.clothC.length]);const len=a.cloth===6?.5:.7;const sk2=add(new THREE.CylinderGeometry(.19*sw,.25,len,20,1,true),skirtC,0,.8-len/2);sk2.material.side=THREE.DoubleSide;g.add(sk2);
+  if(a.cloth===4)for(let i=0;i<5;i++)g.add(add(new THREE.TorusGeometry(.19*sw+(.25-.19*sw)*(i+1)/6,.006,4,24),M('#e0c070'),0,.8-len*(i+1)/6).rotateX(Math.PI/2))}
  return {m:g,up,legs,arms,head,ph:Math.random()*6}}
 /* ---------- Pratinjau 3D di layar pembuatan tokoh ---------- */
 const AvPrev={r:null,scene:null,cam:null,ctl:null,obj:null,raf:0,
@@ -840,10 +855,12 @@ function setSpeed(s){speed=s;if(!$('sp3')){const b=document.createElement('butto
 $('spP').onclick=()=>setSpeed(0);$('sp1').onclick=()=>setSpeed(1);$('sp2').onclick=()=>setSpeed(2);
 (()=>{const b=document.createElement('button');b.id='pBtn';b.title='Pustaka';b.textContent='📚';b.className=$('mBtn').className;$('mBtn').before(b);b.onclick=()=>{Snd.click();pustaka(null,TOOL_TOPIC[tool]||pusTopic)}})();
 $('mBtn').onclick=()=>{const m=$('menu');if(!m.classList.contains('hidden')){m.classList.add('hidden');return}
- m.innerHTML=`<button id="mSave">💾 ${t('save')} <span id="saveDot"></span></button><button id="mNb">🏘️ ${t('neighbors')}</button><button id="mTut">🧭 Tutorial</button><button id="mSet">⚙️ ${SETN[lang].h}</button><button id="mNet">🤝 ${lang==='en'?'Trade network':'Jaringan dagang'}</button><button id="mExp">🗺️ ${t('expH')}</button><button id="mPus">📚 ${PUS[lang].h}</button><button id="mBoard">🏆 ${lt('h')}</button><button id="mSnd">${Snd.on?'🔊':'🔇'} ${lang==='en'?'Sound':'Suara'}</button><button id="mHelp">❓ ${t('help')}</button><button id="mLang">🌐 ${t('lang')}</button><button id="mExit">🚪 ${t('exit')}</button><button id="mHome">🏠 pindotutuko.id</button>`;m.classList.remove('hidden');
+ m.innerHTML=`<button id="mSave">💾 ${t('save')} <span id="saveDot"></span></button><button id="mNb">🏘️ ${t('neighbors')}</button><button id="mTut">🧭 Tutorial</button><button id="mSet">⚙️ ${SETN[lang].h}</button><button id="mNet">🤝 ${lang==='en'?'Trade network':'Jaringan dagang'}</button><button id="mExp">🗺️ ${t('expH')}</button><button id="mPus">📚 ${PUS[lang].h}</button><button id="mBoard">🏆 ${lt('h')}</button><button id="mSnd">${Snd.on?'🔊':'🔇'} ${lang==='en'?'Sound':'Suara'}</button><button id="mHelp">❓ ${t('help')}</button><button id="mGuide">📘 ${t('guidePdf')}</button><button id="mLang">🌐 ${t('lang')}</button><button id="mExit">🚪 ${t('exit')}</button><button id="mHome">🏠 ${lang==='en'?'Home':'Beranda'} · pindotutuko.id</button>`;m.classList.remove('hidden');
  $('mSave').onclick=()=>save(true);$('mBoard').onclick=()=>board();$('mTut').onclick=()=>{$('menu').classList.add('hidden');S.tut=0;tutCheck()};$('mSet').onclick=()=>{$('menu').classList.add('hidden');settings()};$('mNet').onclick=()=>{$('menu').classList.add('hidden');network()};$('mExp').onclick=()=>{$('menu').classList.add('hidden');expand()};$('mPus').onclick=()=>{$('menu').classList.add('hidden');pustaka(null,TOOL_TOPIC[tool]||pusTopic)};$('mSnd').onclick=()=>{Snd.toggle();$('mSnd').innerHTML=(Snd.on?'🔊':'🔇')+' '+(lang==='en'?'Sound':'Suara')};$('mNb').onclick=neighbors;$('mHelp').onclick=()=>modal(`<h2>${t('help')}</h2><p>${t('helpTxt')}</p>`);
  $('mLang').onclick=()=>{lang=lang==='id'?'en':'id';store.set('baLang',lang);applyStatic();renderBar();updHUD();renderMissions();m.classList.add('hidden')};
- $('mExit').onclick=async()=>{await save(true);stopGame();hub()};$('mHome').onclick=async()=>{await save(true);location.href='https://pindotutuko.id/'}};
+ $('mExit').onclick=async()=>{await safeSave();stopGame();hub()};$('mGuide').onclick=()=>window.open('/babat-alas/Panduan-Babat-Alas.pdf','_blank','noopener');$('mHome').onclick=async()=>{const b=$('mHome');b.disabled=true;b.textContent='⏳ '+t('saving');await safeSave();location.href='https://pindotutuko.id/'}};
+/* Simpan sebelum keluar, tetapi jangan pernah macet: gagal jaringan/ditolak server/lebih dari 4 dtk → tetap lanjut (salinan lokal tetap ada). */
+async function safeSave(){try{await Promise.race([save(true),new Promise(r=>setTimeout(r,4000))])}catch(e){}}
 const expCost=n=>({coin:40+30*n,wood:15+10*n,kk:6+5*n});
 function expand(){const o=S.own,n=S.exp||0,c=expCost(n),w=o.x1-o.x0,h=o.y1-o.y0;
  modal(`<h2>🗺️ ${t('expH')}</h2><p>${t('expP',{w,h,m:w*10+' × '+h*10})}</p><p><b>${t('expNeed',{kk:c.kk,c:c.coin,w:c.wood})}</b></p><div class="row">${t('expDir').map((d,i)=>`<button class="bigbtn alt ex" data-d="${i}">${d}</button>`).join('')}</div><div class="err" id="exErr"></div>`);
