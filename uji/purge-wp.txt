@@ -1,0 +1,10 @@
+if ($route === 'reports/purge' && $method === 'POST') {
+    pa_require_admin();
+    $sid = pa_clean_string(pa_input()['sessionId'] ?? '', 80);
+    if (!$sid) pa_reply(400, ['error'=>'Sesi diperlukan.']);
+    global $wpdb;
+    $rows = $wpdb->get_results('SELECT report_id, payload FROM ' . pa_table('reports'), ARRAY_A);
+    $n = 0;
+    foreach ((array)$rows as $row) { $p = json_decode((string)$row['payload'], true); if (is_array($p) && (string)($p['sessionId'] ?? '') === $sid) { $wpdb->delete(pa_table('reports'), ['report_id'=>$row['report_id']], ['%s']); $n++; } }
+    pa_reply(200, ['ok'=>true,'removed'=>$n]);
+}
