@@ -218,7 +218,7 @@
       r.min.push(["Biaya penulis/APC", !!P.apc, P.apc ? "Informasi biaya terdeteksi" : "Informasi biaya tidak terdeteksi"]);
       r.flags = P;
     } else { set("C1", 1, "asumsi"); set("C2", 0.5, "asumsi"); set("C3", 0, "asumsi"); set("C4", 1, "asumsi"); }
-    r.min.push(["e-ISSN", /\//.test(s.issn || "") || /^\d{4}-?\d{3}[\dX]$/i.test(String(s.issn || "").trim()), s.issn ? "ISSN " + s.issn : "ISSN tidak tercatat"]);
+    r.min.push(["e-ISSN", /\d{4}-?\d{3}[\dX]/i.test(String(s.issn || "")), s.issn ? "ISSN " + s.issn : "ISSN tidak tercatat di Direktori"]);
     r.min.push(["Daftar mitra bestari", !!(jr && jr.reviewers && jr.reviewers.length), jr && jr.reviewers ? jr.reviewers.length + " mitra bestari eksternal tercantum" : "Tidak tercantum"]);
     /* E */
     if (cr) {
