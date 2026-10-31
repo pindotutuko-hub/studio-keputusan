@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Koridor Pintar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3efe7;--card:#fffdf9;--ink:#1f1c18;--muted:#6d655a;--line:#ddd3c4;--soft:#efe8dc;--accent:#0f766e;--accentSoft:#d9f0ec;--ok:#2f7d4f;--okSoft:#e1f1e6;--bad:#a33a2a;--badSoft:#f6e1dc;--shadow:0 1px 2px rgba(40,30,20,.06),0 8px 24px rgba(40,30,20,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#15130f;--card:#1f1c17;--ink:#f2ece2;--muted:#a69d8f;--line:#38322a;--soft:#2a261f;--accent:#5fd1c3;--accentSoft:#14302c;--ok:#6cc58f;--okSoft:#1c3326;--bad:#ef8a78;--badSoft:#3a2420;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25)}}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:14.5px/1.5 Inter,system-ui,sans-serif}
+h1,h2,h3{font-family:"Space Grotesk",Inter,system-ui,sans-serif;margin:0;letter-spacing:-.01em}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{max-width:1240px;margin:0 auto;padding:16px 16px 40px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.home{display:inline-flex;align-items:center;gap:4px;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 12px 7px 8px;font-weight:700;font-size:13px}
+.logo{width:42px;height:42px;border-radius:12px;background:#0f766e;display:grid;place-items:center;flex:none}
+.brand h1{font-size:22px}.brand p{margin:0;color:var(--muted);font-size:13px}
+.hud{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;display:flex;gap:6px;align-items:center}.pill b{font-family:"Space Grotesk",Inter,sans-serif;font-size:15px}
+.lang{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.intro{padding:20px 22px;margin-bottom:12px}.intro h2{font-size:22px}
+.levels{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.lv{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:6px 10px;font-size:13px;font-weight:600;text-align:left}.lv.on{border-color:var(--accent);background:var(--accentSoft)}.lv small{display:block;color:var(--muted);font-weight:500;font-size:11.5px}.lv .st{color:#d29a1e;letter-spacing:1px}
+.grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(290px,1fr);gap:16px;align-items:start}@media (max-width:920px){.grid{grid-template-columns:1fr}}
+.mapc{padding:12px}
+.mh{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:2px 4px 8px}.mh h2{font-size:17px;margin-right:auto}
+.chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:600}.chip.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+#map{width:100%;height:auto;display:block;border-radius:12px;touch-action:manipulation}
+.mapscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}@media (max-width:760px){#map{min-width:760px}}
+.cell{cursor:pointer}
+.tools{display:flex;gap:6px;flex-wrap:wrap;padding:8px 4px 0}
+.tool{display:flex;gap:6px;align-items:center;border:1px solid var(--line);background:transparent;border-radius:12px;padding:6px 10px;font-size:13px;font-weight:600}.tool.on{border-color:var(--accent);background:var(--accentSoft)}.tool small{color:var(--muted);font-weight:500}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);padding:8px 4px 0;align-items:center}.legend .bar{width:160px;height:10px;border-radius:6px}
+.side{display:flex;flex-direction:column;gap:12px}.panel{padding:14px 16px}.panel h3{font-size:15px;margin-bottom:8px;display:flex;justify-content:space-between}
+.req{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.req i{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px;background:var(--badSoft);color:var(--bad)}.req.ok i{background:var(--okSoft);color:var(--ok)}.req small{display:block;color:var(--muted);font-size:12px}
+.win{border-radius:14px;padding:12px 14px;background:var(--okSoft);margin-top:10px}.stars{color:#d29a1e;font-size:22px;letter-spacing:3px}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:12px;padding:10px 15px;font-weight:700}@media (prefers-color-scheme:dark){.btn{color:#0b1f1d}}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.hint{color:var(--muted);font-size:13px}
+details{font-size:12.5px;color:var(--muted)}details summary{cursor:pointer;color:var(--ink);font-weight:600}
+footer{margin-top:20px;color:var(--muted);font-size:12.5px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}footer a{color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--card);padding:10px 16px;border-radius:12px;font-size:13.5px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9}.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="home" href="https://pindotutuko.id/"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span data-t="home"></span></a>
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 22V6a3 3 0 0 1 3-3h4"/><path d="M14 3l3 3"/><circle cx="7" cy="9" r="1.5" fill="#fff"/><path d="M3 22h18"/><circle cx="18" cy="16" r="3"/><path d="M18 19v3"/></svg></div>
+    <div class="brand"><h1>Koridor Pintar</h1><p data-t="tag"></p></div>
+    <div class="hud"><div class="pill"><span data-t="budget"></span> <b id="hB">0</b></div><div class="pill"><span data-t="starsT"></span> <b id="hS">0</b></div><button class="lang" id="langBtn">EN</button></div>
+  </header>
+  <section class="card intro"><h2 data-t="introH"></h2><p class="hint" style="margin:6px 0 0" data-t="introP"></p></section>
+  <div class="levels" id="levels"></div>
+  <section class="grid">
+    <div class="card mapc">
+      <div class="mh"><h2 id="lvTitle"></h2><button class="chip" data-v="night" data-t="vNight"></button><button class="chip" data-v="heat" data-t="vHeat"></button><button class="chip" data-v="sense" data-t="vSense"></button></div>
+      <div class="mapscroll"><svg id="map" role="img"></svg></div>
+      <div class="tools" id="tools"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="side">
+      <div class="card panel"><h3><span data-t="reqH"></span><span class="hint" id="costLine"></span></h3><div id="reqs"></div><div id="win"></div></div>
+      <div class="card panel"><h3 data-t="howH"></h3><div class="hint" id="howTxt"></div></div>
+    </div>
+  </section>
+  <footer><span data-t="ref"></span><span><span data-t="by"></span> <a href="https://pindotutuko.id" target="_blank" rel="noopener">pindotutuko.id</a></span></footer>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+"use strict";
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+var lang=store.get('kpLang')==='en'?'en':'id';
+var T={
+ id:{home:"Beranda",tag:"Gim penempatan tiang lampu, sensor, dan pohon di koridor kota",budget:"Dana",starsT:"Bintang",
+  introH:"Rancang koridor yang terang, terpantau, dan teduh",introP:"Koridor fiktif ini punya dua trotoar. Pasang tiang lampu (penerangan malam), sensor suhu pada tiang (pemantauan titik panas), dan pohon peneduh (menurunkan suhu permukaan) — dengan dana terbatas.",
+  vNight:"Malam: cahaya",vHeat:"Siang: suhu",vSense:"Jangkauan sensor",
+  t_lamp:"Tiang lampu",t_sens:"Sensor di tiang",t_tree:"Pohon peneduh",t_del:"Hapus",
+  reqH:"Target",howH:"Model",
+  r_lit:"≥ {v}% trotoar terang",r_mon:"Semua titik panas terpantau sensor",r_node:"Semua simpul ramai ≤ {v} °C",r_mean:"Suhu rata-rata trotoar ≤ {v} °C",r_bud:"Biaya ≤ dana {v}",
+  now:"sekarang: {v}",cost:"biaya {c} / {b}",
+  solved:"Target tercapai!",s2:"★★ bila sisa dana ≥ 15%",s3:"★★★ bila sisa dana ≥ 30%",next:"Level berikutnya",level:"Level {n}",
+  onlySide:"Hanya bisa di trotoar.",needLamp:"Sensor dipasang pada tiang lampu.",occupied:"Petak sudah terisi.",noLampHer:"Zona cagar budaya: tiang lampu tidak boleh menutupi fasad.",
+  legHot:"titik panas",legNode:"simpul ramai (halte, pasar)",legHer:"fasad cagar budaya",legCool:"Sejuk",legHotT:"Panas",
+  howTxt:"Lampu menerangi 3 petak ke kiri dan kanan pada trotoar yang sama. Sensor menjangkau 2 petak di sekitarnya (kedua trotoar bila berseberangan dekat). Pohon menurunkan suhu permukaan 2,5 °C di petaknya dan sekitarnya (jarak 1) dan 1 °C pada jarak 2. Angka suhu dan biaya adalah <b>model contoh untuk latihan</b>, bukan hasil ukur lapangan.",
+  ref:"Koridor dan angka fiktif — model edukatif, terinspirasi aplikasi Urban Sensor.",by:"Dikembangkan oleh: Pindo Tutuko ·"},
+ en:{home:"Home",tag:"A game of placing lamp posts, sensors and trees along a city corridor",budget:"Funds",starsT:"Stars",
+  introH:"Design a corridor that is lit, monitored and shaded",introP:"This fictional corridor has two pavements. Place lamp posts (night lighting), temperature sensors on posts (hot-spot monitoring) and shade trees (lower surface temperature) — on a limited budget.",
+  vNight:"Night: light",vHeat:"Day: temperature",vSense:"Sensor reach",
+  t_lamp:"Lamp post",t_sens:"Sensor on post",t_tree:"Shade tree",t_del:"Remove",
+  reqH:"Targets",howH:"Model",
+  r_lit:"≥ {v}% of pavement lit",r_mon:"Every hot spot is monitored",r_node:"Every busy node ≤ {v} °C",r_mean:"Mean pavement temperature ≤ {v} °C",r_bud:"Cost ≤ funds {v}",
+  now:"now: {v}",cost:"cost {c} / {b}",
+  solved:"Targets met!",s2:"★★ if ≥ 15% of funds left",s3:"★★★ if ≥ 30% of funds left",next:"Next level",level:"Level {n}",
+  onlySide:"Only on the pavement.",needLamp:"Sensors mount on a lamp post.",occupied:"The tile is taken.",noLampHer:"Heritage zone: lamp posts must not block the façade.",
+  legHot:"hot spot",legNode:"busy node (bus stop, market)",legHer:"heritage façade",legCool:"Cool",legHotT:"Hot",
+  howTxt:"A lamp lights 3 tiles left and right on the same pavement. A sensor reaches 2 tiles around it (both pavements when close across). A tree lowers surface temperature by 2.5 °C on its tile and neighbours (distance 1) and by 1 °C at distance 2. Temperatures and costs are an <b>example model for practice</b>, not field measurements.",
+  ref:"Fictional corridor and numbers — educational model, inspired by the Urban Sensor app.",by:"Developed by: Pindo Tutuko ·"}
+};
+function t(k,v){var s=T[lang][k]!=null?T[lang][k]:k;if(v)for(var p in v)s=s.split('{'+p+'}').join(v[p]);return s}
+var $=function(id){return document.getElementById(id)};
+var NS='http://www.w3.org/2000/svg';function el(tag,a,p){var e=document.createElementNS(NS,tag);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function fmt(n,d){return Number(n).toLocaleString(lang==='id'?'id-ID':'en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
+
+var W=24,SIDE=[2,5]; // rows of the two pavements; 0-1 & 6-7 buildings; 3-4 road
+var COST={lamp:3,sens:2,tree:2};
+/* Level data: base temperature 34 °C; hot spots +3; building shade −1; nodes; heritage no-lamp cells */
+var LEVELS=[
+ {title:{id:'Terangi malam',en:'Light the night'},budget:31,req:{lit:90},hot:[],node:[],shade:[],her:[]},
+ {title:{id:'Pantau titik panas',en:'Monitor the hot spots'},budget:36,req:{lit:85,mon:1},hot:[[3,2],[11,2],[19,5],[7,5],[22,2]],node:[],shade:[],her:[]},
+ {title:{id:'Halte yang teduh',en:'Shaded bus stops'},budget:48,req:{lit:85,mon:1,node:33},hot:[[5,2],[14,5],[20,2]],node:[[8,2],[16,5],[2,5]],shade:[[0,5],[1,5],[23,2]],her:[]},
+ {title:{id:'Koridor cagar budaya',en:'Heritage corridor'},budget:53,req:{lit:85,mon:1,node:32.5,mean:33.2},hot:[[4,5],[12,2],[18,5],[21,2]],node:[[9,2],[15,5]],shade:[[6,2],[7,2]],her:[[10,2],[11,2],[12,2],[13,2],[14,2]]}
+];
+function key(x,y){return x+','+y}
+function has(list,x,y){return list.some(function(p){return p[0]===x&&p[1]===y})}
+function compute(L,items){var cells=[];SIDE.forEach(function(y){for(var x=0;x<W;x++)cells.push([x,y])});
+  var lamps=[],trees=[],sens=[];for(var k in items){var p=k.split(',').map(Number),v=items[k];if(v==='lamp'||v==='sens')lamps.push(p);if(v==='sens')sens.push(p);if(v==='tree')trees.push(p)}
+  var lit={},temp={},mon={};
+  cells.forEach(function(c){var x=c[0],y=c[1];
+    lit[key(x,y)]=lamps.some(function(l){return l[1]===y&&Math.abs(l[0]-x)<=3});
+    mon[key(x,y)]=sens.some(function(s){return Math.abs(s[0]-x)<=2});
+    var tt=34+(has(L.hot,x,y)?3:0)-(has(L.shade,x,y)?1:0);
+    trees.forEach(function(tr){if(tr[1]!==y)return;var d=Math.abs(tr[0]-x);if(d<=1)tt-=2.5;else if(d===2)tt-=1});
+    temp[key(x,y)]=Math.max(28,tt)});
+  var litPct=100*cells.filter(function(c){return lit[key(c[0],c[1])]}).length/cells.length;
+  var mean=cells.reduce(function(a,c){return a+temp[key(c[0],c[1])]},0)/cells.length;
+  var hotMon=L.hot.filter(function(h){return mon[key(h[0],h[1])]}).length;
+  var nodeMax=L.node.length?Math.max.apply(null,L.node.map(function(n){return temp[key(n[0],n[1])]})):0;
+  var cost=0;for(var k2 in items)cost+=items[k2]==='sens'?COST.lamp+COST.sens:COST[items[k2]];
+  return {lit:lit,temp:temp,mon:mon,litPct:litPct,mean:mean,hotMon:hotMon,nodeMax:nodeMax,cost:cost,cells:cells}}
+function checks(L,R){var o=[];o.push({k:'r_lit',v:L.req.lit,ok:R.litPct>=L.req.lit,now:fmt(R.litPct,0)+'%'});
+  if(L.req.mon)o.push({k:'r_mon',ok:R.hotMon===L.hot.length,now:R.hotMon+'/'+L.hot.length});
+  if(L.req.node)o.push({k:'r_node',v:fmt(L.req.node,1),ok:R.nodeMax<=L.req.node+1e-9,now:fmt(R.nodeMax,1)+' °C'});
+  if(L.req.mean)o.push({k:'r_mean',v:fmt(L.req.mean,1),ok:R.mean<=L.req.mean+1e-9,now:fmt(R.mean,2)+' °C'});
+  o.push({k:'r_bud',v:L.budget,ok:R.cost<=L.budget,now:R.cost});return o}
+function starsOf(L,R){if(!checks(L,R).every(function(c){return c.ok}))return 0;var left=(L.budget-R.cost)/L.budget;return left>=.3?3:left>=.15?2:1}
+
+var st={i:+(store.get('kpLevel')||0),items:{},tool:'lamp',view:'night',stars:{}};try{st.stars=JSON.parse(store.get('kpStars')||'{}')}catch(e){}
+if(!(st.i>=0&&st.i<LEVELS.length))st.i=0;
+function toast(m){var e=$('toast');e.textContent=m;e.classList.add('on');clearTimeout(st.tt);st.tt=setTimeout(function(){e.classList.remove('on')},1700)}
+function load(i){st.i=i;store.set('kpLevel',i);st.items={};render()}
+function place(x,y){var L=LEVELS[st.i],k=key(x,y),cur=st.items[k];if(SIDE.indexOf(y)<0){toast(t('onlySide'));return}
+  if(st.tool==='del'){delete st.items[k];render();return}
+  if(st.tool==='sens'){if(cur==='lamp'){st.items[k]='sens';render()}else if(cur==='sens'){st.items[k]='lamp';render()}else toast(t('needLamp'));return}
+  if(cur){if(cur===st.tool||(st.tool==='lamp'&&cur==='sens')){delete st.items[k];render();return}toast(t('occupied'));return}
+  if(st.tool==='lamp'&&has(L.her,x,y)){toast(t('noLampHer'));return}
+  st.items[k]=st.tool;render()}
+var STOPS=[[43,90,168],[74,163,196],[143,196,120],[240,200,70],[232,120,50],[190,40,40]];
+function heat(tt){tt=Math.max(0,Math.min(1,tt));var p=tt*(STOPS.length-1),i=Math.min(STOPS.length-2,Math.floor(p)),f=p-i,a=STOPS[i],b=STOPS[i+1];return 'rgb('+[0,1,2].map(function(j){return Math.round(a[j]+(b[j]-a[j])*f)}).join(',')+')'}
+function render(){var L=LEVELS[st.i],R=compute(L,st.items),C=checks(L,R),s=starsOf(L,R);
+  if(s>(st.stars[st.i]||0)){st.stars[st.i]=s;store.set('kpStars',JSON.stringify(st.stars))}
+  var tot=0;for(var k in st.stars)tot+=st.stars[k];$('hS').textContent=tot+'/'+(LEVELS.length*3);$('hB').textContent=(L.budget-R.cost);
+  $('levels').innerHTML=LEVELS.map(function(l,i){var x=st.stars[i]||0;return '<button class="lv'+(i===st.i?' on':'')+'" data-i="'+i+'">'+t('level',{n:i+1})+' <span class="st">'+'★★★'.slice(0,x)+'<span style="opacity:.25">'+'★★★'.slice(0,3-x)+'</span></span><small>'+l.title[lang]+'</small></button>'}).join('');
+  $('levels').querySelectorAll('button').forEach(function(b){b.onclick=function(){load(+b.getAttribute('data-i'))}});
+  $('lvTitle').textContent=L.title[lang];
+  document.querySelectorAll('[data-v]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===st.view)});
+  var svg=$('map'),night=st.view==='night';svg.innerHTML='';svg.setAttribute('viewBox','0 0 '+W+' 8');
+  el('rect',{width:W,height:8,fill:night?'#141821':'#d9d2c3'},svg);
+  for(var x=0;x<W;x++){[0,1,6,7].forEach(function(y){var her=y===1&&has(L.her,x,2);el('rect',{x:x+.04,y:y+.04,width:.92,height:.92,rx:.06,fill:her?(night?'#4a3a2a':'#c9a27a'):(night?'#232a36':((x*7+y*3)%3?'#cfc5b2':'#c2b7a2'))},svg);
+    if(night&&(x*5+y)%4===0)el('rect',{x:x+.3,y:y+.3,width:.2,height:.25,fill:'#e8c66a',opacity:.6},svg)})}
+  el('rect',{x:0,y:3,width:W,height:2,fill:night?'#0c0f15':'#55575c'},svg);
+  for(var x2=0;x2<W;x2+=2)el('rect',{x:x2+.3,y:3.97,width:1,height:.06,fill:'#f2e9c9',opacity:night?.5:.9},svg);
+  var gl=el('g',{},svg);
+  R.cells.forEach(function(c){var x=c[0],y=c[1],k=key(x,y),f;
+    if(st.view==='heat'){f=heat((R.temp[k]-30)/7)}else if(st.view==='sense'){f=R.mon[k]?'#7dd3c8':'#d7cfbf'}else{f=R.lit[k]?'#f3d77a':'#3a4252'}
+    var r=el('rect',{x:x+.04,y:y+.04,width:.92,height:.92,rx:.08,fill:f,'class':'cell'},gl);(function(x,y){r.addEventListener('click',function(){place(x,y)})})(x,y);
+    if(has(L.hot,x,y))el('circle',{cx:x+.82,cy:y+.18,r:.12,fill:'#d6402a','pointer-events':'none'},svg);
+    if(has(L.node,x,y)){el('rect',{x:x+.08,y:y+.08,width:.3,height:.22,rx:.04,fill:'#1f6fb2','pointer-events':'none'},svg)}
+    if(st.view==='heat'){var tx=el('text',{x:x+.5,y:y+.88,'text-anchor':'middle','font-size':.24,fill:'#1b1814','font-weight':700,'pointer-events':'none'},svg);tx.textContent=fmt(R.temp[k],1)}});
+  if(night)for(var k3 in st.items){var p=k3.split(',').map(Number),v=st.items[k3];if(v==='tree')continue;el('ellipse',{cx:p[0]+.5,cy:p[1]+.5,rx:3.4,ry:.7,fill:'#ffe9a6',opacity:.18,'pointer-events':'none'},svg)}
+  for(var k4 in st.items){var q=k4.split(',').map(Number),it=st.items[k4],cx=q[0]+.5,cy=q[1]+.5;
+    if(it==='tree'){el('circle',{cx:cx+.06,cy:cy+.06,r:.42,fill:'#000',opacity:.18,'pointer-events':'none'},svg);el('circle',{cx:cx,cy:cy,r:.42,fill:'#3f8f4a','pointer-events':'none'},svg);el('circle',{cx:cx-.1,cy:cy-.1,r:.2,fill:'#58a862','pointer-events':'none'},svg)}
+    else{el('rect',{x:cx-.07,y:cy-.38,width:.14,height:.76,fill:'#3b3f47','pointer-events':'none'},svg);el('circle',{cx:cx,cy:cy-.38,r:.17,fill:'#ffd75e',stroke:'#3b3f47','stroke-width':.05,'pointer-events':'none'},svg);
+      if(it==='sens')el('rect',{x:cx+.08,y:cy-.05,width:.22,height:.18,rx:.04,fill:'#0f766e',stroke:'#fff','stroke-width':.03,'pointer-events':'none'},svg)}}
+  $('tools').innerHTML=['lamp','sens','tree','del'].map(function(k){return '<button class="tool'+(st.tool===k?' on':'')+'" data-k="'+k+'">'+t('t_'+k)+(COST[k]?' <small>'+(k==='sens'?'+'+COST.sens:COST[k])+'</small>':'')+'</button>'}).join('');
+  $('tools').querySelectorAll('button').forEach(function(b){b.onclick=function(){st.tool=b.getAttribute('data-k');render()}});
+  $('legend').innerHTML=(st.view==='heat'?'<span>'+t('legCool')+'</span><div class="bar" style="background:linear-gradient(90deg,'+[0,.2,.4,.6,.8,1].map(heat).join(',')+')"></div><span>'+t('legHotT')+'</span>':'')+
+    '<span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="#d6402a"/></svg> '+t('legHot')+'</span><span><svg width="12" height="10"><rect width="12" height="9" rx="2" fill="#1f6fb2"/></svg> '+t('legNode')+'</span>'+(L.her.length?'<span><svg width="12" height="10"><rect width="12" height="9" rx="2" fill="#c9a27a"/></svg> '+t('legHer')+'</span>':'');
+  $('costLine').textContent=t('cost',{c:R.cost,b:L.budget});
+  $('reqs').innerHTML=C.map(function(c){return '<div class="req'+(c.ok?' ok':'')+'"><i>'+(c.ok?'✓':'✕')+'</i><span>'+t(c.k,{v:c.v})+'<small>'+t('now',{v:c.now})+'</small></span></div>'}).join('');
+  if(s){var last=st.i===LEVELS.length-1;$('win').innerHTML='<div class="win"><b>'+t('solved')+'</b> <span class="stars">'+'★★★'.slice(0,s)+'<span style="opacity:.25">'+'★★★'.slice(0,3-s)+'</span></span><div class="hint">'+t('s2')+' · '+t('s3')+'</div>'+(last?'':'<div class="row" style="margin-top:8px"><button class="btn" id="nx">'+t('next')+'</button></div>')+'</div>';var nx=$('nx');if(nx)nx.onclick=function(){load(st.i+1);window.scrollTo({top:0,behavior:'smooth'})}}else $('win').innerHTML='';
+  $('howTxt').innerHTML=t('howTxt')}
+function applyStatic(){document.documentElement.lang=lang;document.querySelectorAll('[data-t]').forEach(function(n){n.innerHTML=t(n.getAttribute('data-t'))});$('langBtn').textContent=lang==='id'?'EN':'ID'}
+document.querySelectorAll('[data-v]').forEach(function(b){b.onclick=function(){st.view=b.getAttribute('data-v');render()}});
+$('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('kpLang',lang);applyStatic();render()};
+applyStatic();load(st.i);
+window.__KP={LEVELS:LEVELS,compute:compute,checks:checks,starsOf:starsOf,st:function(){return st},load:load,render:render,place:place,COST:COST};
+})();
+</script>
+</body>
+</html>

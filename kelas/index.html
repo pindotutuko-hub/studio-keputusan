@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Ruang Dosen · Gim Kelas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3efe7;--card:#fffdf9;--ink:#1f1c18;--muted:#6d655a;--line:#ddd3c4;--soft:#efe8dc;--accent:#8a2b2b;--accent2:#b5523b;--ok:#2f7d4f;--bad:#a33a2a;--shadow:0 1px 2px rgba(40,30,20,.06),0 8px 24px rgba(40,30,20,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#15130f;--card:#1f1c17;--ink:#f2ece2;--muted:#a69d8f;--line:#38322a;--soft:#2a261f;--accent:#e08a7a;--accent2:#e3a06c;--ok:#6cc58f;--bad:#ef8a78;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25)}}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:14.5px/1.5 Inter,system-ui,sans-serif}
+h1,h2,h3,h4{font-family:"Space Grotesk",Inter,system-ui,sans-serif;margin:0}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}
+.wrap{max-width:1180px;margin:0 auto;padding:16px 16px 40px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.home{display:inline-flex;align-items:center;gap:4px;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 12px 7px 8px;font-weight:700;font-size:13px}
+.brand h1{font-size:22px}.brand p{margin:0;color:var(--muted);font-size:13px}
+.lang{margin-left:auto;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:22px}
+.hint{color:var(--muted);font-size:13px}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:12px;padding:10px 15px;font-weight:700;text-decoration:none;display:inline-block}
+@media (prefers-color-scheme:dark){.btn{color:#1a120f}}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.form{display:grid;gap:10px;max-width:520px;margin-top:12px}
+.form label{display:grid;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+.form input,.form select{padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg)}
+.msg{color:var(--bad);font-size:13px;min-height:1.2em;margin:0}
+.games{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.gopt{border:1px solid var(--line);border-radius:12px;padding:10px;background:transparent;text-align:left}
+.gopt.on{border-color:var(--accent);background:var(--soft)}
+.gopt b{display:block}.gopt small{color:var(--muted)}
+.sess{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid var(--line);padding:10px 0}
+.codeBig{font-family:"Space Grotesk",Inter,sans-serif;font-size:54px;font-weight:700;letter-spacing:.12em;color:var(--accent);line-height:1}
+.kpis{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:8px 14px;min-width:110px}.kpi b{display:block;font-family:"Space Grotesk",Inter,sans-serif;font-size:24px}.kpi span{font-size:12px;color:var(--muted)}
+.dg{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-top:12px}@media (max-width:860px){.dg{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:6px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:600;font-size:12px}td.r,th.r{text-align:right}
+.case{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}.case h4{font-size:13.5px;margin-bottom:6px}
+.hb{display:flex;align-items:center;gap:8px;font-size:12.5px;margin:3px 0}.hb i{display:block;height:8px;border-radius:4px;background:var(--accent2)}.hb .nm{width:150px;flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hidden{display:none!important}
+footer{margin-top:20px;color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="home" href="https://pindotutuko.id/"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span data-t="home"></span></a>
+    <div class="brand"><h1 data-t="title"></h1><p data-t="tag"></p></div>
+    <button class="lang" id="langBtn">EN</button>
+  </header>
+  <main class="card" id="main"><p class="hint">…</p></main>
+  <footer data-t="foot"></footer>
+</div>
+<script>
+(function(){
+"use strict";
+var API='/kelas/api/index.php?r=';
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+var lang=store.get('klLang')==='en'?'en':'id';
+var GAMES={
+ garis:{url:'/garis-waktu/',id:'Garis Waktu Arsitektur',en:'Architecture Timeline',d:{id:'Susun karya menurut tahun; skor & jumlah benar.',en:'Order works by year; score & correct cards.'}},
+ pintu:{url:'/arsitek-pintu/',id:'Arsitek Pintu',en:'Door Architect',d:{id:'6 level puzzle; bintang dihitung server.',en:'6 puzzle levels; stars counted on the server.'}},
+ krisis:{url:'/krisis-kota/',id:'Krisis Kota',en:'Krisis Kota',d:{id:'Prioritas AHP & keputusan; bobot gabungan kelas.',en:'AHP priorities & decisions; combined class weights.'}},
+ kampung:{url:'/kampung-brantas/',id:'Kampung Brantas',en:'Kampung Brantas',d:{id:'8 tahun penataan; langkah diulang di server.',en:'8 years of planning; moves replayed on the server.'}}};
+var CRIT={id:['Lingkungan','Ekonomi','Keadilan sosial','Warisan budaya','Hemat anggaran'],en:['Environment','Economy','Social equity','Cultural heritage','Fiscal prudence']};
+var ROLE={mayor:{id:'Wali kota',en:'Mayor'},dev:{id:'Pengembang',en:'Developer'},res:{id:'Perwakilan warga',en:'Residents’ rep.'},act:{id:'Pegiat lingkungan & budaya',en:'Env. & heritage activist'}};
+var SCEN={id:['Banjir bantaran','Gedung tua vs. mal','Kemacetan koridor','TPA penuh','Panas perkotaan','PKL alun-alun'],en:['Riverbank floods','Old building vs. mall','Corridor congestion','Full landfill','Urban heat','Square vendors']};
+var T={
+ id:{home:"Beranda",title:"Ruang Dosen · Gim Kelas",tag:"Buat sesi kuis kelas untuk gim pindotutuko.id dan pantau rekap per sesi",foot:"Rekap per sesi; skor dihitung ulang di server. Detektif Ruang punya ruang dosennya sendiri. Dikembangkan oleh: Pindo Tutuko.",
+  loginNeed:"Halaman ini hanya untuk dosen yang sudah masuk ke pindotutuko.id.",loginGo:"Masuk ke situs",noCap:"Akun Anda ({n}) belum berhak membuat sesi. Minta admin memberi peran Penulis/Editor.",hello:"Masuk sebagai {n}.",
+  newH:"Sesi baru",game:"Gim",fTitle:"Nama kelas / sesi",deck:"Dek kartu",d_all:"Semua karya",d_world:"Dunia",d_indo:"Indonesia + Asia",nCards:"Jumlah kartu",create:"Buat sesi",
+  mine:"Sesi saya",empty:"Belum ada sesi.",open_:"Buka",finished:"selesai",statusOpen:"Sesi dibuka",statusClosed:"Sesi ditutup",
+  detektif:"Detektif Ruang punya ruang dosen sendiri →",
+  code:"Kode sesi",share:"Mahasiswa membuka:",players:"Peserta",done:"Selesai",avg:"Rata-rata skor",refresh:"Perbarui",close:"Tutup sesi",reopen:"Buka lagi",csvCopy:"Salin CSV",csvDl:"Unduh CSV",del:"Hapus sesi",delSure:"Klik lagi untuk menghapus",back:"← Sesi lain",
+  lead:"Peringkat",name:"Nama",nim:"NIM",score:"Skor",time:"Waktu",playing:"bermain…",none:"Belum ada peserta.",copied:"Tersalin ✓",copyFail:"Gagal menyalin",
+  c_correct:"Benar",c_stars:"Bintang",c_solved:"Level",c_city:"Indeks kota",c_align:"Selaras AHP",c_cr:"CR",c_role:"Peran",c_sub:"Akses/Banjir/Panas/Hunian/Fasilitas",
+  classW:"Bobot prioritas gabungan kelas (rerata geometrik)",picksH:"Pilihan per krisis",
+  e_login_required:"Silakan masuk ke situs terlebih dahulu.",e_bad_nonce:"Sesi login kedaluwarsa; muat ulang halaman.",e_forbidden:"Anda tidak berhak membuka sesi ini.",e_not_found:"Sesi tidak ditemukan.",e_title_required:"Nama kelas wajib diisi.",e_rate_limited:"Terlalu banyak sesi dibuat hari ini.",e_net:"Koneksi bermasalah."},
+ en:{home:"Home",title:"Lecturer Room · Class Games",tag:"Create class quiz sessions for pindotutuko.id games and follow the per-session recap",foot:"Per-session recap; scores are recomputed on the server. Detektif Ruang has its own lecturer room. Developed by: Pindo Tutuko.",
+  loginNeed:"This page is only for lecturers signed in to pindotutuko.id.",loginGo:"Sign in to the site",noCap:"Your account ({n}) cannot create sessions yet. Ask the admin for an Author/Editor role.",hello:"Signed in as {n}.",
+  newH:"New session",game:"Game",fTitle:"Class / session name",deck:"Card deck",d_all:"All works",d_world:"World",d_indo:"Indonesia + Asia",nCards:"Number of cards",create:"Create session",
+  mine:"My sessions",empty:"No sessions yet.",open_:"Open",finished:"finished",statusOpen:"Session open",statusClosed:"Session closed",
+  detektif:"Detektif Ruang has its own lecturer room →",
+  code:"Session code",share:"Students open:",players:"Players",done:"Finished",avg:"Average score",refresh:"Refresh",close:"Close session",reopen:"Reopen",csvCopy:"Copy CSV",csvDl:"Download CSV",del:"Delete session",delSure:"Click again to delete",back:"← Other sessions",
+  lead:"Leaderboard",name:"Name",nim:"ID",score:"Score",time:"Time",playing:"playing…",none:"No players yet.",copied:"Copied ✓",copyFail:"Copy failed",
+  c_correct:"Correct",c_stars:"Stars",c_solved:"Levels",c_city:"City index",c_align:"AHP aligned",c_cr:"CR",c_role:"Role",c_sub:"Access/Flood/Heat/Housing/Facilities",
+  classW:"Combined class priority weights (geometric mean)",picksH:"Choices per crisis",
+  e_login_required:"Please sign in to the site first.",e_bad_nonce:"Login session expired; reload the page.",e_forbidden:"You are not allowed to open this session.",e_not_found:"Session not found.",e_title_required:"Class name is required.",e_rate_limited:"Too many sessions created today.",e_net:"Connection problem."}};
+function t(k,v){var s=T[lang][k]!=null?T[lang][k]:k;if(v)for(var p in v)s=s.split('{'+p+'}').join(v[p]);return s}
+function err(e){return T[lang]['e_'+e]||t('e_net')}
+var $=function(id){return document.getElementById(id)};
+function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function fmt(n,d){return Number(n).toLocaleString(lang==='id'?'id-ID':'en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
+function mmss(x){if(x==null)return '—';x=Math.round(x);return Math.floor(x/60)+':'+String(x%60).padStart(2,'0')}
+function api(r,d){var o={method:d?'POST':'GET',headers:{},cache:'no-store',credentials:'same-origin'};if(d){o.headers['Content-Type']='application/json';d.nonce=st.who&&st.who.nonce;o.body=JSON.stringify(d)}
+  return fetch(API+r,o).then(function(x){return x.json().catch(function(){return {ok:false,error:'net'}})},function(){return {ok:false,error:'net'}})}
+var st={who:null,game:store.get('klGame')||'garis',view:'home',code:null,data:null,poll:null};
+function gname(g){return GAMES[g]?GAMES[g][lang]:g}
+function setLine(x){if(x.game==='garis'&&x.settings)return t('d_'+x.settings.deck)+' · '+x.settings.n+' '+(lang==='id'?'kartu':'cards');return ''}
+function home(){clearInterval(st.poll);st.view='home';var m=$('main');m.innerHTML='<p class="hint">…</p>';
+  api('whoami').then(function(w){st.who=w.ok?w:null;
+    if(!w.ok){m.innerHTML='<p class="msg">'+err(w.error)+'</p>';return}
+    if(!w.logged){m.innerHTML='<p>'+t('loginNeed')+'</p><a class="btn" href="'+esc(w.login)+'">'+t('loginGo')+'</a>';return}
+    if(!w.can){m.innerHTML='<p class="msg">'+t('noCap',{n:esc(w.name)})+'</p>';return}
+    var dk=w.decks||{all:35,world:25,indo:17};
+    m.innerHTML='<p class="hint">'+t('hello',{n:esc(w.name)})+'</p><h2 style="margin-top:6px">'+t('newH')+'</h2>'+
+     '<div class="games" style="margin-top:10px">'+Object.keys(GAMES).map(function(g){return '<button class="gopt'+(st.game===g?' on':'')+'" data-g="'+g+'"><b>'+esc(gname(g))+'</b><small>'+esc(GAMES[g].d[lang])+'</small></button>'}).join('')+'</div>'+
+     '<form class="form" id="cf"><label>'+t('fTitle')+'<input id="fT" maxlength="80" required></label>'+
+     (st.game==='garis'?'<div class="row" style="gap:10px"><label style="flex:1">'+t('deck')+'<select id="fD">'+['all','world','indo'].map(function(d){return '<option value="'+d+'">'+t('d_'+d)+' ('+dk[d]+')</option>'}).join('')+'</select></label><label style="flex:1">'+t('nCards')+'<input id="fN" type="number" min="5" max="35" value="20"></label></div>':'')+
+     '<div class="row"><button class="btn" type="submit">'+t('create')+'</button></div><p class="msg" id="cm"></p></form>'+
+     '<p style="margin-top:10px"><a href="/detektif-ruang/#dosen" style="color:var(--accent)">'+t('detektif')+'</a></p>'+
+     '<h3 style="margin-top:18px">'+t('mine')+'</h3><div id="list"><p class="hint">…</p></div>';
+    m.querySelectorAll('[data-g]').forEach(function(b){b.onclick=function(){st.game=b.getAttribute('data-g');store.set('klGame',st.game);home()}});
+    $('cf').onsubmit=function(e){e.preventDefault();var s={};if(st.game==='garis'){s.deck=$('fD').value;s.n=+$('fN').value}
+      api('create',{game:st.game,title:$('fT').value,settings:s}).then(function(r){if(!r.ok){$('cm').textContent=err(r.error);return}dash(r.code)})};
+    api('mine',{}).then(function(r){var L=$('list');if(!r.ok){L.innerHTML='<p class="msg">'+err(r.error)+'</p>';return}
+      L.innerHTML=r.sessions.length?r.sessions.map(function(x){return '<div class="sess"><span><b>'+esc(x.code)+'</b> · '+esc(x.title)+'<br><span class="hint">'+esc(gname(x.game))+(setLine(x)?' · '+esc(setLine(x)):'')+' · '+x.done+'/'+x.players+' '+t('finished')+' · '+t(x.open?'statusOpen':'statusClosed')+'</span></span><button class="btn ghost" data-c="'+esc(x.code)+'">'+t('open_')+'</button></div>'}).join(''):'<p class="hint">'+t('empty')+'</p>';
+      L.querySelectorAll('[data-c]').forEach(function(b){b.onclick=function(){dash(b.getAttribute('data-c'))}})})})}
+function dash(code){st.view='dash';st.code=code;$('main').innerHTML='<p class="hint">…</p>';load();clearInterval(st.poll);st.poll=setInterval(function(){if(st.view==='dash')load()},5000)}
+function load(){api('recap',{code:st.code}).then(function(r){if(!r.ok){$('main').innerHTML='<p class="msg">'+err(r.error)+'</p><button class="btn ghost" id="bk">'+t('back')+'</button>';$('bk').onclick=home;return}st.data=r;render()})}
+function cols(g){return g==='garis'?[t('c_correct')]:g==='pintu'?[t('c_stars'),t('c_solved')]:g==='krisis'?[t('c_role'),t('c_align'),t('c_cr')]:[t('c_sub')]}
+function cells(g,res){if(!res)return cols(g).map(function(){return ''});
+  if(g==='garis')return [res.correct+'/'+res.placed];
+  if(g==='pintu')return [res.stars+'/18',res.solved+'/6'];
+  if(g==='krisis')return [esc((ROLE[res.role]||{})[lang]||res.role),res.align+'/6',fmt(Math.max(0,res.CR),3)];
+  return [res.acc+' / '+res.fld+' / '+res.hsc+' / '+res.home+' / '+res.fac]}
+function render(){var r=st.data,g=r.game,done=r.players.filter(function(p){return p.done}),avg=done.length?done.reduce(function(a,p){return a+p.score},0)/done.length:0;
+  var link=location.origin+GAMES[g].url+'?kode='+r.code;
+  var rows=r.players.map(function(p,i){return '<tr><td>'+(p.done?i+1:'')+'</td><td>'+esc(p.name)+'</td><td>'+esc(p.nim)+'</td><td class="r"><b>'+(p.done?p.score:'<span class="hint">'+t('playing')+'</span>')+'</b></td>'+cells(g,p.done?p.result:null).map(function(c){return '<td>'+c+'</td>'}).join('')+'<td class="r">'+(p.done?mmss(p.secs):'')+'</td></tr>'}).join('');
+  var extra='';
+  if(g==='krisis'){if(r.classAhp)extra+='<h3 style="font-size:15px;margin:6px 0">'+t('classW')+'</h3>'+r.classAhp.w.map(function(v,i){return '<div class="hb"><span class="nm">'+CRIT[lang][i]+'</span><i style="width:'+Math.round(v*260)+'px"></i><span>'+fmt(v*100,1)+'%</span></div>'}).join('')+'<p class="hint">CR '+fmt(Math.max(0,r.classAhp.CR),3)+'</p>';
+    var cnt={};done.forEach(function(p){(p.result.log||[]).forEach(function(l){cnt[l.s]=cnt[l.s]||[0,0,0];cnt[l.s][l.pick]++})});
+    extra+='<h3 style="font-size:15px;margin:12px 0 6px">'+t('picksH')+'</h3>'+Object.keys(cnt).map(function(s){var c=cnt[s],mx=Math.max.apply(null,c)||1;return '<div class="case"><h4>'+SCEN[lang][s]+'</h4>'+c.map(function(n,i){return '<div class="hb"><span class="nm">'+'ABC'[i]+'</span><i style="width:'+Math.round(160*n/mx)+'px"></i><span>'+n+'</span></div>'}).join('')+'</div>'}).join('')}
+  $('main').innerHTML='<div class="row" style="justify-content:space-between"><div><h2>'+esc(r.title)+'</h2><span class="hint">'+esc(gname(g))+(setLine(r)?' · '+esc(setLine(r)):'')+' · '+t(r.open?'statusOpen':'statusClosed')+'</span></div><button class="btn ghost" id="bk">'+t('back')+'</button></div>'+
+   '<div class="row" style="margin-top:12px;gap:18px"><div><div class="hint">'+t('code')+'</div><div class="codeBig">'+esc(r.code)+'</div></div><div><div class="hint">'+t('share')+'</div><div style="font-weight:600;word-break:break-all">'+esc(link)+'</div></div></div>'+
+   '<div class="kpis"><div class="kpi"><b>'+r.players.length+'</b><span>'+t('players')+'</span></div><div class="kpi"><b>'+done.length+'</b><span>'+t('done')+'</span></div><div class="kpi"><b>'+fmt(avg,1)+'</b><span>'+t('avg')+'</span></div></div>'+
+   '<div class="row"><button class="btn ghost" id="rf">'+t('refresh')+'</button><button class="btn ghost" id="tg">'+t(r.open?'close':'reopen')+'</button><button class="btn ghost" id="cc">'+t('csvCopy')+'</button><button class="btn ghost" id="cd">'+t('csvDl')+'</button><button class="btn ghost" id="dl" style="color:var(--bad)">'+t('del')+'</button></div>'+
+   '<div class="dg"><div style="overflow-x:auto"><h3 style="font-size:15px;margin:6px 0">'+t('lead')+'</h3><table><thead><tr><th>#</th><th>'+t('name')+'</th><th>'+t('nim')+'</th><th class="r">'+t('score')+'</th>'+cols(g).map(function(c){return '<th>'+c+'</th>'}).join('')+'<th class="r">'+t('time')+'</th></tr></thead><tbody>'+(rows||'<tr><td colspan="8" class="hint">'+t('none')+'</td></tr>')+'</tbody></table></div><div>'+extra+'</div></div>';
+  $('bk').onclick=home;$('rf').onclick=load;$('tg').onclick=function(){api('toggle',{code:r.code,open:!r.open}).then(load)};
+  $('dl').onclick=function(){var b=this;if(!b.dataset.arm){b.dataset.arm='1';b.textContent=t('delSure');setTimeout(function(){if(b.isConnected){delete b.dataset.arm;b.textContent=t('del')}},4000);return}api('remove',{code:r.code}).then(home)};
+  $('cc').onclick=function(){var b=this;try{navigator.clipboard.writeText(csv(r)).then(function(){b.textContent=t('copied')},function(){b.textContent=t('copyFail')})}catch(e){b.textContent=t('copyFail')}};
+  $('cd').onclick=function(){var bl=new Blob(['﻿'+csv(r)],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='kelas-'+r.game+'-'+r.code+'.csv';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)}}
+function csv(r){var q=function(v){v=v==null?'':String(v).replace(/<[^>]+>/g,'');return /[",\n;]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  var head=['rank',t('name'),t('nim'),t('score')].concat(cols(r.game)).concat(['secs']);if(r.game==='krisis')head=head.concat(CRIT[lang].map(function(c){return 'w_'+c}));
+  var lines=[head.map(q).join(',')];r.players.forEach(function(p,i){var row=[p.done?i+1:'',p.name,p.nim,p.done?p.score:''].concat(cells(r.game,p.done?p.result:null)).concat([p.done?p.secs:'']);
+    if(r.game==='krisis')row=row.concat(p.done&&p.result.w?p.result.w.map(function(v){return (v*100).toFixed(1)}):['','','','','']);lines.push(row.map(q).join(','))});return lines.join('\n')}
+function applyStatic(){document.documentElement.lang=lang;document.title=t('title');document.querySelectorAll('[data-t]').forEach(function(n){n.textContent=t(n.getAttribute('data-t'))});$('langBtn').textContent=lang==='id'?'EN':'ID'}
+$('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('klLang',lang);applyStatic();if(st.view==='dash'&&st.data)render();else home()};
+applyStatic();home();
+})();
+</script>
+</body>
+</html>

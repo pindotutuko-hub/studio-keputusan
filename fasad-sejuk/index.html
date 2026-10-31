@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fasad Sejuk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3efe7;--card:#fffdf9;--ink:#1f1c18;--muted:#6d655a;--line:#ddd3c4;--soft:#efe8dc;--accent:#c2410c;--accentSoft:#fbe7dc;--ok:#2f7d4f;--okSoft:#e1f1e6;--bad:#a33a2a;--badSoft:#f6e1dc;--warn:#b7791f;
+  --sky:#dbe9f3;--glass:#8fb8d6;--wall:#e9dfcf;--shadow:0 1px 2px rgba(40,30,20,.06),0 8px 24px rgba(40,30,20,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#15130f;--card:#1f1c17;--ink:#f2ece2;--muted:#a69d8f;--line:#38322a;--soft:#2a261f;--accent:#f39a6b;--accentSoft:#3a2618;--ok:#6cc58f;--okSoft:#1c3326;--bad:#ef8a78;--badSoft:#3a2420;--warn:#e3b45c;
+  --sky:#1d2a35;--glass:#4f7c9c;--wall:#3a342b;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25)}}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:14.5px/1.5 Inter,system-ui,sans-serif}
+h1,h2,h3,h4{font-family:"Space Grotesk",Inter,system-ui,sans-serif;margin:0;letter-spacing:-.01em}
+button,select,input{font:inherit;color:inherit}button{cursor:pointer}
+.wrap{max-width:1240px;margin:0 auto;padding:16px 16px 40px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.home{display:inline-flex;align-items:center;gap:4px;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 12px 7px 8px;font-weight:700;font-size:13px}
+.logo{width:42px;height:42px;border-radius:12px;background:#c2410c;display:grid;place-items:center;flex:none}
+.brand h1{font-size:22px}.brand p{margin:0;color:var(--muted);font-size:13px}
+.hud{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;display:flex;gap:6px;align-items:center}.pill b{font-family:"Space Grotesk",Inter,sans-serif;font-size:15px}
+.lang{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.intro{padding:20px 22px;margin-bottom:12px}.intro h2{font-size:22px}
+.levels{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.lv{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:6px 10px;font-size:13px;font-weight:600;text-align:left}
+.lv.on{border-color:var(--accent);background:var(--accentSoft)}.lv small{display:block;color:var(--muted);font-weight:500;font-size:11.5px}.lv .st{color:#d29a1e;letter-spacing:1px}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:16px;align-items:start}@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.faces{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}@media (max-width:620px){.faces{grid-template-columns:1fr}}
+.face{padding:12px}
+.fh{display:flex;justify-content:space-between;align-items:baseline;gap:6px}.fh h3{font-size:16px}.fh .v{font-family:"Space Grotesk",Inter,sans-serif;font-weight:700}
+.elev{width:100%;height:auto;display:block;border-radius:10px;margin:8px 0}
+.ctl{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;font-size:12.5px}
+.ctl label{color:var(--muted);font-weight:600}
+.ctl select,.ctl input[type=range]{width:100%}
+.ctl select{padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg)}
+input[type=range]{accent-color:var(--accent)}
+.side{display:flex;flex-direction:column;gap:12px}.panel{padding:14px 16px}.panel h3{font-size:15px;margin-bottom:8px}
+.gauge{font-family:"Space Grotesk",Inter,sans-serif;font-size:46px;font-weight:700;line-height:1}
+.gbar{height:12px;border-radius:7px;background:var(--soft);position:relative;overflow:hidden;margin:8px 0 4px}
+.gbar i{position:absolute;left:0;top:0;bottom:0;border-radius:7px;transition:width .3s}
+.gbar s{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink)}
+.req{display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.req i{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:12px;background:var(--badSoft);color:var(--bad)}.req.ok i{background:var(--okSoft);color:var(--ok)}
+.req small{display:block;color:var(--muted);font-size:12px}
+.win{border-radius:14px;padding:12px 14px;background:var(--okSoft);margin-top:10px}.stars{color:#d29a1e;font-size:22px;letter-spacing:3px}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:12px;padding:10px 15px;font-weight:700}@media (prefers-color-scheme:dark){.btn{color:#1f120a}}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.hint{color:var(--muted);font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}th,td{padding:4px 5px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}th{color:var(--muted);font-weight:600}
+details{font-size:12.5px;color:var(--muted)}details summary{cursor:pointer;color:var(--ink);font-weight:600}
+footer{margin-top:20px;color:var(--muted);font-size:12.5px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}footer a{color:var(--muted)}
+.mbar{display:none}@media (max-width:900px){.mbar{display:flex;position:fixed;left:10px;right:10px;bottom:10px;z-index:5;background:var(--ink);color:var(--card);border-radius:14px;padding:10px 14px;justify-content:space-between;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.25)}.wrap{padding-bottom:80px}}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="home" href="https://pindotutuko.id/"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span data-t="home"></span></a>
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="12" height="14"/><path d="M8 11h2M12 11h2M8 15h2M12 15h2"/><circle cx="19" cy="5" r="2.5"/><path d="M19 1v1M23 5h-1M21.8 2.2l-.7.7"/></svg></div>
+    <div class="brand"><h1>Fasad Sejuk</h1><p data-t="tag"></p></div>
+    <div class="hud"><div class="pill">OTTV <b id="hO">–</b></div><div class="pill"><span data-t="starsT"></span> <b id="hS">0</b></div><button class="lang" id="langBtn">EN</button></div>
+  </header>
+  <section class="card intro"><h2 data-t="introH"></h2><p class="hint" style="margin:6px 0 0" data-t="introP"></p></section>
+  <div class="levels" id="levels"></div>
+  <section class="grid">
+    <div><div class="row" style="justify-content:space-between;margin:0 2px 8px"><h2 id="lvTitle" style="font-size:18px"></h2><label class="hint"><input type="checkbox" id="sync"> <span data-t="sync"></span></label></div><div class="faces" id="faces"></div></div>
+    <div class="side">
+      <div class="card panel"><h3 data-t="sumH"></h3><div class="gauge" id="gauge"></div><div class="gbar"><i id="gfill"></i><s id="gmark"></s></div><div class="hint" id="glab"></div>
+        <div id="reqs" style="margin-top:8px"></div><div id="win"></div></div>
+      <div class="card panel"><h3 data-t="tabH"></h3><div style="overflow-x:auto"><table id="tab"></table></div>
+        <details style="margin-top:8px"><summary data-t="how"></summary><div id="howTxt"></div></details></div>
+    </div>
+  </section>
+  <div class="mbar" id="mbar"></div>
+  <footer><span data-t="ref"></span><span><span data-t="by"></span> <a href="https://pindotutuko.id" target="_blank" rel="noopener">pindotutuko.id</a></span></footer>
+</div>
+<script>
+(function(){
+"use strict";
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+var lang=store.get('fsLang')==='en'?'en':'id';
+var T={
+ id:{home:"Beranda",tag:"Gim rancang fasad hemat energi · OTTV menurut rumus SNI",starsT:"Bintang",
+  introH:"Turunkan beban panas fasad sampai OTTV ≤ 35 W/m²",introP:"Atur rasio jendela (WWR), jenis kaca, peneduh, dinding, dan warna cat di tiap sisi gedung. OTTV dihitung dengan rumus SNI 6389; batas maksimum 35 W/m². Penuhi juga keinginan klien dan anggaran.",
+  sync:"Samakan pengaturan semua sisi",sumH:"OTTV gedung",tabH:"Rincian per sisi",how:"Rumus & nilai",
+  limit:"batas 35 W/m²",wwr:"WWR",glass:"Kaca",shade:"Peneduh",wall:"Dinding",paint:"Cat",area:"luas {a} m²",
+  r_ottv:"OTTV ≤ 35 W/m²",r_wwrAvg:"WWR rata-rata ≥ {v}% (permintaan klien: pandangan & cahaya)",r_wwrMin:"WWR tiap sisi ≥ {v}% (permintaan klien: ‘menara kaca’)",r_budget:"Biaya ≤ anggaran {b}",
+  now:"sekarang: {v}",cost:"Biaya {c} / {b}",
+  solved:"Terpenuhi!",s2:"★★ bila OTTV ≤ 30",s3:"★★★ bila juga biaya ≤ 85% anggaran",next:"Level berikutnya",level:"Level {n}",
+  thSide:"Sisi",thSF:"SF",thCond:"Dinding",thSol:"Radiasi kaca",thCondG:"Konduksi kaca",thO:"OTTVᵢ",
+  g0:"Bening 6 mm",g1:"Berwarna (tinted)",g2:"Reflektif",g3:"Ganda low-E",sh0:"Tanpa",sh1:"Sirip/overhang sedang",sh2:"Overhang dalam",w0:"Bata ringan 10 cm",w1:"Bata merah ½ bata",w2:"Beton 15 cm",p0:"Putih kilap",p1:"Putih semi kilap",p2:"Abu-abu tua",p3:"Hitam merata",
+  howTxt:"<p>OTTVᵢ = α·Uw·(1 − WWR)·TDek + SC·WWR·SF + Uf·WWR·ΔT; OTTV = Σ(OTTVᵢ·Aᵢ)/ΣAᵢ; ΔT = 5 K.</p><p>SF (W/m²) orientasi U 130, TL 113, T 112, TG 97, S 97, BD 176, B 243, BL 211 — tabel data radiasi Jakarta (SNI 03-6389-2000). TDek: 15 K (massa dinding < 125 kg/m²), 12 K (125–195), 10 K (> 195). α cat: tabel SNI 6389:2020.</p><p>Nilai SC/U kaca, faktor peneduh, U & massa dinding, dan biaya adalah <b>nilai contoh untuk latihan</b>, bukan data produk. Untuk desain nyata gunakan data pabrikan dan tabel SNI lengkap.</p>",
+  ref:"Rumus & batas OTTV: SNI 6389:2020/SNI 6389:2011 (BSN); SF Jakarta: SNI 03-6389-2000. Nilai material = contoh latihan.",by:"Dikembangkan oleh: Pindo Tutuko ·",
+  dir:{U:"Utara",TL:"Timur laut",T:"Timur",TG:"Tenggara",S:"Selatan",BD:"Barat daya",B:"Barat",BL:"Barat laut"}},
+ en:{home:"Home",tag:"An energy-efficient façade design game · OTTV by the SNI formula",starsT:"Stars",
+  introH:"Cut façade heat gain until OTTV ≤ 35 W/m²",introP:"Set the window-to-wall ratio (WWR), glass, shading, wall and paint on each side of the building. OTTV is computed with the SNI 6389 formula; the maximum is 35 W/m². Also meet the client’s wishes and the budget.",
+  sync:"Apply settings to all sides",sumH:"Building OTTV",tabH:"Breakdown per side",how:"Formula & values",
+  limit:"limit 35 W/m²",wwr:"WWR",glass:"Glass",shade:"Shading",wall:"Wall",paint:"Paint",area:"area {a} m²",
+  r_ottv:"OTTV ≤ 35 W/m²",r_wwrAvg:"Average WWR ≥ {v}% (client wish: views & daylight)",r_wwrMin:"WWR on every side ≥ {v}% (client wish: ‘glass tower’)",r_budget:"Cost ≤ budget {b}",
+  now:"now: {v}",cost:"Cost {c} / {b}",
+  solved:"Requirements met!",s2:"★★ if OTTV ≤ 30",s3:"★★★ if also cost ≤ 85% of budget",next:"Next level",level:"Level {n}",
+  thSide:"Side",thSF:"SF",thCond:"Wall",thSol:"Glass solar",thCondG:"Glass conduction",thO:"OTTVᵢ",
+  g0:"Clear 6 mm",g1:"Tinted",g2:"Reflective",g3:"Double low-E",sh0:"None",sh1:"Medium fins/overhang",sh2:"Deep overhang",w0:"AAC block 10 cm",w1:"Half-brick clay wall",w2:"Concrete 15 cm",p0:"Gloss white",p1:"Semi-gloss white",p2:"Dark grey",p3:"Flat black",
+  howTxt:"<p>OTTVᵢ = α·Uw·(1 − WWR)·TDek + SC·WWR·SF + Uf·WWR·ΔT; OTTV = Σ(OTTVᵢ·Aᵢ)/ΣAᵢ; ΔT = 5 K.</p><p>SF (W/m²) by orientation N 130, NE 113, E 112, SE 97, S 97, SW 176, W 243, NW 211 — Jakarta radiation table (SNI 03-6389-2000). TDek: 15 K (wall mass < 125 kg/m²), 12 K (125–195), 10 K (> 195). Paint α: SNI 6389:2020 table.</p><p>Glass SC/U, shading factors, wall U & mass, and costs are <b>example values for practice</b>, not product data. For real design use manufacturer data and the full SNI tables.</p>",
+  ref:"OTTV formula & limit: SNI 6389:2020/SNI 6389:2011 (BSN); Jakarta SF: SNI 03-6389-2000. Material values are practice examples.",by:"Developed by: Pindo Tutuko ·",
+  dir:{U:"North",TL:"North-east",T:"East",TG:"South-east",S:"South",BD:"South-west",B:"West",BL:"North-west"}}
+};
+function t(k,v){var s=T[lang][k]!=null?T[lang][k]:k;if(v)for(var p in v)s=s.split('{'+p+'}').join(v[p]);return s}
+var $=function(id){return document.getElementById(id)};
+function fmt(n,d){return Number(n).toLocaleString(lang==='id'?'id-ID':'en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
+
+/* SNI values (verified) */
+var SF={U:130,TL:113,T:112,TG:97,S:97,BD:176,B:243,BL:211};          // Jakarta, SNI 03-6389-2000
+var ALPHA=[.25,.30,.91,.95];                                          // SNI 6389:2020 paint table
+function tdek(mass){return mass<125?15:mass<=195?12:10}               // SNI TDek by wall mass
+var DT=5,LIMIT=35;
+/* Practice example values (not product data) */
+var GLASS=[{sc:.95,u:5.8,c:1.0},{sc:.70,u:5.8,c:1.3},{sc:.45,u:5.6,c:1.6},{sc:.35,u:1.8,c:2.6}];
+var SHADE=[{f:1,c:0},{f:.75,c:.5},{f:.55,c:.9}];
+var WALL=[{u:1.1,m:70,c:.6},{u:2.8,m:230,c:.5},{u:3.4,m:345,c:.8}];
+var PAINT_C=.05;
+var LEVELS=[
+ {title:{id:'Kantor memanjang U–S',en:'Office, long sides N–S'},faces:[['U',600],['T',240],['S',600],['B',240]],req:{wwrAvg:30},budget:1700},
+ {title:{id:'Sisi panjang ke barat',en:'Long side facing west'},faces:[['U',240],['T',600],['S',240],['B',600]],req:{wwrAvg:30},budget:1720},
+ {title:{id:'Klien ingin menara kaca',en:'The client wants a glass tower'},faces:[['U',600],['T',240],['S',600],['B',240]],req:{wwrMin:50},budget:3150},
+ {title:{id:'Tapak diagonal',en:'Diagonal site'},faces:[['TL',500],['TG',300],['BD',500],['BL',300]],req:{wwrAvg:35},budget:1850}
+];
+function calc(L,cfg){var sumA=0,sumO=0,cost=0,wsum=0,wmin=100,rows=[];
+  L.faces.forEach(function(f,i){var c=cfg[i],w=c.wwr/100,g=GLASS[c.g],s=SHADE[c.sh],wl=WALL[c.w],a=ALPHA[c.p],A=f[1];
+    var cond=a*wl.u*(1-w)*tdek(wl.m),sol=g.sc*s.f*w*SF[f[0]],cg=g.u*w*DT,o=cond+sol+cg;
+    sumA+=A;sumO+=o*A;cost+=A*w*(g.c+s.c)+A*(1-w)*(wl.c+PAINT_C);wsum+=c.wwr*A;wmin=Math.min(wmin,c.wwr);
+    rows.push({dir:f[0],A:A,cond:cond,sol:sol,cg:cg,o:o})});
+  return {ottv:sumO/sumA,cost:Math.round(cost),wwrAvg:wsum/sumA,wwrMin:wmin,rows:rows}}
+function checks(L,R){var out=[{k:'r_ottv',ok:R.ottv<=LIMIT,now:fmt(R.ottv,1)+' W/m²'}];
+  if(L.req.wwrAvg!=null)out.push({k:'r_wwrAvg',v:L.req.wwrAvg,ok:R.wwrAvg>=L.req.wwrAvg-1e-9,now:fmt(R.wwrAvg,1)+'%'});
+  if(L.req.wwrMin!=null)out.push({k:'r_wwrMin',v:L.req.wwrMin,ok:R.wwrMin>=L.req.wwrMin,now:R.wwrMin+'%'});
+  out.push({k:'r_budget',b:L.budget,ok:R.cost<=L.budget,now:R.cost});return out}
+function starsOf(L,R){if(!checks(L,R).every(function(c){return c.ok}))return 0;if(R.ottv>30)return 1;return R.cost<=.85*L.budget?3:2}
+
+var st={i:+(store.get('fsLevel')||0),cfg:null,stars:{},sync:false};try{st.stars=JSON.parse(store.get('fsStars')||'{}')}catch(e){}
+if(!(st.i>=0&&st.i<LEVELS.length))st.i=0;
+function defaultCfg(L){return L.faces.map(function(){return {wwr:50,g:0,sh:0,w:1,p:2}})}
+function load(i){st.i=i;store.set('fsLevel',i);st.cfg=defaultCfg(LEVELS[i]);render()}
+function elev(f,c,o){var w=c.wwr/100,W=200,H=110,floors=4,bays=6,fh=(H-14)/floors,bw=(W-12)/bays;
+  var s='<svg class="elev" viewBox="0 0 '+W+' '+(H+26)+'"><rect width="'+W+'" height="'+(H+26)+'" fill="var(--sky)"/>';
+  var sun=Math.min(1,SF[f]/243),col='rgba(240,160,40,'+(0.25+0.6*sun)+')';
+  s+='<circle cx="'+(W-16)+'" cy="11" r="'+(4+5*sun)+'" fill="'+col+'"/><g transform="translate(0,18)">';
+  var wallCol=['#f4f1ea','#ebe7df','#6b6b6b','#2b2b2b'][c.p];
+  s+='<rect x="6" y="10" width="'+(W-12)+'" height="'+(H-4)+'" fill="'+wallCol+'" stroke="var(--ink)" stroke-width="1"/>';
+  var gc=['#a9cde6','#7fa3a0','#9fb3c8','#b9d8cf'][c.g];
+  for(var fl=0;fl<floors;fl++)for(var b=0;b<bays;b++){var x=6+b*bw,y=12+fl*fh,gw=bw*Math.sqrt(w),gh=(fh-4)*Math.sqrt(w);
+    if(w>0)s+='<rect x="'+(x+(bw-gw)/2)+'" y="'+(y+(fh-4-gh)/2+1)+'" width="'+gw+'" height="'+gh+'" fill="'+gc+'" stroke="#4b6478" stroke-width=".6"/>';
+    if(c.sh>0&&w>0){var d=c.sh===1?2.5:4.5;s+='<rect x="'+(x+(bw-gw)/2-1)+'" y="'+(y+(fh-4-gh)/2-d+1)+'" width="'+(gw+2)+'" height="'+d+'" fill="#7a6a58"/>'}}
+  s+='<rect x="0" y="'+(H+6)+'" width="'+W+'" height="2" fill="var(--muted)"/></g></svg>';return s}
+function sel(name,i,val,n,pref){var o='';for(var k=0;k<n;k++)o+='<option value="'+k+'"'+(k===val?' selected':'')+'>'+t(pref+k)+'</option>';return '<select data-f="'+i+'" data-k="'+name+'">'+o+'</select>'}
+function render(){var L=LEVELS[st.i],R=calc(L,st.cfg),C=checks(L,R),s=starsOf(L,R);
+  if(s>(st.stars[st.i]||0)){st.stars[st.i]=s;store.set('fsStars',JSON.stringify(st.stars))}
+  var tot=0;for(var k in st.stars)tot+=st.stars[k];$('hS').textContent=tot+'/'+(LEVELS.length*3);$('hO').textContent=fmt(R.ottv,1);
+  $('levels').innerHTML=LEVELS.map(function(l,i){var x=st.stars[i]||0;return '<button class="lv'+(i===st.i?' on':'')+'" data-i="'+i+'">'+t('level',{n:i+1})+' <span class="st">'+'★★★'.slice(0,x)+'<span style="opacity:.25">'+'★★★'.slice(0,3-x)+'</span></span><small>'+l.title[lang]+'</small></button>'}).join('');
+  $('levels').querySelectorAll('button').forEach(function(b){b.onclick=function(){load(+b.getAttribute('data-i'))}});
+  $('lvTitle').textContent=L.title[lang];
+  $('faces').innerHTML=L.faces.map(function(f,i){var c=st.cfg[i],o=R.rows[i].o;return '<div class="card face"><div class="fh"><h3>'+t('dir')[f[0]]+'</h3><span class="v" style="color:'+(o>LIMIT?'var(--bad)':'var(--ok)')+'">'+fmt(o,1)+' W/m²</span></div><div class="hint">SF '+SF[f[0]]+' W/m² · '+t('area',{a:f[1]})+'</div>'+elev(f[0],c,o)+
+    '<div class="ctl"><label>'+t('wwr')+' '+c.wwr+'%</label><input type="range" min="0" max="90" step="5" value="'+c.wwr+'" data-f="'+i+'" data-k="wwr"><label>'+t('glass')+'</label>'+sel('g',i,c.g,4,'g')+'<label>'+t('shade')+'</label>'+sel('sh',i,c.sh,3,'sh')+'<label>'+t('wall')+'</label>'+sel('w',i,c.w,3,'w')+'<label>'+t('paint')+'</label>'+sel('p',i,c.p,4,'p')+'</div></div>'}).join('');
+  $('faces').querySelectorAll('[data-f]').forEach(function(el){var ev=el.type==='range'?'input':'change';el.addEventListener(ev,function(){var i=+el.getAttribute('data-f'),k=el.getAttribute('data-k'),v=+el.value;
+    if(st.sync)st.cfg.forEach(function(c){c[k]=v});else st.cfg[i][k]=v;
+    if(el.type==='range'){var keep=document.activeElement===el;render();if(keep){var n=$('faces').querySelector('[data-f="'+i+'"][data-k="wwr"]');if(n)n.focus()}}else render()})});
+  var pct=Math.min(100,R.ottv/70*100);$('gauge').textContent=fmt(R.ottv,1)+' W/m²';$('gauge').style.color=R.ottv<=LIMIT?'var(--ok)':'var(--bad)';
+  $('gfill').style.width=pct+'%';$('gfill').style.background=R.ottv<=30?'var(--ok)':R.ottv<=LIMIT?'var(--warn)':'var(--bad)';$('gmark').style.left=(LIMIT/70*100)+'%';
+  $('glab').textContent=t('limit')+' · '+t('cost',{c:R.cost,b:L.budget});
+  $('reqs').innerHTML=C.map(function(c){return '<div class="req'+(c.ok?' ok':'')+'"><i>'+(c.ok?'✓':'✕')+'</i><span>'+t(c.k,{v:c.v,b:c.b})+'<small>'+t('now',{v:c.now})+'</small></span></div>'}).join('');
+  if(s){var last=st.i===LEVELS.length-1;$('win').innerHTML='<div class="win"><b>'+t('solved')+'</b> <span class="stars">'+'★★★'.slice(0,s)+'<span style="opacity:.25">'+'★★★'.slice(0,3-s)+'</span></span><div class="hint">'+t('s2')+' · '+t('s3')+'</div>'+(last?'':'<div class="row" style="margin-top:8px"><button class="btn" id="nx">'+t('next')+'</button></div>')+'</div>';var nx=$('nx');if(nx)nx.onclick=function(){load(st.i+1);window.scrollTo({top:0,behavior:'smooth'})}}else $('win').innerHTML='';
+  $('tab').innerHTML='<thead><tr><th>'+t('thSide')+'</th><th>'+t('thSF')+'</th><th>'+t('thCond')+'</th><th>'+t('thSol')+'</th><th>'+t('thCondG')+'</th><th>'+t('thO')+'</th></tr></thead><tbody>'+R.rows.map(function(r){return '<tr><td>'+t('dir')[r.dir]+'</td><td>'+SF[r.dir]+'</td><td>'+fmt(r.cond,1)+'</td><td>'+fmt(r.sol,1)+'</td><td>'+fmt(r.cg,1)+'</td><td><b>'+fmt(r.o,1)+'</b></td></tr>'}).join('')+'</tbody>';
+  $('howTxt').innerHTML=t('howTxt');
+  $('mbar').innerHTML='<span>OTTV '+fmt(R.ottv,1)+' W/m² '+(R.ottv<=LIMIT?'✓':'✕')+'</span><span>'+C.filter(function(c){return c.ok}).length+'/'+C.length+' ✓ · '+'★★★'.slice(0,s)+'</span>'}
+function applyStatic(){document.documentElement.lang=lang;document.querySelectorAll('[data-t]').forEach(function(n){n.innerHTML=t(n.getAttribute('data-t'))});$('langBtn').textContent=lang==='id'?'EN':'ID'}
+$('sync').onchange=function(){st.sync=this.checked;if(st.sync){var c0=st.cfg[0];st.cfg=st.cfg.map(function(){return {wwr:c0.wwr,g:c0.g,sh:c0.sh,w:c0.w,p:c0.p}});render()}};
+$('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('fsLang',lang);applyStatic();render()};
+applyStatic();load(st.i);
+window.__FS={LEVELS:LEVELS,calc:calc,checks:checks,starsOf:starsOf,st:function(){return st},load:load,render:render};
+})();
+</script>
+</body>
+</html>

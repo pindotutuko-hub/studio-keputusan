@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="/kelas/kelas-client.js" defer></script>
 <style>
 :root{
   --bg:#f3efe7;--card:#fffdf9;--ink:#1f1c18;--muted:#6d655a;--line:#ddd3c4;
@@ -113,7 +114,7 @@ details{font-size:12.5px;color:var(--muted)}details summary{cursor:pointer;color
       <p class="hint" data-t="introP"></p>
       <ul><li data-t="g1"></li><li data-t="g2"></li><li data-t="g3"></li><li data-t="g4"></li><li data-t="g5"></li></ul>
       <p class="hint" data-t="introNote"></p>
-      <div class="row" style="margin-top:12px"><button class="btn" id="startBtn" data-t="start"></button></div>
+      <div class="row" style="margin-top:12px"><button class="btn" id="startBtn" data-t="start"></button><span id="kelasSlot"></span></div>
       <p class="hint" id="bestLine" style="margin-top:8px"></p>
     </div>
     <svg id="introMap" viewBox="0 0 16 11" style="width:100%;border-radius:12px"></svg>
@@ -210,7 +211,7 @@ var T={
   changeH:"Perubahan",start_:"Awal",end_:"Akhir",
   ref:"Model edukatif disederhanakan. Rujukan integrasi: Hillier & Hanson (1984), The Social Logic of Space, Cambridge University Press. Kampung fiktif.",
   by:"Dikembangkan oleh: Pindo Tutuko ·",
-  pickTool:"Pilih alat, lalu ketuk petak di peta.",home:"Beranda",
+  pickTool:"Pilih alat, lalu ketuk petak di peta.",home:"Beranda",klRes:"Skor {s} · Akses {a} · Banjir {f} · Panas {h} · Hunian {k} · Fasilitas {c}",
   undone:"Langkah dibatalkan.",nothingUndo:"Tidak ada yang bisa dibatalkan tahun ini."
  },
  en:{tag:"A riverside kampung planning strategy game · educational simulation",year:"Year",fund:"Funds",score:"Score",
@@ -256,7 +257,7 @@ var T={
   changeH:"Change",start_:"Start",end_:"End",
   ref:"Simplified educational model. Integration reference: Hillier & Hanson (1984), The Social Logic of Space, Cambridge University Press. Fictional kampung.",
   by:"Developed by: Pindo Tutuko ·",
-  pickTool:"Pick a tool, then tap a tile on the map.",home:"Home",
+  pickTool:"Pick a tool, then tap a tile on the map.",home:"Home",klRes:"Score {s} · Access {a} · Flood {f} · Heat {h} · Housing {k} · Facilities {c}",
   undone:"Step undone.",nothingUndo:"Nothing to undo this year."
  }
 };
@@ -294,13 +295,14 @@ var WALK={R:1,g:1,r:1};
 var EVENTS=['rain','heat','fire','flood','visit','csr','dry','comm'];
 
 var st={};
-function fresh(){
+function fresh(params){
   var g=MAP0.map(function(r){return r.split('')});
   var bio=g.map(function(r){return r.map(function(){return false})});
   var ev=EVENTS.slice();for(var i=ev.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=ev[i];ev[i]=ev[j];ev[j]=x}
   // the first year is never a fire, so the player has a chance to react
   if(ev[0]==='fire'){var k=1+Math.floor(Math.random()*(ev.length-1));ev[0]=ev[k];ev[k]='fire'}
-  st={g:g,bio:bio,year:1,fund:START_FUND,tool:'gang',ov:'none',events:ev,log:[],undo:[],phase:'play',hover:null};
+  if(params)ev=params.events.slice();
+  st={g:g,bio:bio,year:1,fund:START_FUND,tool:'gang',ov:'none',events:ev,log:[],undo:[],phase:'play',hover:null,alog:[],seed:params?params.seed:Math.floor(Math.random()*10000),cls:null};
   st.k0=countKK(g);st.m0=metrics();st.m=st.m0;
 }
 function countKK(g){var n=0;for(var y=0;y<H;y++)for(var x=0;x<W;x++)n+=KK[g[y][x]]||0;return n}
@@ -416,10 +418,10 @@ function apply(x,y){
   st.undo.push({g:st.g.map(function(r){return r.slice()}),bio:st.bio.map(function(r){return r.slice()}),fund:st.fund,log:st.log.length});
   st.fund-=c;
   if(tool.id==='bio')st.bio[y][x]=true;else{st.g[y][x]=tool.to;if(tool.to!=='g'&&tool.to!=='r')st.bio[y][x]=false}
-  st.log.unshift({txt:t('logBuild',{t:t('t_'+tool.id),x:x,y:y}),k:'build'});
+  st.log.unshift({txt:t('logBuild',{t:t('t_'+tool.id),x:x,y:y}),k:'build'});st.alog.push(['a',tool.id,x,y]);
   refresh();
 }
-function undo(){var u=st.undo.pop();if(!u){toast(t('nothingUndo'));return}st.g=u.g;st.bio=u.bio;st.fund=u.fund;st.log=st.log.slice(st.log.length-u.log);refresh();toast(t('undone'))}
+function undo(){var u=st.undo.pop();if(!u){toast(t('nothingUndo'));return}st.alog.pop();st.g=u.g;st.bio=u.bio;st.fund=u.fund;st.log=st.log.slice(st.log.length-u.log);refresh();toast(t('undone'))}
 function showInfo(x,y){var m=st.m,tp=st.g[y][x],parts=[t('infoTile',{x:x,y:y,n:t('tl_'+tp)})];
   if(KK[tp]||tp==='f'){var s=m.hs[y][x];parts.push(s>=1e9?t('iNo'):t('iSteps',{s:s}))}
   if(m.integ[y][x]!=null)parts.push(t('iInt',{v:fmt(m.integ[y][x],2)}));
@@ -432,7 +434,7 @@ function showInfo(x,y){var m=st.m,tp=st.g[y][x],parts=[t('infoTile',{x:x,y:y,n:t
 function runEvent(id){var m=st.m,d=0,res=null;
   if(id==='rain'){d=m.fld<50?-5:2}
   else if(id==='heat'){d=m.hsc<45?-4:0}
-  else if(id==='fire'){if(m.unconn.length){var p=m.unconn[Math.floor(Math.random()*m.unconn.length)];st.g[p[1]][p[0]]='e';res=t('burned',{x:p[0],y:p[1]})}}
+  else if(id==='fire'){if(m.unconn.length){var p=m.unconn[(st.seed+st.year*7)%m.unconn.length];st.g[p[1]][p[0]]='e';res=t('burned',{x:p[0],y:p[1]})}}
   else if(id==='flood'){d=-m.bankKK-(m.fld<40?3:0)}
   else if(id==='visit'){d=m.fac>=60?6:0}
   else if(id==='csr'){d=6}
@@ -444,7 +446,7 @@ function runEvent(id){var m=st.m,d=0,res=null;
 }
 function endYear(){
   if(st.phase!=='play')return;
-  runEvent(st.events[st.year-1]);st.m=metrics();
+  st.alog.push(['y']);runEvent(st.events[st.year-1]);st.m=metrics();
   if(st.year>=YEARS){st.phase='end';refresh();setTimeout(renderEnd,350);return}
   st.year++;st.fund+=INCOME;st.undo=[];st.log.unshift({txt:t('income',{y:st.year,n:INCOME}),k:'good'});refresh();
 }
@@ -467,7 +469,7 @@ function renderInds(){var m=st.m;var rows=[
   $('inds').innerHTML=rows.map(function(r){var d=r[1]-st.m0[{acc:'acc',fld:'fld',heat:'hsc',home:'home',fac:'fac'}[r[0]]];
     return '<div class="ind"><div class="top">'+t('ind_'+r[0])+'<span>'+r[1]+(d?' <small style="display:inline;color:'+(d>0?'var(--ok)':'var(--bad)')+'">('+(d>0?'+':'')+d+')</small>':'')+'</span></div><div class="bar"><i style="width:'+r[1]+'%;background:'+colorFor(r[1])+'"></i></div><small>'+r[2]+'</small></div>'}).join('');
   $('totLine').textContent=t('total',{s:m.total});$('howTxt').innerHTML=t('howTxt')}
-function renderEvent(){var id=st.events[st.year-1];$('eventBox').innerHTML='<div class="hint">'+t('fc')+'</div><b>'+t('ev_'+id)+'</b><p>'+t('evd_'+id)+'</p>';
+function renderEvent(){var id=st.events[st.year-1];$('eventBox').innerHTML=(st.cls&&window.Kelas?Kelas.badge()+'<br>':'')+'<div class="hint">'+t('fc')+'</div><b>'+t('ev_'+id)+'</b><p>'+t('evd_'+id)+'</p>';
   $('endYear').textContent=st.year>=YEARS?t('endGame'):t('endYear',{y:st.year})}
 function renderLog(){$('log').innerHTML=st.log.slice(0,40).map(function(l){return '<li class="'+(l.k==='good'?'good':l.k==='bad'?'badc':'')+'">'+l.txt+'</li>'}).join('')}
 function hud(){$('hYear').textContent=Math.min(st.year,YEARS)+'/'+YEARS;$('hFund').textContent=st.fund;$('hScore').textContent=st.m.total}
@@ -475,23 +477,25 @@ function refresh(){st.m=metrics();drawMap($('map'),true);legend();renderInds();r
 function applyStatic(){document.documentElement.lang=lang;document.querySelectorAll('[data-t]').forEach(function(n){n.innerHTML=t(n.getAttribute('data-t'))});
   $('langBtn').textContent=lang==='id'?'EN':'ID';var b=store.get('kbBest');$('bestLine').textContent=b?t('best',{s:b}):''}
 function show(id){['intro','endBox','game'].forEach(function(x){$(x).classList.toggle('hidden',x!==id)});window.scrollTo(0,0)}
-function start(){fresh();show('game');$('toolHint').textContent='';renderTools();refresh()}
+function start(sess){fresh(sess?sess.params:null);st.cls=sess||null;show('game');$('toolHint').textContent='';renderTools();refresh()}
 function rating(s){return s>=75?'r3':s>=60?'r2':s>=45?'r1':'r0'}
 function renderEnd(){var m=st.m,m0=st.m0,s=m.total,r=rating(s);var b=+(store.get('kbBest')||0);if(s>b)store.set('kbBest',s);
   show('endBox');var rows=[['ind_acc','acc'],['ind_fld','fld'],['ind_heat','hsc'],['ind_home','home'],['ind_fac','fac']];
   $('endBox').innerHTML='<div><h2>'+t('endH')+'</h2><p class="hint">'+t('endTotal')+'</p><div class="big">'+s+' <span style="font-size:20px;color:var(--muted)">/ 100</span></div><p style="font-family:Space Grotesk,Inter,sans-serif;font-size:20px;font-weight:700;margin:8px 0 12px">'+t(r)+'</p>'+
    '<table><thead><tr><th></th><th>'+t('start_')+'</th><th>'+t('end_')+'</th><th>'+t('changeH')+'</th></tr></thead><tbody>'+rows.map(function(x){var d=m[x[1]]-m0[x[1]];return '<tr><td>'+t(x[0])+'</td><td>'+m0[x[1]]+'</td><td><b>'+m[x[1]]+'</b></td><td class="'+(d>0?'good':d<0?'badc':'')+'">'+(d>0?'+':'')+d+'</td></tr>'}).join('')+
    '<tr><td><b>'+t('score')+'</b></td><td>'+m0.total+'</td><td><b>'+m.total+'</b></td><td class="'+(m.total>m0.total?'good':'badc')+'">'+(m.total-m0.total>0?'+':'')+(m.total-m0.total)+'</td></tr></tbody></table>'+
-   '<div class="row" style="margin-top:14px"><button class="btn" id="againBtn">'+t('again')+'</button><button class="btn ghost" id="copyBtn">'+t('copy')+'</button><button class="btn ghost" id="menuBtn">'+t('backMenu')+'</button></div></div>'+
+   '<div id="klBox"></div><div class="row" style="margin-top:14px"><button class="btn" id="againBtn">'+t('again')+'</button><button class="btn ghost" id="copyBtn">'+t('copy')+'</button><button class="btn ghost" id="menuBtn">'+t('backMenu')+'</button></div></div>'+
    '<svg id="endMap" viewBox="0 0 16 11" style="width:100%;border-radius:12px"></svg>';
   drawMap($('endMap'),false);
-  $('againBtn').onclick=start;$('menuBtn').onclick=function(){st.phase='menu';show('intro');applyStatic()};
+  $('againBtn').onclick=function(){if(window.Kelas)Kelas.end();start()};$('menuBtn').onclick=function(){if(window.Kelas)Kelas.end();st.phase='menu';show('intro');applyStatic()};
+  if(st.cls&&window.Kelas)Kelas.submit({log:st.alog},$('klBox'),function(r){return t('klRes',{s:r.total,a:r.acc,f:r.fld,h:r.hsc,k:r.home,c:r.fac})});
   $('copyBtn').onclick=function(){var bt=this,txt=t('shareTxt',{s:s,r:t(r)})+' pindotutuko.id';try{navigator.clipboard.writeText(txt).then(function(){bt.textContent=t('copied')},function(){bt.textContent=t('copyFail')})}catch(e){bt.textContent=t('copyFail')}}}
 
 document.querySelectorAll('[data-ov]').forEach(function(b){b.onclick=function(){st.ov=b.getAttribute('data-ov');document.querySelectorAll('[data-ov]').forEach(function(c){c.classList.toggle('on',c===b)});refresh()}});
-$('undoBtn').onclick=undo;$('endYear').onclick=endYear;$('startBtn').onclick=start;
+$('undoBtn').onclick=undo;$('endYear').onclick=endYear;$('startBtn').onclick=function(){start()};
+window.addEventListener('load',function(){if(window.Kelas)Kelas.init({game:'kampung',lang:function(){return lang},mounts:['kelasSlot'],onStart:function(sess){start(sess)}})});
 $('map').addEventListener('mouseleave',function(){st.hover=null;hl()});
-$('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('kbLang',lang);applyStatic();if(st.phase==='play'&&!$('game').classList.contains('hidden')){$('toolHint').textContent=t('pickTool');renderTools();refresh()}else if(st.phase==='end'&&!$('endBox').classList.contains('hidden'))renderEnd()};
+$('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('kbLang',lang);applyStatic();if(window.Kelas)Kelas.remount();if(st.phase==='play'&&!$('game').classList.contains('hidden')){$('toolHint').textContent=t('pickTool');renderTools();refresh()}else if(st.phase==='end'&&!$('endBox').classList.contains('hidden'))renderEnd()};
 applyStatic();fresh();st.phase='menu';drawMap($('introMap'),false);
 window.__KB={metrics:function(){return st.m},st:function(){return st},apply:apply,endYear:endYear,setTool:function(id){st.tool=id}};
 })();

@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="/kelas/kelas-client.js" defer></script>
 <style>
 :root{
   --bg:#f3efe7;--card:#fffdf9;--ink:#1f1c18;--muted:#6d655a;--line:#ddd3c4;--soft:#efe8dc;
@@ -105,7 +106,7 @@ footer a{color:var(--muted)}
       <ol><li data-t="i1"></li><li data-t="i2"></li><li data-t="i3"></li></ol>
       <div class="drawLabel" data-t="deckH"></div>
       <div class="modes" id="modes"></div>
-      <div class="row" style="margin-top:8px"><button class="btn" id="startBtn" data-t="start"></button></div>
+      <div class="row" style="margin-top:8px"><button class="btn" id="startBtn" data-t="start"></button><span id="kelasSlot"></span></div>
       <p class="hint" id="bestLine" style="margin-top:8px"></p>
     </div>
     <div id="introCards" class="row" style="justify-content:center;gap:12px"></div>
@@ -144,7 +145,7 @@ var T={
   scrollHint:"Geser garis waktu ke samping bila kartunya banyak.",
   endWin:"Semua kartu tersusun!",endLose:"Nyawa habis",endTotal:"Skor",again:"Main lagi",copy:"Salin hasil",copied:"Tersalin ✓",copyFail:"Gagal menyalin",backMenu:"Kembali",
   placed:"Kartu benar",tabYear:"Tahun",tabWork:"Karya",tabArch:"Arsitek",tabMov:"Aliran",
-  shareTxt:"Garis Waktu Arsitektur — skor {s} ({c} kartu benar).",
+  shareTxt:"Garis Waktu Arsitektur — skor {s} ({c} kartu benar).",klRes:"Skor {s} · {c} kartu benar dari {p} yang ditempatkan",
   ref:"Tahun = tahun selesai/diresmikan menurut sumber umum; beberapa karya dibangun bertahun-tahun.",by:"Dikembangkan oleh: Pindo Tutuko ·"},
  en:{home:"Home",title:"Architecture Timeline",tag:"A game of ordering modern architecture by year",lives:"Lives",score:"Score",streak:"Streak",
   introH:"Order 150 years of modern architecture",introP:"Each card is one work of architecture. Its year stays hidden until you place it on the timeline.",
@@ -156,7 +157,7 @@ var T={
   scrollHint:"Scroll the timeline sideways when it gets long.",
   endWin:"Every card placed!",endLose:"Out of lives",endTotal:"Score",again:"Play again",copy:"Copy result",copied:"Copied ✓",copyFail:"Copy failed",backMenu:"Back",
   placed:"Correct cards",tabYear:"Year",tabWork:"Work",tabArch:"Architect",tabMov:"Movement",
-  shareTxt:"Architecture Timeline — score {s} ({c} correct cards).",
+  shareTxt:"Architecture Timeline — score {s} ({c} correct cards).",klRes:"Score {s} · {c} correct of {p} placed",
   ref:"Year = year completed/opened according to common sources; some works took years to build.",by:"Developed by: Pindo Tutuko ·"}
 };
 function t(k,v){var s=T[lang][k]!=null?T[lang][k]:k;if(v)for(var p in v)s=s.split('{'+p+'}').join(v[p]);return s}
@@ -279,19 +280,19 @@ function cardHTML(c,opts){opts=opts||{};return '<div class="gc'+(opts.big?' big'
 var DECKS={all:function(){return CARDS},world:function(){return CARDS.filter(function(c){return c[7]==='w'})},indo:function(){return CARDS.filter(function(c){return c[7]==='a'}).concat(CARDS.filter(function(c){return ['bauh','savo','seag','pomp','bilb','gugn','robi'].indexOf(c[0])>=0}))}};
 var st={deck:store.get('gwDeck')||'all'};if(!DECKS[st.deck])st.deck='all';
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=a[i];a[i]=a[j];a[j]=x}return a}
-function start(){var pool=shuffle(DECKS[st.deck]()).map(function(c){return c[0]});var n=Math.min(20,pool.length);
+function start(sess){st.cls=sess||null;var pool=sess?sess.params.order.slice():shuffle(DECKS[st.deck]()).map(function(c){return c[0]});var n=sess?pool.length:Math.min(20,pool.length);st.slots=[];
   st.draw=pool.slice(0,n);st.line=[st.draw.shift()];st.total=n;st.lives=3;st.score=0;st.streak=0;st.correct=0;st.hist=[];st.last=null;st.phase='play';
   show('game');$('msg').className='msg neutral';$('msg').textContent=t('first');render()}
 function hud(){$('hLives').textContent='♥♥♥'.slice(0,st.lives||0)+'♡♡♡'.slice(0,3-(st.lives||0));$('hScore').textContent=st.score||0;$('hStreak').textContent=st.streak||0}
 function render(){hud();var cur=st.draw[0];
-  $('progress').textContent=t('progress',{n:Math.min(st.total,st.total-st.draw.length+1),t:st.total});
+  $('progress').innerHTML=esc(t('progress',{n:Math.min(st.total,st.total-st.draw.length+1),t:st.total}))+(st.cls&&window.Kelas?' '+Kelas.badge():'');
   $('hand').innerHTML=cur?cardHTML(card(cur),{big:true,hide:true}):'';
   var tl=$('tl'),h='';
   for(var i=0;i<=st.line.length;i++){h+='<div class="slot"><button data-i="'+i+'" aria-label="'+(i)+'" '+(cur?'':'disabled')+'>+</button></div>';
     if(i<st.line.length){var k=st.line[i];h+=cardHTML(card(k),{cls:st.last&&st.last.k===k?(st.last.ok?'right flash':'wrong flash'):''})}}
   tl.innerHTML=h;tl.querySelectorAll('.slot button').forEach(function(b){b.onclick=function(){place(+b.getAttribute('data-i'))}});
   if(st.last){var el=tl.querySelector('[data-k="'+st.last.k+'"]');if(el)el.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'})}}
-function place(i){if(st.phase!=='play'||!st.draw.length)return;var k=st.draw.shift(),c=card(k),y=c.year;
+function place(i){if(st.phase!=='play'||!st.draw.length)return;st.slots.push(i);var k=st.draw.shift(),c=card(k),y=c.year;
   var lo=i>0?card(st.line[i-1]).year:-Infinity,hi=i<st.line.length?card(st.line[i]).year:Infinity,ok=y>=lo&&y<=hi;
   var pos=i;if(!ok){pos=0;while(pos<st.line.length&&card(st.line[pos]).year<=y)pos++}
   st.line.splice(pos,0,k);var bonus=0;
@@ -304,9 +305,10 @@ function place(i){if(st.phase!=='play'||!st.draw.length)return;var k=st.draw.shi
 function renderEnd(){var b=+(store.get('gwBest')||0);if(st.score>b)store.set('gwBest',st.score);show('endBox');var win=st.lives>0;
   var rows=st.line.map(function(k){var c=card(k),h=st.hist.filter(function(x){return x.k===k})[0];return '<tr><td class="r"><b>'+c.year+'</b></td><td>'+esc(c.name)+(h?(h.ok?' <span style="color:var(--ok)">✓</span>':' <span style="color:var(--bad)">✗</span>'):'')+'</td><td>'+esc(c.arch)+'</td><td><span class="mv" style="display:inline-block;border-radius:999px;padding:1px 8px;font-size:11.5px;font-weight:700;color:#fff;background:'+MOV[c.mov].c+'">'+esc(MOV[c.mov][lang])+'</span></td></tr>'}).join('');
   $('endBox').innerHTML='<div><h2>'+t(win?'endWin':'endLose')+'</h2><p class="hint">'+t('endTotal')+'</p><div class="big">'+st.score+'</div><p class="hint">'+t('placed')+': '+st.correct+' / '+st.hist.length+'</p>'+
-   '<div class="row" style="margin-top:14px"><button class="btn" id="againBtn">'+t('again')+'</button><button class="btn ghost" id="copyBtn">'+t('copy')+'</button><button class="btn ghost" id="menuBtn">'+t('backMenu')+'</button></div></div>'+
+   '<div id="klBox"></div><div class="row" style="margin-top:14px"><button class="btn" id="againBtn">'+t('again')+'</button><button class="btn ghost" id="copyBtn">'+t('copy')+'</button><button class="btn ghost" id="menuBtn">'+t('backMenu')+'</button></div></div>'+
    '<div style="max-height:460px;overflow:auto"><table><thead><tr><th class="r">'+t('tabYear')+'</th><th>'+t('tabWork')+'</th><th>'+t('tabArch')+'</th><th>'+t('tabMov')+'</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
-  $('againBtn').onclick=start;$('menuBtn').onclick=function(){st.phase='menu';show('intro');applyStatic()};
+  $('againBtn').onclick=function(){if(window.Kelas)Kelas.end();start()};$('menuBtn').onclick=function(){if(window.Kelas)Kelas.end();st.phase='menu';show('intro');applyStatic()};
+  if(st.cls&&window.Kelas)Kelas.submit({slots:st.slots},$('klBox'),function(r){return esc(t('klRes',{s:r.score,c:r.correct,p:r.placed}))});
   $('copyBtn').onclick=function(){var bt=this;try{navigator.clipboard.writeText(t('shareTxt',{s:st.score,c:st.correct})+' pindotutuko.id').then(function(){bt.textContent=t('copied')},function(){bt.textContent=t('copyFail')})}catch(e){bt.textContent=t('copyFail')}}}
 function show(id){['intro','game','endBox'].forEach(function(x){$(x).classList.toggle('hidden',x!==id)});window.scrollTo(0,0)}
 function renderModes(){$('modes').innerHTML=['all','world','indo'].map(function(d){return '<button class="chip'+(st.deck===d?' on':'')+'" data-d="'+d+'">'+t('d_'+d)+' ('+DECKS[d]().length+')</button>'}).join('');
@@ -314,8 +316,9 @@ function renderModes(){$('modes').innerHTML=['all','world','indo'].map(function(
 function applyStatic(){document.documentElement.lang=lang;document.title=t('title');document.querySelectorAll('[data-t]').forEach(function(n){n.innerHTML=t(n.getAttribute('data-t'))});
   $('langBtn').textContent=lang==='id'?'EN':'ID';var b=store.get('gwBest');$('bestLine').textContent=b?t('best',{s:b}):'';renderModes();
   $('introCards').innerHTML=['savo','istq','bilb'].map(function(k){return cardHTML(card(k))}).join('')}
-$('startBtn').onclick=start;
-$('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('gwLang',lang);applyStatic();if(st.phase==='play'){render();$('msg').className='msg neutral';$('msg').textContent=t('first')}else if(st.phase==='end')renderEnd()};
+$('startBtn').onclick=function(){start()};
+window.addEventListener('load',function(){if(window.Kelas)Kelas.init({game:'garis',lang:function(){return lang},mounts:['kelasSlot'],onStart:function(sess){start(sess)}})});
+$('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('gwLang',lang);applyStatic();if(window.Kelas)Kelas.remount();if(st.phase==='play'){render();$('msg').className='msg neutral';$('msg').textContent=t('first')}else if(st.phase==='end')renderEnd()};
 applyStatic();hud();
 window.__GW={CARDS:CARDS,NOTE:NOTE,MOV:MOV,st:function(){return st},place:place,card:card};
 })();
