@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kampung Brantas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3efe7;--card:#fffdf9;--ink:#1f1c18;--muted:#6d655a;--line:#ddd3c4;
+  --accent:#8a2b2b;--accent2:#b5523b;--accentSoft:#f3e2dc;--ok:#2f7d4f;--okSoft:#e1f1e6;--warn:#b7791f;--warnSoft:#fbf0d9;--bad:#a33a2a;
+  --shadow:0 1px 2px rgba(40,30,20,.06),0 8px 24px rgba(40,30,20,.07);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#15130f;--card:#1f1c17;--ink:#f2ece2;--muted:#a69d8f;--line:#38322a;
+  --accent:#e08a7a;--accent2:#e3a06c;--accentSoft:#3a2420;--ok:#6cc58f;--okSoft:#1c3326;--warn:#e3b45c;--warnSoft:#3a3020;--bad:#ef8a78;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14.5px/1.5 Inter,system-ui,sans-serif}
+h1,h2,h3,h4{font-family:"Space Grotesk",Inter,system-ui,sans-serif;margin:0;letter-spacing:-.01em}
+button{font:inherit;cursor:pointer;color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:16px 16px 40px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.logo{width:42px;height:42px;border-radius:12px;background:#2f6f8f;display:grid;place-items:center;flex:none}
+.brand h1{font-size:22px}.brand p{margin:0;color:var(--muted);font-size:13px}
+.hud{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;display:flex;gap:6px;align-items:center}
+.pill b{font-family:"Space Grotesk",Inter,sans-serif;font-size:15px}
+.lang{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.mapcard{padding:12px}
+.maphead{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:2px 4px 10px}
+.maphead h2{font-size:17px;margin-right:auto}
+.chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:600}
+.chip.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+#map{width:100%;height:auto;display:block;border-radius:12px;touch-action:manipulation;user-select:none}
+.tile{cursor:pointer}
+.legend{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);padding:8px 6px 0;min-height:26px;flex-wrap:wrap}
+.legend .bar{flex:1;height:10px;border-radius:6px;max-width:240px;min-width:120px}
+.info{font-size:12.5px;color:var(--muted);padding:6px 6px 0;min-height:22px}
+.side{display:flex;flex-direction:column;gap:12px}
+.panel{padding:14px 16px}
+.panel h3{font-size:15px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline}
+.tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.tool{display:flex;gap:8px;align-items:center;border:1px solid var(--line);background:transparent;border-radius:12px;padding:7px 8px;text-align:left;font-size:13px}
+.tool.on{border-color:var(--accent);background:var(--accentSoft)}
+.tool svg{width:28px;height:28px;flex:none;border-radius:6px}
+.tool small{display:block;color:var(--muted);font-size:11.5px}
+.tool b{font-weight:600}
+.ind{margin:7px 0}
+.ind .top{display:flex;justify-content:space-between;font-size:13px;font-weight:600}
+.ind .top span{font-family:"Space Grotesk",Inter,sans-serif}
+.ind .bar{height:8px;border-radius:5px;background:var(--line);overflow:hidden;margin-top:3px}
+.ind .bar i{display:block;height:100%;border-radius:5px;transition:width .4s,background .4s}
+.ind small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+.event{border-radius:14px;padding:12px 14px;background:var(--warnSoft)}
+.event b{font-family:"Space Grotesk",Inter,sans-serif}
+.event p{margin:4px 0 0;font-size:13px}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:12px;padding:11px 16px;font-weight:700;font-size:15px}
+@media (prefers-color-scheme:dark){.btn{color:#1a120f}}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.log{font-size:12.5px;max-height:160px;overflow:auto;margin:0;padding-left:18px}
+.log li{margin:3px 0}
+.good{color:var(--ok)}.badc{color:var(--bad)}
+.intro{padding:26px;display:grid;gap:22px;grid-template-columns:1.1fr 1fr;align-items:center}
+@media (max-width:900px){.intro{grid-template-columns:1fr}}
+.intro h2{font-size:30px;line-height:1.15}
+.intro ul{padding-left:20px;margin:8px 0}
+.intro li{margin:5px 0}
+.hint{color:var(--muted);font-size:13px}
+.big{font-family:"Space Grotesk",Inter,sans-serif;font-size:52px;font-weight:700;color:var(--accent);line-height:1}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:right;padding:5px 6px;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:600;font-size:12px}
+footer{margin-top:20px;color:var(--muted);font-size:12.5px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--muted)}
+.home{display:inline-flex;align-items:center;gap:4px;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 12px 7px 8px;font-weight:700;font-size:13px}
+.home:hover{border-color:var(--accent);color:var(--accent)}
+.hidden{display:none!important}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--card);padding:10px 16px;border-radius:12px;font-size:13.5px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9;max-width:90vw}
+.toast.on{opacity:1}
+details{font-size:12.5px;color:var(--muted)}details summary{cursor:pointer;color:var(--ink);font-weight:600}
+@keyframes wave{from{transform:translateX(0)}to{transform:translateX(-1px)}}
+.waves{animation:wave 3s linear infinite}
+@media (prefers-reduced-motion:reduce){.waves{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="home" href="https://pindotutuko.id/" title="Beranda pindotutuko.id"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span data-t="home"></span></a>
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l5-4 5 4v7H3z"/><path d="M13 13l4-3 4 3v5h-8"/><path d="M2 21c2-1.2 4-1.2 6 0s4 1.2 6 0 4-1.2 6 0"/></svg></div>
+    <div class="brand"><h1>Kampung Brantas</h1><p data-t="tag"></p></div>
+    <div class="hud">
+      <div class="pill"><span data-t="year"></span> <b id="hYear">1/8</b></div>
+      <div class="pill"><span data-t="fund"></span> <b id="hFund">0</b></div>
+      <div class="pill"><span data-t="score"></span> <b id="hScore">0</b></div>
+      <button class="lang" id="langBtn">EN</button>
+    </div>
+  </header>
+
+  <section class="card intro" id="intro">
+    <div>
+      <h2 data-t="introH"></h2>
+      <p class="hint" data-t="introP"></p>
+      <ul><li data-t="g1"></li><li data-t="g2"></li><li data-t="g3"></li><li data-t="g4"></li><li data-t="g5"></li></ul>
+      <p class="hint" data-t="introNote"></p>
+      <div class="row" style="margin-top:12px"><button class="btn" id="startBtn" data-t="start"></button></div>
+      <p class="hint" id="bestLine" style="margin-top:8px"></p>
+    </div>
+    <svg id="introMap" viewBox="0 0 16 11" style="width:100%;border-radius:12px"></svg>
+  </section>
+
+  <section class="card intro hidden" id="endBox"></section>
+
+  <section class="grid hidden" id="game">
+    <div class="card mapcard">
+      <div class="maphead">
+        <h2 data-t="mapH"></h2>
+        <button class="chip on" data-ov="none" data-t="ovNone"></button>
+        <button class="chip" data-ov="int" data-t="ovInt"></button>
+        <button class="chip" data-ov="acc" data-t="ovAcc"></button>
+        <button class="chip" data-ov="run" data-t="ovRun"></button>
+        <button class="chip" data-ov="heat" data-t="ovHeat"></button>
+      </div>
+      <svg id="map" viewBox="0 0 16 11" role="img"></svg>
+      <div class="legend" id="legend"></div>
+      <div class="info" id="info"></div>
+    </div>
+    <div class="side">
+      <div class="card panel">
+        <h3><span data-t="toolsH"></span><button class="chip" id="undoBtn" data-t="undo"></button></h3>
+        <div class="tools" id="tools"></div>
+        <p class="hint" id="toolHint" style="margin:8px 0 0"></p>
+      </div>
+      <div class="card panel">
+        <div class="event" id="eventBox"></div>
+        <div class="row" style="margin-top:10px"><button class="btn" id="endYear"></button></div>
+        <ul class="log" id="log"></ul>
+      </div>
+      <div class="card panel">
+        <h3><span data-t="indH"></span><span class="hint" id="totLine"></span></h3>
+        <div id="inds"></div>
+        <details><summary data-t="how"></summary><div id="howTxt"></div></details>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span data-t="ref"></span>
+    <span><span data-t="by"></span> <a href="https://pindotutuko.id" target="_blank" rel="noopener">pindotutuko.id</a></span>
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+var lang=store.get('kbLang')==='en'?'en':'id';
+var T={
+ id:{tag:"Gim strategi penataan kampung tepi sungai · simulasi edukatif",year:"Tahun",fund:"Dana",score:"Skor",
+  introH:"Tata kampung tepi Brantas dalam 8 tahun",
+  introP:"Kampung fiktif ini padat, rumah-rumahnya menempel di bibir sungai, banyak rumah tanpa akses gang, dan nyaris tak ada ruang hijau. Kamu punya dana terbatas tiap tahun. Tata kampung tanpa menggusur warga keluar kampung.",
+  g1:"<b>Akses</b> — berapa banyak keluarga terhubung ke jalan utama lewat gang, dan seberapa jauh.",
+  g2:"<b>Banjir</b> — koefisien limpasan rerata kawasan dan rumah yang masih berdiri di sempadan sungai.",
+  g3:"<b>Panas</b> — indeks panas relatif dari tutupan permukaan dan pohon di sekitarnya.",
+  g4:"<b>Hunian</b> — semua keluarga awal harus tetap tertampung (rusun kampung menampung 6 KK).",
+  g5:"<b>Fasilitas</b> — keluarga yang ≤4 langkah dari taman atau balai warga.",
+  introNote:"Model edukatif yang disederhanakan: angka menunjukkan arah sebab-akibat, bukan prediksi teknis. Integrasi dihitung dengan rumus sintaksis ruang pada graf ubin.",
+  start:"Mulai menata",best:"Skor terbaikmu: {s}",
+  mapH:"Peta kampung",ovNone:"Normal",ovInt:"Integrasi",ovAcc:"Langkah ke jalan",ovRun:"Limpasan",ovHeat:"Panas",
+  toolsH:"Alat",undo:"↶ Batalkan",indH:"Indikator",how:"Cara menghitung",
+  t_gang:"Gang",t_rth:"Taman (RTH)",t_tree:"Pohon",t_bio:"Biopori",t_rusun:"Rusun kampung",t_balai:"Balai warga",t_clear:"Bongkar",t_info:"Periksa",
+  d_gang:"Jalur pejalan, menghubungkan rumah",d_rth:"Ruang terbuka hijau, bisa dilalui",d_tree:"Peneduh, menyerap air",d_bio:"Resapan di gang/taman",d_rusun:"6 KK di satu petak",d_balai:"Fasilitas warga, harus menempel gang",d_clear:"Kosongkan petak",d_info:"Lihat data petak",
+  cost:"{c} dana",cost1:"1 dana",demolHint:"Membangun di atas rumah/rusun/balai: +1 dana bongkar, dan penghuninya perlu tempat di rusun.",
+  ind_acc:"Akses",ind_fld:"Banjir",ind_heat:"Panas",ind_home:"Hunian",ind_fac:"Fasilitas",
+  s_acc:"{p}% KK terhubung · rerata {m} langkah",s_fld:"C = {c} · {n} KK di sempadan",s_heat:"indeks panas {h} · {g}% hijau",s_home:"{cap}/{k0} KK tertampung{d}",s_homeD:" · {d} KK tergusur!",s_fac:"{p}% KK dekat taman/balai",
+  total:"Skor total {s}",
+  endYear:"Akhiri tahun {y}",endGame:"Lihat laporan akhir",
+  fc:"Prakiraan tahun ini",
+  noFund:"Dana tidak cukup.",cantWater:"Tidak bisa membangun di sungai.",cantRoad:"Jalan utama tidak bisa diubah.",same:"Petak sudah seperti itu.",bioNeed:"Biopori hanya di gang atau taman.",bioHas:"Sudah ada biopori.",balaiNeed:"Balai harus menempel gang/jalan.",
+  logBuild:"{t} di ({x},{y})",
+  infoTile:"({x},{y}) {n}",
+  tl_R:"Jalan utama",tl_g:"Gang",tl_h:"Rumah (1 KK)",tl_e:"Lahan kosong",tl_W:"Sungai",tl_r:"Taman",tl_t:"Pohon",tl_u:"Rusun (6 KK)",tl_f:"Balai warga",
+  iSteps:"langkah ke jalan: {s}",iNo:"tanpa akses",iInt:"integrasi: {v}",iC:"C: {c}",iHeat:"panas: {h}",iBank:"sempadan sungai",iBio:"biopori",
+  legInt:"Segregasi",legInt2:"Terintegrasi",legAcc:"Dekat",legAcc2:"Jauh / terputus",legRun:"Meresap",legRun2:"Melimpas",legHeat:"Sejuk",legHeat2:"Panas",
+  howTxt:"<p><b>Akses</b> = 100 × porsi KK terhubung − 5 × (rerata langkah − 4) bila lebih dari 4. Rumah terhubung bila bersebelahan dengan gang/taman yang tersambung ke jalan utama.</p><p><b>Integrasi</b> (peta): rumus Hillier & Hanson (RA, RRA dengan D<sub>k</sub>) pada graf ubin gang+taman+jalan, per komponen terhubung.</p><p><b>Banjir</b>: C = rerata koefisien limpasan petak darat (atap/jalan 0,90; gang 0,85; lahan kosong 0,50; taman 0,20; pohon 0,15; biopori menurunkan gang ke 0,60 dan taman ke 0,10 — angka perkiraan dalam rentang umum metode rasional). Skor = 100 × (1 − (C − 0,60)/0,30) − 2 per KK di sempadan.</p><p><b>Panas</b>: nilai dasar petak (jalan 0,9; atap 0,8; gang 0,75; kosong 0,6; taman 0,3; pohon 0,15; air 0,1) dirata-rata dengan 8 tetangganya. Skor = 100 × (1 − (H − 0,55)/0,30).</p><p><b>Hunian</b>: 100 − 8 per KK yang tak tertampung. <b>Fasilitas</b>: porsi KK ≤ 4 langkah dari taman/balai.</p><p>Skor total = rerata lima indikator.</p>",
+  ev_rain:"Hujan deras",evd_rain:"Bila skor Banjir < 50, genangan merusak: −5 dana. Bila ≥ 50, warga lega: +2 dana.",
+  ev_heat:"Gelombang panas",evd_heat:"Bila skor Panas < 45: −4 dana untuk layanan kesehatan warga.",
+  ev_fire:"Kebakaran kecil",evd_fire:"Satu rumah tanpa akses gang (bila ada) terbakar karena sulit dijangkau: rumah hilang, 1 KK kehilangan tempat tinggal.",
+  ev_flood:"Banjir kiriman",evd_flood:"−1 dana per KK di sempadan sungai; tambahan −3 bila skor Banjir < 40.",
+  ev_visit:"Studi banding kampus",evd_visit:"Bila skor Fasilitas ≥ 60: +6 dana hibah.",
+  ev_csr:"Dana kolaborasi",evd_csr:"+6 dana dari kemitraan.",
+  ev_dry:"Kemarau panjang",evd_dry:"Bila ada ≥ 4 biopori/taman berbiopori: +3 dana (air tanah terjaga); bila tidak: −2.",
+  ev_comm:"Musyawarah warga",evd_comm:"Bila tak ada KK tergusur: +4 dana swadaya. Bila ada: −4.",
+  evRes:"{e}: {r}",gain:"+{n} dana",loss:"−{n} dana",nothing:"tidak ada dampak",burned:"rumah di ({x},{y}) terbakar",
+  income:"Tahun {y}: dana tahunan +{n}",
+  endH:"Laporan penataan kampung",endTotal:"Skor akhir",again:"Main lagi",copy:"Salin hasil",copied:"Tersalin ✓",copyFail:"Gagal menyalin",backMenu:"Kembali",
+  r0:"Perlu pendampingan",r1:"Kampung berbenah",r2:"Kampung tangguh",r3:"Kampung teladan",
+  shareTxt:"Kampung Brantas — skor {s}/100 ({r}).",
+  changeH:"Perubahan",start_:"Awal",end_:"Akhir",
+  ref:"Model edukatif disederhanakan. Rujukan integrasi: Hillier & Hanson (1984), The Social Logic of Space, Cambridge University Press. Kampung fiktif.",
+  by:"Dikembangkan oleh: Pindo Tutuko ·",
+  pickTool:"Pilih alat, lalu ketuk petak di peta.",home:"Beranda",
+  undone:"Langkah dibatalkan.",nothingUndo:"Tidak ada yang bisa dibatalkan tahun ini."
+ },
+ en:{tag:"A riverside kampung planning strategy game · educational simulation",year:"Year",fund:"Funds",score:"Score",
+  introH:"Plan a kampung on the Brantas riverbank in 8 years",
+  introP:"This fictional kampung is dense, its houses press against the river edge, many houses have no alley access, and there is almost no green space. You get limited funds each year. Improve the kampung without evicting residents.",
+  g1:"<b>Access</b> — how many households connect to the main road via alleys, and how far.",
+  g2:"<b>Flood</b> — the area’s mean runoff coefficient and houses still standing in the river buffer.",
+  g3:"<b>Heat</b> — a relative heat index from surface cover and nearby trees.",
+  g4:"<b>Housing</b> — every original household must stay housed (a kampung walk-up holds 6 households).",
+  g5:"<b>Facilities</b> — households within 4 steps of a park or community hall.",
+  introNote:"A simplified educational model: numbers show cause and effect, not technical predictions. Integration uses the space syntax formula on a tile graph.",
+  start:"Start planning",best:"Your best score: {s}",
+  mapH:"Kampung map",ovNone:"Normal",ovInt:"Integration",ovAcc:"Steps to road",ovRun:"Runoff",ovHeat:"Heat",
+  toolsH:"Tools",undo:"↶ Undo",indH:"Indicators",how:"How it is computed",
+  t_gang:"Alley",t_rth:"Park (green)",t_tree:"Tree",t_bio:"Infiltration pit",t_rusun:"Kampung walk-up",t_balai:"Community hall",t_clear:"Clear",t_info:"Inspect",
+  d_gang:"Footpath linking houses",d_rth:"Open green space, walkable",d_tree:"Shade, absorbs water",d_bio:"On an alley/park tile",d_rusun:"6 households on one tile",d_balai:"Must touch an alley",d_clear:"Empty the tile",d_info:"See tile data",
+  cost:"{c} funds",cost1:"1 fund",demolHint:"Building over a house/walk-up/hall: +1 fund to demolish, and its residents need room in a walk-up.",
+  ind_acc:"Access",ind_fld:"Flood",ind_heat:"Heat",ind_home:"Housing",ind_fac:"Facilities",
+  s_acc:"{p}% hh connected · mean {m} steps",s_fld:"C = {c} · {n} hh in buffer",s_heat:"heat index {h} · {g}% green",s_home:"{cap}/{k0} hh housed{d}",s_homeD:" · {d} hh displaced!",s_fac:"{p}% hh near park/hall",
+  total:"Total score {s}",
+  endYear:"End year {y}",endGame:"See final report",
+  fc:"This year’s forecast",
+  noFund:"Not enough funds.",cantWater:"You cannot build on the river.",cantRoad:"The main road cannot be changed.",same:"The tile is already like that.",bioNeed:"Infiltration pits only on alleys or parks.",bioHas:"Already has a pit.",balaiNeed:"The hall must touch an alley/road.",
+  logBuild:"{t} at ({x},{y})",
+  infoTile:"({x},{y}) {n}",
+  tl_R:"Main road",tl_g:"Alley",tl_h:"House (1 hh)",tl_e:"Vacant lot",tl_W:"River",tl_r:"Park",tl_t:"Tree",tl_u:"Walk-up (6 hh)",tl_f:"Community hall",
+  iSteps:"steps to road: {s}",iNo:"no access",iInt:"integration: {v}",iC:"C: {c}",iHeat:"heat: {h}",iBank:"river buffer",iBio:"infiltration pit",
+  legInt:"Segregated",legInt2:"Integrated",legAcc:"Near",legAcc2:"Far / cut off",legRun:"Infiltrates",legRun2:"Runs off",legHeat:"Cool",legHeat2:"Hot",
+  howTxt:"<p><b>Access</b> = 100 × share of households connected − 5 × (mean steps − 4) when above 4. A house is connected if it touches an alley/park linked to the main road.</p><p><b>Integration</b> (map): Hillier & Hanson’s formula (RA, RRA with D<sub>k</sub>) on the tile graph of alleys+parks+road, per connected component.</p><p><b>Flood</b>: C = mean runoff coefficient of land tiles (roof/road 0.90; alley 0.85; vacant 0.50; park 0.20; tree 0.15; a pit lowers an alley to 0.60 and a park to 0.10 — estimates within common rational-method ranges). Score = 100 × (1 − (C − 0.60)/0.30) − 2 per household in the buffer.</p><p><b>Heat</b>: tile base values (road 0.9; roof 0.8; alley 0.75; vacant 0.6; park 0.3; tree 0.15; water 0.1) averaged with 8 neighbours. Score = 100 × (1 − (H − 0.55)/0.30).</p><p><b>Housing</b>: 100 − 8 per unhoused household. <b>Facilities</b>: share of households ≤ 4 steps from a park/hall.</p><p>Total = mean of the five indicators.</p>",
+  ev_rain:"Heavy rain",evd_rain:"If Flood score < 50, ponding causes damage: −5 funds. If ≥ 50, residents are relieved: +2 funds.",
+  ev_heat:"Heatwave",evd_heat:"If Heat score < 45: −4 funds for residents’ health services.",
+  ev_fire:"Small fire",evd_fire:"One house without alley access (if any) burns because it is hard to reach: the house is lost and 1 household is left homeless.",
+  ev_flood:"Upstream flood",evd_flood:"−1 fund per household in the river buffer; an extra −3 if Flood score < 40.",
+  ev_visit:"University study visit",evd_visit:"If Facilities score ≥ 60: +6 funds grant.",
+  ev_csr:"Partnership funds",evd_csr:"+6 funds from a partnership.",
+  ev_dry:"Long dry season",evd_dry:"If there are ≥ 4 infiltration pits: +3 funds (groundwater kept); otherwise −2.",
+  ev_comm:"Residents’ meeting",evd_comm:"If nobody is displaced: +4 funds from self-help. Otherwise −4.",
+  evRes:"{e}: {r}",gain:"+{n} funds",loss:"−{n} funds",nothing:"no impact",burned:"house at ({x},{y}) burned",
+  income:"Year {y}: annual funds +{n}",
+  endH:"Kampung planning report",endTotal:"Final score",again:"Play again",copy:"Copy result",copied:"Copied ✓",copyFail:"Copy failed",backMenu:"Back",
+  r0:"Needs support",r1:"Kampung on the mend",r2:"Resilient kampung",r3:"Model kampung",
+  shareTxt:"Kampung Brantas — score {s}/100 ({r}).",
+  changeH:"Change",start_:"Start",end_:"End",
+  ref:"Simplified educational model. Integration reference: Hillier & Hanson (1984), The Social Logic of Space, Cambridge University Press. Fictional kampung.",
+  by:"Developed by: Pindo Tutuko ·",
+  pickTool:"Pick a tool, then tap a tile on the map.",home:"Home",
+  undone:"Step undone.",nothingUndo:"Nothing to undo this year."
+ }
+};
+function t(k,v){var s=T[lang][k]!=null?T[lang][k]:k;if(v)for(var p in v)s=s.split('{'+p+'}').join(v[p]);return s}
+function fmt(n,d){return Number(n).toLocaleString(lang==='id'?'id-ID':'en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
+var $=function(id){return document.getElementById(id)};
+var NS='http://www.w3.org/2000/svg';
+function el(tag,a,p){var e=document.createElementNS(NS,tag);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+
+/* ---------- Map: R road, g alley, h house, e vacant, W river, r park, t tree, u walk-up, f hall ---------- */
+var W=16,H=11,YEARS=8,START_FUND=45,INCOME=20;
+var MAP0=[
+ "RRRRRRRRRRRRRRRR",
+ "hhhhhghhhhhhghhh",
+ "hhhehghhhhhhghhh",
+ "hhhhhghhthhhghhh",
+ "hggggggggehhghhh",
+ "hhhhhghhhhhhghhe",
+ "hhehhghhhhhfghhh",
+ "hhhhhghhhhhhghhh",
+ "hhhhhhhhhhhhhhhh",
+ "WWWWWWWWWWWWWWWW",
+ "WWWWWWWWWWWWWWWW"];
+var BANK=8; // row touching the river = river buffer (sempadan)
+var KK={h:1,u:6};
+var TOOLS=[
+ {id:'gang',to:'g',c:2,icon:'g'},{id:'rth',to:'r',c:3,icon:'r'},
+ {id:'tree',to:'t',c:1,icon:'t'},{id:'bio',c:1,icon:'bio'},
+ {id:'rusun',to:'u',c:12,icon:'u'},{id:'balai',to:'f',c:5,icon:'f'},
+ {id:'clear',to:'e',c:1,icon:'e'},{id:'info',c:0,icon:'info'}];
+var RUN={R:.9,h:.9,u:.9,f:.9,g:.85,e:.5,r:.2,t:.15};
+var RUN_BIO={g:.6,r:.1};
+var HEAT={R:.9,h:.8,u:.8,f:.8,g:.75,e:.6,r:.3,t:.15,W:.1};
+var WALK={R:1,g:1,r:1};
+var EVENTS=['rain','heat','fire','flood','visit','csr','dry','comm'];
+
+var st={};
+function fresh(){
+  var g=MAP0.map(function(r){return r.split('')});
+  var bio=g.map(function(r){return r.map(function(){return false})});
+  var ev=EVENTS.slice();for(var i=ev.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=ev[i];ev[i]=ev[j];ev[j]=x}
+  // the first year is never a fire, so the player has a chance to react
+  if(ev[0]==='fire'){var k=1+Math.floor(Math.random()*(ev.length-1));ev[0]=ev[k];ev[k]='fire'}
+  st={g:g,bio:bio,year:1,fund:START_FUND,tool:'gang',ov:'none',events:ev,log:[],undo:[],phase:'play',hover:null};
+  st.k0=countKK(g);st.m0=metrics();st.m=st.m0;
+}
+function countKK(g){var n=0;for(var y=0;y<H;y++)for(var x=0;x<W;x++)n+=KK[g[y][x]]||0;return n}
+function nb4(x,y){var o=[];if(x>0)o.push([x-1,y]);if(x<W-1)o.push([x+1,y]);if(y>0)o.push([x,y-1]);if(y<H-1)o.push([x,y+1]);return o}
+
+/* ---------- Metrics ---------- */
+function metrics(){
+  var g=st.g,bio=st.bio,x,y,i;
+  var INF=1e9,steps=[],q=[];
+  for(y=0;y<H;y++){steps.push([]);for(x=0;x<W;x++){steps[y].push(INF);if(g[y][x]==='R'){steps[y][x]=0;q.push([x,y])}}}
+  for(i=0;i<q.length;i++){var c=q[i];nb4(c[0],c[1]).forEach(function(n){if(WALK[g[n[1]][n[0]]]&&steps[n[1]][n[0]]===INF){steps[n[1]][n[0]]=steps[c[1]][c[0]]+1;q.push(n)}})}
+  // houses: steps = min neighbour walk + 1
+  var hs=[],conn=0,kk=0,sumSteps=0,unconn=[],bankKK=0;
+  for(y=0;y<H;y++){hs.push([]);for(x=0;x<W;x++){var tp=g[y][x],v=INF;
+    if(KK[tp]||tp==='f'){nb4(x,y).forEach(function(n){var s=steps[n[1]][n[0]];if(WALK[g[n[1]][n[0]]]&&s<INF)v=Math.min(v,s+1)})}
+    hs[y].push(v);
+    if(KK[tp]){kk+=KK[tp];if(v<INF){conn+=KK[tp];sumSteps+=v*KK[tp]}else if(tp==='h')unconn.push([x,y]);if(y===BANK)bankKK+=KK[tp]}}}
+  var meanSteps=conn?sumSteps/conn:0;
+  var acc=kk?Math.round(Math.max(0,Math.min(100,100*conn/kk-Math.max(0,meanSteps-4)*5))):0;
+  // integration on walkable tile graph (per component)
+  var integ=[],nodes=[],idx={};for(y=0;y<H;y++){integ.push([]);for(x=0;x<W;x++){integ[y].push(null);if(WALK[g[y][x]]){idx[x+','+y]=nodes.length;nodes.push([x,y])}}}
+  var comp=new Array(nodes.length).fill(-1),comps=[];
+  nodes.forEach(function(n,ni){if(comp[ni]>=0)return;var cq=[ni];comp[ni]=comps.length;for(var a=0;a<cq.length;a++){var p=nodes[cq[a]];nb4(p[0],p[1]).forEach(function(m){var mi=idx[m[0]+','+m[1]];if(mi!=null&&comp[mi]<0){comp[mi]=comps.length;cq.push(mi)}})}comps.push(cq)});
+  var gangI=[],imax=0,imin=Infinity;
+  comps.forEach(function(cq){var k=cq.length;if(k<3)return;var Dk=2*(k*(Math.log2((k+2)/3)-1)+1)/((k-1)*(k-2));
+    cq.forEach(function(s){var d={};d[s]=0;var bq=[s],td=0;for(var a=0;a<bq.length;a++){var p=nodes[bq[a]];nb4(p[0],p[1]).forEach(function(m){var mi=idx[m[0]+','+m[1]];if(mi!=null&&d[mi]==null){d[mi]=d[bq[a]]+1;td+=d[mi];bq.push(mi)}})}
+      var MD=td/(k-1),RA=2*(MD-1)/(k-2),I=RA>0?Dk/RA:0;var p=nodes[s];integ[p[1]][p[0]]=I;if(I>imax)imax=I;if(I<imin)imin=I;if(g[p[1]][p[0]]!=='R')gangI.push(I)})});
+  // runoff
+  var sumC=0,nl=0,run=[];for(y=0;y<H;y++){run.push([]);for(x=0;x<W;x++){var tp2=g[y][x];if(tp2==='W'){run[y].push(null);continue}var cc=bio[y][x]&&RUN_BIO[tp2]!=null?RUN_BIO[tp2]:RUN[tp2];run[y].push(cc);sumC+=cc;nl++}}
+  var C=sumC/nl,fld=Math.round(Math.max(0,Math.min(100,100*(1-(C-.6)/.3)-2*bankKK)));
+  // heat
+  var heat=[],sumH=0,green=0;for(y=0;y<H;y++){heat.push([]);for(x=0;x<W;x++){var b=HEAT[g[y][x]],s2=0,n2=0;for(var dy=-1;dy<=1;dy++)for(var dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;var xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=W||yy>=H)continue;s2+=HEAT[g[yy][xx]];n2++}
+    var hv=.5*b+.5*(s2/n2);heat[y].push(hv);if(g[y][x]!=='W'){sumH+=hv;if(g[y][x]==='r'||g[y][x]==='t')green++}}}
+  var Hm=sumH/nl,hsc=Math.round(Math.max(0,Math.min(100,100*(1-(Hm-.55)/.3))));
+  // housing
+  var cap=kk,disp=Math.max(0,st.k0-cap),home=Math.max(0,100-8*disp);
+  // facilities: walkable tiles within 4 steps of park/hall
+  var fd=[],fq=[];for(y=0;y<H;y++){fd.push([]);for(x=0;x<W;x++)fd[y].push(INF)}
+  for(y=0;y<H;y++)for(x=0;x<W;x++){if(g[y][x]==='r'){fd[y][x]=0;fq.push([x,y])}else if(g[y][x]==='f'){nb4(x,y).forEach(function(n){if(WALK[g[n[1]][n[0]]]&&fd[n[1]][n[0]]>0){fd[n[1]][n[0]]=0;fq.push(n)}})}}
+  for(i=0;i<fq.length;i++){var c2=fq[i];nb4(c2[0],c2[1]).forEach(function(n){if(WALK[g[n[1]][n[0]]]&&fd[n[1]][n[0]]===INF){fd[n[1]][n[0]]=fd[c2[1]][c2[0]]+1;fq.push(n)}})}
+  var near=0;for(y=0;y<H;y++)for(x=0;x<W;x++){var tp3=g[y][x];if(!KK[tp3])continue;var best=INF;nb4(x,y).forEach(function(n){if(WALK[g[n[1]][n[0]]])best=Math.min(best,fd[n[1]][n[0]]+1)});if(best<=4)near+=KK[tp3]}
+  var fac=kk?Math.round(100*near/kk):0;
+  var nbio=0;for(y=0;y<H;y++)for(x=0;x<W;x++)if(bio[y][x])nbio++;
+  var total=Math.round((acc+fld+hsc+home+fac)/5);
+  return {steps:steps,hs:hs,integ:integ,imax:imax,imin:imin===Infinity?0:imin,run:run,heat:heat,
+    acc:acc,conn:conn,kk:kk,meanSteps:meanSteps,unconn:unconn,C:C,bankKK:bankKK,fld:fld,Hm:Hm,green:green/nl,hsc:hsc,cap:cap,disp:disp,home:home,fac:fac,near:near,nbio:nbio,total:total,
+    gangI:gangI.length?gangI.reduce(function(a,b){return a+b},0)/gangI.length:0};
+}
+
+/* ---------- Tile art ---------- */
+var ROOFS=['#b5523b','#9c4a33','#8d8f93','#c46b45','#a8583e','#7f8790'];
+function hash(x,y){return ((x*73856093)^(y*19349663))>>>0}
+function drawTile(p,x,y,tp,isBio){
+  var g=el('g',{transform:'translate('+x+' '+y+')'},p),h=hash(x,y);
+  function r(a){a.x=a.x||0;a.y=a.y||0;return el('rect',a,g)}
+  if(tp==='W'){r({width:1,height:1,fill:y===BANK+1?'#5b9cc8':'#4a87b6'});var w=el('g',{'class':'waves'},g);for(var k=0;k<2;k++)el('path',{d:'M-0.2 '+(.3+k*.4)+' q.15 -.08 .3 0 t.3 0 t.3 0 t.3 0 t.3 0',fill:'none',stroke:'#cfe6f5','stroke-width':.035,opacity:.7},w);return g}
+  if(tp==='R'){r({width:1,height:1,fill:'#4b4b4d'});el('line',{x1:.1,x2:.45,y1:.5,y2:.5,stroke:'#f2e9c9','stroke-width':.05},g);el('line',{x1:.6,x2:.95,y1:.5,y2:.5,stroke:'#f2e9c9','stroke-width':.05},g);return g}
+  if(tp==='g'){r({width:1,height:1,fill:'#e7dcc8'});el('path',{d:'M0 .33H1M0 .66H1M.5 0V.33M.25 .33V.66M.75 .33V.66M.5 .66V1',stroke:'#d2c4aa','stroke-width':.025,fill:'none'},g)}
+  else if(tp==='e'){r({width:1,height:1,fill:'#d8c49f'});for(var s=0;s<5;s++){var hh=hash(x+s*7,y+s*3);el('circle',{cx:.15+(hh%70)/100,cy:.15+((hh>>7)%70)/100,r:.025,fill:'#b9a37c'},g)}}
+  else if(tp==='r'){r({width:1,height:1,fill:'#9ccc7c'});for(var s2=0;s2<6;s2++){var h2=hash(x+s2*5,y+s2*11);el('circle',{cx:.12+(h2%76)/100,cy:.12+((h2>>6)%76)/100,r:.03,fill:'#7fb661'},g)}}
+  else if(tp==='t'){r({width:1,height:1,fill:'#9ccc7c'});el('circle',{cx:.55,cy:.58,r:.36,fill:'#000',opacity:.12},g);el('circle',{cx:.5,cy:.5,r:.36,fill:'#3f8f4a'},g);el('circle',{cx:.42,cy:.42,r:.2,fill:'#58a862'},g)}
+  else if(tp==='h'){r({width:1,height:1,fill:'#e2d6c0'});var rc=ROOFS[h%ROOFS.length];r({x:.12,y:.14,width:.82,height:.8,fill:'#000',opacity:.15,rx:.03});r({x:.08,y:.08,width:.82,height:.8,fill:rc,rx:.03});
+    if(h%2)el('line',{x1:.08,x2:.9,y1:.48,y2:.48,stroke:'#000','stroke-opacity':.25,'stroke-width':.05},g);else el('line',{x1:.49,x2:.49,y1:.08,y2:.88,stroke:'#000','stroke-opacity':.25,'stroke-width':.05},g)}
+  else if(tp==='u'){r({width:1,height:1,fill:'#e2d6c0'});r({x:.13,y:.13,width:.82,height:.84,fill:'#000',opacity:.2,rx:.03});r({x:.06,y:.04,width:.82,height:.86,fill:'#e9e2d3',stroke:'#8d8676','stroke-width':.03,rx:.03});
+    for(var yy=0;yy<4;yy++)for(var xx=0;xx<3;xx++)r({x:.16+xx*.24,y:.12+yy*.19,width:.14,height:.11,fill:'#5d7489'})}
+  else if(tp==='f'){r({width:1,height:1,fill:'#e2d6c0'});r({x:.12,y:.14,width:.8,height:.8,fill:'#000',opacity:.15,rx:.05});r({x:.08,y:.08,width:.8,height:.8,fill:'#2f7d4f',rx:.05});el('path',{d:'M.48 .22l.08 .17 .19 .03 -.14 .13 .04 .19 -.17 -.09 -.17 .09 .04 -.19 -.14 -.13 .19 -.03z',fill:'#f6f1e6'},g)}
+  if(isBio){el('circle',{cx:.8,cy:.8,r:.11,fill:'#5a4632',stroke:'#f6f1e6','stroke-width':.04},g);el('circle',{cx:.8,cy:.8,r:.04,fill:'#2b2118'},g)}
+  return g;
+}
+function drawMap(svg,interactive){
+  svg.innerHTML='';var g=st.g,m=st.m;
+  el('rect',{x:0,y:0,width:W,height:H,fill:'#d8c49f'},svg);
+  var base=el('g',{},svg),ov=el('g',{'pointer-events':'none'},svg),top=el('g',{'pointer-events':'none'},svg);
+  for(var y=0;y<H;y++)for(var x=0;x<W;x++){var tg=drawTile(base,x,y,g[y][x],st.bio[y][x]);
+    if(interactive){tg.setAttribute('class','tile');(function(x,y){tg.addEventListener('click',function(){apply(x,y)});tg.addEventListener('mouseenter',function(){st.hover=[x,y];showInfo(x,y);hl()})})(x,y)}}
+  // river buffer line
+  el('line',{x1:0,x2:W,y1:BANK+1,y2:BANK+1,stroke:'#2f5f86','stroke-width':.05},top);
+  if(interactive&&st.ov!=='none'){
+    for(var y2=0;y2<H;y2++)for(var x2=0;x2<W;x2++){var v=ovVal(x2,y2);if(v==null)continue;el('rect',{x:x2+.02,y:y2+.02,width:.96,height:.96,fill:v.c,opacity:.78,rx:.06},ov);
+      if(v.txt!=null){var tx=el('text',{x:x2+.5,y:y2+.62,'text-anchor':'middle','font-size':.32,'font-weight':700,fill:v.ink||'#1b1814','font-family':'Space Grotesk,Inter,sans-serif'},ov);tx.textContent=v.txt}}
+  }
+  if(interactive){st.hlRect=el('rect',{x:0,y:0,width:1,height:1,fill:'none',stroke:'#fff','stroke-width':.08,opacity:0,rx:.06},top);hl()}
+}
+function hl(){if(!st.hlRect)return;if(!st.hover){st.hlRect.setAttribute('opacity',0);return}st.hlRect.setAttribute('x',st.hover[0]);st.hlRect.setAttribute('y',st.hover[1]);st.hlRect.setAttribute('opacity',.95)}
+
+/* ---------- Overlays ---------- */
+var STOPS=[[43,90,168],[74,163,196],[143,196,120],[240,200,70],[232,120,50],[190,40,40]];
+function heatc(tt){tt=Math.max(0,Math.min(1,tt));var p=tt*(STOPS.length-1),i=Math.min(STOPS.length-2,Math.floor(p)),f=p-i,a=STOPS[i],b=STOPS[i+1];return [0,1,2].map(function(j){return Math.round(a[j]+(b[j]-a[j])*f)})}
+function rgb(c){return 'rgb('+c.join(',')+')'}
+function inkOn(c){return (0.299*c[0]+0.587*c[1]+0.114*c[2])>150?'#1b1814':'#ffffff'}
+function ovVal(x,y){var m=st.m,tp=st.g[y][x],c;
+  if(st.ov==='int'){var I=m.integ[y][x];if(I==null)return null;var tt=m.imax>m.imin?(I-m.imin)/(m.imax-m.imin):.5;c=heatc(tt);return {c:rgb(c)}}
+  if(st.ov==='acc'){if(!(KK[tp]||tp==='f'))return null;var s=m.hs[y][x];if(s>=1e9)return {c:'#3a3a3a',txt:'×',ink:'#fff'};c=heatc(Math.min(1,(s-1)/9));return {c:rgb(c),txt:String(s),ink:inkOn(c)}}
+  if(st.ov==='run'){var r=m.run[y][x];if(r==null)return null;c=heatc((r-.1)/.8);return {c:rgb(c)}}
+  if(st.ov==='heat'){var h=m.heat[y][x];c=heatc((h-.1)/.8);return {c:rgb(c)}}
+  return null}
+function legend(){var L=$('legend');var map={int:['legInt','legInt2'],acc:['legAcc','legAcc2'],run:['legRun','legRun2'],heat:['legHeat','legHeat2']}[st.ov];
+  if(!map){L.innerHTML='';return}var stops=[];for(var i=0;i<=10;i++)stops.push(rgb(heatc(i/10))+' '+(i*10)+'%');
+  L.innerHTML='<span>'+t(map[0])+'</span><div class="bar" style="background:linear-gradient(90deg,'+stops.join(',')+')"></div><span>'+t(map[1])+'</span>'+(st.ov==='int'?'<span>· '+t('iInt',{v:fmt(st.m.gangI,2)})+'</span>':'')}
+
+/* ---------- Actions ---------- */
+function toast(msg){var e=$('toast');e.textContent=msg;e.classList.add('on');clearTimeout(st.tt);st.tt=setTimeout(function(){e.classList.remove('on')},1800)}
+function costOf(tool,x,y){var tp=st.g[y][x],c=tool.c;if(tool.to&&tool.to!==tp&&(tp==='h'||tp==='u'||tp==='f'))c+=1;return c}
+function apply(x,y){
+  if(st.phase!=='play')return;var tool=TOOLS.filter(function(z){return z.id===st.tool})[0],tp=st.g[y][x];
+  if(tool.id==='info'){showInfo(x,y);return}
+  if(tp==='W'){toast(t('cantWater'));return}
+  if(tp==='R'){toast(t('cantRoad'));return}
+  if(tool.id==='bio'){if(tp!=='g'&&tp!=='r'){toast(t('bioNeed'));return}if(st.bio[y][x]){toast(t('bioHas'));return}}
+  else if(tool.to===tp){toast(t('same'));return}
+  if(tool.id==='balai'){var ok=nb4(x,y).some(function(n){return WALK[st.g[n[1]][n[0]]]});if(!ok){toast(t('balaiNeed'));return}}
+  var c=costOf(tool,x,y);if(c>st.fund){toast(t('noFund'));return}
+  st.undo.push({g:st.g.map(function(r){return r.slice()}),bio:st.bio.map(function(r){return r.slice()}),fund:st.fund,log:st.log.length});
+  st.fund-=c;
+  if(tool.id==='bio')st.bio[y][x]=true;else{st.g[y][x]=tool.to;if(tool.to!=='g'&&tool.to!=='r')st.bio[y][x]=false}
+  st.log.unshift({txt:t('logBuild',{t:t('t_'+tool.id),x:x,y:y}),k:'build'});
+  refresh();
+}
+function undo(){var u=st.undo.pop();if(!u){toast(t('nothingUndo'));return}st.g=u.g;st.bio=u.bio;st.fund=u.fund;st.log=st.log.slice(st.log.length-u.log);refresh();toast(t('undone'))}
+function showInfo(x,y){var m=st.m,tp=st.g[y][x],parts=[t('infoTile',{x:x,y:y,n:t('tl_'+tp)})];
+  if(KK[tp]||tp==='f'){var s=m.hs[y][x];parts.push(s>=1e9?t('iNo'):t('iSteps',{s:s}))}
+  if(m.integ[y][x]!=null)parts.push(t('iInt',{v:fmt(m.integ[y][x],2)}));
+  if(m.run[y][x]!=null)parts.push(t('iC',{c:fmt(m.run[y][x],2)}));
+  parts.push(t('iHeat',{h:fmt(m.heat[y][x],2)}));
+  if(y===BANK)parts.push(t('iBank'));if(st.bio[y][x])parts.push(t('iBio'));
+  $('info').textContent=parts.join(' · ')}
+
+/* ---------- Events ---------- */
+function runEvent(id){var m=st.m,d=0,res=null;
+  if(id==='rain'){d=m.fld<50?-5:2}
+  else if(id==='heat'){d=m.hsc<45?-4:0}
+  else if(id==='fire'){if(m.unconn.length){var p=m.unconn[Math.floor(Math.random()*m.unconn.length)];st.g[p[1]][p[0]]='e';res=t('burned',{x:p[0],y:p[1]})}}
+  else if(id==='flood'){d=-m.bankKK-(m.fld<40?3:0)}
+  else if(id==='visit'){d=m.fac>=60?6:0}
+  else if(id==='csr'){d=6}
+  else if(id==='dry'){d=m.nbio>=4?3:-2}
+  else if(id==='comm'){d=m.disp===0?4:-4}
+  st.fund=Math.max(0,st.fund+d);
+  var r=res||(d>0?t('gain',{n:d}):d<0?t('loss',{n:-d}):t('nothing'));
+  st.log.unshift({txt:t('evRes',{e:t('ev_'+id),r:r}),k:d<0||res?'bad':d>0?'good':''});
+}
+function endYear(){
+  if(st.phase!=='play')return;
+  runEvent(st.events[st.year-1]);st.m=metrics();
+  if(st.year>=YEARS){st.phase='end';refresh();setTimeout(renderEnd,350);return}
+  st.year++;st.fund+=INCOME;st.undo=[];st.log.unshift({txt:t('income',{y:st.year,n:INCOME}),k:'good'});refresh();
+}
+
+/* ---------- UI ---------- */
+function toolIcon(tool){var s=document.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 1 1');
+  if(tool.icon==='bio'){drawTile(s,0,0,'g',true)}else if(tool.icon==='info'){el('rect',{width:1,height:1,fill:'#e7dcc8'},s);el('circle',{cx:.45,cy:.45,r:.22,fill:'none',stroke:'#1f1c18','stroke-width':.08},s);el('path',{d:'M.62 .62L.85 .85',stroke:'#1f1c18','stroke-width':.1,'stroke-linecap':'round'},s)}
+  else drawTile(s,0,0,tool.icon,false);return s}
+function renderTools(){var box=$('tools');box.innerHTML='';TOOLS.forEach(function(tool){var b=document.createElement('button');b.className='tool'+(st.tool===tool.id?' on':'');
+  b.appendChild(toolIcon(tool));var d=document.createElement('span');d.innerHTML='<b>'+t('t_'+tool.id)+'</b><small>'+(tool.c?t(tool.c===1?'cost1':'cost',{c:tool.c})+' · ':'')+t('d_'+tool.id)+'</small>';b.appendChild(d);
+  b.onclick=function(){st.tool=tool.id;renderTools();$('toolHint').textContent=tool.to?t('demolHint'):t('d_'+tool.id)};box.appendChild(b)});
+  if(!$('toolHint').textContent)$('toolHint').textContent=t('pickTool')}
+function colorFor(v){return v>=70?'var(--ok)':v>=45?'var(--warn)':'var(--bad)'}
+function renderInds(){var m=st.m;var rows=[
+  ['acc',m.acc,t('s_acc',{p:Math.round(100*m.conn/Math.max(1,m.kk)),m:fmt(m.meanSteps,1)})],
+  ['fld',m.fld,t('s_fld',{c:fmt(m.C,2),n:m.bankKK})],
+  ['heat',m.hsc,t('s_heat',{h:fmt(m.Hm,2),g:Math.round(100*m.green)})],
+  ['home',m.home,t('s_home',{cap:m.cap,k0:st.k0,d:m.disp?t('s_homeD',{d:m.disp}):''})],
+  ['fac',m.fac,t('s_fac',{p:m.fac})]];
+  $('inds').innerHTML=rows.map(function(r){var d=r[1]-st.m0[{acc:'acc',fld:'fld',heat:'hsc',home:'home',fac:'fac'}[r[0]]];
+    return '<div class="ind"><div class="top">'+t('ind_'+r[0])+'<span>'+r[1]+(d?' <small style="display:inline;color:'+(d>0?'var(--ok)':'var(--bad)')+'">('+(d>0?'+':'')+d+')</small>':'')+'</span></div><div class="bar"><i style="width:'+r[1]+'%;background:'+colorFor(r[1])+'"></i></div><small>'+r[2]+'</small></div>'}).join('');
+  $('totLine').textContent=t('total',{s:m.total});$('howTxt').innerHTML=t('howTxt')}
+function renderEvent(){var id=st.events[st.year-1];$('eventBox').innerHTML='<div class="hint">'+t('fc')+'</div><b>'+t('ev_'+id)+'</b><p>'+t('evd_'+id)+'</p>';
+  $('endYear').textContent=st.year>=YEARS?t('endGame'):t('endYear',{y:st.year})}
+function renderLog(){$('log').innerHTML=st.log.slice(0,40).map(function(l){return '<li class="'+(l.k==='good'?'good':l.k==='bad'?'badc':'')+'">'+l.txt+'</li>'}).join('')}
+function hud(){$('hYear').textContent=Math.min(st.year,YEARS)+'/'+YEARS;$('hFund').textContent=st.fund;$('hScore').textContent=st.m.total}
+function refresh(){st.m=metrics();drawMap($('map'),true);legend();renderInds();renderEvent();renderLog();hud();if(st.hover)showInfo(st.hover[0],st.hover[1])}
+function applyStatic(){document.documentElement.lang=lang;document.querySelectorAll('[data-t]').forEach(function(n){n.innerHTML=t(n.getAttribute('data-t'))});
+  $('langBtn').textContent=lang==='id'?'EN':'ID';var b=store.get('kbBest');$('bestLine').textContent=b?t('best',{s:b}):''}
+function show(id){['intro','endBox','game'].forEach(function(x){$(x).classList.toggle('hidden',x!==id)});window.scrollTo(0,0)}
+function start(){fresh();show('game');$('toolHint').textContent='';renderTools();refresh()}
+function rating(s){return s>=75?'r3':s>=60?'r2':s>=45?'r1':'r0'}
+function renderEnd(){var m=st.m,m0=st.m0,s=m.total,r=rating(s);var b=+(store.get('kbBest')||0);if(s>b)store.set('kbBest',s);
+  show('endBox');var rows=[['ind_acc','acc'],['ind_fld','fld'],['ind_heat','hsc'],['ind_home','home'],['ind_fac','fac']];
+  $('endBox').innerHTML='<div><h2>'+t('endH')+'</h2><p class="hint">'+t('endTotal')+'</p><div class="big">'+s+' <span style="font-size:20px;color:var(--muted)">/ 100</span></div><p style="font-family:Space Grotesk,Inter,sans-serif;font-size:20px;font-weight:700;margin:8px 0 12px">'+t(r)+'</p>'+
+   '<table><thead><tr><th></th><th>'+t('start_')+'</th><th>'+t('end_')+'</th><th>'+t('changeH')+'</th></tr></thead><tbody>'+rows.map(function(x){var d=m[x[1]]-m0[x[1]];return '<tr><td>'+t(x[0])+'</td><td>'+m0[x[1]]+'</td><td><b>'+m[x[1]]+'</b></td><td class="'+(d>0?'good':d<0?'badc':'')+'">'+(d>0?'+':'')+d+'</td></tr>'}).join('')+
+   '<tr><td><b>'+t('score')+'</b></td><td>'+m0.total+'</td><td><b>'+m.total+'</b></td><td class="'+(m.total>m0.total?'good':'badc')+'">'+(m.total-m0.total>0?'+':'')+(m.total-m0.total)+'</td></tr></tbody></table>'+
+   '<div class="row" style="margin-top:14px"><button class="btn" id="againBtn">'+t('again')+'</button><button class="btn ghost" id="copyBtn">'+t('copy')+'</button><button class="btn ghost" id="menuBtn">'+t('backMenu')+'</button></div></div>'+
+   '<svg id="endMap" viewBox="0 0 16 11" style="width:100%;border-radius:12px"></svg>';
+  drawMap($('endMap'),false);
+  $('againBtn').onclick=start;$('menuBtn').onclick=function(){st.phase='menu';show('intro');applyStatic()};
+  $('copyBtn').onclick=function(){var bt=this,txt=t('shareTxt',{s:s,r:t(r)})+' pindotutuko.id';try{navigator.clipboard.writeText(txt).then(function(){bt.textContent=t('copied')},function(){bt.textContent=t('copyFail')})}catch(e){bt.textContent=t('copyFail')}}}
+
+document.querySelectorAll('[data-ov]').forEach(function(b){b.onclick=function(){st.ov=b.getAttribute('data-ov');document.querySelectorAll('[data-ov]').forEach(function(c){c.classList.toggle('on',c===b)});refresh()}});
+$('undoBtn').onclick=undo;$('endYear').onclick=endYear;$('startBtn').onclick=start;
+$('map').addEventListener('mouseleave',function(){st.hover=null;hl()});
+$('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('kbLang',lang);applyStatic();if(st.phase==='play'&&!$('game').classList.contains('hidden')){$('toolHint').textContent=t('pickTool');renderTools();refresh()}else if(st.phase==='end'&&!$('endBox').classList.contains('hidden'))renderEnd()};
+applyStatic();fresh();st.phase='menu';drawMap($('introMap'),false);
+window.__KB={metrics:function(){return st.m},st:function(){return st},apply:apply,endYear:endYear,setTool:function(id){st.tool=id}};
+})();
+</script>
+</body>
+</html>
