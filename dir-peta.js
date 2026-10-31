@@ -75,7 +75,7 @@
     box.innerHTML = "<div class='dash' style='margin-top:6px'><aside class='side'><div class='sticky'><div class='fg'><span class='lbl'>Peta per jurnal</span><select id='ppJ' style='width:100%;font:inherit;font-size:13px;padding:7px;border:1.5px solid var(--bk);border-radius:0;background:#fff;color:var(--bk)'></select><div id='ppJi' class='note' style='margin-top:6px;font-size:11.5px'></div></div><div id='ppF'></div></div></aside><div class='body'><div class='kpis' id='ppK'></div><div id='ppMap'></div>" +
       "<div class='blk' id='ppSh' hidden style='margin-top:12px;border-top:6px solid var(--q1)'><div class='hd'><h3 id='ppSt'></h3><button type='button' class='x' id='ppSx'>Tutup ✕</button></div><div class='in' id='ppS'></div></div>" +
       "<div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:16px'>" +
-      "<div class='blk' style='margin:0'><div class='hd'><h3>Peringkat</h3><div class='seg' id='ppRm'><button type='button' data-v='n' class='on'>Negara</button><button type='button' data-v='c'>Cluster</button><button type='button' data-v='j'>Jurnal</button></div></div><div class='in' id='ppR'></div></div>" +
+      "<div class='blk' style='margin:0'><div class='hd'><h3>Peringkat</h3><div class='seg' id='ppRm'><button type='button' data-v='n' class='on'>Negara</button><button type='button' data-v='c'>Cluster</button><button type='button' data-v='j'>Jurnal</button></div></div><div class='in'><div id='ppJs' class='seg' style='margin:0 0 10px;display:none'><span class='lbl' style='align-self:center;margin-right:6px'>Urutkan</span><button type='button' data-v='n' class='on'>Jumlah orang</button><button type='button' data-v='p'>% luar negeri</button><button type='button' data-v='g'>Jumlah negara</button></div><div id='ppR'></div><p class='note' id='ppRn' style='margin:8px 0 0;display:none'>Batang: <b style='color:var(--q1)'>■</b> luar negeri · <b style='color:var(--q3)'>■</b> Indonesia. Dihitung dari mitra bestari dan dewan editor — penulis artikel tidak termasuk.</p></div></div>" +
       "<div class='blk' style='margin:0'><div class='hd'><h3>Wilayah × SINTA</h3><span class='lbl'>jumlah orang</span></div><div class='in' id='ppX' style='overflow-x:auto'></div></div></div>" +
       "<p class='note' style='margin-top:10px'>Cluster wilayah: ASEAN = 11 negara anggota termasuk Timor-Leste (resmi bergabung Oktober 2025); Asia = ASEAN, Asia Timur, Asia Selatan, dan Timur Tengah (Turki dihitung di Timur Tengah); Asia Pasifik = ASEAN, Asia Timur, Asia Selatan, dan Oseania. Tahun akreditasi = tahun mulai periode peringkat SINTA terakhir jurnal. Satu orang yang menjadi mitra bestari/editor di dua jurnal dihitung dua kali.</p></div></div>";
     wrap.parentNode.insertBefore(box, wrap);
@@ -104,7 +104,8 @@
     jsel.addEventListener("change", function () { st.j = jsel.value; update(); });
     document.getElementById("ppJi").addEventListener("click", function (e) { if (e.target.id === "ppJp" && window.__PROFIL) { e.preventDefault(); window.__PROFIL.open(JA[st.j].id); } });
     window.__PETA = { setJ: function (a) { st.j = JL.indexOf(a) >= 0 ? a : "*"; update(); var pk = document.getElementById("ptPeta"); if (pk) pk.scrollIntoView({ behavior: "smooth", block: "start" }); } };
-    var rmode = "n";
+    var rmode = "n", jsort = "n";
+    document.getElementById("ppJs").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; jsort = b.dataset.v; this.querySelectorAll("button").forEach(function (x) { x.classList.toggle("on", x === b); }); update(); });
     document.getElementById("ppRm").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; rmode = b.dataset.v; this.querySelectorAll("button").forEach(function (x) { x.classList.toggle("on", x === b); }); update(); });
 
     /* simpul bawaan */
@@ -173,12 +174,15 @@
       /* peringkat */
       var items;
       if (rmode === "n") items = Object.keys(A.k).map(function (k) { return { k: k, l: k, v: A.k[k], d: tagsOf(k).slice(0, 2).join(" · ") }; });
-      else if (rmode === "j") { var jc = {}, ji = {}; rows.forEach(function (r) { jc[r.j] = (jc[r.j] || 0) + 1; if (r.k !== "Indonesia") ji[r.j] = (ji[r.j] || 0) + 1; }); items = Object.keys(jc).map(function (a) { return { k: "j:" + a, l: a, v: jc[a], d: Math.round(100 * (ji[a] || 0) / jc[a]) + "% luar negeri" + (JA[a] && JA[a].s ? " · S" + JA[a].s : "") }; }); }
+      else if (rmode === "j") { var jc = {}, ji = {}, jn = {}; rows.forEach(function (r) { jc[r.j] = (jc[r.j] || 0) + 1; if (r.k !== "Indonesia") ji[r.j] = (ji[r.j] || 0) + 1; (jn[r.j] = jn[r.j] || {})[r.k] = 1; });
+        items = Object.keys(jc).map(function (a) { var f = ji[a] || 0, p = Math.round(100 * f / jc[a]), ng = Object.keys(jn[a]).length; return { k: "j:" + a, l: a, n: jc[a], f: f, p: p, g: ng, v: jsort === "p" ? p : jsort === "g" ? ng : jc[a], vt: jsort === "p" ? p + "%" : String(jsort === "g" ? ng : jc[a]), d: f + " dari " + jc[a] + " orang luar negeri (" + p + "%) · " + ng + " negara" + (JA[a] && JA[a].s ? " · S" + JA[a].s : "") }; }); }
       else items = RK.map(function (rk) { var v = 0; REG[rk].c.forEach(function (k) { v += A.k[k] || 0; }); return { k: "r:" + rk, l: REG[rk].l, v: v, d: REG[rk].c.filter(function (k) { return A.k[k]; }).length + " negara" }; }).filter(function (x) { return x.v; });
-      items.sort(function (a, b) { return b.v - a.v; });
+      items.sort(function (a, b) { return b.v - a.v || (b.n || 0) - (a.n || 0); });
       var mx = items.length ? items[0].v : 1;
+      document.getElementById("ppJs").style.display = rmode === "j" ? "flex" : "none"; document.getElementById("ppRn").style.display = rmode === "j" ? "" : "none";
       document.getElementById("ppR").innerHTML = items.length ? "<div class='scroll'>" + items.map(function (it, i) {
-        return "<button type='button' class='rk' data-k='" + esc(it.k) + "' style='grid-template-columns:28px 130px minmax(0,1fr) 46px'><span class='n'>" + String(i + 1).padStart(2, "0") + "</span><span class='a'>" + esc(it.l) + "<small>" + esc(it.d) + "</small></span><div class='sb' style='width:" + Math.max(2, 100 * it.v / mx) + "%'><i style='width:100%;background:var(--q1)'></i></div><span class='v'>" + it.v + "</span></button>";
+        var bar = it.f != null && jsort !== "p" && jsort !== "g" ? "<div class='sb' style='width:" + Math.max(2, 100 * it.v / mx) + "%' title='luar negeri / Indonesia'><i style='width:" + (100 * it.f / it.n) + "%;background:var(--q1)'></i><i style='width:" + (100 - 100 * it.f / it.n) + "%;background:var(--q3)'></i></div>" : "<div class='sb' style='width:" + Math.max(2, 100 * it.v / (jsort === "p" ? 100 : mx)) + "%'><i style='width:100%;background:var(--q1)'></i></div>";
+        return "<button type='button' class='rk' data-k='" + esc(it.k) + "' style='grid-template-columns:28px " + (it.f != null ? "190px" : "130px") + " minmax(0,1fr) 56px'><span class='n'>" + String(i + 1).padStart(2, "0") + "</span><span class='a'>" + esc(it.l) + "<small>" + esc(it.d) + "</small></span>" + bar + "<span class='v'>" + esc(it.vt || it.v) + "</span></button>";
       }).join("") + "</div>" : "<p class='note'>Tidak ada data untuk filter ini.</p>";
       /* matriks wilayah × SINTA */
       var SC = [["12", "S1–2"], ["3", "S3"], ["4", "S4"], ["56", "S5–6"], ["0", "Belum"]];
