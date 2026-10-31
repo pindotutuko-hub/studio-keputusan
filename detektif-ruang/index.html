@@ -91,6 +91,7 @@ footer a{color:var(--muted)}
 .panel{padding:24px;max-width:1180px}
 .form{display:grid;gap:10px;max-width:440px;margin-top:12px}
 .form label{display:grid;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+.form select{font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 .form input{font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 .msg{min-height:1.2em;color:var(--bad);font-size:13px;margin:0}
 .codeBig{font-family:"Space Grotesk",Inter,sans-serif;font-size:56px;font-weight:700;letter-spacing:.12em;color:var(--accent);line-height:1}
@@ -109,6 +110,8 @@ footer a{color:var(--muted)}
 .keybox{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--bg);border-radius:8px;padding:8px 10px;word-break:break-all}
 .sess{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid var(--line);padding:8px 0;font-size:14px}
 .clsres{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0}
+.home{display:inline-flex;align-items:center;gap:4px;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 12px 7px 8px;font-weight:700;font-size:13px}
+.home:hover{border-color:var(--accent);color:var(--accent)}
 .hidden{display:none!important}
 .mobLock{position:fixed;left:12px;right:12px;bottom:12px;z-index:5;display:none;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 @media (max-width:860px){.mobLock.show{display:block}.wrap{padding-bottom:90px}}
@@ -118,6 +121,7 @@ footer a{color:var(--muted)}
 <body>
 <div class="wrap">
   <header>
+    <a class="home" href="https://pindotutuko.id/" title="Beranda pindotutuko.id"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg><span data-t="home"></span></a>
     <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="6"/><path d="M14.5 14.5 20 20"/><path d="M7.5 10h5M10 7.5v5"/></svg></div>
     <div class="brand"><h1>Detektif Ruang</h1><p data-t="tag"></p></div>
     <div class="hud">
@@ -158,19 +162,16 @@ footer a{color:var(--muted)}
     <div id="hostHome">
       <h2 data-t="hostH"></h2>
       <p class="hint" data-t="hostP"></p>
-      <form id="createForm" class="form">
+      <div id="hostGate"></div>
+      <form id="createForm" class="form hidden">
         <label><span data-t="fTitle"></span><input id="hTitle" maxlength="80" required></label>
+        <label><span data-t="fMode"></span><select id="hMode"><option value="mix" data-t="mMix"></option><option value="int" data-t="mInt"></option><option value="seg" data-t="mSeg"></option></select></label>
+        <div class="row" style="gap:10px"><label style="flex:1"><span data-t="fN"></span><select id="hN"></select></label>
+        <label style="flex:1"><span data-t="fLimit"></span><select id="hLimit"><option>15</option><option>20</option><option selected>30</option><option>45</option><option>60</option><option>90</option><option>120</option></select></label></div>
         <div class="row"><button class="btn" type="submit" data-t="create"></button><button class="btn ghost back" type="button" data-t="back"></button></div>
         <p class="msg" id="hMsg"></p>
       </form>
       <div id="mySess"></div>
-      <details style="margin-top:12px"><summary data-t="openOther"></summary>
-        <form id="openForm" class="form" style="margin-top:8px">
-          <label><span data-t="fCode"></span><input id="oCode" maxlength="6" autocomplete="off" required></label>
-          <label><span data-t="fKey"></span><input id="oKey" maxlength="64" autocomplete="off" required></label>
-          <div class="row"><button class="btn ghost" type="submit" data-t="openRecap"></button></div>
-        </form>
-      </details>
     </div>
     <div id="dash" class="hidden"></div>
   </section>
@@ -229,9 +230,11 @@ var T={
   joinOpen:"Gabung kuis kelas",hostOpen:"Ruang dosen",
   joinH:"Gabung kuis kelas",joinP:"Masukkan kode sesi dari dosen. Skor dihitung ulang di server dari pilihan ruangmu; waktu total dihitung sejak bergabung.",
   fCode:"Kode sesi",fName:"Nama",fNim:"NIM / ID (opsional)",joinGo:"Gabung & mulai",back:"Kembali",
-  hostH:"Ruang dosen",hostP:"Buat sesi kuis untuk satu kelas. Bagikan kodenya; mahasiswa memainkan 5 kasus yang sama, lalu rekap per sesi muncul di sini secara langsung.",
-  fTitle:"Nama kelas / sesi",create:"Buat sesi",fKey:"Kunci dosen",openOther:"Buka sesi dari perangkat lain",openRecap:"Buka rekap",
-  mySess:"Sesi saya di perangkat ini",open_:"Buka",
+  hostH:"Ruang dosen",hostP:"Buat sesi kuis untuk satu kelas: atur jenis permainan, jumlah soal, dan waktu per soal. Soal diacak untuk tiap mahasiswa. Rekap per sesi muncul di sini secara langsung.",
+  fTitle:"Nama kelas / sesi",create:"Buat sesi",fMode:"Jenis permainan",mMix:"Campur (terintegrasi & segregasi)",mInt:"Hanya ruang paling terintegrasi",mSeg:"Hanya ruang paling segregasi",fN:"Jumlah soal",fLimit:"Waktu per soal (detik)",
+  loginNeed:"Ruang dosen hanya untuk dosen yang sudah masuk ke pindotutuko.id.",loginGo:"Masuk ke situs",noCap:"Akun Anda ({n}) belum berhak membuat sesi. Minta admin memberi peran Penulis/Editor.",hello:"Masuk sebagai {n}.",
+  setLine:"{n} soal · {l} detik/soal · {m}",delS:"Hapus sesi",delSure:"Klik lagi untuk menghapus",mineEmpty:"Belum ada sesi.",
+  mySess:"Sesi saya",open_:"Buka",
   keyNote:"Simpan kunci dosen ini untuk membuka rekap dari perangkat lain:",
   shareJoin:"Mahasiswa membuka:",players:"Peserta",finished:"Selesai",avg:"Rata-rata",statusOpen:"Sesi dibuka",statusClosed:"Sesi ditutup",
   closeS:"Tutup sesi",openS:"Buka lagi",csvCopy:"Salin CSV",csvDl:"Unduh CSV",refresh:"Perbarui",backHome:"← Sesi lain",
@@ -240,8 +243,8 @@ var T={
   clsH:"Hasil kuis kelas",clsScore:"Skor kelas (dihitung server, tanpa bonus waktu): {s}/{m} · {c} tepat. Bila skor sama, waktu tercepat di atas.",clsRank:"Peringkat sementara: {r} dari {n}",
   clsSending:"Mengirim jawaban…",clsFail:"Gagal mengirim: {e}. Coba lagi.",retry:"Kirim ulang",inClass:"Kelas: {t}",
   err_not_found:"Kode sesi tidak ditemukan.",err_closed:"Sesi sudah ditutup dosen.",err_name_required:"Nama wajib diisi.",err_bad_code:"Kode harus 6 karakter.",
-  err_forbidden:"Kode atau kunci tidak cocok.",err_rate_limited:"Terlalu banyak sesi dibuat hari ini.",err_full:"Sesi sudah penuh.",err_already_submitted:"Jawaban sudah terkirim.",err_net:"Koneksi bermasalah.",
-  steps:"langkah",sumCase:"Kasus",sumPick:"Pilihan",sumPts:"Poin"
+  err_forbidden:"Anda tidak berhak membuka sesi ini.",err_login_required:"Silakan masuk ke situs terlebih dahulu.",err_bad_nonce:"Sesi login kedaluwarsa; muat ulang halaman.",err_rate_limited:"Terlalu banyak sesi dibuat hari ini.",err_full:"Sesi sudah penuh.",err_already_submitted:"Jawaban sudah terkirim.",err_net:"Koneksi bermasalah.",
+  home:"Beranda",steps:"langkah",sumCase:"Kasus",sumPick:"Pilihan",sumPts:"Poin"
  },
  en:{tag:"A spatial-configuration guessing game · space syntax",score:"Score",
   introH:"Where do people pass by and gather most?",
@@ -272,9 +275,11 @@ var T={
   joinOpen:"Join a class quiz",hostOpen:"Lecturer room",
   joinH:"Join a class quiz",joinP:"Enter the session code from your lecturer. Your score is recomputed on the server from your picks; total time counts from joining.",
   fCode:"Session code",fName:"Name",fNim:"Student ID (optional)",joinGo:"Join & start",back:"Back",
-  hostH:"Lecturer room",hostP:"Create a quiz session for one class. Share the code; students play the same 5 cases and a per-session recap appears here live.",
-  fTitle:"Class / session name",create:"Create session",fKey:"Lecturer key",openOther:"Open a session from another device",openRecap:"Open recap",
-  mySess:"My sessions on this device",open_:"Open",
+  hostH:"Lecturer room",hostP:"Create a quiz session for one class: set the game type, number of questions and time per question. Questions are shuffled for each student. A per-session recap appears here live.",
+  fTitle:"Class / session name",create:"Create session",fMode:"Game type",mMix:"Mixed (integrated & segregated)",mInt:"Most integrated space only",mSeg:"Most segregated space only",fN:"Number of questions",fLimit:"Time per question (seconds)",
+  loginNeed:"The lecturer room is only for lecturers signed in to pindotutuko.id.",loginGo:"Sign in to the site",noCap:"Your account ({n}) cannot create sessions yet. Ask the admin for an Author/Editor role.",hello:"Signed in as {n}.",
+  setLine:"{n} questions · {l} s/question · {m}",delS:"Delete session",delSure:"Click again to delete",mineEmpty:"No sessions yet.",
+  mySess:"My sessions",open_:"Open",
   keyNote:"Keep this lecturer key to open the recap from another device:",
   shareJoin:"Students open:",players:"Players",finished:"Finished",avg:"Average",statusOpen:"Session open",statusClosed:"Session closed",
   closeS:"Close session",openS:"Reopen",csvCopy:"Copy CSV",csvDl:"Download CSV",refresh:"Refresh",backHome:"← Other sessions",
@@ -283,8 +288,8 @@ var T={
   clsH:"Class quiz result",clsScore:"Class score (server-computed, no time bonus): {s}/{m} · {c} correct. Ties are broken by fastest time.",clsRank:"Current rank: {r} of {n}",
   clsSending:"Sending answers…",clsFail:"Sending failed: {e}. Try again.",retry:"Resend",inClass:"Class: {t}",
   err_not_found:"Session code not found.",err_closed:"The session has been closed.",err_name_required:"Name is required.",err_bad_code:"The code must be 6 characters.",
-  err_forbidden:"Code or key does not match.",err_rate_limited:"Too many sessions created today.",err_full:"The session is full.",err_already_submitted:"Answers already submitted.",err_net:"Connection problem.",
-  steps:"steps",sumCase:"Case",sumPick:"Pick",sumPts:"Points"
+  err_forbidden:"You are not allowed to open this session.",err_login_required:"Please sign in to the site first.",err_bad_nonce:"Login session expired; reload the page.",err_rate_limited:"Too many sessions created today.",err_full:"The session is full.",err_already_submitted:"Answers already submitted.",err_net:"Connection problem.",
+  home:"Home",steps:"steps",sumCase:"Case",sumPick:"Pick",sumPts:"Points"
  }
 };
 function t(k,v){var s=(T[lang][k]!=null?T[lang][k]:k);if(v)for(var p in v)s=s.split('{'+p+'}').join(v[p]);return s}
@@ -298,36 +303,53 @@ var LEVELS=[
    R('KEL','R. Keluarga','Family',0,2,6,3),R('KT2','K. Tidur 2','Bedroom 2',6,2,4,3),R('DPR','Dapur','Kitchen',0,0,6,2),R('KM','KM','Bath',6,0,4,2)],
   doors:[['TRS','TMU'],['TMU','KT1'],['TMU','KEL'],['KEL','KT2'],['KEL','DPR'],['DPR','KM']],
   lesson:{id:"<b>Ruang keluarga</b>, bukan ruang tamu, menjadi simpul: ia menghubungkan ruang depan, kamar, dan servis dengan langkah paling sedikit. Ruang tamu justru menjadi ‘penyaring’ antara luar dan dalam.",
-   en:"The <b>family room</b>, not the front living room, is the hub: it links the front, the bedrooms and the service spaces in the fewest steps. The living room acts as a ‘filter’ between outside and inside."}},
+   en:"The <b>family room</b>, not the front living room, is the hub: it links the front, the bedrooms and the service spaces in the fewest steps. The living room acts as a ‘filter’ between outside and inside."},
+  lesson2:{id:"<b>KM</b> paling dalam: hanya bisa dicapai lewat dapur, di ujung cabang graf. Ruang servis di ujung cabang terjaga privasinya tanpa perlu koridor tambahan.",en:"The <b>bath</b> is the deepest: reachable only through the kitchen, at the end of a branch. Service spaces at the end of a branch stay private without an extra corridor."}},
  {title:{id:"Omah Joglo (Jawa)",en:"Javanese Joglo House"},q:'int',W:15,H:14,entry:[7.5,14],
   rooms:[R('HAL','Halaman','Front yard',0,12,15,2,'open'),R('PEN','Pendopo','Pendopo',3,8,9,4,'open'),R('PRI','Pringgitan','Pringgitan',3,6,9,2),
    R('DAL','Dalem','Dalem',3,3,9,3),R('SKI','Senthong kiwa','Left senthong',3,0,3,3),R('STE','Senthong tengah','Middle senthong',6,0,3,3),R('STN','Senthong tengen','Right senthong',9,0,3,3),
    R('GKI','Gandok kiwa','Left gandok',0,0,3,8),R('GTE','Gandok tengen','Right gandok',12,3,3,5),R('PAW','Pawon','Pawon (kitchen)',12,0,3,3)],
   doors:[['HAL','PEN'],['PEN','PRI'],['PRI','DAL'],['DAL','SKI'],['DAL','STE'],['DAL','STN'],['DAL','GKI'],['DAL','GTE'],['GTE','PAW']],
   lesson:{id:"<b>Pendopo</b> paling luas dan terbuka, tetapi secara konfigurasi ia dangkal dari halaman. <b>Dalem</b>-lah yang menyatukan senthong, gandok, dan pringgitan — inti integrasi rumah. Pelajaran: besar ruang ≠ sentral secara konfigurasi.",
-   en:"The <b>pendopo</b> is the largest and most open, yet configurationally it is shallow from the yard. The <b>dalem</b> ties the senthong, gandok and pringgitan together — the integration core. Lesson: large ≠ configurationally central."}},
+   en:"The <b>pendopo</b> is the largest and most open, yet configurationally it is shallow from the yard. The <b>dalem</b> ties the senthong, gandok and pringgitan together — the integration core. Lesson: large ≠ configurationally central."},
+  lesson2:{id:"<b>Halaman</b> paling segregasi terhadap sistem rumah: dari halaman ke senthong butuh 4 langkah. Ruang yang paling ‘publik’ bisa paling dalam secara konfigurasi bila semua ruang bertumpu pada dalem di tengah.",en:"The <b>front yard</b> is the most segregated relative to the house system: it takes 4 steps to reach the senthong. The most ‘public’ space can be configurationally deepest when every room hinges on the central dalem."}},
  {title:{id:"Gedung Kuliah",en:"Lecture Building"},q:'seg',W:16,H:10,entry:[8,10],
   rooms:[R('R1','Kelas 1','Class 1',0,0,4,5),R('R2','Kelas 2','Class 2',4,0,4,5),R('R3','Kelas 3','Class 3',8,0,4,5),R('R4','Kelas 4','Class 4',12,0,4,5),
    R('KOR','Koridor','Corridor',0,5,16,2,'open'),R('DSN','R. Dosen','Staff room',0,7,3,3),R('ARS','R. Arsip','Archive',3,7,3,3),R('LOB','Lobi','Lobby',6,7,4,3,'open'),
    R('WC','Toilet','Toilet',10,7,3,3),R('TGA','Tangga','Stairs',13,7,3,3)],
   doors:[['LOB','KOR'],['KOR','R1'],['KOR','R2'],['KOR','R3'],['KOR','R4'],['KOR','DSN'],['KOR','WC'],['KOR','TGA'],['DSN','ARS']],
   lesson:{id:"Ruang yang hanya bisa dicapai lewat ruang lain (<b>arsip</b> lewat ruang dosen) menjadi paling segregasi — cocok untuk fungsi yang perlu kontrol akses. Koridor adalah tulang punggung integrasi gedung.",
-   en:"A space reachable only through another space (the <b>archive</b>, via the staff room) is the most segregated — suited to functions needing access control. The corridor is the building’s integration spine."}},
+   en:"A space reachable only through another space (the <b>archive</b>, via the staff room) is the most segregated — suited to functions needing access control. The corridor is the building’s integration spine."},
+  lesson2:{id:"<b>Koridor</b> menghubungkan hampir semua ruang dalam satu langkah — inti integrasi gedung. Ruang dosen sedikit lebih terintegrasi daripada kelas karena ia juga menjadi pintu ke arsip.",en:"The <b>corridor</b> links almost every space in one step — the building’s integration core. The staff room is slightly more integrated than the classes because it also leads to the archive."}},
  {title:{id:"Kampung Kota",en:"Urban Kampung"},q:'int',W:16,H:12,entry:[8,12],bg:'blocks',
   rooms:[R('JLN','Jalan utama','Main road',0,11,16,1,'gang'),R('GA','Gang A','Alley A',3,0,1,10,'gang'),R('GB','Gang B','Alley B',9,3,1,8,'gang'),R('GC','Gang C','Alley C',14,3,1,8,'gang'),
    R('GD','Gang D','Alley D',4,5,5,1,'gang'),R('GE','Gang E','Alley E',10,8,4,1,'gang'),R('GF','Gang F','Alley F',0,2,3,1,'gang'),R('GG','Gang G','Alley G',4,1,4,1,'gang'),
    R('LAP','Lapangan','Field',10,3,4,3,'open'),R('MUS','Mushola','Prayer hall',6,7,3,3)],
   doors:[['JLN','GB'],['JLN','GC'],['GA','GD'],['GD','GB'],['GB','GE'],['GE','GC'],['GA','GF'],['GA','GG'],['GB','LAP'],['GC','LAP'],['GB','MUS']],
   lesson:{id:"<b>Gang B</b> menyambung ke jalan utama, gang lain, lapangan, dan mushola — ia paling terintegrasi. Menurut teori pergerakan alami (natural movement, Hillier dkk., 1993), konfigurasi jaringan seperti ini memengaruhi di mana orang paling banyak lewat, sehingga fasilitas bersama di gang terintegrasi lebih mudah hidup.",
-   en:"<b>Alley B</b> links the main road, other alleys, the field and the prayer hall — it is the most integrated. Natural-movement theory (Hillier et al., 1993) holds that network configuration shapes where people pass most, so shared facilities on integrated alleys come alive more easily."}},
+   en:"<b>Alley B</b> links the main road, other alleys, the field and the prayer hall — it is the most integrated. Natural-movement theory (Hillier et al., 1993) holds that network configuration shapes where people pass most, so shared facilities on integrated alleys come alive more easily."},
+  lesson2:{id:"<b>Gang F dan G</b> buntu dan menggantung pada gang A, yang tidak tersambung langsung ke jalan utama. Gang seperti ini paling segregasi: terasa paling privat, tetapi juga paling sulit dijangkau saat darurat.",en:"<b>Alleys F and G</b> are dead ends hanging off alley A, which has no direct link to the main road. Such alleys are the most segregated: they feel most private, but are also hardest to reach in an emergency."}},
  {title:{id:"Rumah dengan Taman Dalam",en:"Courtyard House"},q:'seg',W:12,H:12,entry:[6,12],
   rooms:[R('TRS','Teras','Terrace',4,10,4,2,'open'),R('FOY','Foyer','Foyer',4,8,4,2),R('TMU','R. Tamu','Living',0,6,4,6),R('KEL','R. Keluarga','Family',8,6,4,6),
    R('TAM','Taman dalam','Courtyard',4,4,4,4,'open'),R('MKN','R. Makan','Dining',0,2,4,4),R('DPR','Dapur','Kitchen',0,0,4,2),R('KTU','K. Utama','Main bed',8,2,4,4),
    R('KTA','K. Anak','Child bed',4,0,4,4),R('KM','KM','Bath',8,0,4,2)],
   doors:[['TRS','FOY'],['FOY','TMU'],['FOY','TAM'],['FOY','KEL'],['TMU','MKN'],['TAM','MKN'],['MKN','DPR'],['KEL','KTU'],['TAM','KTA'],['KEL','TAM'],['KTU','KM']],
   lesson:{id:"Cincin sirkulasi lewat <b>taman dalam</b> memberi pilihan rute dan membuat rumah lebih terintegrasi. Namun ruang di ujung ‘cabang’ — <b>KM</b> di balik kamar utama — tetap paling dalam: privat karena konfigurasi, bukan karena dinding tebal.",
-   en:"The circulation ring through the <b>courtyard</b> offers route choice and makes the house more integrated. Yet the space at the end of a ‘branch’ — the <b>bath</b> behind the main bedroom — stays deepest: private by configuration, not by thick walls."}}
+   en:"The circulation ring through the <b>courtyard</b> offers route choice and makes the house more integrated. Yet the space at the end of a ‘branch’ — the <b>bath</b> behind the main bedroom — stays deepest: private by configuration, not by thick walls."},
+  lesson2:{id:"<b>Taman dalam</b> menjadi pusat cincin sirkulasi: ia menyambung foyer, ruang makan, ruang keluarga, dan kamar anak. Ruang terbuka di tengah rumah bisa menjadi simpul integrasi.",en:"The <b>courtyard</b> is the hub of the circulation ring, linking the foyer, dining room, family room and child’s bedroom. An open space at the heart of a house can be the integration node."}},
+ {title:{id:"Pasar Tradisional",en:"Traditional Market"},q:'int',W:14,H:10,entry:[7,10],
+  rooms:[R('HAL','Parkir','Parking',0,8,14,2,'open'),R('LOR','Lorong utama','Main aisle',6,0,2,8,'open'),R('LSY','Los sayur','Vegetable hall',0,4,6,4),R('LIK','Los ikan','Fish hall',0,0,6,4),
+   R('LSM','Lorong samping','Side aisle',8,3,6,1,'open'),R('KSA','Kios A','Kiosk A',8,4,3,4),R('KSB','Kios B','Kiosk B',11,4,3,4),R('GDG','Gudang','Storage',8,0,3,3),R('KTR','Kantor','Office',11,0,3,3)],
+  doors:[['HAL','LOR'],['HAL','LSY'],['LSY','LOR'],['LIK','LOR'],['LIK','LSY'],['LOR','LSM'],['LSM','KSA'],['LSM','KSB'],['LSM','GDG'],['GDG','KTR']],
+  lesson:{id:"<b>Lorong samping</b>, bukan lorong utama, paling terintegrasi: ia menyambung lorong utama ke kios, gudang, dan kantor sekaligus. Lorong utama dekat dengan parkir, tetapi lorong samping lebih ‘dekat’ ke semua ruang.",en:"The <b>side aisle</b>, not the main aisle, is the most integrated: it links the main aisle to the kiosks, storage and office at once. The main aisle is close to the parking, but the side aisle is ‘closer’ to every space."},
+  lesson2:{id:"<b>Kantor</b> pengelola hanya bisa dicapai lewat gudang — paling dalam. Kontrol akses terjadi lewat konfigurasi ruang, bukan hanya lewat pintu terkunci.",en:"The management <b>office</b> is reachable only through storage — the deepest space. Access control comes from spatial configuration, not only from locked doors."}}
 ];
+
+/* ---------- Random rounds: 5 of the levels, random order, random question (integrated / segregated) ---------- */
+function randomRounds(){var ix=LEVELS.map(function(_,i){return i});for(var i=ix.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var x=ix[i];ix[i]=ix[j];ix[j]=x}
+  return ix.slice(0,ROUNDS).map(function(lv){return {lv:lv,q:Math.random()<.5?'int':'seg'}})}
+function roundLevel(r){var L=LEVELS[r.lv];var o={};for(var k in L)o[k]=L[k];o.q=r.q;o.lesson=r.q===L.q?L.lesson:L.lesson2;o.lv=r.lv;return o}
+function setRounds(rs){st.rounds=rs;st.R=rs.map(roundLevel)}
 
 /* ---------- Space syntax computation ---------- */
 function analyze(L){
@@ -367,7 +389,7 @@ function inkOn(c){var l=(0.299*c[0]+0.587*c[1]+0.114*c[2]);return l>150?'#1b1814
 function heatT(A,id){var vals=A.ids.map(function(i){return A.res[i].I}).filter(isFinite);var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);var v=A.res[id].I;if(!isFinite(v))return 1;return mx>mn?(v-mn)/(mx-mn):0.5}
 
 /* ---------- State ---------- */
-var LIMIT=30,st={cls:null,host:null,poll:null,i:0,score:0,sel:null,phase:'intro',focus:null,hist:[],t0:0,timer:null,A:null};
+var ROUNDS=5,LIMIT_SOLO=30,st={limit:30,R:[],cls:null,host:null,poll:null,i:0,score:0,sel:null,phase:'intro',focus:null,hist:[],t0:0,timer:null,A:null};
 var $=function(id){return document.getElementById(id)};
 var NS='http://www.w3.org/2000/svg';
 function el(tag,attrs,parent){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
@@ -381,11 +403,11 @@ function applyStatic(){
   var stops=[];for(var i=0;i<=10;i++)stops.push(rgb(heat(i/10))+' '+(i*10)+'%');
   $('legendBar').style.background='linear-gradient(90deg,'+stops.join(',')+')';
 }
-function dots(){var d=$('dots');d.innerHTML='';LEVELS.forEach(function(_,i){var s=document.createElement('span');s.className='dot';var h=st.hist[i];if(h)s.className+=h.correct?' done':' miss';else if(i===st.i&&st.phase!=='intro'&&st.phase!=='end')s.className+=' on';d.appendChild(s)})}
+function dots(){var d=$('dots');d.innerHTML='';(st.R.length?st.R:LEVELS.slice(0,ROUNDS)).forEach(function(_,i){var s=document.createElement('span');s.className='dot';var h=st.hist[i];if(h)s.className+=h.correct?' done':' miss';else if(i===st.i&&st.phase!=='intro'&&st.phase!=='end')s.className+=' on';d.appendChild(s)})}
 
 /* ---------- Plan drawing ---------- */
 function drawPlan(){
-  var L=LEVELS[st.i],A=st.A,svg=$('planSvg'),rev=st.phase==='reveal';
+  var L=st.R[st.i],A=st.A,svg=$('planSvg'),rev=st.phase==='reveal';
   svg.innerHTML='';svg.setAttribute('viewBox',(-0.6)+' '+(-0.6)+' '+(L.W+1.2)+' '+(L.H+1.9));
   svg.setAttribute('aria-label',L.title[lang]);
   svg.classList.toggle('revealed',rev);
@@ -461,9 +483,9 @@ function bestIds(A,q){var v=A.ids.map(function(i){return A.res[i].TD});var tgt=q
 function nameOf(L,k){for(var i=0;i<L.rooms.length;i++)if(L.rooms[i].k===k)return L.rooms[i].n[lang];return k}
 
 function renderSide(){
-  var L=LEVELS[st.i],A=st.A,s=$('side'),h=st.hist[st.i];
+  var L=st.R[st.i],A=st.A,s=$('side'),h=st.hist[st.i];
   if(st.phase==='guess'){
-    s.innerHTML='<div class="hint">'+t('round',{n:st.i+1,t:LEVELS.length})+'</div>'+
+    s.innerHTML='<div class="hint">'+t('round',{n:st.i+1,t:st.R.length})+'</div>'+
      '<div class="q">'+t(L.q==='int'?'qInt':'qSeg')+'</div>'+
      '<div class="timer"><i id="tbar"></i></div>'+
      '<div class="sel" id="selBox">'+(st.sel?t('picked')+' <b>'+nameOf(L,st.sel)+'</b>':t('pick'))+'</div>'+
@@ -480,8 +502,8 @@ function renderSide(){
       rows.map(function(id){var r=A.res[id],tag=(id===h.pick?' <span style="color:var(--accent)">'+t('you')+'</span>':'')+(best.indexOf(id)>=0?' <span style="color:var(--ok)">'+t('bestTag')+'</span>':'');
         var c=heat(heatT(A,id));
         return '<tr><td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:'+rgb(c)+';margin-right:6px"></span>'+nameOf(L,id)+tag+'</td><td>'+r.TD+'</td><td>'+fmt(r.MD,2)+'</td><td>'+fmt(r.RA,3)+'</td><td>'+fmt(r.RRA,3)+'</td><td><b>'+fmt(r.I,2)+'</b></td></tr>'}).join('')+'</tbody></table>';
-    var last=st.i===LEVELS.length-1;
-    s.innerHTML='<div class="hint">'+t('round',{n:st.i+1,t:LEVELS.length})+'</div>'+v+
+    var last=st.i===st.R.length-1;
+    s.innerHTML='<div class="hint">'+t('round',{n:st.i+1,t:st.R.length})+'</div>'+v+
       '<div class="lesson">'+L.lesson[lang]+'</div>'+
       '<div class="jg"><h3>'+t('jgH',{r:nameOf(L,st.focus)})+'</h3><p>'+t('jgP')+'</p><svg id="jgSvg"></svg></div>'+
       '<div style="overflow-x:auto">'+tb+'</div>'+
@@ -493,14 +515,14 @@ function renderSide(){
 }
 
 function renderEnd(){
-  var m=LEVELS.length*120,s=st.score,r=s>=480?'rank3':s>=340?'rank2':s>=200?'rank1':'rank0';
+  var m=st.R.length*120,s=st.score,fr=s/m,r=fr>=.8?'rank3':fr>=.57?'rank2':fr>=.33?'rank1':'rank0';
   var b=+(store.get('drBest')||0);if(s>b)store.set('drBest',s);
   showOnly('endBox');var e=$('endBox');
   e.innerHTML='<div><h2>'+t('endH')+'</h2><p class="hint">'+t('endTotal')+'</p><div class="big">'+s+' <span style="font-size:20px;color:var(--muted)">/ '+m+'</span></div>'+
    '<p style="font-family:Space Grotesk,Inter,sans-serif;font-size:20px;font-weight:700;margin:8px 0 12px">'+t(r)+'</p>'+
    (st.cls?'<div class="clsres" id="clsRes"></div>':'')+
    '<table class="sumtab"><thead><tr><th>#</th><th>'+t('sumCase')+'</th><th>'+t('sumPick')+'</th><th>'+t('sumPts')+'</th></tr></thead><tbody>'+
-   st.hist.map(function(h,i){var L=LEVELS[i];return '<tr><td>'+(i+1)+'</td><td>'+L.title[lang]+'</td><td>'+(h.pick?nameOf(L,h.pick):'—')+(h.correct?' ✓':'')+'</td><td>'+h.pts+'</td></tr>'}).join('')+'</tbody></table>'+
+   st.hist.map(function(h,i){var L=st.R[i];return '<tr><td>'+(i+1)+'</td><td>'+L.title[lang]+'</td><td>'+(h.pick?nameOf(L,h.pick):'—')+(h.correct?' ✓':'')+'</td><td>'+h.pts+'</td></tr>'}).join('')+'</tbody></table>'+
    '<div class="row" style="margin-top:14px"><button class="btn" id="againBtn">'+t('again')+'</button><button class="btn ghost" id="copyBtn">'+t('copy')+'</button><button class="btn ghost" id="homeBtn">'+t('back')+'</button></div></div>'+
    '<svg id="endSvg" viewBox="0 0 300 220"></svg>';
   drawJG($('endSvg'),analyze(LEVELS[1]),LEVELS[1],'HAL',true);
@@ -532,56 +554,63 @@ function api(route,data,get){var o={method:data?'POST':'GET',headers:{},cache:'n
   return fetch(API+route+(get?'&'+get:''),o).then(function(r){return r.json().catch(function(){return {ok:false,error:'net'}})},function(){return {ok:false,error:'net'}})}
 function errT(e){var k='err_'+e;return T[lang][k]!=null?t(k):t('err_net')}
 function showOnly(id){['intro','joinBox','hostBox','endBox','game'].forEach(function(x){$(x).classList.toggle('hidden',x!==id)});window.scrollTo(0,0)}
-function hosts(){try{return JSON.parse(store.get('drHost')||'[]')}catch(e){return []}}
 function mmss(x){if(x==null)return '—';x=Math.round(x);return Math.floor(x/60)+':'+String(x%60).padStart(2,'0')}
-
 function openJoin(code){showOnly('joinBox');if(code)$('jCode').value=code;$('jMsg').textContent='';($('jCode').value?$('jName'):$('jCode')).focus()}
 $('joinForm').addEventListener('submit',function(e){e.preventDefault();var b=this.querySelector('button[type=submit]');b.disabled=true;$('jMsg').textContent='';
   var code=$('jCode').value.trim().toUpperCase();
   api('join',{code:code,name:$('jName').value,nim:$('jNim').value}).then(function(r){b.disabled=false;
     if(!r.ok){$('jMsg').textContent=errT(r.error);return}
-    store.set('drName',$('jName').value);st.cls={code:code,pid:r.pid,token:r.token,title:r.title};start()})});
+    store.set('drName',$('jName').value);st.cls={code:code,pid:r.pid,token:r.token,title:r.title};setRounds(r.rounds);st.limit=r.limit||30;start()})});
 
-function renderMySess(){var h=hosts(),box=$('mySess');if(!h.length){box.innerHTML='';return}
-  box.innerHTML='<h3 style="font-size:15px;margin:18px 0 4px">'+t('mySess')+'</h3>'+h.map(function(x,i){return '<div class="sess"><span><b>'+esc(x.code)+'</b> · '+esc(x.title)+'</span><button class="btn ghost" data-i="'+i+'">'+t('open_')+'</button></div>'}).join('');
-  box.querySelectorAll('button[data-i]').forEach(function(bt){bt.onclick=function(){var x=hosts()[+bt.getAttribute('data-i')];openDash(x.code,x.key,false)}})}
-function openHost(){showOnly('hostBox');$('hostHome').classList.remove('hidden');$('dash').classList.add('hidden');clearInterval(st.poll);$('hMsg').textContent='';renderMySess()}
+var MODE_T={mix:'mMix',int:'mInt',seg:'mSeg'};
+function setLine(o){return t('setLine',{n:o.n,l:o.limit,m:t(MODE_T[o.mode]||'mMix')})}
+function fillN(){var mode=$('hMode').value,max=st.who?(mode==='mix'?st.who.maxMix:st.who.maxOne):6,cur=+$('hN').value||5,o='';for(var i=1;i<=max;i++)o+='<option'+(i===Math.min(cur,max)?' selected':'')+'>'+i+'</option>';$('hN').innerHTML=o}
+function openHost(){showOnly('hostBox');$('hostHome').classList.remove('hidden');$('dash').classList.add('hidden');clearInterval(st.poll);$('hMsg').textContent='';
+  $('hostGate').innerHTML='<p class="hint">…</p>';$('createForm').classList.add('hidden');$('mySess').innerHTML='';
+  api('whoami').then(function(w){st.who=w.ok?w:null;
+    if(!w.ok){$('hostGate').innerHTML='<p class="msg">'+errT(w.error)+'</p>';return}
+    if(!w.logged){$('hostGate').innerHTML='<p>'+t('loginNeed')+'</p><a class="btn" style="display:inline-block;text-decoration:none" href="'+esc(w.login)+'">'+t('loginGo')+'</a> <button class="btn ghost back2" type="button">'+t('back')+'</button>';$('hostGate').querySelector('.back2').onclick=function(){showOnly('intro')};return}
+    if(!w.can){$('hostGate').innerHTML='<p class="msg">'+t('noCap',{n:esc(w.name)})+'</p>';return}
+    $('hostGate').innerHTML='<p class="hint">'+t('hello',{n:esc(w.name)})+'</p>';$('createForm').classList.remove('hidden');fillN();renderMySess()})}
+function hostApi(route,data){data=data||{};data.nonce=st.who&&st.who.nonce;return api(route,data)}
+function renderMySess(){var box=$('mySess');hostApi('mine').then(function(r){if(!r.ok){box.innerHTML='<p class="msg">'+errT(r.error)+'</p>';return}
+  box.innerHTML='<h3 style="font-size:15px;margin:18px 0 4px">'+t('mySess')+'</h3>'+(r.sessions.length?r.sessions.map(function(x){return '<div class="sess"><span><b>'+esc(x.code)+'</b> · '+esc(x.title)+'<br><span class="hint">'+setLine(x)+' · '+x.done+'/'+x.players+' '+t('finished').toLowerCase()+' · '+t(x.open?'statusOpen':'statusClosed')+'</span></span><button class="btn ghost" data-c="'+esc(x.code)+'">'+t('open_')+'</button></div>'}).join(''):'<p class="hint">'+t('mineEmpty')+'</p>');
+  box.querySelectorAll('button[data-c]').forEach(function(bt){bt.onclick=function(){openDash(bt.getAttribute('data-c'))}})})}
+$('hMode').addEventListener('change',fillN);
 $('createForm').addEventListener('submit',function(e){e.preventDefault();var b=this.querySelector('button[type=submit]');b.disabled=true;
-  api('create',{title:$('hTitle').value}).then(function(r){b.disabled=false;if(!r.ok){$('hMsg').textContent=errT(r.error);return}
-    var h=hosts();h.unshift({code:r.code,key:r.key,title:r.title,at:Date.now()});store.set('drHost',JSON.stringify(h.slice(0,30)));$('hTitle').value='';openDash(r.code,r.key,true)})});
-$('openForm').addEventListener('submit',function(e){e.preventDefault();var c=$('oCode').value.trim().toUpperCase(),k=$('oKey').value.trim();
-  api('recap',{code:c,key:k}).then(function(r){if(!r.ok){alertMsg(errT(r.error));return}var h=hosts();if(!h.some(function(x){return x.code===c})){h.unshift({code:c,key:k,title:r.title,at:Date.now()});store.set('drHost',JSON.stringify(h.slice(0,30)))}openDash(c,k,false)})});
-function alertMsg(m){$('hMsg').textContent=m}
-
-function openDash(code,key,showKey){st.host={code:code,key:key,showKey:showKey,data:null};$('hostHome').classList.add('hidden');$('dash').classList.remove('hidden');$('dash').innerHTML='<p class="hint">…</p>';
+  hostApi('create',{title:$('hTitle').value,mode:$('hMode').value,n:+$('hN').value,limit:+$('hLimit').value}).then(function(r){b.disabled=false;if(!r.ok){$('hMsg').textContent=errT(r.error);return}
+    $('hTitle').value='';openDash(r.code)})});
+function openDash(code){st.host={code:code,data:null};$('hostHome').classList.add('hidden');$('dash').classList.remove('hidden');$('dash').innerHTML='<p class="hint">…</p>';
   loadDash();clearInterval(st.poll);st.poll=setInterval(function(){if(!$('dash').classList.contains('hidden')&&!$('hostBox').classList.contains('hidden'))loadDash();else clearInterval(st.poll)},5000)}
-function loadDash(){var h=st.host;if(!h)return;api('recap',{code:h.code,key:h.key}).then(function(r){if(!r.ok){$('dash').innerHTML='<p class="msg">'+errT(r.error)+'</p><button class="btn ghost" id="dBack">'+t('backHome')+'</button>';$('dBack').onclick=openHost;return}h.data=r;renderDash()})}
-function caseStats(r){var done=r.players.filter(function(p){return p.done});return LEVELS.map(function(L,i){var A=analyze(L),best=bestIds(A,L.q),cnt={},n=0,ok=0;
-  done.forEach(function(p){var k=p.picks&&p.picks[i];if(!k)return;n++;cnt[k]=(cnt[k]||0)+1;if(best.indexOf(k)>=0)ok++});
-  var list=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]}).map(function(k){return {k:k,n:cnt[k],ok:best.indexOf(k)>=0}});
-  return {L:L,n:n,ok:ok,list:list,best:best}})}
+function loadDash(){var h=st.host;if(!h)return;hostApi('recap',{code:h.code}).then(function(r){if(!r.ok){$('dash').innerHTML='<p class="msg">'+errT(r.error)+'</p><button class="btn ghost" id="dBack">'+t('backHome')+'</button>';$('dBack').onclick=openHost;return}h.data=r;renderDash()})}
+function caseStats(r){var done=r.players.filter(function(p){return p.done&&p.rounds}),out=[];
+  LEVELS.forEach(function(_,lv){['int','seg'].forEach(function(q){var L=roundLevel({lv:lv,q:q}),A=analyze(L),best=bestIds(A,q),cnt={},n=0,ok=0;
+    done.forEach(function(p){p.rounds.forEach(function(rd,i){if(rd.lv!==lv||rd.q!==q)return;n++;var k=p.picks&&p.picks[i];if(!k)return;cnt[k]=(cnt[k]||0)+1;if(best.indexOf(k)>=0)ok++})});
+    if(!n)return;var list=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]}).map(function(k){return {k:k,n:cnt[k],ok:best.indexOf(k)>=0}});
+    out.push({L:L,n:n,ok:ok,list:list,best:best})})});return out}
 function renderDash(){var h=st.host,r=h.data,done=r.players.filter(function(p){return p.done});
   var avg=done.length?done.reduce(function(a,p){return a+p.score},0)/done.length:0;
   var link=location.origin+location.pathname+'?kode='+h.code;
-  var rows=r.players.map(function(p,i){return '<tr><td>'+(p.done?(i+1):'')+'</td><td style="text-align:left">'+esc(p.name)+'</td><td style="text-align:left">'+esc(p.nim)+'</td><td><b>'+(p.done?p.score:'<span class="hint">'+t('playing')+'</span>')+'</b></td><td>'+(p.done?p.correct+'/'+LEVELS.length:'')+'</td><td>'+(p.done?mmss(p.secs):'')+'</td></tr>'}).join('');
+  var rows=r.players.map(function(p,i){return '<tr><td>'+(p.done?(i+1):'')+'</td><td style="text-align:left">'+esc(p.name)+'</td><td style="text-align:left">'+esc(p.nim)+'</td><td><b>'+(p.done?p.score:'<span class="hint">'+t('playing')+'</span>')+'</b></td><td>'+(p.done?p.correct+'/'+(p.rounds?p.rounds.length:''):'')+'</td><td>'+(p.done?mmss(p.secs):'')+'</td></tr>'}).join('');
   var cs=caseStats(r).map(function(c,i){var mx=Math.max(1,c.list.length?c.list[0].n:1);
-    return '<div class="case"><h4>'+(i+1)+'. '+esc(c.L.title[lang])+' · <span style="color:var(--muted);font-weight:500">'+t(c.L.q==='int'?'int':'seg')+'</span> · '+t('correctPct',{p:c.n?Math.round(100*c.ok/c.n):0})+'</h4>'+
+    return '<div class="case"><h4>'+esc(c.L.title[lang])+' · <span style="color:var(--muted);font-weight:500">'+t(c.L.q==='int'?'int':'seg')+' · n='+c.n+'</span> · '+t('correctPct',{p:c.n?Math.round(100*c.ok/c.n):0})+'</h4>'+
      (c.list.length?c.list.slice(0,5).map(function(x){return '<div class="hb"><span class="nm">'+esc(nameOf(c.L,x.k))+(x.ok?' ✓':'')+'</span><i class="'+(x.ok?'ok':'')+'" style="width:'+Math.round(140*x.n/mx)+'px"></i><span>'+x.n+'</span></div>'}).join(''):'<div class="hint">—</div>')+'</div>'}).join('');
   $('dash').innerHTML='<div class="row" style="justify-content:space-between;align-items:center"><div><h2>'+esc(r.title)+'</h2><span class="hint">'+t(r.open?'statusOpen':'statusClosed')+'</span></div><button class="btn ghost" id="dBack">'+t('backHome')+'</button></div>'+
    '<div style="margin-top:12px" class="row"><div><div class="hint">'+t('fCode')+'</div><div class="codeBig">'+esc(h.code)+'</div></div><div style="align-self:end"><div class="hint">'+t('shareJoin')+'</div><div style="font-weight:600;word-break:break-all">'+esc(link)+'</div></div></div>'+
-   (h.showKey?'<p class="hint" style="margin:12px 0 4px">'+t('keyNote')+'</p><div class="keybox">'+esc(h.key)+'</div>':'')+
+   '<p class="hint" style="margin:10px 0 0">'+setLine(r)+'</p>'+
    '<div class="kpis"><div class="kpi"><b>'+r.players.length+'</b><span>'+t('players')+'</span></div><div class="kpi"><b>'+done.length+'</b><span>'+t('finished')+'</span></div><div class="kpi"><b>'+fmt(avg,0)+'</b><span>'+t('avg')+' / '+r.max+'</span></div></div>'+
-   '<div class="row"><button class="btn ghost" id="dRef">'+t('refresh')+'</button><button class="btn ghost" id="dTog">'+t(r.open?'closeS':'openS')+'</button><button class="btn ghost" id="dCsv">'+t('csvCopy')+'</button><button class="btn ghost" id="dDl">'+t('csvDl')+'</button></div>'+
+   '<div class="row"><button class="btn ghost" id="dRef">'+t('refresh')+'</button><button class="btn ghost" id="dTog">'+t(r.open?'closeS':'openS')+'</button><button class="btn ghost" id="dCsv">'+t('csvCopy')+'</button><button class="btn ghost" id="dDl">'+t('csvDl')+'</button><button class="btn ghost" id="dDel" style="color:var(--bad)">'+t('delS')+'</button></div>'+
    '<div class="dashgrid"><div><h3 style="font-size:15px;margin:6px 0">'+t('lead')+'</h3><div style="overflow-x:auto"><table><thead><tr><th>#</th><th style="text-align:left">'+t('thName')+'</th><th style="text-align:left">'+t('thNim')+'</th><th>'+t('thScore')+'</th><th>'+t('thOk')+'</th><th>'+t('thTime')+'</th></tr></thead><tbody>'+(rows||'<tr><td colspan="6" class="hint" style="text-align:left">'+t('noPlayers')+'</td></tr>')+'</tbody></table></div></div>'+
    '<div><h3 style="font-size:15px;margin:6px 0">'+t('perCase')+'</h3>'+cs+'</div></div>';
   $('dBack').onclick=openHost;$('dRef').onclick=loadDash;
-  $('dTog').onclick=function(){api('toggle',{code:h.code,key:h.key,open:!r.open}).then(loadDash)};
+  $('dTog').onclick=function(){hostApi('toggle',{code:h.code,open:!r.open}).then(loadDash)};
+  $('dDel').onclick=function(){var b=this;if(!b.dataset.arm){b.dataset.arm='1';b.textContent=t('delSure');setTimeout(function(){if(b.isConnected){delete b.dataset.arm;b.textContent=t('delS')}},4000);return}clearInterval(st.poll);hostApi('remove',{code:h.code}).then(function(){openHost()})};
   $('dCsv').onclick=function(){var b=this;try{navigator.clipboard.writeText(csv(r)).then(function(){b.textContent=t('copied')},function(){b.textContent=t('copyFail')})}catch(e){b.textContent=t('copyFail')}};
   $('dDl').onclick=function(){var bl=new Blob(['﻿'+csv(r)],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='detektif-ruang-'+h.code+'.csv';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)};
 }
 function csv(r){var q=function(v){v=v==null?'':String(v);return /[",\n;]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
-  var head=['rank',t('thName'),t('thNim'),t('thScore'),t('thOk'),'secs'].concat(LEVELS.map(function(L,i){return (i+1)+'. '+L.title[lang]}));
-  var lines=[head.map(q).join(',')];r.players.forEach(function(p,i){lines.push([p.done?i+1:'',p.name,p.nim,p.done?p.score:'',p.done?p.correct:'',p.done?p.secs:''].concat(LEVELS.map(function(L,j){return p.picks&&p.picks[j]?nameOf(L,p.picks[j]):''})).map(q).join(','))});
+  var head=['rank',t('thName'),t('thNim'),t('thScore'),t('thOk'),'secs'];for(var c=1;c<=ROUNDS;c++)head.push(t('sumCase')+' '+c);
+  var lines=[head.map(q).join(',')];r.players.forEach(function(p,i){lines.push([p.done?i+1:'',p.name,p.nim,p.done?p.score:'',p.done?p.correct:'',p.done?p.secs:''].concat((p.rounds||[]).map(function(rd,j){var L=roundLevel(rd);return L.title[lang]+' ('+t(rd.q==='int'?'int':'seg')+'): '+(p.picks&&p.picks[j]?nameOf(L,p.picks[j]):'—')})).map(q).join(','))});
   return lines.join('\n')}
 $('joinOpen').onclick=function(){openJoin('')};$('hostOpen').onclick=openHost;
 document.querySelectorAll('.back').forEach(function(b){b.onclick=function(){clearInterval(st.poll);showOnly('intro')}});
@@ -589,38 +618,38 @@ function initApi(){if(!/^https?:$/.test(location.protocol))return;
   var to=new Promise(function(res){setTimeout(function(){res({ok:false})},4000)});
   Promise.race([api('ping'),to]).then(function(r){if(!r||!r.ok)return;apiOK=true;
     document.querySelectorAll('.cls').forEach(function(b){b.classList.remove('hidden')});
-    var m=/[?&]kode=([A-Za-z0-9]{6})/.exec(location.search);if(m)openJoin(m[1].toUpperCase());
+    var m=/[?&]kode=([A-Za-z0-9]{6})/.exec(location.search);if(m)openJoin(m[1].toUpperCase());else if(location.hash==='#dosen')openHost();
     var nm=store.get('drName');if(nm)$('jName').value=nm})}
 
 /* ---------- Flow ---------- */
-function loadLevel(){var L=LEVELS[st.i];st.A=analyze(L);st.sel=null;st.focus=null;st.phase='guess';st.t0=Date.now();
-  $('lvTitle').textContent=L.title[lang];$('lvSub').textContent=t('round',{n:st.i+1,t:LEVELS.length})+(st.cls?' · '+t('inClass',{t:st.cls.title}):'');
+function loadLevel(){var L=st.R[st.i];st.A=analyze(L);st.sel=null;st.focus=null;st.phase='guess';st.t0=Date.now();
+  $('lvTitle').textContent=L.title[lang];$('lvSub').textContent=t('round',{n:st.i+1,t:st.R.length})+(st.cls?' · '+t('inClass',{t:st.cls.title}):'');
   drawPlan();renderSide();dots();clearInterval(st.timer);st.timer=setInterval(tick,250)}
-function tick(){if(st.phase!=='guess')return;var el_=(Date.now()-st.t0)/1000,rem=Math.max(0,LIMIT-el_);var b=$('tbar');if(b)b.style.width=(rem/LIMIT*100)+'%';if(rem<=0){lockAnswer(true)}}
-function mob(){var m=$('mobLock');m.textContent=t('lock')+(st.sel?' · '+nameOf(LEVELS[st.i],st.sel):'');m.classList.toggle('show',st.phase==='guess'&&!!st.sel)}
+function tick(){if(st.phase!=='guess')return;var el_=(Date.now()-st.t0)/1000,rem=Math.max(0,st.limit-el_);var b=$('tbar');if(b)b.style.width=(rem/st.limit*100)+'%';if(rem<=0){lockAnswer(true)}}
+function mob(){var m=$('mobLock');m.textContent=t('lock')+(st.sel?' · '+nameOf(st.R[st.i],st.sel):'');m.classList.toggle('show',st.phase==='guess'&&!!st.sel)}
 function onRoom(k){
-  if(st.phase==='guess'){st.sel=k;drawPlan();var sb=$('selBox');if(sb)sb.innerHTML=t('picked')+' <b>'+nameOf(LEVELS[st.i],k)+'</b>';$('lockBtn').disabled=false;mob()}
-  else if(st.phase==='reveal'){st.focus=k;drawPlan();var L=LEVELS[st.i];document.querySelector('.jg h3').textContent=t('jgH',{r:nameOf(L,k)});drawJG($('jgSvg'),st.A,L,k,false)}
+  if(st.phase==='guess'){st.sel=k;drawPlan();var sb=$('selBox');if(sb)sb.innerHTML=t('picked')+' <b>'+nameOf(st.R[st.i],k)+'</b>';$('lockBtn').disabled=false;mob()}
+  else if(st.phase==='reveal'){st.focus=k;drawPlan();var L=st.R[st.i];document.querySelector('.jg h3').textContent=t('jgH',{r:nameOf(L,k)});drawJG($('jgSvg'),st.A,L,k,false)}
 }
 function lockAnswer(timeout){
   if(st.phase!=='guess')return;clearInterval(st.timer);
-  var L=LEVELS[st.i],A=st.A,el_=(Date.now()-st.t0)/1000,h={pick:st.sel,pts:0,bonus:0,correct:false,rank:0,timeout:false};
+  var L=st.R[st.i],A=st.A,el_=(Date.now()-st.t0)/1000,h={pick:st.sel,pts:0,bonus:0,correct:false,rank:0,timeout:false};
   if(!st.sel){h.timeout=true}
   else{var mine=A.res[st.sel].TD,better=A.ids.filter(function(i){return L.q==='int'?A.res[i].TD<mine:A.res[i].TD>mine}).length;
     h.rank=better+1;h.correct=better===0;var base=Math.round(100*(1-better/(A.k-1)));
-    h.bonus=h.correct?Math.max(0,Math.round(20*(LIMIT-el_)/LIMIT)):0;h.pts=base+h.bonus}
+    h.bonus=h.correct?Math.max(0,Math.round(20*(st.limit-el_)/st.limit)):0;h.pts=base+h.bonus}
   st.hist[st.i]=h;st.score+=h.pts;$('mobLock').classList.remove('show');$('score').textContent=st.score;
   st.phase='reveal';st.focus=L.rooms[0].k;drawPlan();renderSide();dots();
 }
-function next(){if(st.i<LEVELS.length-1){st.i++;loadLevel();window.scrollTo({top:0,behavior:'smooth'})}else renderEnd()}
-function start(){st.i=0;st.score=0;st.hist=[];$('score').textContent='0';
+function next(){if(st.i<st.R.length-1){st.i++;loadLevel();window.scrollTo({top:0,behavior:'smooth'})}else renderEnd()}
+function start(){if(!st.cls){setRounds(randomRounds());st.limit=LIMIT_SOLO}st.i=0;st.score=0;st.hist=[];$('score').textContent='0';
   showOnly('game');loadLevel()}
 
 function drawIntroArt(){
   var svg=$('introSvg');if(!svg)return;var L=LEVELS[1],A=analyze(L);drawJG(svg,A,L,'HAL',true);
 }
 $('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('drLang',lang);applyStatic();
-  if(st.phase==='guess'||st.phase==='reveal'){var L=LEVELS[st.i];$('lvTitle').textContent=L.title[lang];$('lvSub').textContent=t('round',{n:st.i+1,t:LEVELS.length});drawPlan();
+  if(st.phase==='guess'||st.phase==='reveal'){var L=st.R[st.i];$('lvTitle').textContent=L.title[lang];$('lvSub').textContent=t('round',{n:st.i+1,t:st.R.length});drawPlan();
     if(st.phase==='guess'){var keep=st.t0;renderSide();st.t0=keep}else renderSide()}
   else if(st.phase==='end'){if($('endBox').classList.contains('hidden'))drawIntroArt();else renderEnd()} else drawIntroArt();
   if(!$('hostBox').classList.contains('hidden')){if(st.host&&!$('dash').classList.contains('hidden')&&st.host.data)renderDash();else renderMySess()}};
