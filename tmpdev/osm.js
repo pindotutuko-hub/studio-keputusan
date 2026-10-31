@@ -20,7 +20,7 @@ function raster(j,lat,lon,W,H){var b=bbox(lat,lon,W,H),kx=111320*Math.cos(lat*Ma
    if(t.leisure||/^(grass|village_green|recreation_ground)$/.test(t.landuse||'')){if(cl)P.g.push(pts);return}
    if(t.waterway){var wd={river:22,canal:10,stream:7}[t.waterway],w=parseFloat(t.width)||wd;if(w)lines.push({k:'W',p:pts,r:Math.max(w/2,6)/CELL});return}
    if(t.highway&&t.area!=='yes'){var h=t.highway,rw={motorway:12,trunk:10,trunk_link:8,primary:9,primary_link:7,secondary:8,secondary_link:6,tertiary:7,tertiary_link:6,residential:6,unclassified:6}[h];
-     if(rw)lines.push({k:'R',p:pts,r:Math.max(rw/2,6)/CELL});else if(/^(living_street|service|footway|path|steps|pedestrian|track|cycleway|alley|corridor)$/.test(h))lines.push({k:'g',p:pts,r:6/CELL})}})});
+     if(rw)lines.push({k:'R',p:pts,r:Math.max(rw/2,6)/CELL});else if(/^(living_street|service|footway|path|steps|pedestrian|track|cycleway|alley|corridor)$/.test(h))lines.push({k:'g',p:pts,r:5/CELL})}})});
  var g=[],nH=0,land=0,known=0;
  for(var y=0;y<H;y++){var row=[];for(var x=0;x<W;x++){var cx=x+.5,cy=y+.5,tp=null,k,i;
    var hit=function(k){return lines.some(function(l){return l.k===k&&dline(cx,cy,l.p)<l.r})};
