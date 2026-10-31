@@ -54,12 +54,13 @@
   DATA.institusi.forEach(function (ins) { (ins.orang || []).forEach(function (o) { var ja = JA[o.j] || {}; ROWS.push({ k: ins.negara, ins: ins.nama, n: o.n, j: o.j, p: o.peran, s: sgr(ja.s), y: ygr(ja.y) }); }); });
   var GEO = {}; (DATA.geo || []).forEach(function (g) { GEO[g.k] = g; });
 
-  var st = { w: "*", p: "*", s: "*", y: "*", m: "n" };
+  var st = { w: "*", p: "*", s: "*", y: "*", m: "n", j: "*" };
   var pass = function (r, skip) {
     if (skip !== "w" && st.w !== "*" && CL[st.w].r.indexOf(regOf(r.k)) < 0) return false;
     if (skip !== "p" && st.p !== "*" && r.p !== st.p) return false;
     if (skip !== "s" && st.s !== "*" && r.s !== st.s) return false;
     if (skip !== "y" && st.y !== "*" && r.y !== st.y) return false;
+    if (skip !== "j" && st.j !== "*" && r.j !== st.j) return false;
     return true;
   };
 
@@ -71,10 +72,10 @@
 
     /* ---------- tata letak dasbor ---------- */
     var box = document.createElement("div"); box.id = "ptPeta"; box.className = "bt";
-    box.innerHTML = "<div class='dash' style='margin-top:6px'><aside class='side'><div class='sticky' id='ppF'></div></aside><div class='body'><div class='kpis' id='ppK'></div><div id='ppMap'></div>" +
+    box.innerHTML = "<div class='dash' style='margin-top:6px'><aside class='side'><div class='sticky'><div class='fg'><span class='lbl'>Peta per jurnal</span><select id='ppJ' style='width:100%;font:inherit;font-size:13px;padding:7px;border:1.5px solid var(--bk);border-radius:0;background:#fff;color:var(--bk)'></select><div id='ppJi' class='note' style='margin-top:6px;font-size:11.5px'></div></div><div id='ppF'></div></div></aside><div class='body'><div class='kpis' id='ppK'></div><div id='ppMap'></div>" +
       "<div class='blk' id='ppSh' hidden style='margin-top:12px;border-top:6px solid var(--q1)'><div class='hd'><h3 id='ppSt'></h3><button type='button' class='x' id='ppSx'>Tutup ✕</button></div><div class='in' id='ppS'></div></div>" +
       "<div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:16px'>" +
-      "<div class='blk' style='margin:0'><div class='hd'><h3>Peringkat</h3><div class='seg' id='ppRm'><button type='button' data-v='n' class='on'>Negara</button><button type='button' data-v='c'>Cluster</button></div></div><div class='in' id='ppR'></div></div>" +
+      "<div class='blk' style='margin:0'><div class='hd'><h3>Peringkat</h3><div class='seg' id='ppRm'><button type='button' data-v='n' class='on'>Negara</button><button type='button' data-v='c'>Cluster</button><button type='button' data-v='j'>Jurnal</button></div></div><div class='in' id='ppR'></div></div>" +
       "<div class='blk' style='margin:0'><div class='hd'><h3>Wilayah × SINTA</h3><span class='lbl'>jumlah orang</span></div><div class='in' id='ppX' style='overflow-x:auto'></div></div></div>" +
       "<p class='note' style='margin-top:10px'>Cluster wilayah: ASEAN = 11 negara anggota termasuk Timor-Leste (resmi bergabung Oktober 2025); Asia = ASEAN, Asia Timur, Asia Selatan, dan Timur Tengah (Turki dihitung di Timur Tengah); Asia Pasifik = ASEAN, Asia Timur, Asia Selatan, dan Oseania. Tahun akreditasi = tahun mulai periode peringkat SINTA terakhir jurnal. Satu orang yang menjadi mitra bestari/editor di dua jurnal dihitung dua kali.</p></div></div>";
     wrap.parentNode.insertBefore(box, wrap);
@@ -89,6 +90,20 @@
       { k: "m", l: "Tampilan peta", opts: [["n", "Titik negara"], ["c", "Gelembung cluster"]] }
     ];
     var SG = B.seg(document.getElementById("ppF"), groups, st, function () { update(); });
+    document.getElementById("ppF").addEventListener("click", function (e) { if (e.target.closest(".reset")) { st.j = "*"; update(); } });
+    var JL = Object.keys(JA).filter(function (a) { return ROWS.some(function (r) { return r.j === a; }); }).sort();
+    var jsel = document.getElementById("ppJ");
+    var fillJ = function () {
+      var c = {}; ROWS.forEach(function (r) { if (pass(r, "j")) c[r.j] = (c[r.j] || 0) + 1; });
+      var tot = 0; Object.keys(c).forEach(function (k) { tot += c[k]; });
+      jsel.innerHTML = "<option value='*'>Semua jurnal UNMER (" + tot + " orang)</option>" + JL.map(function (a) { return "<option value='" + esc(a) + "'" + (st.j === a ? " selected" : "") + ">" + esc(a) + " — " + (c[a] || 0) + " orang</option>"; }).join("");
+      jsel.value = st.j;
+      var ja = JA[st.j];
+      document.getElementById("ppJi").innerHTML = st.j === "*" ? "Pilih satu jurnal untuk melihat peta jaringannya sendiri." : esc(ja ? ja.nama : st.j) + (ja && ja.s ? " · SINTA " + ja.s : "") + (window.__PROFIL ? " · <a href='#' id='ppJp'>buka profil jurnal →</a>" : "");
+    };
+    jsel.addEventListener("change", function () { st.j = jsel.value; update(); });
+    document.getElementById("ppJi").addEventListener("click", function (e) { if (e.target.id === "ppJp" && window.__PROFIL) { e.preventDefault(); window.__PROFIL.open(JA[st.j].id); } });
+    window.__PETA = { setJ: function (a) { st.j = JL.indexOf(a) >= 0 ? a : "*"; update(); var pk = document.getElementById("ptPeta"); if (pk) pk.scrollIntoView({ behavior: "smooth", block: "start" }); } };
     var rmode = "n";
     document.getElementById("ppRm").addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) return; rmode = b.dataset.v; this.querySelectorAll("button").forEach(function (x) { x.classList.toggle("on", x === b); }); update(); });
 
@@ -158,6 +173,7 @@
       /* peringkat */
       var items;
       if (rmode === "n") items = Object.keys(A.k).map(function (k) { return { k: k, l: k, v: A.k[k], d: tagsOf(k).slice(0, 2).join(" · ") }; });
+      else if (rmode === "j") { var jc = {}, ji = {}; rows.forEach(function (r) { jc[r.j] = (jc[r.j] || 0) + 1; if (r.k !== "Indonesia") ji[r.j] = (ji[r.j] || 0) + 1; }); items = Object.keys(jc).map(function (a) { return { k: "j:" + a, l: a, v: jc[a], d: Math.round(100 * (ji[a] || 0) / jc[a]) + "% luar negeri" + (JA[a] && JA[a].s ? " · S" + JA[a].s : "") }; }); }
       else items = RK.map(function (rk) { var v = 0; REG[rk].c.forEach(function (k) { v += A.k[k] || 0; }); return { k: "r:" + rk, l: REG[rk].l, v: v, d: REG[rk].c.filter(function (k) { return A.k[k]; }).length + " negara" }; }).filter(function (x) { return x.v; });
       items.sort(function (a, b) { return b.v - a.v; });
       var mx = items.length ? items[0].v : 1;
@@ -172,6 +188,7 @@
         RK.filter(function (rk) { return M[rk]; }).map(function (rk) {
           var t = 0; return "<tr><td>" + esc(REG[rk].l) + "</td>" + SC.map(function (c) { var v = M[rk][c[0]] || 0; t += v; var a = v ? 0.12 + 0.8 * v / mxM : 0; return "<td class='r' style='background:rgba(122,30,51," + a.toFixed(2) + ");color:" + (a > 0.5 ? "#fff" : "#141017") + "'>" + (v || "·") + "</td>"; }).join("") + "<td class='r'><b>" + t + "</b></td></tr>";
         }).join("") + "</tbody></table>";
+      fillJ();
       if (cur) sheet(cur, true);
     };
 
@@ -192,7 +209,7 @@
         (!A.n ? "<p class='note'>Tidak ada orang dari " + esc(name) + " untuk filter peran/SINTA/tahun yang dipilih.</p>" :
         "<div class='kpis'><div class='kpi'><span class='lbl'>Orang</span><b>" + A.n + "</b></div><div class='kpi'><span class='lbl'>Institusi</span><b>" + Object.keys(A.ins).length + "</b></div><div class='kpi'><span class='lbl'>Mitra bestari</span><b>" + A.bes + "</b></div><div class='kpi'><span class='lbl'>Dewan editor</span><b>" + A.ed + "</b></div><div class='kpi'><span class='lbl'>Jurnal UNMER</span><b>" + Object.keys(A.j).length + "</b></div></div>" +
         "<div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px'>" +
-        "<div><span class='lbl'>Jurnal UNMER yang dilayani</span>" + jl.map(function (j) { var ja = JA[j] || {}; return "<div style='display:grid;grid-template-columns:110px minmax(0,1fr) 30px;gap:8px;align-items:center;margin:5px 0;font-size:13px'><b>" + esc(j) + "</b><div class='sb' style='width:" + (100 * A.j[j] / mj) + "%'><i style='width:100%;background:var(--q2)'></i></div><span style='text-align:right'>" + A.j[j] + "</span></div>"; }).join("") + "</div>" +
+        "<div><span class='lbl'>Jurnal UNMER yang dilayani</span>" + jl.map(function (j) { var ja = JA[j] || {}; return "<div style='display:grid;grid-template-columns:110px minmax(0,1fr) 30px;gap:8px;align-items:center;margin:5px 0;font-size:13px'><b>" + (ja.id ? "<a href='#' data-prof='" + esc(ja.id) + "' style='color:var(--q1)'>" + esc(j) + "</a>" : esc(j)) + "</b><div class='sb' style='width:" + (100 * A.j[j] / mj) + "%'><i style='width:100%;background:var(--q2)'></i></div><span style='text-align:right'>" + A.j[j] + "</span></div>"; }).join("") + "</div>" +
         "<div><span class='lbl'>Institusi teratas</span><table style='margin-top:4px'><tbody>" + il.map(function (i) { return "<tr><td>" + esc(i) + "</td><td class='r'>" + A.ins[i] + "</td></tr>"; }).join("") + "</tbody></table>" + (Object.keys(A.ins).length > 8 ? "<p class='note'>+" + (Object.keys(A.ins).length - 8) + " institusi lainnya</p>" : "") + "</div></div>") +
         "<div style='margin-top:12px;display:flex;gap:8px;flex-wrap:wrap'>" + (!isR ? "<button type='button' class='btn' id='ppGo'>Buka daftar institusi " + esc(name) + " →</button>" : "") +
         (isR && CL[rk] ? "<button type='button' class='btn ghost' id='ppFl'>Saring peta ke " + esc(REG[rk].l) + "</button>" : "") + "</div>";
@@ -206,6 +223,7 @@
       if (fl) fl.onclick = function () { st.w = rk; st.m = "n"; SG.paint(); update(); };
       if (!quiet) document.getElementById("ppSh").scrollIntoView({ behavior: "smooth", block: "nearest" });
     };
+    document.getElementById("ppS").addEventListener("click", function (e) { var a = e.target.closest("[data-prof]"); if (a && window.__PROFIL) { e.preventDefault(); window.__PROFIL.open(a.dataset.prof); } });
     document.getElementById("ppSx").onclick = function () { cur = null; document.getElementById("ppSh").hidden = true; svg.querySelectorAll(".geo-node.ppsel").forEach(function (c) { c.classList.remove("ppsel"); }); };
 
     /* klik bulatan/label → panel info (seret peta tetap jalan) */
@@ -218,7 +236,7 @@
       var r = el.getAttribute("data-r");
       sheet(r ? "r:" + r : setK(el));
     }, true);
-    document.getElementById("ppR").addEventListener("click", function (e) { var b = e.target.closest(".rk"); if (b) sheet(b.dataset.k); });
+    document.getElementById("ppR").addEventListener("click", function (e) { var b = e.target.closest(".rk"); if (!b) return; if (b.dataset.k.indexOf("j:") === 0) { window.__PETA.setJ(b.dataset.k.slice(2)); return; } sheet(b.dataset.k); });
     var gh = wrap.querySelector(".geohead");
     if (gh) { var tip = gh.querySelector("span,small,.mono"); }
     var ctlHint = wrap.querySelector(".geoctl");

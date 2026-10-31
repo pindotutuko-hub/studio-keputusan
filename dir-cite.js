@@ -145,7 +145,7 @@
     $("ciDt").textContent = j.ak + " — rincian citedness";
     var dl = function (x) { return x ? "<a href='https://doi.org/" + esc(x) + "' target='_blank' rel='noopener'>" : ""; };
     $("ciD").innerHTML =
-      "<p class='note' style='margin-top:0'><b>" + esc(j.nama) + "</b> · SINTA " + (j.sinta || "–") + (j.bid ? " · " + esc(j.bid) : "") + (j.url ? " · <a href='" + esc(j.url) + "' target='_blank' rel='noopener'>laman jurnal</a>" : "") + "</p>" +
+      "<p class='note' style='margin-top:0'><b>" + esc(j.nama) + "</b> · SINTA " + (j.sinta || "–") + (j.bid ? " · " + esc(j.bid) : "") + (j.url ? " · <a href='" + esc(j.url) + "' target='_blank' rel='noopener'>laman jurnal</a>" : "") + " · <a href='#' data-prof='" + esc(j.id) + "'>profil jurnal di aplikasi ini →</a></p>" +
       (!c.src ? "<p class='note'>Jurnal ini tidak ditemukan di OpenAlex lewat ISSN-nya, jadi sitasinya belum bisa dihitung. Pastikan ISSN terdaftar benar di ISSN Portal dan Crossref, dan setiap artikel ber-DOI dengan metadata referensi lengkap.</p>" :
       "<div class='kpis'><div class='kpi'><span class='lbl'>Dokumen Scopus</span><b>" + d.length + "</b><small>sesuai filter</small></div>" +
       "<div class='kpi'><span class='lbl'>Artikel dikutip</span><b>" + al.length + "</b><small>dari " + fmt(c.w || 0) + " karya tercatat di OpenAlex</small></div>" +

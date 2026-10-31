@@ -657,5 +657,5 @@
       .then(function (j) { window.PT_AKRP = j.data; PROG = j.data.j || {}; document.getElementById("akrs-prog").innerHTML = hProg(); var pd = document.getElementById("akrProgDet"); pd.innerHTML = progDetail(k); pd.dataset.k = k; document.getElementById("akrProgMsg").textContent = "Tersimpan dan langsung terlihat oleh semua pengunjung."; })
       .catch(function (e) { msg.textContent = "Gagal: " + e.message; });
   }
-  window.__AKR = { R: R, total: total, G: G };
+  window.__AKR = { R: R, total: total, G: G, peringkat: peringkat, openSim: function (k) { SIM.k = k; SIM.man = null; SIM.mode = "auto"; showSub("kalk"); simRender(); } };
 })();
