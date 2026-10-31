@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Detektif Ruang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f1ea;--card:#fffdf9;--ink:#1f1c18;--muted:#6d655a;--line:#ddd3c4;
+  --room:#efe6d7;--roomh:#e4d3b8;--block:#ded5c6;--gang:#f7f2ea;--blockline:#cfc4b2;
+  --accent:#8a2b2b;--accent2:#b5523b;--accentSoft:#f3e2dc;--door:#c9922e;--ok:#2f7d4f;--okSoft:#e1f1e6;--bad:#a33a2a;
+  --shadow:0 1px 2px rgba(40,30,20,.06),0 8px 24px rgba(40,30,20,.07);
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#15130f;--card:#1f1c17;--ink:#f2ece2;--muted:#a69d8f;--line:#38322a;
+  --room:#2b2720;--roomh:#3b3428;--block:#26221c;--gang:#3a342b;--blockline:#322d25;
+  --accent:#e08a7a;--accent2:#e3a06c;--accentSoft:#3a2420;--door:#d9a648;--ok:#6cc58f;--okSoft:#1c3326;--bad:#ef8a78;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif}
+h1,h2,h3{font-family:"Space Grotesk",Inter,sans-serif;margin:0;letter-spacing:-.01em}
+button{font:inherit;cursor:pointer}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 18px 40px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.logo{width:42px;height:42px;border-radius:12px;background:var(--accent);display:grid;place-items:center;flex:none}
+.logo svg{width:26px;height:26px}
+.brand h1{font-size:22px}
+.brand p{margin:0;color:var(--muted);font-size:13px}
+.hud{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;display:flex;gap:6px;align-items:center}
+.pill b{font-family:"Space Grotesk",Inter,system-ui,sans-serif;font-size:15px}
+.lang{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px}
+.dots{display:flex;gap:5px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--line)}
+.dot.on{background:var(--accent)}.dot.done{background:var(--ok)}.dot.miss{background:var(--accent2)}
+.grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(320px,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.plan{padding:14px}
+.planhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:2px 4px 10px;flex-wrap:wrap}
+.planhead h2{font-size:18px}
+.planhead span{color:var(--muted);font-size:13px}
+#planSvg{width:100%;height:auto;display:block;touch-action:manipulation;max-height:70vh}
+.room{cursor:pointer;transition:fill .25s}
+.room:hover{fill:var(--roomh)}
+.revealed .room{cursor:pointer}
+.legend{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);padding:8px 6px 0}
+.legend .bar{flex:1;height:10px;border-radius:6px;max-width:260px}
+.side{padding:18px;display:flex;flex-direction:column;gap:14px}
+.q{font-family:"Space Grotesk",Inter,system-ui,sans-serif;font-size:20px;line-height:1.3}
+.q em{font-style:normal;color:var(--accent)}
+.hint{color:var(--muted);font-size:13.5px}
+.timer{height:6px;border-radius:6px;background:var(--line);overflow:hidden}
+.timer i{display:block;height:100%;background:var(--accent);width:100%;transition:width .25s linear}
+.sel{border:1px dashed var(--line);border-radius:12px;padding:10px 12px;font-size:14px;min-height:44px;display:flex;align-items:center;gap:8px}
+.sel b{color:var(--accent)}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 16px;font-weight:700;font-size:15px}
+@media (prefers-color-scheme:dark){.btn{color:#1a120f}}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.verdict{border-radius:14px;padding:12px 14px;font-weight:600}
+.verdict.good{background:var(--okSoft);color:var(--ok)}
+.verdict.meh{background:var(--accentSoft);color:var(--accent)}
+.verdict small{display:block;font-weight:500;color:var(--ink);opacity:.85;margin-top:2px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:right;padding:5px 6px;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:600;font-size:12px}
+.jg{border:1px solid var(--line);border-radius:12px;padding:8px}
+.jg h3{font-size:14px;margin:0 2px 4px}
+.jg p{margin:0 2px 6px;font-size:12px;color:var(--muted)}
+#jgSvg{width:100%;height:auto;display:block}
+.lesson{background:var(--bg);border-radius:12px;padding:12px 14px;font-size:14px}
+.lesson b{font-family:"Space Grotesk",Inter,sans-serif}
+details{font-size:13px;color:var(--muted)}
+details summary{cursor:pointer;font-weight:600;color:var(--ink)}
+code{font-size:12.5px}
+.intro{padding:26px;display:grid;gap:18px;grid-template-columns:1.2fr 1fr;align-items:center}
+@media (max-width:860px){.intro{grid-template-columns:1fr}}
+.intro h2{font-size:30px;line-height:1.15}
+.intro ol{padding-left:20px;margin:6px 0 0}
+.intro li{margin:6px 0}
+.big{font-family:"Space Grotesk",Inter,system-ui,sans-serif;font-size:46px;font-weight:700;color:var(--accent);line-height:1}
+footer{margin-top:22px;color:var(--muted);font-size:12.5px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--muted)}
+.panel{padding:24px;max-width:1180px}
+.form{display:grid;gap:10px;max-width:440px;margin-top:12px}
+.form label{display:grid;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+.form input{font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.msg{min-height:1.2em;color:var(--bad);font-size:13px;margin:0}
+.codeBig{font-family:"Space Grotesk",Inter,sans-serif;font-size:56px;font-weight:700;letter-spacing:.12em;color:var(--accent);line-height:1}
+.kpis{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:8px 14px;min-width:110px}
+.kpi b{display:block;font-family:"Space Grotesk",Inter,sans-serif;font-size:24px}
+.kpi span{font-size:12px;color:var(--muted)}
+.dashgrid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-top:12px}
+@media (max-width:860px){.dashgrid{grid-template-columns:1fr}}
+.case{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.case h4{margin:0 0 6px;font-size:13.5px}
+.hb{display:flex;align-items:center;gap:8px;font-size:12.5px;margin:3px 0}
+.hb i{display:block;height:8px;border-radius:4px;background:var(--accent2)}
+.hb i.ok{background:var(--ok)}
+.hb .nm{width:120px;flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.keybox{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--bg);border-radius:8px;padding:8px 10px;word-break:break-all}
+.sess{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid var(--line);padding:8px 0;font-size:14px}
+.clsres{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0}
+.hidden{display:none!important}
+.mobLock{position:fixed;left:12px;right:12px;bottom:12px;z-index:5;display:none;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+@media (max-width:860px){.mobLock.show{display:block}.wrap{padding-bottom:90px}}
+.sumtab td:nth-child(2){text-align:left}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="6"/><path d="M14.5 14.5 20 20"/><path d="M7.5 10h5M10 7.5v5"/></svg></div>
+    <div class="brand"><h1>Detektif Ruang</h1><p data-t="tag"></p></div>
+    <div class="hud">
+      <div class="dots" id="dots"></div>
+      <div class="pill"><span data-t="score"></span> <b id="score">0</b></div>
+      <button class="lang" id="langBtn">EN</button>
+    </div>
+  </header>
+
+  <section class="card intro" id="intro">
+    <div>
+      <h2 data-t="introH"></h2>
+      <p class="hint" data-t="introP"></p>
+      <ol>
+        <li data-t="i1"></li>
+        <li data-t="i2"></li>
+        <li data-t="i3"></li>
+      </ol>
+      <div class="row" style="margin-top:14px"><button class="btn" id="startBtn" data-t="start"></button><button class="btn ghost cls hidden" id="joinOpen" data-t="joinOpen"></button><button class="btn ghost cls hidden" id="hostOpen" data-t="hostOpen"></button></div>
+      <p class="hint" id="bestLine" style="margin-top:10px"></p>
+    </div>
+    <svg id="introSvg" viewBox="0 0 300 220" role="img" aria-label="Justified graph"></svg>
+  </section>
+
+  <section class="card panel hidden" id="joinBox">
+    <h2 data-t="joinH"></h2>
+    <p class="hint" data-t="joinP"></p>
+    <form id="joinForm" class="form">
+      <label><span data-t="fCode"></span><input id="jCode" maxlength="6" autocomplete="off" autocapitalize="characters" required placeholder="ABC234"></label>
+      <label><span data-t="fName"></span><input id="jName" maxlength="60" required></label>
+      <label><span data-t="fNim"></span><input id="jNim" maxlength="30"></label>
+      <div class="row"><button class="btn" type="submit" data-t="joinGo"></button><button class="btn ghost back" type="button" data-t="back"></button></div>
+      <p class="msg" id="jMsg"></p>
+    </form>
+  </section>
+
+  <section class="card panel hidden" id="hostBox">
+    <div id="hostHome">
+      <h2 data-t="hostH"></h2>
+      <p class="hint" data-t="hostP"></p>
+      <form id="createForm" class="form">
+        <label><span data-t="fTitle"></span><input id="hTitle" maxlength="80" required></label>
+        <div class="row"><button class="btn" type="submit" data-t="create"></button><button class="btn ghost back" type="button" data-t="back"></button></div>
+        <p class="msg" id="hMsg"></p>
+      </form>
+      <div id="mySess"></div>
+      <details style="margin-top:12px"><summary data-t="openOther"></summary>
+        <form id="openForm" class="form" style="margin-top:8px">
+          <label><span data-t="fCode"></span><input id="oCode" maxlength="6" autocomplete="off" required></label>
+          <label><span data-t="fKey"></span><input id="oKey" maxlength="64" autocomplete="off" required></label>
+          <div class="row"><button class="btn ghost" type="submit" data-t="openRecap"></button></div>
+        </form>
+      </details>
+    </div>
+    <div id="dash" class="hidden"></div>
+  </section>
+
+  <section class="card intro hidden" id="endBox"></section>
+
+  <section class="grid hidden" id="game">
+    <div class="card plan">
+      <div class="planhead"><h2 id="lvTitle"></h2><span id="lvSub"></span></div>
+      <svg id="planSvg" role="img"></svg>
+      <div class="legend hidden" id="legend"><span data-t="seg"></span><div class="bar" id="legendBar"></div><span data-t="int"></span></div>
+    </div>
+    <div class="card side" id="side"></div>
+  </section>
+
+  <button class="btn mobLock" id="mobLock"></button>
+  <footer>
+    <span data-t="ref"></span>
+    <span><span data-t="by"></span> <a href="https://pindotutuko.id" target="_blank" rel="noopener">pindotutuko.id</a></span>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+var lang=store.get('drLang')==='en'?'en':'id';
+
+var T={
+ id:{tag:"Gim tebak konfigurasi ruang · sintaksis ruang (space syntax)",score:"Skor",
+  introH:"Di mana orang paling sering lewat dan berkumpul?",
+  introP:"Dalam sintaksis ruang, sebuah ruang “terintegrasi” bila ia dapat dicapai dari semua ruang lain dengan langkah paling sedikit. Ruang yang “segregasi” (dalam) justru jauh dari semuanya. Ukuran ruang tidak menentukan — hubungannya yang menentukan.",
+  i1:"Lihat denah. Titik kuning adalah pintu atau sambungan antarruang.",
+  i2:"Ketuk ruang yang menurutmu menjawab pertanyaan, lalu kunci jawaban sebelum waktu habis.",
+  i3:"Hasil hitungan (kedalaman rerata, RA, RRA, integrasi) dan graf terjustifikasi (justified graph) akan ditampilkan.",
+  start:"Mulai menyelidiki",best:"Skor terbaikmu: {s}",
+  round:"Kasus {n} dari {t}",qInt:"Ruang mana yang <em>paling terintegrasi</em>?",qSeg:"Ruang mana yang <em>paling segregasi</em> (paling dalam)?",
+  hInt:"Petunjuk: hitung berapa langkah (melewati pintu) dari ruang itu ke semua ruang lain. Paling sedikit = paling terintegrasi.",
+  hSeg:"Petunjuk: cari ruang yang total langkahnya ke semua ruang lain paling banyak.",
+  pick:"Belum memilih ruang.",picked:"Pilihanmu:",lock:"Kunci jawaban",next:"Kasus berikutnya",finish:"Lihat hasil akhir",
+  right:"Tepat! +{p} poin",rightS:"Termasuk bonus waktu {b}.",
+  rank:"Pilihanmu peringkat ke-{r} dari {k} · +{p} poin",rankS:"Jawaban terbaik: {best}.",
+  timeout:"Waktu habis · +0 poin",
+  seg:"Segregasi",int:"Terintegrasi",
+  colRoom:"Ruang",TD:"TD",MD:"MD",RA:"RA",RRA:"RRA",I:"Integrasi",
+  you:"(pilihanmu)",bestTag:"(terbaik)",
+  jgH:"Graf terjustifikasi dari: {r}",jgP:"Ketuk ruang mana pun di denah untuk menggambar ulang graf dari ruang itu. Setiap baris = satu langkah lebih dalam.",
+  how:"Cara menghitung",
+  howTxt:"TD = jumlah kedalaman ke semua ruang; MD = TD/(k−1); RA = 2(MD−1)/(k−2); RRA = RA/D<sub>k</sub> dengan D<sub>k</sub> = 2{k[log₂((k+2)/3)−1]+1}/((k−1)(k−2)); Integrasi = 1/RRA. Di denah ini k = {k}, D<sub>k</sub> = {dk}.",
+  endH:"Laporan detektif",endTotal:"Skor total",rank0:"Pemula Ruang",rank1:"Detektif Muda",rank2:"Detektif Senior",rank3:"Ahli Sintaksis Ruang",
+  again:"Main lagi",copy:"Salin hasil",copied:"Tersalin ✓",copyFail:"Gagal menyalin",
+  shareTxt:"Detektif Ruang — skor {s}/{m} ({r}).",
+  ref:"Rujukan: Hillier & Hanson (1984), The Social Logic of Space, Cambridge University Press; Hillier dkk. (1993), Natural movement, Environment and Planning B 20(1), 29–66.",
+  by:"Dikembangkan oleh: Pindo Tutuko ·",
+  simp:"Denah skematik, disederhanakan untuk latihan.",
+  joinOpen:"Gabung kuis kelas",hostOpen:"Ruang dosen",
+  joinH:"Gabung kuis kelas",joinP:"Masukkan kode sesi dari dosen. Skor dihitung ulang di server dari pilihan ruangmu; waktu total dihitung sejak bergabung.",
+  fCode:"Kode sesi",fName:"Nama",fNim:"NIM / ID (opsional)",joinGo:"Gabung & mulai",back:"Kembali",
+  hostH:"Ruang dosen",hostP:"Buat sesi kuis untuk satu kelas. Bagikan kodenya; mahasiswa memainkan 5 kasus yang sama, lalu rekap per sesi muncul di sini secara langsung.",
+  fTitle:"Nama kelas / sesi",create:"Buat sesi",fKey:"Kunci dosen",openOther:"Buka sesi dari perangkat lain",openRecap:"Buka rekap",
+  mySess:"Sesi saya di perangkat ini",open_:"Buka",
+  keyNote:"Simpan kunci dosen ini untuk membuka rekap dari perangkat lain:",
+  shareJoin:"Mahasiswa membuka:",players:"Peserta",finished:"Selesai",avg:"Rata-rata",statusOpen:"Sesi dibuka",statusClosed:"Sesi ditutup",
+  closeS:"Tutup sesi",openS:"Buka lagi",csvCopy:"Salin CSV",csvDl:"Unduh CSV",refresh:"Perbarui",backHome:"← Sesi lain",
+  lead:"Peringkat",perCase:"Pilihan per kasus",correctPct:"{p}% tepat",playing:"bermain…",noPlayers:"Belum ada peserta.",
+  thName:"Nama",thNim:"NIM",thScore:"Skor",thOk:"Tepat",thTime:"Waktu",
+  clsH:"Hasil kuis kelas",clsScore:"Skor kelas (dihitung server, tanpa bonus waktu): {s}/{m} · {c} tepat. Bila skor sama, waktu tercepat di atas.",clsRank:"Peringkat sementara: {r} dari {n}",
+  clsSending:"Mengirim jawaban…",clsFail:"Gagal mengirim: {e}. Coba lagi.",retry:"Kirim ulang",inClass:"Kelas: {t}",
+  err_not_found:"Kode sesi tidak ditemukan.",err_closed:"Sesi sudah ditutup dosen.",err_name_required:"Nama wajib diisi.",err_bad_code:"Kode harus 6 karakter.",
+  err_forbidden:"Kode atau kunci tidak cocok.",err_rate_limited:"Terlalu banyak sesi dibuat hari ini.",err_full:"Sesi sudah penuh.",err_already_submitted:"Jawaban sudah terkirim.",err_net:"Koneksi bermasalah.",
+  steps:"langkah",sumCase:"Kasus",sumPick:"Pilihan",sumPts:"Poin"
+ },
+ en:{tag:"A spatial-configuration guessing game · space syntax",score:"Score",
+  introH:"Where do people pass by and gather most?",
+  introP:"In space syntax, a space is “integrated” when it can be reached from every other space in the fewest steps. A “segregated” (deep) space is far from everything. Size does not decide it — relationships do.",
+  i1:"Study the plan. Yellow marks are doors or connections between spaces.",
+  i2:"Tap the space you think answers the question, then lock your answer before time runs out.",
+  i3:"The computed values (mean depth, RA, RRA, integration) and a justified graph will be revealed.",
+  start:"Start investigating",best:"Your best score: {s}",
+  round:"Case {n} of {t}",qInt:"Which space is the <em>most integrated</em>?",qSeg:"Which space is the <em>most segregated</em> (deepest)?",
+  hInt:"Hint: count how many steps (through doors) it takes from that space to all others. Fewest = most integrated.",
+  hSeg:"Hint: look for the space whose total steps to all others is largest.",
+  pick:"No space selected yet.",picked:"Your pick:",lock:"Lock answer",next:"Next case",finish:"See final result",
+  right:"Correct! +{p} points",rightS:"Includes a time bonus of {b}.",
+  rank:"Your pick ranks #{r} of {k} · +{p} points",rankS:"Best answer: {best}.",
+  timeout:"Time's up · +0 points",
+  seg:"Segregated",int:"Integrated",
+  colRoom:"Space",TD:"TD",MD:"MD",RA:"RA",RRA:"RRA",I:"Integration",
+  you:"(your pick)",bestTag:"(best)",
+  jgH:"Justified graph from: {r}",jgP:"Tap any space on the plan to redraw the graph from that space. Each row = one step deeper.",
+  how:"How it is computed",
+  howTxt:"TD = total depth to all spaces; MD = TD/(k−1); RA = 2(MD−1)/(k−2); RRA = RA/D<sub>k</sub> where D<sub>k</sub> = 2{k[log₂((k+2)/3)−1]+1}/((k−1)(k−2)); Integration = 1/RRA. In this plan k = {k}, D<sub>k</sub> = {dk}.",
+  endH:"Detective report",endTotal:"Total score",rank0:"Space Rookie",rank1:"Junior Detective",rank2:"Senior Detective",rank3:"Space Syntax Expert",
+  again:"Play again",copy:"Copy result",copied:"Copied ✓",copyFail:"Copy failed",
+  shareTxt:"Detektif Ruang (Space Detective) — score {s}/{m} ({r}).",
+  ref:"References: Hillier & Hanson (1984), The Social Logic of Space, Cambridge University Press; Hillier et al. (1993), Natural movement, Environment and Planning B 20(1), 29–66.",
+  by:"Developed by: Pindo Tutuko ·",
+  simp:"Schematic plan, simplified for practice.",
+  joinOpen:"Join a class quiz",hostOpen:"Lecturer room",
+  joinH:"Join a class quiz",joinP:"Enter the session code from your lecturer. Your score is recomputed on the server from your picks; total time counts from joining.",
+  fCode:"Session code",fName:"Name",fNim:"Student ID (optional)",joinGo:"Join & start",back:"Back",
+  hostH:"Lecturer room",hostP:"Create a quiz session for one class. Share the code; students play the same 5 cases and a per-session recap appears here live.",
+  fTitle:"Class / session name",create:"Create session",fKey:"Lecturer key",openOther:"Open a session from another device",openRecap:"Open recap",
+  mySess:"My sessions on this device",open_:"Open",
+  keyNote:"Keep this lecturer key to open the recap from another device:",
+  shareJoin:"Students open:",players:"Players",finished:"Finished",avg:"Average",statusOpen:"Session open",statusClosed:"Session closed",
+  closeS:"Close session",openS:"Reopen",csvCopy:"Copy CSV",csvDl:"Download CSV",refresh:"Refresh",backHome:"← Other sessions",
+  lead:"Leaderboard",perCase:"Picks per case",correctPct:"{p}% correct",playing:"playing…",noPlayers:"No players yet.",
+  thName:"Name",thNim:"ID",thScore:"Score",thOk:"Correct",thTime:"Time",
+  clsH:"Class quiz result",clsScore:"Class score (server-computed, no time bonus): {s}/{m} · {c} correct. Ties are broken by fastest time.",clsRank:"Current rank: {r} of {n}",
+  clsSending:"Sending answers…",clsFail:"Sending failed: {e}. Try again.",retry:"Resend",inClass:"Class: {t}",
+  err_not_found:"Session code not found.",err_closed:"The session has been closed.",err_name_required:"Name is required.",err_bad_code:"The code must be 6 characters.",
+  err_forbidden:"Code or key does not match.",err_rate_limited:"Too many sessions created today.",err_full:"The session is full.",err_already_submitted:"Answers already submitted.",err_net:"Connection problem.",
+  steps:"steps",sumCase:"Case",sumPick:"Pick",sumPts:"Points"
+ }
+};
+function t(k,v){var s=(T[lang][k]!=null?T[lang][k]:k);if(v)for(var p in v)s=s.split('{'+p+'}').join(v[p]);return s}
+function fmt(n,d){if(!isFinite(n))return '∞';return n.toLocaleString(lang==='id'?'id-ID':'en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
+
+/* ---------- Levels (grid units; y grows downward; entrance at bottom) ---------- */
+function R(k,id,en,x,y,w,h,ty){return {k:k,n:{id:id,en:en},x:x,y:y,w:w,h:h,ty:ty||'room'}}
+var LEVELS=[
+ {title:{id:"Rumah Tinggal Sederhana",en:"Simple Dwelling"},q:'int',W:10,H:10,entry:[3,10],
+  rooms:[R('TRS','Teras','Terrace',0,8,6,2,'open'),R('TMU','R. Tamu','Living',0,5,6,3),R('KT1','K. Tidur 1','Bedroom 1',6,5,4,5),
+   R('KEL','R. Keluarga','Family',0,2,6,3),R('KT2','K. Tidur 2','Bedroom 2',6,2,4,3),R('DPR','Dapur','Kitchen',0,0,6,2),R('KM','KM','Bath',6,0,4,2)],
+  doors:[['TRS','TMU'],['TMU','KT1'],['TMU','KEL'],['KEL','KT2'],['KEL','DPR'],['DPR','KM']],
+  lesson:{id:"<b>Ruang keluarga</b>, bukan ruang tamu, menjadi simpul: ia menghubungkan ruang depan, kamar, dan servis dengan langkah paling sedikit. Ruang tamu justru menjadi ‘penyaring’ antara luar dan dalam.",
+   en:"The <b>family room</b>, not the front living room, is the hub: it links the front, the bedrooms and the service spaces in the fewest steps. The living room acts as a ‘filter’ between outside and inside."}},
+ {title:{id:"Omah Joglo (Jawa)",en:"Javanese Joglo House"},q:'int',W:15,H:14,entry:[7.5,14],
+  rooms:[R('HAL','Halaman','Front yard',0,12,15,2,'open'),R('PEN','Pendopo','Pendopo',3,8,9,4,'open'),R('PRI','Pringgitan','Pringgitan',3,6,9,2),
+   R('DAL','Dalem','Dalem',3,3,9,3),R('SKI','Senthong kiwa','Left senthong',3,0,3,3),R('STE','Senthong tengah','Middle senthong',6,0,3,3),R('STN','Senthong tengen','Right senthong',9,0,3,3),
+   R('GKI','Gandok kiwa','Left gandok',0,0,3,8),R('GTE','Gandok tengen','Right gandok',12,3,3,5),R('PAW','Pawon','Pawon (kitchen)',12,0,3,3)],
+  doors:[['HAL','PEN'],['PEN','PRI'],['PRI','DAL'],['DAL','SKI'],['DAL','STE'],['DAL','STN'],['DAL','GKI'],['DAL','GTE'],['GTE','PAW']],
+  lesson:{id:"<b>Pendopo</b> paling luas dan terbuka, tetapi secara konfigurasi ia dangkal dari halaman. <b>Dalem</b>-lah yang menyatukan senthong, gandok, dan pringgitan — inti integrasi rumah. Pelajaran: besar ruang ≠ sentral secara konfigurasi.",
+   en:"The <b>pendopo</b> is the largest and most open, yet configurationally it is shallow from the yard. The <b>dalem</b> ties the senthong, gandok and pringgitan together — the integration core. Lesson: large ≠ configurationally central."}},
+ {title:{id:"Gedung Kuliah",en:"Lecture Building"},q:'seg',W:16,H:10,entry:[8,10],
+  rooms:[R('R1','Kelas 1','Class 1',0,0,4,5),R('R2','Kelas 2','Class 2',4,0,4,5),R('R3','Kelas 3','Class 3',8,0,4,5),R('R4','Kelas 4','Class 4',12,0,4,5),
+   R('KOR','Koridor','Corridor',0,5,16,2,'open'),R('DSN','R. Dosen','Staff room',0,7,3,3),R('ARS','R. Arsip','Archive',3,7,3,3),R('LOB','Lobi','Lobby',6,7,4,3,'open'),
+   R('WC','Toilet','Toilet',10,7,3,3),R('TGA','Tangga','Stairs',13,7,3,3)],
+  doors:[['LOB','KOR'],['KOR','R1'],['KOR','R2'],['KOR','R3'],['KOR','R4'],['KOR','DSN'],['KOR','WC'],['KOR','TGA'],['DSN','ARS']],
+  lesson:{id:"Ruang yang hanya bisa dicapai lewat ruang lain (<b>arsip</b> lewat ruang dosen) menjadi paling segregasi — cocok untuk fungsi yang perlu kontrol akses. Koridor adalah tulang punggung integrasi gedung.",
+   en:"A space reachable only through another space (the <b>archive</b>, via the staff room) is the most segregated — suited to functions needing access control. The corridor is the building’s integration spine."}},
+ {title:{id:"Kampung Kota",en:"Urban Kampung"},q:'int',W:16,H:12,entry:[8,12],bg:'blocks',
+  rooms:[R('JLN','Jalan utama','Main road',0,11,16,1,'gang'),R('GA','Gang A','Alley A',3,0,1,10,'gang'),R('GB','Gang B','Alley B',9,3,1,8,'gang'),R('GC','Gang C','Alley C',14,3,1,8,'gang'),
+   R('GD','Gang D','Alley D',4,5,5,1,'gang'),R('GE','Gang E','Alley E',10,8,4,1,'gang'),R('GF','Gang F','Alley F',0,2,3,1,'gang'),R('GG','Gang G','Alley G',4,1,4,1,'gang'),
+   R('LAP','Lapangan','Field',10,3,4,3,'open'),R('MUS','Mushola','Prayer hall',6,7,3,3)],
+  doors:[['JLN','GB'],['JLN','GC'],['GA','GD'],['GD','GB'],['GB','GE'],['GE','GC'],['GA','GF'],['GA','GG'],['GB','LAP'],['GC','LAP'],['GB','MUS']],
+  lesson:{id:"<b>Gang B</b> menyambung ke jalan utama, gang lain, lapangan, dan mushola — ia paling terintegrasi. Menurut teori pergerakan alami (natural movement, Hillier dkk., 1993), konfigurasi jaringan seperti ini memengaruhi di mana orang paling banyak lewat, sehingga fasilitas bersama di gang terintegrasi lebih mudah hidup.",
+   en:"<b>Alley B</b> links the main road, other alleys, the field and the prayer hall — it is the most integrated. Natural-movement theory (Hillier et al., 1993) holds that network configuration shapes where people pass most, so shared facilities on integrated alleys come alive more easily."}},
+ {title:{id:"Rumah dengan Taman Dalam",en:"Courtyard House"},q:'seg',W:12,H:12,entry:[6,12],
+  rooms:[R('TRS','Teras','Terrace',4,10,4,2,'open'),R('FOY','Foyer','Foyer',4,8,4,2),R('TMU','R. Tamu','Living',0,6,4,6),R('KEL','R. Keluarga','Family',8,6,4,6),
+   R('TAM','Taman dalam','Courtyard',4,4,4,4,'open'),R('MKN','R. Makan','Dining',0,2,4,4),R('DPR','Dapur','Kitchen',0,0,4,2),R('KTU','K. Utama','Main bed',8,2,4,4),
+   R('KTA','K. Anak','Child bed',4,0,4,4),R('KM','KM','Bath',8,0,4,2)],
+  doors:[['TRS','FOY'],['FOY','TMU'],['FOY','TAM'],['FOY','KEL'],['TMU','MKN'],['TAM','MKN'],['MKN','DPR'],['KEL','KTU'],['TAM','KTA'],['KEL','TAM'],['KTU','KM']],
+  lesson:{id:"Cincin sirkulasi lewat <b>taman dalam</b> memberi pilihan rute dan membuat rumah lebih terintegrasi. Namun ruang di ujung ‘cabang’ — <b>KM</b> di balik kamar utama — tetap paling dalam: privat karena konfigurasi, bukan karena dinding tebal.",
+   en:"The circulation ring through the <b>courtyard</b> offers route choice and makes the house more integrated. Yet the space at the end of a ‘branch’ — the <b>bath</b> behind the main bedroom — stays deepest: private by configuration, not by thick walls."}}
+];
+
+/* ---------- Space syntax computation ---------- */
+function analyze(L){
+  var ids=L.rooms.map(function(r){return r.k}),adj={},k=ids.length;
+  ids.forEach(function(i){adj[i]=[]});
+  L.doors.forEach(function(d){adj[d[0]].push(d[1]);adj[d[1]].push(d[0])});
+  var Dk=2*(k*(Math.log2((k+2)/3)-1)+1)/((k-1)*(k-2));
+  var res={};
+  ids.forEach(function(s){
+    var dep={},q=[s];dep[s]=0;
+    while(q.length){var u=q.shift();adj[u].forEach(function(v){if(dep[v]==null){dep[v]=dep[u]+1;q.push(v)}})}
+    var TD=0;ids.forEach(function(i){TD+=dep[i]});
+    var MD=TD/(k-1),RA=2*(MD-1)/(k-2),RRA=RA/Dk;
+    res[s]={dep:dep,TD:TD,MD:MD,RA:RA,RRA:RRA,I:RA>0?1/RRA:Infinity};
+  });
+  return {ids:ids,adj:adj,k:k,Dk:Dk,res:res};
+}
+function sharedEdge(a,b){
+  var e=1e-9,ov,lo,hi;
+  if(Math.abs(a.x+a.w-b.x)<e||Math.abs(b.x+b.w-a.x)<e){
+    var x=Math.abs(a.x+a.w-b.x)<e?b.x:a.x;lo=Math.max(a.y,b.y);hi=Math.min(a.y+a.h,b.y+b.h);
+    if(hi-lo>e)return {v:true,x:x,lo:lo,hi:hi};
+  }
+  if(Math.abs(a.y+a.h-b.y)<e||Math.abs(b.y+b.h-a.y)<e){
+    var y=Math.abs(a.y+a.h-b.y)<e?b.y:a.y;lo=Math.max(a.x,b.x);hi=Math.min(a.x+a.w,b.x+b.w);
+    if(hi-lo>e)return {v:false,y:y,lo:lo,hi:hi};
+  }
+  return null;
+}
+
+/* ---------- Heat colours (space syntax convention: blue = segregated, red = integrated) ---------- */
+var STOPS=[[43,90,168],[74,163,196],[143,196,120],[240,200,70],[232,120,50],[190,40,40]];
+function heat(t){t=Math.max(0,Math.min(1,t));var p=t*(STOPS.length-1),i=Math.min(STOPS.length-2,Math.floor(p)),f=p-i,a=STOPS[i],b=STOPS[i+1];
+  var c=[0,1,2].map(function(j){return Math.round(a[j]+(b[j]-a[j])*f)});return c}
+function rgb(c){return 'rgb('+c.join(',')+')'}
+function inkOn(c){var l=(0.299*c[0]+0.587*c[1]+0.114*c[2]);return l>150?'#1b1814':'#ffffff'}
+function heatT(A,id){var vals=A.ids.map(function(i){return A.res[i].I}).filter(isFinite);var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);var v=A.res[id].I;if(!isFinite(v))return 1;return mx>mn?(v-mn)/(mx-mn):0.5}
+
+/* ---------- State ---------- */
+var LIMIT=30,st={cls:null,host:null,poll:null,i:0,score:0,sel:null,phase:'intro',focus:null,hist:[],t0:0,timer:null,A:null};
+var $=function(id){return document.getElementById(id)};
+var NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,parent){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+
+function applyStatic(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll('[data-t]').forEach(function(n){n.innerHTML=t(n.getAttribute('data-t'))});
+  $('langBtn').textContent=lang==='id'?'EN':'ID';
+  $('langBtn').setAttribute('aria-label',lang==='id'?'Switch to English':'Ganti ke Bahasa Indonesia');
+  var b=store.get('drBest'),bl=$('bestLine');if(bl)bl.textContent=b?t('best',{s:b}):'';
+  var stops=[];for(var i=0;i<=10;i++)stops.push(rgb(heat(i/10))+' '+(i*10)+'%');
+  $('legendBar').style.background='linear-gradient(90deg,'+stops.join(',')+')';
+}
+function dots(){var d=$('dots');d.innerHTML='';LEVELS.forEach(function(_,i){var s=document.createElement('span');s.className='dot';var h=st.hist[i];if(h)s.className+=h.correct?' done':' miss';else if(i===st.i&&st.phase!=='intro'&&st.phase!=='end')s.className+=' on';d.appendChild(s)})}
+
+/* ---------- Plan drawing ---------- */
+function drawPlan(){
+  var L=LEVELS[st.i],A=st.A,svg=$('planSvg'),rev=st.phase==='reveal';
+  svg.innerHTML='';svg.setAttribute('viewBox',(-0.6)+' '+(-0.6)+' '+(L.W+1.2)+' '+(L.H+1.9));
+  svg.setAttribute('aria-label',L.title[lang]);
+  svg.classList.toggle('revealed',rev);
+  if(L.bg==='blocks'){
+    el('rect',{x:0,y:0,width:L.W,height:L.H,fill:'var(--block)',rx:0.15},svg);
+    for(var gx=0;gx<L.W;gx+=1)for(var gy=0;gy<L.H-1;gy+=1){el('rect',{x:gx+0.12,y:gy+0.12,width:0.76,height:0.76,fill:'none',stroke:'var(--blockline)','stroke-width':0.04,rx:0.08},svg)}
+  }
+  var gR=el('g',{},svg),gD=el('g',{},svg),gL=el('g',{'pointer-events':'none'},svg);
+  L.rooms.forEach(function(r){
+    var fill=r.ty==='gang'?'var(--gang)':(r.ty==='open'?'var(--card)':'var(--room)'),c=null;
+    if(rev){c=heat(heatT(A,r.k));fill=rgb(c)}
+    var isSel=st.sel===r.k,isFocus=rev&&st.focus===r.k;
+    var rect=el('rect',{x:r.x,y:r.y,width:r.w,height:r.h,fill:fill,stroke:'var(--ink)','stroke-width':0.07,'class':'room',tabindex:0,role:'button','aria-label':r.n[lang]},gR);
+    if(r.ty==='open'&&!rev)rect.setAttribute('stroke-dasharray','0.25 0.15');
+    rect.addEventListener('click',function(){onRoom(r.k)});
+    rect.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();onRoom(r.k)}});
+    if(isSel||isFocus){el('rect',{x:r.x+0.12,y:r.y+0.12,width:Math.max(0.05,r.w-0.24),height:Math.max(0.05,r.h-0.24),fill:'none',stroke:isSel?'var(--accent)':'var(--ink)','stroke-width':0.14,'stroke-dasharray':isFocus&&!isSel?'0.3 0.18':'none','pointer-events':'none',rx:0.08},gL)}
+    // label
+    var name=r.n[lang],vert=r.h>r.w*1.6&&r.w<2.2,span=(vert?r.h:r.w)-0.3,thick=vert?r.w:r.h;
+    var fs=Math.min(0.5,thick*0.42,span/(name.length*0.56));
+    var cx=r.x+r.w/2,cy=r.y+r.h/2,showVal=rev&&thick>=1.6;
+    var ink=rev?inkOn(c):'var(--ink)';
+    var tx=el('text',{x:cx,y:cy+(showVal?-0.12:fs*0.36),'text-anchor':'middle','font-size':fs,'font-weight':600,fill:ink,'font-family':'Inter,sans-serif'},gL);
+    if(vert)tx.setAttribute('transform','rotate(-90 '+cx+' '+cy+')');
+    tx.textContent=name;
+    if(rev){
+      var I=A.res[r.k].I,vtxt=fmt(I,2);
+      if(showVal){var v=el('text',{x:cx,y:cy+0.48,'text-anchor':'middle','font-size':Math.min(0.42,fs*0.95),fill:ink,'font-family':'Space Grotesk,sans-serif','font-weight':700},gL);v.textContent=vtxt}
+      if(isFocus){var d=el('text',{x:r.x+0.18,y:r.y+0.5,'font-size':0.32,fill:ink,'font-weight':700},gL);d.textContent='●'}
+      else if(st.focus&&!vert&&thick>=1){var dd=el('text',{x:r.x+0.18,y:r.y+0.48,'font-size':0.3,fill:ink,opacity:0.85,'font-family':'Space Grotesk,sans-serif'},gL);dd.textContent=A.res[st.focus].dep[r.k]}
+    }
+  });
+  var byK={};L.rooms.forEach(function(r){byK[r.k]=r});
+  L.doors.forEach(function(d){
+    var s=sharedEdge(byK[d[0]],byK[d[1]]);if(!s){console.warn('No shared wall',d);return}
+    var len=Math.min((s.hi-s.lo)*0.6,1.0),mid=(s.lo+s.hi)/2;
+    var a=s.v?{x1:s.x,y1:mid-len/2,x2:s.x,y2:mid+len/2}:{x1:mid-len/2,y1:s.y,x2:mid+len/2,y2:s.y};
+    a.stroke='var(--door)';a['stroke-width']=0.22;a['stroke-linecap']='round';a['pointer-events']='none';el('line',a,gD);
+  });
+  // entrance arrow
+  var ex=L.entry[0],ey=L.entry[1];
+  el('path',{d:'M'+ex+' '+(ey+1.05)+' L'+ex+' '+(ey+0.25)+' M'+(ex-0.3)+' '+(ey+0.55)+' L'+ex+' '+(ey+0.25)+' L'+(ex+0.3)+' '+(ey+0.55),stroke:'var(--accent)','stroke-width':0.12,fill:'none','stroke-linecap':'round','stroke-linejoin':'round'},svg);
+  var en=el('text',{x:ex+0.45,y:ey+0.95,'font-size':0.36,fill:'var(--accent)','font-weight':700},svg);en.textContent=lang==='id'?'Masuk':'Entry';
+  $('legend').classList.toggle('hidden',!rev);
+}
+
+/* ---------- Justified graph ---------- */
+function drawJG(svg,A,L,root,small){
+  svg.innerHTML='';var dep=A.res[root].dep,levels=[],max=0;
+  A.ids.forEach(function(i){var d=dep[i];max=Math.max(max,d);(levels[d]=levels[d]||[]).push(i)});
+  var W=320,gap=small?40:54,top=22,bot=30,H=top+bot+max*gap,pos={},crowd={};
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  levels.forEach(function(row,d){
+    if(d>0)row.sort(function(a,b){function bc(n){var s=0,c=0;A.adj[n].forEach(function(m){if(dep[m]===d-1){s+=pos[m].x;c++}});return c?s/c:W/2}return bc(a)-bc(b)});
+    row.forEach(function(n,j){pos[n]={x:W*(j+1)/(row.length+1),y:H-bot-d*gap};crowd[n]=(W/(row.length+1)<66)&&(j%2===1)});
+  });
+  var nm={};L.rooms.forEach(function(r){nm[r.k]=r.n[lang]});
+  for(var d=0;d<=max;d++){el('line',{x1:8,x2:W-8,y1:H-bot-d*gap,y2:H-bot-d*gap,stroke:'var(--line)','stroke-width':1,'stroke-dasharray':'2 4'},svg);var lt=el('text',{x:6,y:H-bot-d*gap-5,'font-size':9,fill:'var(--muted)'},svg);lt.textContent=d}
+  L.doors.forEach(function(e){var a=pos[e[0]],b=pos[e[1]];
+    if(a.y===b.y){var my=a.y-gap*0.35;el('path',{d:'M'+a.x+' '+a.y+' Q'+((a.x+b.x)/2)+' '+my+' '+b.x+' '+b.y,stroke:'var(--muted)','stroke-width':1.4,fill:'none'},svg)}
+    else el('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:'var(--muted)','stroke-width':1.4},svg)});
+  A.ids.forEach(function(n){var p=pos[n],c=heat(heatT(A,n)),r=small?9:12;
+    var g=el('g',{},svg);var title=el('title',{},g);title.textContent=nm[n]+' · '+t('I')+' '+fmt(A.res[n].I,2);
+    el('circle',{cx:p.x,cy:p.y,r:r,fill:rgb(c),stroke:n===root?'var(--ink)':'var(--card)','stroke-width':n===root?2.5:1.5},g);
+    if(n===root){el('circle',{cx:p.x,cy:p.y,r:r+4,fill:'none',stroke:'var(--ink)','stroke-width':1},g)}
+    var tx=el('text',{x:p.x,y:crowd[n]?p.y-r-5:p.y+r+11,'text-anchor':'middle','font-size':small?8.5:9.5,fill:'var(--ink)','font-weight':600},g);
+    var s=nm[n];var lim=crowd[n]!==undefined&&W/(levels[dep[n]].length+1)<66?10:14;tx.textContent=s.length>lim?s.slice(0,lim-1)+'…':s;var bg=tx.cloneNode(true);bg.setAttribute('stroke','var(--card)');bg.setAttribute('stroke-width','3');bg.setAttribute('stroke-linejoin','round');g.insertBefore(bg,tx);
+  });
+}
+
+/* ---------- Side panel ---------- */
+function bestIds(A,q){var v=A.ids.map(function(i){return A.res[i].TD});var tgt=q==='int'?Math.min.apply(null,v):Math.max.apply(null,v);return A.ids.filter(function(i){return A.res[i].TD===tgt})}
+function nameOf(L,k){for(var i=0;i<L.rooms.length;i++)if(L.rooms[i].k===k)return L.rooms[i].n[lang];return k}
+
+function renderSide(){
+  var L=LEVELS[st.i],A=st.A,s=$('side'),h=st.hist[st.i];
+  if(st.phase==='guess'){
+    s.innerHTML='<div class="hint">'+t('round',{n:st.i+1,t:LEVELS.length})+'</div>'+
+     '<div class="q">'+t(L.q==='int'?'qInt':'qSeg')+'</div>'+
+     '<div class="timer"><i id="tbar"></i></div>'+
+     '<div class="sel" id="selBox">'+(st.sel?t('picked')+' <b>'+nameOf(L,st.sel)+'</b>':t('pick'))+'</div>'+
+     '<button class="btn" id="lockBtn" '+(st.sel?'':'disabled')+'>'+t('lock')+'</button>'+
+     '<p class="hint">'+t(L.q==='int'?'hInt':'hSeg')+'</p><p class="hint" style="margin-top:-6px">'+t('simp')+'</p>';
+    $('lockBtn').onclick=lockAnswer;tick();
+  } else if(st.phase==='reveal'){
+    var best=bestIds(A,L.q),bn=best.map(function(b){return nameOf(L,b)}).join(', ');
+    var v=h.timeout?'<div class="verdict meh">'+t('timeout')+'<small>'+t('rankS',{best:bn})+'</small></div>':
+      h.correct?'<div class="verdict good">'+t('right',{p:h.pts})+'<small>'+t('rightS',{b:h.bonus})+'</small></div>':
+      '<div class="verdict meh">'+t('rank',{r:h.rank,k:A.k,p:h.pts})+'<small>'+t('rankS',{best:bn})+'</small></div>';
+    var rows=A.ids.slice().sort(function(a,b){return L.q==='int'?A.res[a].TD-A.res[b].TD:A.res[b].TD-A.res[a].TD});
+    var tb='<table><thead><tr><th>'+t('colRoom')+'</th><th>TD</th><th>MD</th><th>RA</th><th>RRA</th><th>'+t('I')+'</th></tr></thead><tbody>'+
+      rows.map(function(id){var r=A.res[id],tag=(id===h.pick?' <span style="color:var(--accent)">'+t('you')+'</span>':'')+(best.indexOf(id)>=0?' <span style="color:var(--ok)">'+t('bestTag')+'</span>':'');
+        var c=heat(heatT(A,id));
+        return '<tr><td><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:'+rgb(c)+';margin-right:6px"></span>'+nameOf(L,id)+tag+'</td><td>'+r.TD+'</td><td>'+fmt(r.MD,2)+'</td><td>'+fmt(r.RA,3)+'</td><td>'+fmt(r.RRA,3)+'</td><td><b>'+fmt(r.I,2)+'</b></td></tr>'}).join('')+'</tbody></table>';
+    var last=st.i===LEVELS.length-1;
+    s.innerHTML='<div class="hint">'+t('round',{n:st.i+1,t:LEVELS.length})+'</div>'+v+
+      '<div class="lesson">'+L.lesson[lang]+'</div>'+
+      '<div class="jg"><h3>'+t('jgH',{r:nameOf(L,st.focus)})+'</h3><p>'+t('jgP')+'</p><svg id="jgSvg"></svg></div>'+
+      '<div style="overflow-x:auto">'+tb+'</div>'+
+      '<details><summary>'+t('how')+'</summary><p>'+t('howTxt',{k:A.k,dk:fmt(A.Dk,4)})+'</p></details>'+
+      '<button class="btn" id="nextBtn">'+t(last?'finish':'next')+'</button>';
+    drawJG($('jgSvg'),A,L,st.focus,false);
+    $('nextBtn').onclick=next;
+  }
+}
+
+function renderEnd(){
+  var m=LEVELS.length*120,s=st.score,r=s>=480?'rank3':s>=340?'rank2':s>=200?'rank1':'rank0';
+  var b=+(store.get('drBest')||0);if(s>b)store.set('drBest',s);
+  showOnly('endBox');var e=$('endBox');
+  e.innerHTML='<div><h2>'+t('endH')+'</h2><p class="hint">'+t('endTotal')+'</p><div class="big">'+s+' <span style="font-size:20px;color:var(--muted)">/ '+m+'</span></div>'+
+   '<p style="font-family:Space Grotesk,Inter,sans-serif;font-size:20px;font-weight:700;margin:8px 0 12px">'+t(r)+'</p>'+
+   (st.cls?'<div class="clsres" id="clsRes"></div>':'')+
+   '<table class="sumtab"><thead><tr><th>#</th><th>'+t('sumCase')+'</th><th>'+t('sumPick')+'</th><th>'+t('sumPts')+'</th></tr></thead><tbody>'+
+   st.hist.map(function(h,i){var L=LEVELS[i];return '<tr><td>'+(i+1)+'</td><td>'+L.title[lang]+'</td><td>'+(h.pick?nameOf(L,h.pick):'—')+(h.correct?' ✓':'')+'</td><td>'+h.pts+'</td></tr>'}).join('')+'</tbody></table>'+
+   '<div class="row" style="margin-top:14px"><button class="btn" id="againBtn">'+t('again')+'</button><button class="btn ghost" id="copyBtn">'+t('copy')+'</button><button class="btn ghost" id="homeBtn">'+t('back')+'</button></div></div>'+
+   '<svg id="endSvg" viewBox="0 0 300 220"></svg>';
+  drawJG($('endSvg'),analyze(LEVELS[1]),LEVELS[1],'HAL',true);
+  $('againBtn').onclick=function(){st.cls=null;start()};
+  $('homeBtn').onclick=function(){st.cls=null;st.phase='intro';showOnly('intro');dots();applyStatic()};
+  $('copyBtn').onclick=function(){var btn=this,txt=t('shareTxt',{s:s,m:m,r:t(r)})+' pindotutuko.id';
+    try{navigator.clipboard.writeText(txt).then(function(){btn.textContent=t('copied')},function(){btn.textContent=t('copyFail')})}catch(err){btn.textContent=t('copyFail')}};
+  st.phase='end';dots();
+  if(st.cls)sendClass();
+}
+function sendClass(){
+  var box=$('clsRes'),c=st.cls;if(!box||!c)return;
+  if(c.res){showClassRes();return}
+  box.innerHTML='<b>'+t('clsH')+'</b><div class="hint">'+t('clsSending')+'</div>';
+  api('submit',{code:c.code,pid:c.pid,token:c.token,picks:st.hist.map(function(h){return h&&h.pick?h.pick:null})}).then(function(r){
+    if(r.ok||r.error==='already_submitted'){if(r.ok)c.res=r;showClassRes();return}
+    box.innerHTML='<b>'+t('clsH')+'</b><p class="msg">'+t('clsFail',{e:errT(r.error)})+'</p><button class="btn ghost" id="retryBtn">'+t('retry')+'</button>';
+    $('retryBtn').onclick=sendClass;
+  });
+}
+function showClassRes(){var box=$('clsRes'),c=st.cls;if(!box||!c)return;var r=c.res;
+  box.innerHTML='<b>'+t('clsH')+' · '+esc(c.title)+'</b>'+(r?'<div>'+t('clsScore',{s:r.score,m:r.max,c:r.correct})+'</div><div class="hint">'+t('clsRank',{r:r.rank,n:r.n})+'</div>':'<div class="hint">'+t('err_already_submitted')+'</div>')}
+
+/* ---------- Class mode ---------- */
+var API='api/index.php?r=',apiOK=false;
+function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function api(route,data,get){var o={method:data?'POST':'GET',headers:{},cache:'no-store',credentials:'same-origin'};
+  if(data){o.headers['Content-Type']='application/json';o.body=JSON.stringify(data)}
+  return fetch(API+route+(get?'&'+get:''),o).then(function(r){return r.json().catch(function(){return {ok:false,error:'net'}})},function(){return {ok:false,error:'net'}})}
+function errT(e){var k='err_'+e;return T[lang][k]!=null?t(k):t('err_net')}
+function showOnly(id){['intro','joinBox','hostBox','endBox','game'].forEach(function(x){$(x).classList.toggle('hidden',x!==id)});window.scrollTo(0,0)}
+function hosts(){try{return JSON.parse(store.get('drHost')||'[]')}catch(e){return []}}
+function mmss(x){if(x==null)return '—';x=Math.round(x);return Math.floor(x/60)+':'+String(x%60).padStart(2,'0')}
+
+function openJoin(code){showOnly('joinBox');if(code)$('jCode').value=code;$('jMsg').textContent='';($('jCode').value?$('jName'):$('jCode')).focus()}
+$('joinForm').addEventListener('submit',function(e){e.preventDefault();var b=this.querySelector('button[type=submit]');b.disabled=true;$('jMsg').textContent='';
+  var code=$('jCode').value.trim().toUpperCase();
+  api('join',{code:code,name:$('jName').value,nim:$('jNim').value}).then(function(r){b.disabled=false;
+    if(!r.ok){$('jMsg').textContent=errT(r.error);return}
+    store.set('drName',$('jName').value);st.cls={code:code,pid:r.pid,token:r.token,title:r.title};start()})});
+
+function renderMySess(){var h=hosts(),box=$('mySess');if(!h.length){box.innerHTML='';return}
+  box.innerHTML='<h3 style="font-size:15px;margin:18px 0 4px">'+t('mySess')+'</h3>'+h.map(function(x,i){return '<div class="sess"><span><b>'+esc(x.code)+'</b> · '+esc(x.title)+'</span><button class="btn ghost" data-i="'+i+'">'+t('open_')+'</button></div>'}).join('');
+  box.querySelectorAll('button[data-i]').forEach(function(bt){bt.onclick=function(){var x=hosts()[+bt.getAttribute('data-i')];openDash(x.code,x.key,false)}})}
+function openHost(){showOnly('hostBox');$('hostHome').classList.remove('hidden');$('dash').classList.add('hidden');clearInterval(st.poll);$('hMsg').textContent='';renderMySess()}
+$('createForm').addEventListener('submit',function(e){e.preventDefault();var b=this.querySelector('button[type=submit]');b.disabled=true;
+  api('create',{title:$('hTitle').value}).then(function(r){b.disabled=false;if(!r.ok){$('hMsg').textContent=errT(r.error);return}
+    var h=hosts();h.unshift({code:r.code,key:r.key,title:r.title,at:Date.now()});store.set('drHost',JSON.stringify(h.slice(0,30)));$('hTitle').value='';openDash(r.code,r.key,true)})});
+$('openForm').addEventListener('submit',function(e){e.preventDefault();var c=$('oCode').value.trim().toUpperCase(),k=$('oKey').value.trim();
+  api('recap',{code:c,key:k}).then(function(r){if(!r.ok){alertMsg(errT(r.error));return}var h=hosts();if(!h.some(function(x){return x.code===c})){h.unshift({code:c,key:k,title:r.title,at:Date.now()});store.set('drHost',JSON.stringify(h.slice(0,30)))}openDash(c,k,false)})});
+function alertMsg(m){$('hMsg').textContent=m}
+
+function openDash(code,key,showKey){st.host={code:code,key:key,showKey:showKey,data:null};$('hostHome').classList.add('hidden');$('dash').classList.remove('hidden');$('dash').innerHTML='<p class="hint">…</p>';
+  loadDash();clearInterval(st.poll);st.poll=setInterval(function(){if(!$('dash').classList.contains('hidden')&&!$('hostBox').classList.contains('hidden'))loadDash();else clearInterval(st.poll)},5000)}
+function loadDash(){var h=st.host;if(!h)return;api('recap',{code:h.code,key:h.key}).then(function(r){if(!r.ok){$('dash').innerHTML='<p class="msg">'+errT(r.error)+'</p><button class="btn ghost" id="dBack">'+t('backHome')+'</button>';$('dBack').onclick=openHost;return}h.data=r;renderDash()})}
+function caseStats(r){var done=r.players.filter(function(p){return p.done});return LEVELS.map(function(L,i){var A=analyze(L),best=bestIds(A,L.q),cnt={},n=0,ok=0;
+  done.forEach(function(p){var k=p.picks&&p.picks[i];if(!k)return;n++;cnt[k]=(cnt[k]||0)+1;if(best.indexOf(k)>=0)ok++});
+  var list=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]}).map(function(k){return {k:k,n:cnt[k],ok:best.indexOf(k)>=0}});
+  return {L:L,n:n,ok:ok,list:list,best:best}})}
+function renderDash(){var h=st.host,r=h.data,done=r.players.filter(function(p){return p.done});
+  var avg=done.length?done.reduce(function(a,p){return a+p.score},0)/done.length:0;
+  var link=location.origin+location.pathname+'?kode='+h.code;
+  var rows=r.players.map(function(p,i){return '<tr><td>'+(p.done?(i+1):'')+'</td><td style="text-align:left">'+esc(p.name)+'</td><td style="text-align:left">'+esc(p.nim)+'</td><td><b>'+(p.done?p.score:'<span class="hint">'+t('playing')+'</span>')+'</b></td><td>'+(p.done?p.correct+'/'+LEVELS.length:'')+'</td><td>'+(p.done?mmss(p.secs):'')+'</td></tr>'}).join('');
+  var cs=caseStats(r).map(function(c,i){var mx=Math.max(1,c.list.length?c.list[0].n:1);
+    return '<div class="case"><h4>'+(i+1)+'. '+esc(c.L.title[lang])+' · <span style="color:var(--muted);font-weight:500">'+t(c.L.q==='int'?'int':'seg')+'</span> · '+t('correctPct',{p:c.n?Math.round(100*c.ok/c.n):0})+'</h4>'+
+     (c.list.length?c.list.slice(0,5).map(function(x){return '<div class="hb"><span class="nm">'+esc(nameOf(c.L,x.k))+(x.ok?' ✓':'')+'</span><i class="'+(x.ok?'ok':'')+'" style="width:'+Math.round(140*x.n/mx)+'px"></i><span>'+x.n+'</span></div>'}).join(''):'<div class="hint">—</div>')+'</div>'}).join('');
+  $('dash').innerHTML='<div class="row" style="justify-content:space-between;align-items:center"><div><h2>'+esc(r.title)+'</h2><span class="hint">'+t(r.open?'statusOpen':'statusClosed')+'</span></div><button class="btn ghost" id="dBack">'+t('backHome')+'</button></div>'+
+   '<div style="margin-top:12px" class="row"><div><div class="hint">'+t('fCode')+'</div><div class="codeBig">'+esc(h.code)+'</div></div><div style="align-self:end"><div class="hint">'+t('shareJoin')+'</div><div style="font-weight:600;word-break:break-all">'+esc(link)+'</div></div></div>'+
+   (h.showKey?'<p class="hint" style="margin:12px 0 4px">'+t('keyNote')+'</p><div class="keybox">'+esc(h.key)+'</div>':'')+
+   '<div class="kpis"><div class="kpi"><b>'+r.players.length+'</b><span>'+t('players')+'</span></div><div class="kpi"><b>'+done.length+'</b><span>'+t('finished')+'</span></div><div class="kpi"><b>'+fmt(avg,0)+'</b><span>'+t('avg')+' / '+r.max+'</span></div></div>'+
+   '<div class="row"><button class="btn ghost" id="dRef">'+t('refresh')+'</button><button class="btn ghost" id="dTog">'+t(r.open?'closeS':'openS')+'</button><button class="btn ghost" id="dCsv">'+t('csvCopy')+'</button><button class="btn ghost" id="dDl">'+t('csvDl')+'</button></div>'+
+   '<div class="dashgrid"><div><h3 style="font-size:15px;margin:6px 0">'+t('lead')+'</h3><div style="overflow-x:auto"><table><thead><tr><th>#</th><th style="text-align:left">'+t('thName')+'</th><th style="text-align:left">'+t('thNim')+'</th><th>'+t('thScore')+'</th><th>'+t('thOk')+'</th><th>'+t('thTime')+'</th></tr></thead><tbody>'+(rows||'<tr><td colspan="6" class="hint" style="text-align:left">'+t('noPlayers')+'</td></tr>')+'</tbody></table></div></div>'+
+   '<div><h3 style="font-size:15px;margin:6px 0">'+t('perCase')+'</h3>'+cs+'</div></div>';
+  $('dBack').onclick=openHost;$('dRef').onclick=loadDash;
+  $('dTog').onclick=function(){api('toggle',{code:h.code,key:h.key,open:!r.open}).then(loadDash)};
+  $('dCsv').onclick=function(){var b=this;try{navigator.clipboard.writeText(csv(r)).then(function(){b.textContent=t('copied')},function(){b.textContent=t('copyFail')})}catch(e){b.textContent=t('copyFail')}};
+  $('dDl').onclick=function(){var bl=new Blob(['﻿'+csv(r)],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='detektif-ruang-'+h.code+'.csv';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500)};
+}
+function csv(r){var q=function(v){v=v==null?'':String(v);return /[",\n;]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  var head=['rank',t('thName'),t('thNim'),t('thScore'),t('thOk'),'secs'].concat(LEVELS.map(function(L,i){return (i+1)+'. '+L.title[lang]}));
+  var lines=[head.map(q).join(',')];r.players.forEach(function(p,i){lines.push([p.done?i+1:'',p.name,p.nim,p.done?p.score:'',p.done?p.correct:'',p.done?p.secs:''].concat(LEVELS.map(function(L,j){return p.picks&&p.picks[j]?nameOf(L,p.picks[j]):''})).map(q).join(','))});
+  return lines.join('\n')}
+$('joinOpen').onclick=function(){openJoin('')};$('hostOpen').onclick=openHost;
+document.querySelectorAll('.back').forEach(function(b){b.onclick=function(){clearInterval(st.poll);showOnly('intro')}});
+function initApi(){if(!/^https?:$/.test(location.protocol))return;
+  var to=new Promise(function(res){setTimeout(function(){res({ok:false})},4000)});
+  Promise.race([api('ping'),to]).then(function(r){if(!r||!r.ok)return;apiOK=true;
+    document.querySelectorAll('.cls').forEach(function(b){b.classList.remove('hidden')});
+    var m=/[?&]kode=([A-Za-z0-9]{6})/.exec(location.search);if(m)openJoin(m[1].toUpperCase());
+    var nm=store.get('drName');if(nm)$('jName').value=nm})}
+
+/* ---------- Flow ---------- */
+function loadLevel(){var L=LEVELS[st.i];st.A=analyze(L);st.sel=null;st.focus=null;st.phase='guess';st.t0=Date.now();
+  $('lvTitle').textContent=L.title[lang];$('lvSub').textContent=t('round',{n:st.i+1,t:LEVELS.length})+(st.cls?' · '+t('inClass',{t:st.cls.title}):'');
+  drawPlan();renderSide();dots();clearInterval(st.timer);st.timer=setInterval(tick,250)}
+function tick(){if(st.phase!=='guess')return;var el_=(Date.now()-st.t0)/1000,rem=Math.max(0,LIMIT-el_);var b=$('tbar');if(b)b.style.width=(rem/LIMIT*100)+'%';if(rem<=0){lockAnswer(true)}}
+function mob(){var m=$('mobLock');m.textContent=t('lock')+(st.sel?' · '+nameOf(LEVELS[st.i],st.sel):'');m.classList.toggle('show',st.phase==='guess'&&!!st.sel)}
+function onRoom(k){
+  if(st.phase==='guess'){st.sel=k;drawPlan();var sb=$('selBox');if(sb)sb.innerHTML=t('picked')+' <b>'+nameOf(LEVELS[st.i],k)+'</b>';$('lockBtn').disabled=false;mob()}
+  else if(st.phase==='reveal'){st.focus=k;drawPlan();var L=LEVELS[st.i];document.querySelector('.jg h3').textContent=t('jgH',{r:nameOf(L,k)});drawJG($('jgSvg'),st.A,L,k,false)}
+}
+function lockAnswer(timeout){
+  if(st.phase!=='guess')return;clearInterval(st.timer);
+  var L=LEVELS[st.i],A=st.A,el_=(Date.now()-st.t0)/1000,h={pick:st.sel,pts:0,bonus:0,correct:false,rank:0,timeout:false};
+  if(!st.sel){h.timeout=true}
+  else{var mine=A.res[st.sel].TD,better=A.ids.filter(function(i){return L.q==='int'?A.res[i].TD<mine:A.res[i].TD>mine}).length;
+    h.rank=better+1;h.correct=better===0;var base=Math.round(100*(1-better/(A.k-1)));
+    h.bonus=h.correct?Math.max(0,Math.round(20*(LIMIT-el_)/LIMIT)):0;h.pts=base+h.bonus}
+  st.hist[st.i]=h;st.score+=h.pts;$('mobLock').classList.remove('show');$('score').textContent=st.score;
+  st.phase='reveal';st.focus=L.rooms[0].k;drawPlan();renderSide();dots();
+}
+function next(){if(st.i<LEVELS.length-1){st.i++;loadLevel();window.scrollTo({top:0,behavior:'smooth'})}else renderEnd()}
+function start(){st.i=0;st.score=0;st.hist=[];$('score').textContent='0';
+  showOnly('game');loadLevel()}
+
+function drawIntroArt(){
+  var svg=$('introSvg');if(!svg)return;var L=LEVELS[1],A=analyze(L);drawJG(svg,A,L,'HAL',true);
+}
+$('langBtn').onclick=function(){lang=lang==='id'?'en':'id';store.set('drLang',lang);applyStatic();
+  if(st.phase==='guess'||st.phase==='reveal'){var L=LEVELS[st.i];$('lvTitle').textContent=L.title[lang];$('lvSub').textContent=t('round',{n:st.i+1,t:LEVELS.length});drawPlan();
+    if(st.phase==='guess'){var keep=st.t0;renderSide();st.t0=keep}else renderSide()}
+  else if(st.phase==='end'){if($('endBox').classList.contains('hidden'))drawIntroArt();else renderEnd()} else drawIntroArt();
+  if(!$('hostBox').classList.contains('hidden')){if(st.host&&!$('dash').classList.contains('hidden')&&st.host.data)renderDash();else renderMySess()}};
+$('startBtn').onclick=start;$('mobLock').onclick=function(){lockAnswer()};
+applyStatic();dots();drawIntroArt();initApi();
+window.__DR={LEVELS:LEVELS,analyze:analyze,sharedEdge:sharedEdge};
+})();
+</script>
+</body>
+</html>
