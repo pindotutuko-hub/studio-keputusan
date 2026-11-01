@@ -119,7 +119,8 @@ function audit(array $st, ?array $prev, int $prevAt): array {
 	// batas atas pemasukan: kas awal + misi (11×15) + bonus era + iuran/pasar per bulan
 	$nDone = min(count($st['done'] ?? []), 11 + $ex + intdiv(max($kk, 0), 25) + 2);
 	$prodB = ($cnt['kebun'] ?? 0) + ($cnt['bengkel'] ?? 0) + ($cnt['pond'] ?? 0) + ($cnt['kandang'] ?? 0) + ($cnt['peternakan'] ?? 0) + ($cnt['dapur'] ?? 0) + $upP + 1; $links = is_array($st['links'] ?? null) ? min(count($st['links']), 40) : 0;
-	$coinCap = START['coin'] + max(11, $nDone) * 15 + 40 * $era * $era + $t * (0.6 * max($kk, 1) + 4 + 6 * $markets + 10 * $prodB + 8 * $links + 4 * $zLv + 0.8 * max($kk, 1) + 3 * ($cnt['museum'] ?? 0) + 6 * ($cnt['stadion'] ?? 0) + 6 * ($cnt['dermaga'] ?? 0)) + 30 * 6 * intdiv($t, 12) + 5;
+	$loanIn = min(max(0, (int) ($st['loanTot'] ?? 0)), 133 * (1 + intdiv($t, 24)));
+	$coinCap = START['coin'] + $loanIn + 25 * intdiv($era * ($era + 1), 2) + max(11, $nDone) * 15 + 40 * $era * $era + $t * (0.6 * max($kk, 1) + 9 + 6 * $markets + 10 * $prodB + 8 * $links + 4 * $zLv + 0.8 * max($kk, 1) + 3 * ($cnt['museum'] ?? 0) + 6 * ($cnt['stadion'] ?? 0) + 6 * ($cnt['dermaga'] ?? 0)) + 30 * 6 * intdiv($t, 12) + 5;
 	if ($coin + $spentC > $coinCap * 1.15 + 20) { $bad[] = 'coin'; }
 	if ($wood + $spentW > 2 * (START['wood'] + 4 * $cleared) + 5) { $bad[] = 'wood'; }
 	if ($cleared > substr_count(implode('', $land), 'G') + $paths) { $bad[] = 'cleared'; }
