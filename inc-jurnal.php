@@ -19,7 +19,10 @@ define( 'PT_JR_APP', dirname( untrailingslashit( ABSPATH ), 2 ) . '/khusus-apps/
 define( 'PT_JR_DIRAPP', dirname( untrailingslashit( ABSPATH ), 2 ) . '/khusus-apps/direktori' );
 define( 'PT_JR_OJS', 'https://jurnal.unmer.ac.id/index.php/' );
 define( 'PT_JR_DIR_SRC', 'https://direktorijurnal-unmer.netlify.app/' );
-define( 'PT_JR_VERSION', '1.0.0' );
+define( 'PT_JR_VERSION', '1.0.1' );
+if ( file_exists( __DIR__ . '/inc-ojs-sync.php' ) ) {
+	require_once __DIR__ . '/inc-ojs-sync.php';
+}
 
 /* ---------------- peran ---------------- */
 add_action(
@@ -852,6 +855,9 @@ function pt_jd_api( $ep ) {
 			pt_jr_err( $ok, 502 );
 		}
 		pt_jr_json( array( 'ok' => true ) );
+	}
+	if ( function_exists( 'pt_jo_api' ) ) {
+		pt_jo_api( $ep );
 	}
 	pt_jr_err( 'Endpoint tidak dikenal.', 404 );
 }
