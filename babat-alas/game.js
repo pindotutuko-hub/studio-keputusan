@@ -389,12 +389,12 @@ function loadML(cb){if(window.maplibregl)return cb();const l=document.createElem
 function boxGeo(lat,lon){const dy=200/111320,dx=200/(111320*Math.cos(lat*Math.PI/180));return {type:'Feature',geometry:{type:'Polygon',coordinates:[[[lon-dx,lat-dy],[lon+dx,lat-dy],[lon+dx,lat+dy],[lon-dx,lat+dy],[lon-dx,lat-dy]]]}}}
 let geoT=0;
 function pickLoc(){show('scLoc');$('locChips').innerHTML=PRESETS.map((p,i)=>`<button type="button" data-i="${i}">${esc(p[0])}</button>`).join('');
- loadML(()=>{if(lmap){lmap.resize();return}
+ loadML(()=>{if(lmap){lmap.resize();clAt=null;loadClaims();return}
   lmap=new maplibregl.Map({container:'locMap',style:'https://tiles.openfreemap.org/styles/liberty',center:[112.6066,-7.9426],zoom:13.5,attributionControl:{compact:true}});lmap.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
   lmap.on('load',()=>{const c=lmap.getCenter();lmap.addSource('b',{type:'geojson',data:boxGeo(c.lat,c.lng)});lmap.addLayer({id:'bf',type:'fill',source:'b',paint:{'fill-color':'#e67e22','fill-opacity':.15}});lmap.addLayer({id:'bl',type:'line',source:'b',paint:{'line-color':'#e67e22','line-width':3}});
    lmap.addSource('cl',{type:'geojson',data:{type:'FeatureCollection',features:[]}});lmap.addLayer({id:'clf',type:'fill',source:'cl',paint:{'fill-color':['case',['get','mine'],'#2f8f6a','#c0392b'],'fill-opacity':.28}},'bf');lmap.addLayer({id:'cll',type:'line',source:'cl',paint:{'line-color':['case',['get','mine'],'#2f8f6a','#c0392b'],'line-width':2}});
    try{lmap.addLayer({id:'clt',type:'symbol',source:'cl',layout:{'text-field':['get','label'],'text-size':12,'text-font':['Noto Sans Regular']},paint:{'text-color':'#7a1f14','text-halo-color':'#fff','text-halo-width':1.5}})}catch(e){}
-   geo()});
+   geo();loadClaims()});
   lmap.on('move',()=>{const c=lmap.getCenter(),s=lmap.getSource('b');if(s)s.setData(boxGeo(c.lat,c.lng));claimCheck()});lmap.on('moveend',()=>{clearTimeout(geoT);geoT=setTimeout(geo,700);clearTimeout(clT);clT=setTimeout(loadClaims,500)})});
  $('locChips').querySelectorAll('button').forEach(b=>b.onclick=()=>{const p=PRESETS[+b.dataset.i];if(lmap)lmap.jumpTo({center:[p[2],p[1]],zoom:14});$('lName').value=(lang==='en'?'':'Kampung ')+p[0].split(',')[0]})}
 /* ---- wilayah yang sudah dipakai pemain lain: tampil merah dan tidak bisa dipilih ---- */
@@ -1721,4 +1721,4 @@ function tutCheck(){const st=tutStep();if(!st||st.end)return;if(st.ok()){S.tut++
 /* ================= Mulai ================= */
 applyStatic();
 (async()=>{const go=async()=>{if(TOKEN){try{const j=await api('me');ME=j.me;ME.tantangan=j.tantangan||'';if(!ME.eula){try{await api('eula',{ver:EULA_VER})}catch(e){}}hub();return}catch(e){TOKEN=null;store.del('baTok')}}show('scAuth')};if(!eulaOK())showEula(go);else go()})();
-if(/^(127\.0\.0\.1|localhost)$/.test(location.hostname))window.__BA={h:(x,z)=>R3.hAt(x,z),setAva:a=>{draft.char.ava=a;renderAvEditor()},rebuild:()=>{R3.world()},weather:w=>{S.wx=w;R3.weather(w,seasonOf(calM()));R3.daylight(S.clk.h/24)},ui:()=>{updHUD();renderMissions()},style:v=>{curStyle=v},cam:(x,y,z,tx,ty,tz)=>{const o=R3.cam();o.controls.target.set(tx,ty,tz);o.camera.position.set(x,y,z)},look:(x,z,d)=>R3.look(x,z,d),lp:()=>{const v=R3.leaderPos();return v?[v.x,v.y,v.z]:null},real:()=>REAL.ok,dbg:()=>R3.dbg(),state:()=>S,tick,act:(k,x,y)=>{tool=k;act(x,y,true)},BT};
+if(/^(127\.0\.0\.1|localhost)$/.test(location.hostname))window.__BA={h:(x,z)=>R3.hAt(x,z),setAva:a=>{draft.char.ava=a;renderAvEditor()},rebuild:()=>{R3.world()},weather:w=>{S.wx=w;R3.weather(w,seasonOf(calM()));R3.daylight(S.clk.h/24)},ui:()=>{updHUD();renderMissions()},style:v=>{curStyle=v},cam:(x,y,z,tx,ty,tz)=>{const o=R3.cam();o.controls.target.set(tx,ty,tz);o.camera.position.set(x,y,z)},look:(x,z,d)=>R3.look(x,z,d),lp:()=>{const v=R3.leaderPos();return v?[v.x,v.y,v.z]:null},real:()=>REAL.ok,dbg:()=>R3.dbg(),state:()=>S,tick,day:()=>{S.clk.d++;dayTick()},act:(k,x,y)=>{tool=k;act(x,y,true)},BT};

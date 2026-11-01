@@ -166,7 +166,8 @@ function indicators(array $st, int $nb): array {
 	$K = 0.6 * (int) ($st['happy'] ?? 0) + 0.4 * (int) ($st['coh'] ?? 0);
 	$P = 70 * $cl(((int) ($st['kk'] ?? 0)) / 50) + 30 * $cl(((int) ($st['era'] ?? 1) - 1) / 5);
 	$r = ['e' => (int) round($E), 'n' => (int) round($N), 'c' => (int) round($C), 'k' => (int) round($K), 'p' => (int) round($P), 'rth' => (int) round($RTH), 'svc' => (int) round($SVC)];
-	$r['score'] = (int) round(10 * (0.25 * $r['e'] + 0.2 * $r['n'] + 0.2 * $r['c'] + 0.25 * $r['k'] + 0.1 * $r['p']));
+	// kampung yang baru sedikit warganya tidak boleh langsung berskor tinggi: bobot naik sampai 50 KK
+	$r['score'] = (int) round(10 * (0.25 * $r['e'] + 0.2 * $r['n'] + 0.2 * $r['c'] + 0.25 * $r['k'] + 0.1 * $r['p']) * (0.35 + 0.65 * min(1, ((int) ($st['kk'] ?? 0)) / 50)));
 	$r['kk'] = (int) ($st['kk'] ?? 0); $r['era'] = (int) ($st['era'] ?? 1);
 	return $r;
 }
