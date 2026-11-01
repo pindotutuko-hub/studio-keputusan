@@ -854,7 +854,8 @@ function upgReq(b){const u=UPG[b.t],lv=b.lv||1;if(!u||lv>=3||b.bt)return null;co
 function doUpgrade(b){const q=upgReq(b);if(!q)return;if(q.ok.some(r=>!r[1])){toast(L2('Syarat naik level belum terpenuhi','Upgrade requirements not met'));Snd.play('err');return}
  if(!canAfford(q.st.c)){toast(S.res.coin<(q.st.c.coin||0)?t('noMoney'):t('noWood'));Snd.play('err');return}
  pay(q.st.c);b.lv=(b.lv||1)+1;R3.delB(b.id);R3.addB(b);Snd.play('build');Snd.play('coin');toast('⬆️ '+tlN(b.t)+' → '+q.st.n[q.li]);if(b.t==='house')R3.villagers();after();showInfo(b.x,b.y)}
-let infoAt=null;function infoRefresh(){const i=$('info');if(infoAt&&i&&!i.classList.contains('hidden'))showInfo(infoAt[0],infoAt[1])}
+let infoAt=null,infoTouch=0;function infoRefresh(){const i=$('info');if(!infoAt||!i||i.classList.contains('hidden'))return;if(Date.now()-infoTouch<2500||i.matches(':hover'))return;showInfo(infoAt[0],infoAt[1])}
+document.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closest('#info'))infoTouch=Date.now()},true);
 /* ---------- Bank Desa: pinjaman lunak (bunga 6% total, 24 cicilan bulanan) ---------- */
 const LOANS=[33,67,133];
 function loanMonth(){const L=S.loan;if(!L)return;const p=Math.min(L.inst,L.left);if(S.res.coin>=p){S.res.coin-=p;L.left=+(L.left-p).toFixed(2);L.n--;L.late=0}else{L.late=(L.late||0)+1;S.happy-=2;advise(L2('⚠️ Cicilan Bank Desa tertunggak. Kepuasan warga turun.','⚠️ Village Bank installment is overdue. Satisfaction drops.'),'eco')}
