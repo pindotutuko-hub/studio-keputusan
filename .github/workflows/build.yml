@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths-ignore: ['**.md', 'docs/**']
+    paths-ignore: ['**.md', 'docs/**', '.github/**']
     tags: ['v*']
 permissions:
   contents: write
@@ -47,6 +47,8 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Studio-Keputusan-${{ runner.os }}
+          # artefak hanya perantara ke job release (installer tetap ada di Releases); simpan 1 hari agar kuota Actions storage tidak habis
+          retention-days: 1
           path: |
             dist/*.exe
             dist/*.dmg
