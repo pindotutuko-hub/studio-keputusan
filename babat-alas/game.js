@@ -460,7 +460,7 @@ function npcVillages(st){const r=rng(st.seed+9),L=SYL[st.loc.cc]||SYL.XX,P=ecoPr
 
 
 /* ---------- perdagangan bulanan ---------- */
-function tradeMonth(staff,smul){const P=S.eco||(S.eco=ecoProfile(S)),out={income:0,items:[]};const kom=count('kom'),mk=count('market');const links=(S.links||[]).length,mult=1+.12*Math.min(links,8)+(kom?.15:0);
+function tradeMonth(staff,smul){const P=S.eco||(S.eco=ecoProfile(S)),out={income:0,items:[]};const kom=count('kom'),mk=count('market');const links=(S.links||[]).length,mult=1+.12*Math.min(links,8)+(kom?.15:0)+.1*Math.min(count('dermaga'),3);
  const prod={};const add=(k,v)=>{prod[k]=(prod[k]||0)+v};built().forEach(b=>{if(b.t==='kebun')add(P.crop,6*staff*smul*fert(b.x,b.y));if(b.t==='bengkel')add(P.craft,3*staff);if(b.t==='pond')add('ikan',1.5*staff)});
  if(P.nat.includes('madu'))add('madu',Math.min(3,(S.land.join('').split('F').length-1)/2500));
  for(const k in prod){S.stock[k]=(S.stock[k]||0)+prod[k]}
@@ -564,21 +564,21 @@ function citySim(){const R=S.res;S.city=S.city||{};S.tax=S.tax||{r:9,c:9,i:9};co
  const homes=Bs.filter(isHome),cov=(list,types,r)=>list.length?list.filter(h=>nearAny(h.x,h.y,types,r)).length/list.length:1;
  C.water=homes.length?homes.filter(h=>near(h.x,h.y,'well',5)||near(h.x,h.y,'menara',12)).length/homes.length:1;
  C.sew=S.era>=4?cov(homes,['ipal'],12):1;
- const gen=Math.max(1,S.kk),capG=cnt('tps')*40+cnt('tpa')*700+(S.era<=2?40:0);C.garb=Math.min(1,capG/gen);
+ const gen=Math.max(1,S.kk),capG=cnt('tps')*40+cnt('tpa')*700+(S.era<=2?40:0);C.garb=Math.min(1,capG*(kbjOn('banksampah')?1.3:1)/gen);
  C.cop=cov(homes,['pospol'],10);C.fireCov=cov(Bs.filter(b=>!['tree','field','kebun','pond','zr','zc','zi'].includes(b.t)||b.lv),['damkar'],12);
- C.health=Math.min(1,(cnt('klinik')*20+cnt('rs')*120)/Math.max(1,S.kk));C.edu=Math.min(1,(cnt('paud')*10+cnt('sekolah')*15+cnt('smp')*40+cnt('sma')*60+cnt('kampus')*150)/Math.max(1,S.kk));
+ C.health=Math.min(1,(cnt('klinik')*20+cnt('rs')*120)/Math.max(1,S.kk));C.edu=Math.min(1,(kbjOn('beasiswa')?.15*S.kk:0)+(cnt('paud')*10+cnt('sekolah')*15+cnt('smp')*40+cnt('sma')*60+cnt('kampus')*150)/Math.max(1,S.kk));
  // lapangan kerja
- let jobs=0;Bs.forEach(b=>{jobs+=(BT[b.t].jobs||0)+(BT[b.t].emp||0)});jobs+=zl('zc')*0+zones.reduce((a,z)=>a+(z.t==='zc'||z.t==='zi'?ZCAP[z.t][z.lv||0]:0),0);
+ let jobs=0;Bs.forEach(b=>{jobs+=(BT[b.t].jobs||0)+(BT[b.t].emp||0)});jobs+=(kbjOn('umkm')?Math.round(S.kk*.06):0)+zl('zc')*0+zones.reduce((a,z)=>a+(z.t==='zc'||z.t==='zi'?ZCAP[z.t][z.lv||0]:0),0);
  const workers=Math.max(1,Math.round(S.kk*1.3));C.jobs=jobs;C.workers=workers;C.emp=Math.min(1,jobs/workers);
  // polusi & lalu lintas & kriminalitas (indeks 0–100)
  const trees=cnt('tree')+cnt('taman')*2+cnt('tamkot')*6;let polS=Bs.reduce((a,b)=>a+(BT[b.t].pol||0)+(b.t==='zi'?(b.lv||0)*2.5:0),0);
- const traffic=S.era>=4?Math.max(0,Math.min(100,Math.round((S.kk/6+zl('zc')*1.5+zl('zi')*2)-cnt('halte')*12-cnt('terminal')*25-cnt('stasiun')*60-roadCap()-(cnt('stasiun')?Math.min(60,cnt('rel')*.6):0)))):0;C.traffic=traffic;
- C.pol=Math.max(0,Math.min(100,Math.round(polS*1.1+traffic*.2+(1-C.garb)*25+(1-C.sew)*15-trees*.8-(cnt('tamkot')+cnt('taman'))*1.5)));
- C.crime=Math.max(0,Math.min(100,Math.round(S.kk/25+(55-S.happy)*.6+(1-C.emp)*35-C.cop*30+(S.era>=4?10:0))));
+ const traffic=S.era>=4?Math.max(0,Math.min(100,Math.round((S.kk/6+zl('zc')*1.5+zl('zi')*2)-cnt('halte')*12-cnt('terminal')*25-cnt('stasiun')*60-roadCap()-(cnt('stasiun')?Math.min(60,cnt('rel')*.6):0)-(kbjOn('cfd')?12:0)))):0;C.traffic=traffic;
+ C.pol=Math.max(0,Math.min(100,Math.round(polS*1.1+traffic*.2+(1-C.garb)*25+(1-C.sew)*15-trees*.8-(cnt('tamkot')+cnt('taman'))*1.5-(kbjOn('cfd')?8:0)-(kbjOn('iklim')?12:0))));
+ C.crime=Math.max(0,Math.min(100,Math.round(S.kk/25+(55-S.happy)*.6+(1-C.emp)*35-C.cop*30+(S.era>=4?10:0)-(kbjOn('ronda')?12:0))));
  // permintaan R/K/I (−100..100)
  const capR=homes.reduce((a,b)=>a+(b.t==='house'?1:b.t==='perum'?4:b.t==='apartemen'?16:ZCAP.zr[b.lv||0]),0);
- C.dR=Math.round(Math.max(-100,Math.min(100,(C.emp-.85)*160+(S.happy-50)*.8-(TXR.r-9)*6+(capR-S.kk<4?25:-5))));
- C.dC=Math.round(Math.max(-100,Math.min(100,(S.kk*.22-zones.filter(z=>z.t==='zc').reduce((a,z)=>a+ZCAP.zc[z.lv||0],0))*3-(TXR.c-9)*6)));
+ C.dR=Math.round(Math.max(-100,Math.min(100,(C.emp-.85)*160+(S.happy-50)*.8-(TXR.r-9)*6+(capR-S.kk<4?25:-5)+(kbjOn('beasiswa')?8:0))));
+ C.dC=Math.round(Math.max(-100,Math.min(100,(S.kk*.22-zones.filter(z=>z.t==='zc').reduce((a,z)=>a+ZCAP.zc[z.lv||0],0))*3-(TXR.c-9)*6+(kbjOn('umkm')?15:0))));
  C.dI=Math.round(Math.max(-100,Math.min(100,(S.kk*.3-zones.filter(z=>z.t==='zi').reduce((a,z)=>a+ZCAP.zi[z.lv||0],0))*2.5+((S.links||[]).length)*6-(TXR.i-9)*6)));
  // pertumbuhan zona (otomatis seperti di gim simulasi kota)
  let changed=0;zones.forEach(z=>{const lv=z.lv||0,dm=z.t==='zr'?C.dR:z.t==='zc'?C.dC:C.dI;const ok=roadNear(z)&&(S.era<3||C.pw>=.6)&&(z.t!=='zr'||C.water>=.5||nearAny(z.x,z.y,['well','menara'],12));
@@ -588,10 +588,10 @@ function citySim(){const R=S.res;S.city=S.city||{};S.tax=S.tax||{r:9,c:9,i:9};co
  if(changed)zones.forEach(z=>{if(z._lv!==z.lv){z._lv=z.lv;R3.delB(z.id);R3.addB(z)}});
  // anggaran: pajak & biaya operasional
  const incR=S.kk*.6*(TXR.r/9)-S.kk*.6,incC=zones.filter(z=>z.t==='zc').reduce((a,z)=>a+(z.lv||0)*1.2,0)*TXR.c/9,incI=zones.filter(z=>z.t==='zi').reduce((a,z)=>a+(z.lv||0)*1.5,0)*TXR.i/9;
- const up=Bs.reduce((a,b)=>a+(BT[b.t].up||0),0);const tour=Bs.reduce((a,b)=>a+(BT[b.t].tour||0),0);C.tour=tour;R.coin+=tour;C.inc=Math.round((S.kk*.6*TXR.r/9+incC+incI+tour)*10)/10;C.exp=Math.round(up*10)/10;
+ const pc=POLICY.reduce((a,p)=>a+(kbjOn(p[0])?p[1]:0),0);C.polCost=pc;const up=Bs.reduce((a,b)=>a+(BT[b.t].up||0),0)+pc;if((kbjOn('banksampah')||kbjOn('ronda'))&&Math.random()<.35)S.coh=Math.min(100,S.coh+1);const tour=Math.round(Bs.reduce((a,b)=>a+(BT[b.t].tour||0),0)*(kbjOn('wisata')?1.4:1));C.tour=tour;R.coin+=tour;C.inc=Math.round((S.kk*.6*TXR.r/9+incC+incI+tour)*10)/10;C.exp=Math.round(up*10)/10;
  R.coin=Math.max(0,R.coin+Math.round(incR+incC+incI-up));
  // kebahagiaan: dampak layanan kota
- const adj=(S.era>=3?-(1-C.pw)*14:0)-(1-C.garb)*9-(1-C.sew)*7-(1-C.water)*6-C.pol*.12-C.crime*.1+(S.era>=4?(C.emp-.85)*12:0)-Math.max(0,TXR.r-9)*1.6+Math.max(0,9-TXR.r)*.6+(C.health-.5)*4+(C.edu-.5)*4+Math.min(8,Bs.reduce((a,b)=>a+(BT[b.t].lm||0),0)*.8);
+ const adj=(S.era>=3?-(1-C.pw)*14:0)-(1-C.garb)*9-(1-C.sew)*7-(1-C.water)*6-C.pol*.12-C.crime*.1+(S.era>=4?(C.emp-.85)*12:0)-Math.max(0,TXR.r-9)*1.6+Math.max(0,9-TXR.r)*.6+(C.health-.5)*4+(C.edu-.5)*4+Math.min(8,Bs.reduce((a,b)=>a+(BT[b.t].lm||0),0)*.8)+(kbjOn('cfd')?2:0)+(kbjOn('ronda')?1:0);
  // bencana: kebakaran & gempa
  let msg=null;const dk=DIS();if(S.era>=3&&Math.random()<.06*dk){const cand=Bs.filter(b=>!['tree','field','kebun','pond','zr','zc','zi'].includes(b.t)||b.lv);const b=cand[Math.floor(Math.random()*cand.length)];
   if(b&&!near(b.x,b.y,'damkar',12)){b.dmg=4;if(b.t==='house'&&S.kk>3)S.kk--;msg=L2('🔥 Kebakaran di permukiman! Bangun Pemadam (damkar) agar cepat tertangani.','🔥 Fire in the settlement! Build a fire station to respond quickly.');Snd.play('err')}}
@@ -617,9 +617,11 @@ function cityPanel(){const C=S.city||{},T=S.tax||(S.tax={r:9,c:9,i:9}),m=$('moda
   <h3>🗺️ ${L2('Peta lapisan','Data layers')}</h3><div class="lbt">${[['lv',L2('Nilai lahan','Land value')],['pol',L2('Polusi','Pollution')],['pw',L2('Listrik','Power')],['wat',L2('Air','Water')],['cop',L2('Keamanan','Safety')],['fire',L2('Kebakaran','Fire')],['fl',L2('Rawan genangan','Flood-prone')],['zone',L2('Zona','Zones')]].map(([k,l])=>`<button data-ov="${k}" class="${R3.ovKind===k?'on':''}">${l}</button>`).join('')}<button data-ov="">✕</button></div></section>
  <section><h3>💰 ${L2('Anggaran bulanan','Monthly budget')}</h3><table class="lb"><tr><td>${L2('Pendapatan pajak & retribusi','Tax revenue')}</td><td>${money(C.inc||0)}</td></tr><tr><td>${L2('Biaya operasional layanan','Service upkeep')}</td><td>−${money(C.exp||0)}</td></tr><tr><th>${L2('Saldo','Net')}</th><th>${money((C.inc||0)-(C.exp||0))}</th></tr></table>
   ${sl('r',L2('Pajak hunian (PBB)','Residential tax'))}${sl('c',L2('Pajak komersial','Commercial tax'))}${sl('i',L2('Pajak industri','Industrial tax'))}<p class="note">${L2('Pajak tinggi menambah kas tetapi menurunkan kepuasan dan permintaan zona.','Higher taxes raise revenue but lower satisfaction and zone demand.')}${C.tour?' '+L2('Termasuk pemasukan wisata','Includes tourism')+' '+money(C.tour)+'.':''}</p>
+  <h3>📋 ${L2('Kebijakan kota','City policies')}</h3>${POLICY.map(([k,c,id,en,di,de])=>`<label class="setr chk" title="${lang==='en'?de:di}"><span>${lang==='en'?en:id}<br><small class="note">${lang==='en'?de:di} · ${money(c)}/${L2('bln','mo')}</small></span><input type="checkbox" data-kbj="${k}" ${kbjOn(k)?'checked':''}></label>`).join('')}
   <h3>🏅 ${L2('Penghargaan kota','City awards')}</h3><div class="awl">${AWARDS.map(([k,f,id,en])=>`<span class="${(S.awards||{})[k]?'on':''}" title="${(S.awards||{})[k]?L2('Diraih ','Won ')+(S.awards||{})[k]:L2('Belum diraih','Not yet won')}">${lang==='en'?en:id}</span>`).join('')}</div><p class="note">${L2('Dinilai tiap awal tahun permainan. Jalan kolektor/arteri: ','Assessed every game year. Collector/arterial roads: ')}${Object.values(S.rc||{}).filter(v=>v===2).length} / ${Object.values(S.rc||{}).filter(v=>v===3).length}</p></section></div></div>`;
  $('cpX').onclick=()=>m.classList.add('hidden');
  m.querySelectorAll('input[data-tax]').forEach(i=>i.oninput=()=>{T[i.dataset.tax]=+i.value;i.nextElementSibling.textContent=i.value+'%';dirty=true});
+ m.querySelectorAll('input[data-kbj]').forEach(i=>i.onchange=()=>{S.kbj=S.kbj||{};S.kbj[i.dataset.kbj]=i.checked?1:0;dirty=true;Snd.click()});
  m.querySelectorAll('[data-ov]').forEach(b=>b.onclick=()=>{R3.overlay(b.dataset.ov||null);m.classList.add('hidden')})}
 /** nilai lapisan data per petak (0..1, makin tinggi makin baik kecuali polusi) */
 function ovVal(kind,x,y){const occB=occ[y][x]?S.b.find(q=>q.id===occ[y][x]):null;
@@ -680,12 +682,26 @@ const DIS=()=>({normal:1,rendah:.35,mati:0})[SET.bencana||'normal']??1;
 /** risiko banjir kota (0–100): permukaan kedap air (zona terbangun, jalan beraspal) vs drainase, kolam retensi, pohon */
 function floodRisk(){const Bs=built(),cnt=t=>Bs.filter(b=>b.t===t).length;const imp=Bs.filter(b=>BT[b.t].zone).reduce((a,z)=>a+(z.lv||0),0)+Bs.filter(b=>['perum','ruko','apartemen','mal','rs','stasiun','terminal','pembangkit'].includes(b.t)).length*3;
  const paved=S.era>=5?(S.land.join('').split('P').length-1)*.25:Object.values(S.rc||{}).filter(v=>v>=2).length*.25;const drain=Bs.reduce((a,b)=>a+(BT[b.t].dr||0),0),green=cnt('tree')+cnt('taman')*2+cnt('tamkot')*5+cnt('alun')*4;
- return Math.max(0,Math.min(100,Math.round((imp*1.5+paved-drain*1.2-green*.6)*100/Math.max(40,imp*1.5+paved+20))))}
+ return Math.max(0,Math.min(100,Math.round((imp*1.5+paved-drain*1.2-green*.6)*100/Math.max(40,imp*1.5+paved+20))-(kbjOn('iklim')?12:0)))}
 function lowTile(x,y){const H=R3.hAt(x+.5,y+.5),o=S.own;let lo=0,n=0;for(let i=0;i<30;i++){const X=o.x0+Math.floor(hash2(i,7,S.seed||1)*(o.x1-o.x0)),Y=o.y0+Math.floor(hash2(7,i,S.seed||1)*(o.y1-o.y0));n++;if(R3.hAt(X+.5,Y+.5)>H)lo++}return lo/n}
 function urbanFlood(){if(!S._rain||S.era<3)return null;const r=floodRisk();(S.city||(S.city={})).flood=r;const k=DIS();if(Math.random()>r/250*k)return null;
  let n=0;built().forEach(b=>{if(b.t==='tree'||b.dmg)return;if(lowTile(b.x,b.y)>.7&&!nearAny(b.x,b.y,['saluran'],6)&&!nearAny(b.x,b.y,['retensi'],12)&&Math.random()<.5){b.dmg=2;n++}});
  if(!n)return null;Snd.play('flood');return L2('🌧️ Banjir genangan di kawasan rendah ('+n+' bangunan). Bangun drainase & kolam retensi, perbanyak pohon dan RTH.','🌧️ Urban flooding in low areas ('+n+' buildings). Build drainage & retention ponds, add trees and green space.')}
 function relNb(x,y){return [[1,0],[-1,0],[0,1],[0,-1]].filter(([a,c])=>{const X=x+a,Y=y+c;if(!inside(X,Y)||!occ[Y][X])return false;const q=S.b.find(b=>b.id===occ[Y][X]);return q&&(q.t==='rel'||q.t==='stasiun')})}
+
+/* ================= Paket kota 2D: dermaga & transportasi air, kebijakan kota ================= */
+Object.assign(BT,{dermaga:{era:2,w:1,h:1,c:{coin:20,wood:14},up:.2,days:5,tour:1}});
+TOOLS.splice(TOOLS.indexOf('halte'),0,'dermaga');ICON.dermaga='⚓';
+TX.id.tl.dermaga='Dermaga';TX.en.tl.dermaga='Jetty';TX.id.tlD.dermaga='Perahu & dagang lewat sungai; harus di tepi air';TX.en.tlD.dermaga='Boats & river trade; must be next to water';
+/** kebijakan kota: biaya per bulan (satuan kas) & dampak */
+const POLICY=[['cfd',3,'🚲 Hari bebas kendaraan (car-free day)','🚲 Car-free day','Kemacetan & polusi turun, warga lebih bahagia.','Less traffic & pollution, happier residents.'],
+ ['banksampah',2,'♻️ Bank sampah','♻️ Waste bank','Kapasitas sampah +30%, kohesi naik.','Waste capacity +30%, more cohesion.'],
+ ['iklim',4,'🌱 Kampung iklim (ProKlim)','🌱 Climate village','Polusi & risiko banjir turun.','Lower pollution & flood risk.'],
+ ['ronda',1,'🔦 Siskamling/ronda','🔦 Neighbourhood watch','Kriminalitas turun, kohesi naik.','Lower crime, more cohesion.'],
+ ['beasiswa',4,'🎓 Beasiswa & sekolah gratis','🎓 Scholarships','Pendidikan naik, permintaan hunian naik.','Better education, more housing demand.'],
+ ['wisata',3,'🎭 Promosi wisata budaya','🎭 Cultural tourism promotion','Pemasukan wisata +40%.','Tourism revenue +40%.'],
+ ['umkm',3,'🏪 Dukungan UMKM','🏪 Small business support','Permintaan komersial naik, lapangan kerja +.','More commercial demand & jobs.']];
+const kbjOn=k=>!!(S&&S.kbj&&S.kbj[k]);
 
 let S=null;          // keadaan permainan
 let occ=null;        // occ[y][x] = id bangunan
@@ -910,6 +926,7 @@ const R3={};
   else if(b.t==='retensi'){const lawn=new THREE.Mesh(new THREE.PlaneGeometry(1.94,1.94),mat('#6fae55'));lawn.rotation.x=-Math.PI/2;lawn.position.set(.5,.035,.5);g.add(lawn);const w=new THREE.Mesh(new THREE.PlaneGeometry(1.5,1.3),mat('#4f86ad',{roughness:.1,metalness:.2}));w.rotation.x=-Math.PI/2;w.position.set(.5,.045,.5);g.add(w);
    for(let k=0;k<4;k++)B(g,mat('#8f8a80'),k<2?.5:(k===2?-.27:1.27),.03,k<2?(k?1.17:-.17):.5,k<2?1.56:.04,.05,k<2?.04:1.36);[[-.3,-.3],[1.3,1.3],[-.3,1.3]].forEach(([x,z])=>{const c=new THREE.Mesh(new THREE.IcosahedronGeometry(.2,0),mat('#3f8a3a'));c.position.set(x,.35,z);c.castShadow=true;g.add(c)})}
   else if(b.t==='rel'){const nb=relNb(b.x,b.y),hz=nb.some(([a])=>a!==0)&&!nb.some(([a,c])=>c!==0)||nb.length===0;B(g,mat('#8a847a'),0,0,0,hz?1:.5,.05,hz?.5:1);for(let k=0;k<5;k++)B(g,tmat('wood','#6b4f3a'),hz?-.4+k*.2:0,.05,hz?0:-.4+k*.2,hz?.06:.42,.025,hz?.42:.06);[-1,1].forEach(sd=>B(g,mat('#bdbdbd',{metalness:.7,roughness:.3}),hz?0:sd*.12,.075,hz?sd*.12:0,hz?1:.025,.025,hz?.025:1));if((b.x+b.y)%3===0){B(g,mat('#7a7a72'),hz?0:.22,.05,hz?.22:0,.03,.6,.03);B(g,mat('#7a7a72'),0,.62,0,hz?.03:.5,.02,hz?.5:.03)}}
+  else if(b.t==='dermaga'){B(g,tmat('wood','#8a6a45'),0,.0,0,.9,.06,.5);for(const x of [-.4,.4])for(const z of [-.2,.2])B(g,tmat('wood','#5a3a22'),x,-.25,z,.06,.36,.06);B(g,tmat('wood','#8a6a45'),0,.06,.32,.9,.03,.06);const bt=new THREE.Mesh(new THREE.CylinderGeometry(.06,.045,.42,8),mat('#2f6fb0'));bt.rotation.z=Math.PI/2;bt.scale.y=1;bt.position.set(0,.02,.45);g.add(bt)}
   else if(b.t==='paud'){B(g,mat('#8fd0a0'),0,0,0,.92,.03,.92);B(g,mat(['#f6d36b','#9fd3e8','#f4a6a6'][b.id%3]),0,.03,-.12,.7,.38,.5);const r=hipRoof(.8,.6,.22,mat('#e07a26'));r.position.set(0,.48,-.12);g.add(r);B(g,mat('#e0a526'),-.25,.03,.3,.04,.22,.04);B(g,mat('#e0a526'),.05,.03,.3,.04,.22,.04);B(g,mat('#c0392b'),-.1,.22,.3,.36,.03,.06);const sl=new THREE.Mesh(box,mat('#2f6fb0'));sl.scale.set(.1,.02,.4);sl.position.set(.3,.13,.28);sl.rotation.x=.5;g.add(sl)}
   else if(b.t==='smp'||b.t==='sma'){const fl=b.t==='sma'?3:2;B(g,mat('#8f8a80'),.5,0,.5,1.9,.05,1.6);B(g,tmat('plaster'),.5,.05,.25,1.75,fl*.32,.6);for(let f=0;f<fl;f++)for(let i=0;i<6;i++)B(g,mat('#2c3a44',{roughness:.2}),-.2+i*.28,.14+f*.32,.551,.16,.14,.01);B(g,mat(b.t==='sma'?'#6b7a8a':'#3b6fb0'),.5,.05+fl*.32,.25,1.8,.05,.66);
    B(g,mat('#c8b48a'),.5,0,1.05,1.7,.015,.75);[[.1],[.9]].forEach(([x])=>B(g,mat('#f2efe7'),x,0,1.38,.04,.32,.04));B(g,mat('#c8c8c8',{metalness:.6}),1.3,0,1.2,.02,.9,.02);const fl2=new THREE.Mesh(new THREE.PlaneGeometry(.22,.14),new THREE.MeshStandardMaterial({color:'#d32f2f',side:THREE.DoubleSide}));fl2.position.set(1.42,.83,1.2);g.add(fl2)}
@@ -1139,6 +1156,13 @@ const R3={};
   for(const t of T){t.u+=dt*1.6;if(t.u>=1){t.u=0;const n=nbs(t.b[0],t.b[1]).filter(q=>!(q[0]===t.a[0]&&q[1]===t.a[1]));const pv=t.a;t.a=t.b;t.b=n.length?pick(n):pv}
    if(!isR(t.a[0],t.a[1])){root.remove(t.m);t.dead=1;continue}const ax=t.a[0]+.5,az=t.a[1]+.5,bx=t.b[0]+.5,bz=t.b[1]+.5,x=ax+(bx-ax)*t.u,z=az+(bz-az)*t.u;t.m.position.set(x,R3.hAt(x,z)+.08,z);const tg=Math.atan2(bx-ax,bz-az);let d=tg-t.m.rotation.y;d=Math.atan2(Math.sin(d),Math.cos(d));t.m.rotation.y+=d*Math.min(1,dt*6)}
   for(let i=T.length-1;i>=0;i--)if(T[i].dead)T.splice(i,1)}
+ function stepBoats(dt){const D=S.b.filter(b=>b.t==='dermaga'&&!b.bt);const T=LIFE.boats=LIFE.boats||[];if(!D.length){T.forEach(t=>root.remove(t.m));T.length=0;return}
+  const isW=(x,y)=>inside(x,y)&&L(x,y)==='W',nbs=(x,y)=>[[1,0],[-1,0],[0,1],[0,-1]].map(([a,c])=>[x+a,y+c]).filter(([X,Y])=>isW(X,Y));
+  if(T.length<Math.min(5,D.length*2)&&Math.random()<dt*.25){const d=pick(D);const st=[[1,0],[-1,0],[0,1],[0,-1]].map(([a,c])=>[d.x+a,d.y+c]).find(([X,Y])=>isW(X,Y));if(st){const n=nbs(st[0],st[1]);const g=new THREE.Group();const hull=new THREE.Mesh(new THREE.CylinderGeometry(.07,.05,.5,8,1),mat(pick(['#2f6fb0','#c0392b','#2f8f6a','#e0a526'])));hull.rotation.x=Math.PI/2;hull.scale.x=1.6;hull.position.y=.04;g.add(hull);const roof=new THREE.Mesh(box,mat('#e8e4da'));roof.scale.set(.16,.03,.2);roof.position.set(0,.13,-.04);g.add(roof);[[-.06],[.06]].forEach(([x])=>{const p=new THREE.Mesh(box,mat('#6b4f3a'));p.scale.set(.012,.09,.012);p.position.set(x,.09,-.04);g.add(p)});
+   const o=mkPerson(false,'caping');o.m.position.set(0,.02,.12);o.m.scale.setScalar(.5);g.add(o.m);root.add(g);T.push({m:g,a:st,b:n.length?pick(n):st,u:0,life:60})}}
+  for(const t of T){t.u+=dt*.5;if(t.u>=1){t.u=0;t.life--;const n=nbs(t.b[0],t.b[1]).filter(q=>!(q[0]===t.a[0]&&q[1]===t.a[1]));const pv=t.a;t.a=t.b;t.b=n.length?pick(n):pv}
+   if(t.life<=0){root.remove(t.m);t.dead=1;continue}const ax=t.a[0]+.5,az=t.a[1]+.5,bx=t.b[0]+.5,bz=t.b[1]+.5,x=ax+(bx-ax)*t.u,z=az+(bz-az)*t.u;t.m.position.set(x,.33+Math.sin(clock.elapsedTime*2+x)*.01,z);const tg=Math.atan2(bx-ax,bz-az);let d=tg-t.m.rotation.y;d=Math.atan2(Math.sin(d),Math.cos(d));t.m.rotation.y+=d*Math.min(1,dt*3)}
+  for(let i=T.length-1;i>=0;i--)if(T[i].dead)T.splice(i,1)}
  function stepVeh(dt){const T=pathNet();const era=S.era;const want=era>=5?(isNight()?Math.min(12,Math.floor(T.length/8)):Math.min(14+era*8,Math.floor(T.length/2.5))):isNight()?Math.min(2,Math.floor(T.length/12)):Math.min(2+era*3,Math.floor(T.length/5));const V=LIFE.veh;
   for(let sp=0;sp<(era>=5?4:1);sp++)if(V.filter(v=>v.kind!=='truk').length<want&&(era>=5||Math.random()<dt*.8)){const pub=era>=4&&S.b.some(b=>(b.t==='halte'||b.t==='terminal')&&!b.bt);const k=pub&&Math.random()<.25?'angkot':era>=5?pick(['mobil','mobil','mobil','motor','motor','bus','sepeda','mobil']):era>=3?pick(['sepeda','motor','mobil','mobil','gerobak']):era>=2?pick(['sepeda','sepeda','motor','gerobak']):pick(['sepeda','gerobak','gerobak']);const v=spawnVeh(k);if(v)V.push(v)}
   LIFE.truckT-=dt;if(era>=2&&T.length>=10&&LIFE.truckT<=0&&!isNight()&&!V.some(v=>v.kind==='truk')){const v=spawnVeh('truk');if(v)V.push(v);LIFE.truckT=45+Math.random()*30}
@@ -1162,7 +1186,7 @@ const R3={};
   LIFE.glows.forEach(g=>{g.visible=night&&(h>18.6||h<4.5+g.userData.f);g.material.opacity=.75+Math.sin(clock.elapsedTime*3+g.userData.f*9)*.1});
   if(LIFE.gather>0)LIFE.gather-=dt}
  R3.gather=s=>{LIFE.gather=s;LIFE.people.forEach(p=>{if(!isNight())plan(p)})};
- R3.lifeReset=()=>{[...LIFE.people.map(p=>p.m),...LIFE.veh.map(v=>v.m),...LIFE.hens.map(h=>h.m),...LIFE.birds.map(b=>b.m),...LIFE.smoke,...LIFE.glows,...(LIFE.trains||[]).map(t=>t.m)].forEach(o=>root.remove(o));LIFE.trains=[];Object.assign(LIFE,{leader:null,people:[],veh:[],birds:[],hens:[],smoke:[],glows:[],paths:null,nReal:0})};
+ R3.lifeReset=()=>{[...LIFE.people.map(p=>p.m),...LIFE.veh.map(v=>v.m),...LIFE.hens.map(h=>h.m),...LIFE.birds.map(b=>b.m),...LIFE.smoke,...LIFE.glows,...(LIFE.trains||[]).map(t=>t.m),...(LIFE.boats||[]).map(t=>t.m)].forEach(o=>root.remove(o));LIFE.trains=[];LIFE.boats=[];Object.assign(LIFE,{leader:null,people:[],veh:[],birds:[],hens:[],smoke:[],glows:[],paths:null,nReal:0})};
  let ovMesh=null;R3.ovKind=null;
  R3.overlay=k=>{if(ovMesh){root.remove(ovMesh);ovMesh.geometry.dispose();ovMesh.material.dispose();ovMesh=null}R3.ovKind=k||null;let chip=$('ovChip');if(!k){if(chip)chip.remove();return}if(!S)return;
   const o=S.own,n=(o.x1-o.x0)*(o.y1-o.y0),geo=new THREE.PlaneGeometry(.96,.96);geo.rotateX(-Math.PI/2);const im=new THREE.InstancedMesh(geo,new THREE.MeshBasicMaterial({transparent:true,opacity:.55,depthWrite:false}),n);let i=0;const d=new THREE.Object3D(),col=new THREE.Color();
@@ -1172,7 +1196,7 @@ const R3={};
   chip.innerHTML=`🗺️ <b>${nm}</b> <span class="lg"><i style="background:#c0392b"></i>${k==='pol'?L2('tinggi','high'):k==='fl'?L2('rawan','prone'):L2('rendah','low')}<i style="background:#2f8f6a"></i>${k==='pol'?L2('rendah','low'):k==='fl'?L2('aman','safe'):L2('baik','good')}</span><button aria-label="tutup">✕</button>`;chip.querySelector('button').onclick=()=>R3.overlay(null)};
  R3.lifeRebuild=()=>{LIFE.people.forEach(p=>root.remove(p.m));LIFE.people=[];LIFE.leader=null;LIFE.nReal=0;if(S)R3.villagers()};
  R3.pathsDirty=()=>{LIFE.paths=null};
- R3.life=dt=>{if(!S)return;for(const id in bmeshes){const u=bmeshes[id].userData;if(u.train)u.train.position.x=.5+Math.sin(clock.elapsedTime*.35+(+id))*.9}stepPeople(dt);stepHens(dt);stepVeh(dt);stepTrain(dt);stepAmbient(dt)};
+ R3.life=dt=>{if(!S)return;for(const id in bmeshes){const u=bmeshes[id].userData;if(u.train)u.train.position.x=.5+Math.sin(clock.elapsedTime*.35+(+id))*.9}stepPeople(dt);stepHens(dt);stepVeh(dt);stepTrain(dt);stepBoats(dt);stepAmbient(dt)};
  R3.hour=hour;R3.leaderPos=()=>LIFE.leader?LIFE.leader.m.position:null;R3.lifeStats=()=>({bikes:LIFE.veh.filter(v=>v.kind==='sepeda').length,motors:LIFE.veh.filter(v=>v.kind==='motor'||v.kind==='mobil').length,hens:LIFE.hens.length});R3.look=(x,z,d)=>{controls.target.set(x,R3.hAt(x,z),z);camera.position.set(x-d*.3,R3.hAt(x,z)+d*1.1,z+d*.6)};R3.dbg=()=>({veh:LIFE.veh.map(v=>v.kind+':'+v.a+'>'+v.b),paths:pathNet().length,people:LIFE.people.length});
  R3.quality=()=>{const q=SET.q==='auto'?(Math.min(innerWidth,innerHeight)<700||devicePixelRatio>2.5?'med':'high'):SET.q;renderer.setPixelRatio(q==='low'?1:q==='med'?Math.min(1.5,devicePixelRatio):Math.min(2,devicePixelRatio));renderer.shadowMap.enabled=SET.shadow&&q!=='low';const hi=q==='high';if(R3.hiQ!==hi){R3.hiQ=hi;R3.post(hi);if(S&&terrain)R3.world()}sun.castShadow=renderer.shadowMap.enabled;scene.traverse(o=>{if(o.material)o.material.needsUpdate=true});const el=renderer.domElement.parentElement;if(el){const w=el.clientWidth,h=el.clientHeight;renderer.setSize(w,h,false)}};R3.camSpeed=v=>{controls.rotateSpeed=v;controls.panSpeed=v;controls.zoomSpeed=v};R3.cam=()=>({camera,controls});
  R3.dom=()=>renderer.domElement;R3.controls=()=>controls;
@@ -1190,6 +1214,7 @@ function act(x,y,silent){const say=m=>{if(!silent){toast(m);Snd.play('err')}};
  if(tool==='jalan2'){if(L(x,y)!=='P'){say(L2('Pilih petak jalan yang sudah ada.','Pick an existing road tile.'));return}S.rc=S.rc||{};const k=x+','+y,c=S.rc[k]||1,nx=c+1;if(nx>3){say(L2('Sudah jalan arteri.','Already an arterial road.'));return}const need=nx===2?4:5;if(S.era<need){say(t('locked',{n:need}));return}const cost=nx===2?6:15;if(S.res.coin<cost){say(t('noMoney'));return}S.res.coin-=cost;S.rc[k]=nx;Snd.play('path');R3.path(x,y);after();return}
  if(tool==='bull'){const id=occ[y][x];if(!id)return;const b=S.b.find(b=>b.id===id);S.res.wood+=Math.floor((BT[b.t].c.wood||0)/2);S.b=S.b.filter(q=>q.id!==id);R3.delB(id);rebuildOcc();Snd.play('bull');if(b.t==='house'&&S.kk>count('house'))S.kk=Math.max(1,count('house'));R3.villagers();after();return}
  const T=BT[tool];if(!T)return;if(T.era>S.era){say(t('locked',{n:T.era}));return}
+ if(tool==='dermaga'&&!nearWater(x,y,1)){say(L2('Dermaga harus di tepi sungai/air.','A jetty must be next to water.'));return}
  if(tool==='pltmh'&&!nearWater(x,y,1)){say(L2('PLTMH harus di tepi sungai.','Micro-hydro must be next to a river.'));return}
  for(let dy=0;dy<T.h;dy++)for(let dx=0;dx<T.w;dx++){const X=x+dx,Y=y+dy;if(!inside(X,Y)||!inOwn(X,Y)){say(t('outside'));return}const l=L(X,Y);if(l==='W'){say(t('onWater'));return}if(l==='F'){say(t('needClear'));return}if(occ[Y][X]||l==='P'){say(t('occupied'));return}}
  if(!canAfford(T.c)){say(S.res.coin<(T.c.coin||0)?t('noMoney'):t('noWood'));return}

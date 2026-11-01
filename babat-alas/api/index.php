@@ -15,9 +15,9 @@ const TOKEN_DAYS = 45;
 const EULA_VER = '2026-11-01';
 const ERA_MAX = 7;            // era tertinggi di versi ini
 const START = ['coin' => 60, 'wood' => 25];
-const COST = ['house' => [2, 8], 'field' => [3, 2], 'well' => [4, 2], 'barn' => [6, 12], 'pond' => [5, 0], 'tree' => [1, 0], 'hall' => [20, 30], 'worship' => [15, 15], 'market' => [25, 20], 'rt' => [8, 10], 'taman' => [6, 4], 'kebun' => [6, 3], 'bengkel' => [10, 8], 'sekolah' => [30, 25], 'klinik' => [35, 15], 'kom' => [20, 10], 'perum' => [120, 40], 'ruko' => [90, 30], 'rs' => [220, 40], 'tamkot' => [60, 5], 'apartemen' => [400, 60], 'mal' => [350, 50], 'stasiun' => [300, 40], 'balkot' => [500, 60], 'zr' => [2, 0], 'zc' => [2, 0], 'zi' => [2, 0], 'halte' => [8, 2], 'surya' => [25, 2], 'pltmh' => [60, 10], 'menara' => [40, 6], 'tps' => [12, 4], 'ipal' => [70, 8], 'pospol' => [45, 10], 'damkar' => [80, 12], 'pembangkit' => [300, 30], 'tpa' => [150, 10], 'kampus' => [350, 40], 'paud' => [10, 6], 'smp' => [60, 30], 'sma' => [90, 30], 'terminal' => [120, 20], 'alun' => [30, 5], 'tugu' => [40, 10], 'museum' => [90, 15], 'stadion' => [260, 40], 'saluran' => [6, 2], 'retensi' => [60, 5], 'rel' => [12, 4]];
+const COST = ['house' => [2, 8], 'field' => [3, 2], 'well' => [4, 2], 'barn' => [6, 12], 'pond' => [5, 0], 'tree' => [1, 0], 'hall' => [20, 30], 'worship' => [15, 15], 'market' => [25, 20], 'rt' => [8, 10], 'taman' => [6, 4], 'kebun' => [6, 3], 'bengkel' => [10, 8], 'sekolah' => [30, 25], 'klinik' => [35, 15], 'kom' => [20, 10], 'perum' => [120, 40], 'ruko' => [90, 30], 'rs' => [220, 40], 'tamkot' => [60, 5], 'apartemen' => [400, 60], 'mal' => [350, 50], 'stasiun' => [300, 40], 'balkot' => [500, 60], 'zr' => [2, 0], 'zc' => [2, 0], 'zi' => [2, 0], 'halte' => [8, 2], 'surya' => [25, 2], 'pltmh' => [60, 10], 'menara' => [40, 6], 'tps' => [12, 4], 'ipal' => [70, 8], 'pospol' => [45, 10], 'damkar' => [80, 12], 'pembangkit' => [300, 30], 'tpa' => [150, 10], 'kampus' => [350, 40], 'paud' => [10, 6], 'smp' => [60, 30], 'sma' => [90, 30], 'terminal' => [120, 20], 'alun' => [30, 5], 'tugu' => [40, 10], 'museum' => [90, 15], 'stadion' => [260, 40], 'saluran' => [6, 2], 'retensi' => [60, 5], 'rel' => [12, 4], 'dermaga' => [20, 14]];
 const SIZE = ['field' => 2, 'hall' => 2, 'market' => 2, 'kebun' => 2, 'sekolah' => 2, 'perum' => 2, 'ruko' => 2, 'rs' => 2, 'tamkot' => 2, 'apartemen' => 2, 'mal' => 2, 'stasiun' => 2, 'balkot' => 2, 'pembangkit' => 2, 'tpa' => 2, 'kampus' => 2, 'smp' => 2, 'sma' => 2, 'terminal' => 2, 'alun' => 2, 'stadion' => 2, 'retensi' => 2];
-const ERA_OF = ['hall' => 2, 'worship' => 2, 'market' => 2, 'sekolah' => 2, 'klinik' => 2, 'kom' => 2, 'ruko' => 4, 'perum' => 5, 'rs' => 5, 'tamkot' => 5, 'apartemen' => 6, 'mal' => 6, 'stasiun' => 6, 'balkot' => 7, 'zr' => 4, 'zc' => 4, 'zi' => 4, 'halte' => 4, 'surya' => 2, 'pltmh' => 3, 'menara' => 3, 'tps' => 2, 'ipal' => 4, 'pospol' => 3, 'damkar' => 4, 'pembangkit' => 5, 'tpa' => 5, 'kampus' => 6, 'paud' => 2, 'smp' => 4, 'sma' => 5, 'terminal' => 5, 'alun' => 3, 'tugu' => 4, 'museum' => 5, 'stadion' => 6, 'saluran' => 3, 'retensi' => 4, 'rel' => 6];
+const ERA_OF = ['hall' => 2, 'worship' => 2, 'market' => 2, 'sekolah' => 2, 'klinik' => 2, 'kom' => 2, 'ruko' => 4, 'perum' => 5, 'rs' => 5, 'tamkot' => 5, 'apartemen' => 6, 'mal' => 6, 'stasiun' => 6, 'balkot' => 7, 'zr' => 4, 'zc' => 4, 'zi' => 4, 'halte' => 4, 'surya' => 2, 'pltmh' => 3, 'menara' => 3, 'tps' => 2, 'ipal' => 4, 'pospol' => 3, 'damkar' => 4, 'pembangkit' => 5, 'tpa' => 5, 'kampus' => 6, 'paud' => 2, 'smp' => 4, 'sma' => 5, 'terminal' => 5, 'alun' => 3, 'tugu' => 4, 'museum' => 5, 'stadion' => 6, 'saluran' => 3, 'retensi' => 4, 'rel' => 6, 'dermaga' => 2];
 const BADWORDS = ['anjing', 'bangsat', 'kontol', 'memek', 'ngentot', 'jancok', 'jancuk', 'goblok', 'fuck', 'shit', 'bitch', 'asshole', 'nigger', 'pussy', 'dick'];
 
 function out(array $a, int $code = 200): void { http_response_code($code); echo json_encode($a, JSON_UNESCAPED_UNICODE); exit; }
@@ -115,7 +115,7 @@ function audit(array $st, ?array $prev, int $prevAt): array {
 	// batas atas pemasukan: kas awal + misi (11×15) + bonus era + iuran/pasar per bulan
 	$nDone = min(count($st['done'] ?? []), 11 + $ex + intdiv(max($kk, 0), 25) + 2);
 	$prodB = ($cnt['kebun'] ?? 0) + ($cnt['bengkel'] ?? 0) + ($cnt['pond'] ?? 0); $links = is_array($st['links'] ?? null) ? min(count($st['links']), 40) : 0;
-	$coinCap = START['coin'] + max(11, $nDone) * 15 + 40 * $era * $era + $t * (0.6 * max($kk, 1) + 4 + 6 * $markets + 10 * $prodB + 8 * $links + 4 * $zLv + 0.8 * max($kk, 1) + 3 * ($cnt['museum'] ?? 0) + 6 * ($cnt['stadion'] ?? 0)) + 30 * 6 * intdiv($t, 12) + 5;
+	$coinCap = START['coin'] + max(11, $nDone) * 15 + 40 * $era * $era + $t * (0.6 * max($kk, 1) + 4 + 6 * $markets + 10 * $prodB + 8 * $links + 4 * $zLv + 0.8 * max($kk, 1) + 3 * ($cnt['museum'] ?? 0) + 6 * ($cnt['stadion'] ?? 0) + 6 * ($cnt['dermaga'] ?? 0)) + 30 * 6 * intdiv($t, 12) + 5;
 	if ($coin + $spentC > $coinCap * 1.15 + 20) { $bad[] = 'coin'; }
 	if ($wood + $spentW > 2 * (START['wood'] + 4 * $cleared) + 5) { $bad[] = 'wood'; }
 	if ($cleared > substr_count(implode('', $land), 'G') + $paths) { $bad[] = 'cleared'; }
@@ -156,6 +156,13 @@ function indicators(array $st, int $nb): array {
 		foreach ($bs as $b) { if ($b['t'] === 'tree' && abs($b['x'] - $h['x']) <= 3 && abs($b['y'] - $h['y']) <= 3) { $g += 2; } }
 		$sum += 0.3 * ($near($h, 'well', 5) ? 1 : 0) + 0.2 * ($near($h, 'worship', 8) ? 1 : 0) + 0.2 * $cl($g / 8) + 0.15 * ($wet ? 0 : 1) + 0.15 * ($acc ? 1 : 0); }
 	$C = $houses ? 100 * $sum / count($houses) : 0;
+	// layanan kota & RTH (dihitung dari bangunan, bukan dari data klien)
+	$era = (int) ($st['era'] ?? 1); $nb2 = max(1, count($bs));
+	$green = $c('tree') + 2 * $c('taman') + 5 * $c('tamkot') + 4 * $c('alun') + 4 * $c('retensi');
+	$svc = [$cl(($c('tps') * 40 + $c('tpa') * 700 + ($era <= 2 ? 40 : 0)) / $kk), $cl($green / $nb2 / 0.3)];
+	if ($era >= 3) { $svc[] = $cl(($c('surya') * 12 + $c('pltmh') * 45 + $c('pembangkit') * 420) / ($kk * 0.3 + 5)); $svc[] = $cl(($c('pospol') * 60) / $kk); }
+	if ($era >= 4) { $svc[] = $cl(($c('ipal') * 40) / $kk); $svc[] = $cl(($c('damkar') * 80) / $kk); $svc[] = $cl(($c('paud') * 10 + $c('sekolah') * 15 + $c('smp') * 40 + $c('sma') * 60 + $c('kampus') * 150) / $kk); }
+	$C = 0.7 * $C + 30 * array_sum($svc) / count($svc);
 	$K = 0.6 * (int) ($st['happy'] ?? 0) + 0.4 * (int) ($st['coh'] ?? 0);
 	$P = 70 * $cl(((int) ($st['kk'] ?? 0)) / 50) + 30 * $cl(((int) ($st['era'] ?? 1) - 1) / 5);
 	$r = ['e' => (int) round($E), 'n' => (int) round($N), 'c' => (int) round($C), 'k' => (int) round($K), 'p' => (int) round($P)];
