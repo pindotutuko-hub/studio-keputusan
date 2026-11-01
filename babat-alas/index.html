@@ -106,6 +106,7 @@ body.ui-l #hud,body.ui-l #bar,body.ui-l #missions{zoom:1.15}body.ui-s #hud,body.
 #toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);z-index:30;background:rgba(0,0,0,.78);color:#fff;border-radius:12px;padding:8px 14px;font-weight:600;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center}
 #toast.on{opacity:1}
 #menu{right:max(10px,env(safe-area-inset-right));top:72px;width:260px}
+#menu{max-height:calc(100vh - 84px);max-height:calc(100dvh - 84px - env(safe-area-inset-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 #menu button{display:block;width:100%;text-align:left;border:0;background:transparent;color:var(--ink);padding:9px 8px;border-radius:10px;font-weight:600}#menu button:hover{background:rgba(255,255,255,.08)}
 #saveDot{font-size:11px;color:var(--muted)}
 .modal{position:fixed;inset:0;z-index:25;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px}
@@ -161,7 +162,7 @@ body.ui-l #hud,body.ui-l #bar,body.ui-l #missions{zoom:1.15}body.ui-s #hud,body.
  #advisor{top:112px;left:8px;right:8px;width:auto}
  #bar{border-radius:14px;padding:4px;overflow-x:auto;justify-content:flex-start}
  .tool{width:54px;flex:none}.tool i{font-size:20px}.tool span{font-size:10px}.tool em{font-size:9px}
- #menu{right:8px;top:112px}
+ #menu{right:8px;top:112px;max-height:calc(100vh - 124px);max-height:calc(100dvh - 124px - env(safe-area-inset-bottom))}
 }
 @media (min-width:600px) and (max-width:1100px) and (pointer:coarse){
  .tool{width:62px}.ctl button{min-width:40px;height:40px}
@@ -295,6 +296,6 @@ html,body{touch-action:manipulation}#hud,#bar,#missions,#info,#menu,#modal,#advi
 <div id="toast"></div>
 <div id="modal" class="modal hidden"></div>
 
-<script type="module" src="game.js?v=38"></script>
+<script type="module" src="game.js?v=38b"></script>
 </body>
 </html>
