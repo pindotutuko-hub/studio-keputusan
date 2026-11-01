@@ -174,6 +174,11 @@ body.ui-l #hud,body.ui-l #bar,body.ui-l #missions{zoom:1.15}body.ui-s #hud,body.
 .awl{display:flex;flex-wrap:wrap;gap:6px}.awl span{font-size:12px;padding:4px 9px;border-radius:999px;background:rgba(0,0,0,.06);opacity:.55}.awl span.on{background:#fde9b8;opacity:1;font-weight:700}
 #ovChip{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 112px);z-index:12;background:rgba(15,24,19,.88);color:#fff;border-radius:999px;padding:6px 8px 6px 14px;font-size:13px;display:flex;gap:8px;align-items:center;backdrop-filter:blur(6px)}#ovChip .lg{display:flex;gap:4px;align-items:center;font-size:11.5px;opacity:.9}#ovChip .lg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-left:6px}#ovChip button{border:0;background:rgba(255,255,255,.15);color:#fff;border-radius:999px;width:26px;height:26px}
 @media (max-width:760px){#ovChip{top:auto;bottom:calc(env(safe-area-inset-bottom) + 108px)}}
+
+/* HUD: tombol kecepatan & menu selalu tampil di kanan atas, statistik bergeser/menggulir bila layar sempit */
+#hud .stats{flex:1 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none}#hud .stats::-webkit-scrollbar{display:none}
+#hud .ctl{flex-shrink:0;margin-left:auto}#hud .who,#hud .date{flex-shrink:0}
+@media (max-width:1280px) and (min-width:761px){#hud .who small{font-size:11px}#hud .stats .st{padding-left:8px;padding-right:8px}}
 </style>
 </head>
 <body>
