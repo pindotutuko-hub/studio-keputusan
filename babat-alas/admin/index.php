@@ -18,6 +18,9 @@ function ba_rd(string $f): ?array { $p = BA_DATA . '/' . $f; if (!is_file($p)) {
 function ba_upd(string $f, callable $fn): void { $p = BA_DATA . '/' . $f; if (!is_file($p)) { return; } $h = fopen($p, 'c+'); if (!$h) { return; } flock($h, LOCK_EX);
 	$s = stream_get_contents($h); $cur = json_decode(substr((string) $s, strlen(BA_GUARD)), true); $new = $fn(is_array($cur) ? $cur : []);
 	ftruncate($h, 0); rewind($h); fwrite($h, BA_GUARD . json_encode($new, JSON_UNESCAPED_UNICODE)); fflush($h); flock($h, LOCK_UN); fclose($h); }
+function ba_put(string $f, array $v): void { $p = BA_DATA . '/' . $f; $h = fopen($p, 'c+'); if (!$h) { return; } flock($h, LOCK_EX); ftruncate($h, 0); rewind($h); fwrite($h, BA_GUARD . json_encode($v, JSON_UNESCAPED_UNICODE)); fflush($h); flock($h, LOCK_UN); fclose($h); }
+const BA_CFG_DEF = ['announce' => '', 'announceId' => 0, 'maint' => false, 'maintMsg' => '', 'regOpen' => true, 'guestOk' => true, 'buildMul' => 1.0, 'maxSpeed' => 3, 'disaster' => '', 'botMode' => 'normal', 'autoBan' => false];
+function ba_cfg(): array { $c = ba_rd('cfg.php') ?: []; return array_merge(BA_CFG_DEF, array_intersect_key($c, BA_CFG_DEF)); }
 function ba_free_claim(string $uid): void { ba_upd('dir.php', function ($d) use ($uid) { unset($d[$uid]); return $d; }); }
 function ba_delete_user(string $uid, bool $account): void {
 	@unlink(BA_DATA . '/s_' . $uid . '.php'); ba_free_claim($uid);
@@ -30,21 +33,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	check_admin_referer('ba_admin');
 	$uid = preg_replace('/[^a-f0-9]/', '', (string) ($_POST['uid'] ?? ''));
 	$act = (string) ($_POST['act'] ?? '');
-	if (strlen($uid) === 20 && is_file(BA_DATA . '/u_' . $uid . '.php')) {
+	$txt = fn(string $k, int $max): string => mb_substr(trim(preg_replace('/[\x00-\x09\x0B-\x1F\x7F<>]/u', '', wp_unslash((string) ($_POST[$k] ?? ''))) ?? ''), 0, $max);
+	if ($act === 'cfg') {
+		$old = ba_cfg(); $ann = $txt('announce', 300);
+		$new = ['announce' => $ann, 'announceId' => $ann === '' ? 0 : ($ann === $old['announce'] && empty($_POST['reshow']) ? (int) $old['announceId'] : time()),
+			'maint' => !empty($_POST['maint']), 'maintMsg' => $txt('maintMsg', 300), 'regOpen' => !empty($_POST['regOpen']), 'guestOk' => !empty($_POST['guestOk']),
+			'buildMul' => max(0.25, min(10.0, round((float) ($_POST['buildMul'] ?? 1), 2))), 'maxSpeed' => max(1, min(3, (int) ($_POST['maxSpeed'] ?? 3))),
+			'disaster' => in_array($_POST['disaster'] ?? '', ['', 'normal', 'rendah', 'mati'], true) ? (string) $_POST['disaster'] : '',
+			'botMode' => in_array($_POST['botMode'] ?? '', ['off', 'normal', 'strict'], true) ? (string) $_POST['botMode'] : 'normal', 'autoBan' => !empty($_POST['autoBan']),
+			'by' => wp_get_current_user()->user_login, 'at' => time()];
+		ba_put('cfg.php', $new); $msg = '✅ Pengaturan gim disimpan. Pemain menerimanya dalam ±1 menit (saat sinyal berikutnya) atau saat membuka gim.';
+	} elseif ($act === 'clearalerts') { ba_put('alerts.php', []); $msg = 'Log peringatan dikosongkan.';
+	} elseif (strlen($uid) === 20 && is_file(BA_DATA . '/u_' . $uid . '.php')) {
 		$u = ba_rd('u_' . $uid . '.php');
 		if ($act === 'delete') { ba_delete_user($uid, true); $msg = 'Akun “' . esc_html($u['user'] ?? $uid) . '” beserta simpanan, wilayah, dan peringkatnya sudah dihapus.'; }
+		elseif ($act === 'ban') { ba_upd('u_' . $uid . '.php', function ($x) { $x['ban'] = time(); $x['tokens'] = []; return $x; }); ba_free_claim($uid); foreach (glob(BA_DATA . '/lb_*.php') ?: [] as $lb) { ba_upd(basename($lb), function ($d) use ($uid) { unset($d[$uid]); return $d; }); } $msg = '⛔ “' . esc_html($u['user'] ?? $uid) . '” diblokir: tidak bisa masuk/menyimpan, dihapus dari peringkat dan wilayah.'; }
+		elseif ($act === 'unban') { ba_upd('u_' . $uid . '.php', function ($x) { unset($x['ban']); return $x; }); $msg = 'Blokir “' . esc_html($u['user'] ?? $uid) . '” dibuka.'; }
+		elseif ($act === 'botok') { ba_upd('u_' . $uid . '.php', function ($x) { unset($x['bot']); $x['botOk'] = time(); return $x; }); $msg = '“' . esc_html($u['user'] ?? $uid) . '” ditandai bukan bot; peringatan dihapus.'; }
 		elseif ($act === 'reset') { ba_delete_user($uid, false); $msg = 'Simpanan & wilayah “' . esc_html($u['user'] ?? $uid) . '” sudah direset (akun tetap ada).'; }
 	} else { $msg = 'Pengguna tidak ditemukan.'; }
+	set_transient('ba_adm_msg_' . get_current_user_id(), $msg, 120);
+	wp_safe_redirect(strtok((string) $_SERVER['REQUEST_URI'], '?') . '#' . ($act === 'cfg' ? 'setel' : ($act === 'clearalerts' ? 'log' : 'pemain'))); exit;
 }
+if (!$msg && ($tm = get_transient('ba_adm_msg_' . get_current_user_id()))) { $msg = (string) $tm; delete_transient('ba_adm_msg_' . get_current_user_id()); }
 
-$now = time(); $users = [];
+$now = time();
+$ago = function (int $t) use ($now): string { if (!$t) { return '–'; } $d = $now - $t; if ($d < 60) { return 'baru saja'; } if ($d < 3600) { return intdiv($d, 60) . ' mnt lalu'; } if ($d < 86400) { return intdiv($d, 3600) . ' jam lalu'; } return intdiv($d, 86400) . ' hari lalu'; };
+$users = [];
 foreach (glob(BA_DATA . '/u_*.php') ?: [] as $f) {
 	$uid = substr(basename($f, '.php'), 2); $u = ba_rd(basename($f)); if (!$u) { continue; }
 	$s = ba_rd('s_' . $uid . '.php'); $m = $s['meta'] ?? [];
 	$seen = max((int) ($u['seen'] ?? 0), (int) ($m['at'] ?? 0));
 	$users[] = ['uid' => $uid, 'user' => $u['user'] ?? '', 'name' => $u['name'] ?? '', 'kampus' => $u['kampus'] ?? '', 'kelas' => $u['kelas'] ?? '', 'created' => (int) ($u['created'] ?? 0),
 		'seen' => $seen, 'kampung' => $m['name'] ?? '', 'loc' => $m['loc'] ?? '', 'lat' => $m['lat'] ?? null, 'lon' => $m['lon'] ?? null, 'era' => $m['era'] ?? '', 'kk' => $m['kk'] ?? '',
-		'month' => $m['month'] ?? '', 'score' => $m['score'] ?? '', 'flags' => $s['flagged'] ?? [], 'ver' => $s['ver'] ?? 0, 'owns' => $u['owns'] ?? []];
+		'month' => $m['month'] ?? '', 'score' => $m['score'] ?? '', 'bot' => $u['bot'] ?? null, 'ban' => $u['ban'] ?? 0, 'flags' => $s['flagged'] ?? [], 'ver' => $s['ver'] ?? 0, 'owns' => $u['owns'] ?? []];
 }
 usort($users, fn($a, $b) => $b['seen'] <=> $a['seen']);
 $online = count(array_filter($users, fn($x) => $now - $x['seen'] < 300)); $day = count(array_filter($users, fn($x) => $now - $x['seen'] < 86400));
@@ -52,45 +74,65 @@ $saves = count(array_filter($users, fn($x) => $x['ver'] > 0));
 $classes = []; foreach (glob(BA_DATA . '/k_*.php') ?: [] as $f) { $k = ba_rd(basename($f)); if ($k) { $code = substr(basename($f, '.php'), 2); $classes[] = $k + ['code' => $code, 'n' => count(array_filter($users, fn($x) => $x['kelas'] === $code))]; } }
 $deals = ba_rd('deals.php') ?: []; $activeDeals = count(array_filter($deals, fn($d) => ($d['st'] ?? '') === 'active'));
 $byUid = []; foreach ($users as $x) { $byUid[$x['uid']] = $x['user']; }
-$ago = function (int $t) use ($now): string { if (!$t) { return '–'; } $d = $now - $t; if ($d < 60) { return 'baru saja'; } if ($d < 3600) { return intdiv($d, 60) . ' mnt lalu'; } if ($d < 86400) { return intdiv($d, 3600) . ' jam lalu'; } return intdiv($d, 86400) . ' hari lalu'; };
+$cfg = ba_cfg(); $cfgRaw = ba_rd('cfg.php') ?: [];
+$live = ba_rd('live.php') ?: []; uasort($live, fn($a, $b) => ($b['at'] ?? 0) <=> ($a['at'] ?? 0));
+$liveOn = array_filter($live, fn($v) => $now - (int) ($v['at'] ?? 0) < 300); $liveDay = array_filter($live, fn($v) => $now - (int) ($v['at'] ?? 0) < 86400);
+$guestOn = count(array_filter($liveOn, fn($v) => !empty($v['guest'])));
+$alerts = array_reverse(ba_rd('alerts.php') ?: []);
+$pts = []; foreach ($live as $v) { if (!empty($v['lat']) || !empty($v['lon'])) { $d = $now - (int) $v['at']; $pts[] = ['la' => (float) $v['lat'], 'lo' => (float) $v['lon'], 's' => $d < 300 ? 2 : ($d < 86400 ? 1 : 0), 'n' => ($v['user'] ?: 'Tamu') . ' · ' . ($v['name'] ?: '–'), 'l' => (string) ($v['loc'] ?? ''), 't' => $ago((int) $v['at'])]; } }
+$seenUid = array_flip(array_filter(array_column($live, 'uid')));
+foreach ($users as $x) { if ($x['lat'] !== null && !isset($seenUid[$x['uid']])) { $d = $now - $x['seen']; $pts[] = ['la' => (float) $x['lat'], 'lo' => (float) $x['lon'], 's' => $d < 300 ? 2 : ($d < 86400 ? 1 : 0), 'n' => $x['user'] . ' · ' . ($x['kampung'] ?: '–'), 'l' => (string) $x['loc'], 't' => $ago($x['seen'])]; } }
+$online = max($online, count($liveOn));
 $eras = ['', 'Babat alas', 'Dusun', 'Kampung', 'Desa', 'Kelurahan', 'Kota kecil', 'Kota'];
 $nonce = wp_create_nonce('ba_admin');
-?><!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Monitor Babat Alas</title>
-<?php if (!empty($_GET['auto'])): ?><meta http-equiv="refresh" content="30"><?php endif; ?>
+?><!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kontrol Gim Babat Alas</title>
+<link rel="stylesheet" href="lf/leaflet.css">
 <style>
 :root{--g:#1f6f4f;--ink:#1d1a16;--mut:#6b655b;--line:#e3dccd;--bg:#f6f1e7}*{box-sizing:border-box}body{margin:0;font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:var(--bg)}
 header{background:#0f1e16;color:#fff;padding:14px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}header h1{margin:0;font-size:19px}header a{color:#e0a526}
 main{padding:18px 22px;max-width:1400px;margin:auto}.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:16px}.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px}.card b{display:block;font-size:24px;color:var(--g)}.card span{color:var(--mut);font-size:12px}
 table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}th,td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:13px}th{background:#efe8da;position:sticky;top:0}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;background:#bbb}.on{background:#2f8f6a}.day{background:#e0a526}.flag{color:#a33a2a;font-size:11px}
-button{border:0;border-radius:8px;padding:5px 9px;cursor:pointer;font-size:12px}.del{background:#a33a2a;color:#fff}.rst{background:#efe8da}.msg{background:#eaf3ee;border-left:4px solid var(--g);padding:9px 12px;border-radius:8px;margin-bottom:12px}
+button{border:0;border-radius:8px;padding:5px 9px;cursor:pointer;font-size:12px}.del{background:#a33a2a;color:#fff}.rst{background:#efe8da}.alert{background:#fbe9e5;border:1px solid #e3a99c;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;flex-direction:column;gap:6px}.alert .arow{display:flex;justify-content:space-between;gap:10px;align-items:center;border-top:1px solid #efc9bf;padding-top:8px}.msg{background:#eaf3ee;border-left:4px solid var(--g);padding:9px 12px;border-radius:8px;margin-bottom:12px}
 input[type=search]{padding:8px 11px;border:1px solid var(--line);border-radius:9px;width:min(420px,100%)}h2{font-size:16px;margin:22px 0 8px}.mut{color:var(--mut);font-size:12px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 4px;border-bottom:1px solid var(--line)}.tabs a{padding:8px 13px;border-radius:10px 10px 0 0;color:var(--ink);text-decoration:none;font-weight:600}.tabs a.cur{background:#fff;border:1px solid var(--line);border-bottom-color:#fff;margin-bottom:-1px}.pane{display:none}.pane.show{display:block}
+.setel{display:grid;gap:12px;max-width:760px}.setel fieldset{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:grid;gap:8px}.setel legend{font-weight:700;padding:0 6px}.setel textarea,.setel input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:9px;font:inherit}.setel input[type=number],.setel select{padding:5px 8px;border:1px solid var(--line);border-radius:8px;font:inherit}.save{background:var(--g);color:#fff;font-size:14px;padding:9px 16px}
 </style></head><body>
-<header><h1>🛰️ Monitor Babat Alas</h1><span class="mut" style="color:#cfc8b8">Diperbarui <?= esc_html(wp_date('d M Y H:i:s')) ?></span>
-<a href="?<?= empty($_GET['auto']) ? 'auto=1' : '' ?>"><?= empty($_GET['auto']) ? '⟳ Segarkan otomatis (30 dtk)' : '⏸ Hentikan penyegaran otomatis' ?></a><a href="/babat-alas/">▶ Buka gim</a></header>
+<header><a href="/khusus/">← Aplikasi Khusus</a><h1>🛰️ Kontrol Gim Babat Alas</h1><span class="mut" style="color:#cfc8b8">Diperbarui <?= esc_html(wp_date('d M Y H:i:s')) ?></span>
+<a href="#" id="autoBtn">⟳ Segarkan otomatis (30 dtk)</a><a href="/babat-alas/">▶ Buka gim</a></header>
 <main>
 <?php if ($msg): ?><div class="msg"><?= $msg ?></div><?php endif; ?>
+<?php if ($cfg['maint']): ?><div class="alert" style="background:#fff4d6;border-color:#e0c06a"><b>🛠 Mode pemeliharaan AKTIF — pemain tidak bisa bermain/menyimpan.</b><span class="mut">Matikan di tab Pengaturan bila sudah selesai.</span></div><?php endif; ?>
+<?php $sus = array_filter($users, fn($x) => $x['bot'] && !$x['ban']); if ($sus): ?>
+<div class="alert"><b>⚠ <?= count($sus) ?> pemain dicurigai memakai bot/AI atau otomasi</b><span class="mut" style="color:#5a2a20">Periksa alasannya; blokir (ban) bila benar, atau abaikan bila keliru.</span>
+<?php foreach ($sus as $x): ?><div class="arow"><div><b><?= esc_html($x['user']) ?></b> · <?= esc_html($x['kampung'] ?: '–') ?><br><span class="mut"><?= esc_html(implode(' · ', $x['bot']['why'] ?? [])) ?> — terdeteksi <?= esc_html($ago((int) ($x['bot']['at'] ?? 0))) ?>, <?= (int) ($x['bot']['n'] ?? 1) ?>×</span></div>
+<form method="post"><input type="hidden" name="_wpnonce" value="<?= $nonce ?>"><input type="hidden" name="uid" value="<?= $x['uid'] ?>"><button class="del" name="act" value="ban">⛔ Ban</button> <button class="rst" name="act" value="botok">Abaikan (bukan bot)</button></form></div><?php endforeach; ?></div>
+<?php endif; ?>
 <div class="cards">
  <div class="card"><b><?= $online ?></b><span>sedang bermain (≤ 5 menit)</span></div>
+ <div class="card"><b><?= $guestOn ?></b><span>tamu sedang bermain</span></div>
  <div class="card"><b><?= $day ?></b><span>aktif 24 jam terakhir</span></div>
  <div class="card"><b><?= count($users) ?></b><span>akun terdaftar</span></div>
  <div class="card"><b><?= $saves ?></b><span>punya simpanan kampung</span></div>
  <div class="card"><b><?= count($classes) ?></b><span>kelas dosen</span></div>
  <div class="card"><b><?= $activeDeals ?></b><span>perjanjian dagang aktif</span></div>
+ <div class="card"><b style="color:#a33a2a"><?= count(array_filter($users, fn($x) => $x['bot'] && !$x['ban'])) ?></b><span>dicurigai bot/AI</span></div>
 </div>
-<p class="mut">Pemain tamu tidak tercatat di server (simpanannya hanya di peramban masing-masing). "Sedang bermain" berdasarkan aktivitas terakhir ke server (simpan otomatis tiap ±1 menit).</p>
+<nav class="tabs"><a href="#pemain" data-t="pemain">👥 Pemain</a><a href="#monitor" data-t="monitor">🗺️ Monitor langsung</a><a href="#setel" data-t="setel">⚙️ Pengaturan gim</a><a href="#log" data-t="log">⚠ Log peringatan (<?= count($alerts) ?>)</a></nav>
+<section id="t-pemain" class="pane">
+<p class="mut">"Sedang bermain" berdasarkan sinyal ke server (tiap ±1 menit, termasuk tamu). Simpanan tamu hanya ada di peramban masing-masing.</p>
 <h2>👥 Pemain</h2>
 <input type="search" id="q" placeholder="Cari nama pengguna, kampung, kampus, kelas, lokasi…" oninput="f(this.value)">
 <div style="overflow:auto;max-height:70vh;margin-top:8px"><table id="tb"><thead><tr><th>Status</th><th>Pengguna</th><th>Kampung</th><th>Lokasi</th><th>Era · KK</th><th>Skor</th><th>Kampus · Kelas</th><th>Daftar</th><th>Aksi</th></tr></thead><tbody>
 <?php foreach ($users as $x): $d = $now - $x['seen']; $cls = $d < 300 ? 'on' : ($d < 86400 ? 'day' : ''); ?>
 <tr><td><span class="dot <?= $cls ?>"></span><?= esc_html($ago($x['seen'])) ?></td>
-<td><b><?= esc_html($x['user']) ?></b><?= $x['owns'] ? '<br><span class="mut">👩‍🏫 dosen (' . count($x['owns']) . ' kelas)</span>' : '' ?></td>
+<td><b><?= esc_html($x['user']) ?></b><?= $x['ban'] ? ' <span class="flag">⛔ diblokir</span>' : ($x['bot'] ? ' <span class="flag">⚠ dicurigai bot/AI</span>' : '') ?><?= $x['owns'] ? '<br><span class="mut">👩‍🏫 dosen (' . count($x['owns']) . ' kelas)</span>' : '' ?></td>
 <td><?= esc_html($x['kampung'] ?: '–') ?><?= $x['flags'] ? '<br><span class="flag">⚠ ' . esc_html(implode(', ', $x['flags'])) . '</span>' : '' ?></td>
 <td><?php if ($x['lat'] !== null): ?><a href="https://www.openstreetmap.org/?mlat=<?= (float) $x['lat'] ?>&amp;mlon=<?= (float) $x['lon'] ?>#map=16/<?= (float) $x['lat'] ?>/<?= (float) $x['lon'] ?>" target="_blank" rel="noopener"><?= esc_html($x['loc'] ?: 'peta') ?></a><?php else: ?>–<?php endif; ?></td>
 <td><?= $x['era'] !== '' ? esc_html(($eras[(int) $x['era']] ?? $x['era']) . ' · ' . $x['kk'] . ' KK') : '–' ?><br><span class="mut"><?= $x['month'] !== '' ? 'bulan ke-' . (int) $x['month'] : '' ?></span></td>
 <td><?= esc_html((string) $x['score']) ?></td><td><?= esc_html($x['kampus'] ?: '–') ?><br><span class="mut"><?= esc_html($x['kelas'] ?: '') ?></span></td>
 <td><span class="mut"><?= $x['created'] ? esc_html(wp_date('d M Y', $x['created'])) : '–' ?></span></td>
-<td><form method="post" onsubmit="return confirm('Reset simpanan & lepaskan wilayah <?= esc_js($x['user']) ?>? Akun tetap ada.')"><input type="hidden" name="_wpnonce" value="<?= $nonce ?>"><input type="hidden" name="uid" value="<?= $x['uid'] ?>"><input type="hidden" name="act" value="reset"><button class="rst">Reset simpanan</button></form>
+<td><form method="post" style="margin-bottom:4px"><input type="hidden" name="_wpnonce" value="<?= $nonce ?>"><input type="hidden" name="uid" value="<?= $x['uid'] ?>"><?php if ($x['ban']): ?><button class="rst" name="act" value="unban">Buka blokir</button><?php else: ?><button class="del" name="act" value="ban" onclick="return confirm('Blokir <?= esc_js($x['user']) ?>?')">⛔ Ban</button><?php endif; ?></form><form method="post" onsubmit="return confirm('Reset simpanan & lepaskan wilayah <?= esc_js($x['user']) ?>? Akun tetap ada.')"><input type="hidden" name="_wpnonce" value="<?= $nonce ?>"><input type="hidden" name="uid" value="<?= $x['uid'] ?>"><input type="hidden" name="act" value="reset"><button class="rst">Reset simpanan</button></form>
 <form method="post" style="margin-top:4px" onsubmit="return confirm('HAPUS akun <?= esc_js($x['user']) ?> beserta simpanan, wilayah, dan peringkatnya? Tindakan ini tidak bisa dibatalkan.')"><input type="hidden" name="_wpnonce" value="<?= $nonce ?>"><input type="hidden" name="uid" value="<?= $x['uid'] ?>"><input type="hidden" name="act" value="delete"><button class="del">Hapus akun</button></form></td></tr>
 <?php endforeach; if (!$users): ?><tr><td colspan="9">Belum ada akun terdaftar.</td></tr><?php endif; ?>
 </tbody></table></div>
@@ -102,7 +144,45 @@ input[type=search]{padding:8px 11px;border:1px solid var(--line);border-radius:9
 <table><thead><tr><th>Dari</th><th>Kepada</th><th>Komoditas</th><th>Status</th><th>Tanggal</th></tr></thead><tbody>
 <?php $nd = 0; foreach (array_reverse($deals, true) as $id => $dd): if ($nd++ >= 100) { break; } ?><tr><td><?= esc_html($byUid[$dd['from']] ?? '?') ?></td><td><?= esc_html($byUid[$dd['to']] ?? '?') ?></td><td><?= esc_html($dd['com'] ?? '') ?></td><td><?= esc_html($dd['st'] ?? '') ?></td><td><span class="mut"><?= !empty($dd['t']) ? esc_html(wp_date('d M Y H:i', (int) $dd['t'])) : '' ?></span></td></tr><?php endforeach; if (!$deals): ?><tr><td colspan="5">Belum ada perjanjian.</td></tr><?php endif; ?>
 </tbody></table>
+</section>
+<section id="t-monitor" class="pane">
+<h2>🗺️ Peta pemain</h2><p class="mut"><span class="dot on"></span>sedang bermain (≤ 5 mnt) · <span class="dot day"></span>aktif 24 jam · <span class="dot"></span>lebih lama. Titik = lokasi kampung yang dipilih pemain (bukan lokasi perangkat).</p>
+<div id="map" style="height:min(62vh,560px);border-radius:12px;border:1px solid var(--line)"></div>
+<h2>🟢 Sesi aktif 24 jam terakhir (<?= count($liveDay) ?>)</h2>
+<div style="overflow:auto;max-height:60vh"><table><thead><tr><th>Status</th><th>Pemain</th><th>Kampung</th><th>Lokasi</th><th>Era · KK</th><th>Perangkat</th></tr></thead><tbody>
+<?php foreach ($liveDay as $v): $d = $now - (int) $v['at']; ?><tr><td><span class="dot <?= $d < 300 ? 'on' : 'day' ?>"></span><?= esc_html($ago((int) $v['at'])) ?></td><td><?= $v['guest'] ? '<span class="mut">Tamu</span>' : '<b>' . esc_html($v['user']) . '</b>' ?></td><td><?= esc_html($v['name'] ?: '–') ?></td><td><?= esc_html(trim(($v['loc'] ?? '') . ' ' . (($v['cc'] ?? '') ? '(' . strtoupper($v['cc']) . ')' : '')) ?: '–') ?></td><td><?= !empty($v['era']) ? esc_html(($eras[(int) $v['era']] ?? $v['era']) . ' · ' . (int) $v['kk'] . ' KK') : '–' ?></td><td><span class="mut"><?= esc_html(($v['dev'] ?? '') . ' ' . ($v['scr'] ?? '')) ?></span></td></tr><?php endforeach; if (!$liveDay): ?><tr><td colspan="6">Belum ada sesi dalam 24 jam terakhir.</td></tr><?php endif; ?>
+</tbody></table></div>
+</section>
+<section id="t-setel" class="pane">
+<h2>⚙️ Pengaturan gim (berlaku untuk semua pemain)</h2>
+<form method="post" class="setel"><input type="hidden" name="_wpnonce" value="<?= $nonce ?>"><input type="hidden" name="act" value="cfg">
+<fieldset><legend>📢 Pengumuman</legend><textarea name="announce" maxlength="300" rows="2" placeholder="Kosongkan bila tidak ada pengumuman"><?= esc_textarea($cfg['announce']) ?></textarea><label><input type="checkbox" name="reshow" value="1"> Tampilkan ulang ke semua pemain (meski teks sama)</label></fieldset>
+<fieldset><legend>🛠 Pemeliharaan</legend><label><input type="checkbox" name="maint" value="1" <?= $cfg['maint'] ? 'checked' : '' ?>> Aktifkan mode pemeliharaan (gim dikunci, simpan ditolak)</label><input type="text" name="maintMsg" maxlength="300" value="<?= esc_attr($cfg['maintMsg']) ?>" placeholder="Pesan, mis. Pemeliharaan sampai pukul 21.00 WIB"></fieldset>
+<fieldset><legend>🚪 Akses</legend><label><input type="checkbox" name="regOpen" value="1" <?= $cfg['regOpen'] ? 'checked' : '' ?>> Pendaftaran akun baru dibuka</label><label><input type="checkbox" name="guestOk" value="1" <?= $cfg['guestOk'] ? 'checked' : '' ?>> Boleh bermain sebagai tamu</label></fieldset>
+<fieldset><legend>⏱ Laju permainan</legend><label>Pengali kecepatan membangun <input type="number" name="buildMul" min="0.25" max="10" step="0.25" value="<?= esc_attr((string) $cfg['buildMul']) ?>"> × <span class="mut">(1 = normal)</span></label>
+<label>Kecepatan waktu maksimum <select name="maxSpeed"><?php foreach ([1 => '▶ ×1', 2 => '⏩ ×10', 3 => '⏩⏩ ×60 (semua)'] as $k => $l): ?><option value="<?= $k ?>" <?= (int) $cfg['maxSpeed'] === $k ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></label>
+<label>Bencana <select name="disaster"><?php foreach (['' => 'Ikuti pilihan pemain', 'normal' => 'Paksa normal', 'rendah' => 'Paksa rendah', 'mati' => 'Paksa mati'] as $k => $l): ?><option value="<?= $k ?>" <?= $cfg['disaster'] === $k ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></label></fieldset>
+<fieldset><legend>🤖 Penyaring bot/AI</legend><label>Kepekaan <select name="botMode"><?php foreach (['off' => 'Mati', 'normal' => 'Normal', 'strict' => 'Ketat'] as $k => $l): ?><option value="<?= $k ?>" <?= $cfg['botMode'] === $k ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></label>
+<label><input type="checkbox" name="autoBan" value="1" <?= $cfg['autoBan'] ? 'checked' : '' ?>> Ban otomatis saat terdeteksi (tanpa menunggu saya)</label><span class="mut">Peringatan pertama juga dikirim ke email admin situs.</span></fieldset>
+<button class="save">💾 Simpan pengaturan</button> <span class="mut"><?= !empty($cfgRaw['at']) ? 'Terakhir diubah ' . esc_html(wp_date('d M Y H:i', (int) $cfgRaw['at'])) . ' oleh ' . esc_html((string) ($cfgRaw['by'] ?? '')) : 'Belum pernah diubah (nilai bawaan).' ?></span>
+</form>
+</section>
+<section id="t-log" class="pane">
+<h2>⚠ Log peringatan bot/AI</h2>
+<table><thead><tr><th>Waktu</th><th>Pengguna</th><th>Alasan</th></tr></thead><tbody>
+<?php foreach (array_slice($alerts, 0, 200) as $a): ?><tr><td><span class="mut"><?= esc_html(wp_date('d M Y H:i', (int) ($a['at'] ?? 0))) ?></span></td><td><b><?= esc_html((string) ($a['user'] ?? '')) ?></b></td><td><?= esc_html(implode(' · ', (array) ($a['why'] ?? []))) ?></td></tr><?php endforeach; if (!$alerts): ?><tr><td colspan="3">Belum ada peringatan.</td></tr><?php endif; ?>
+</tbody></table>
+<?php if ($alerts): ?><form method="post" style="margin-top:8px" onsubmit="return confirm('Kosongkan log peringatan?')"><input type="hidden" name="_wpnonce" value="<?= $nonce ?>"><input type="hidden" name="act" value="clearalerts"><button class="rst">Kosongkan log</button></form><?php endif; ?>
+</section>
 <p class="mut" style="margin-top:20px">Hanya administrator WordPress yang dapat membuka halaman ini. Penghapusan bersifat permanen.</p>
 </main>
-<script>function f(v){v=v.toLowerCase();document.querySelectorAll('#tb tbody tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(v)?'':'none'})}</script>
+<script src="lf/leaflet.js"></script>
+<script>const PTS=<?= wp_json_encode($pts) ?>;let map;
+function tab(t){if(!document.getElementById('t-'+t))t='pemain';document.querySelectorAll('.pane').forEach(e=>e.classList.toggle('show',e.id==='t-'+t));document.querySelectorAll('.tabs a').forEach(a=>a.classList.toggle('cur',a.dataset.t===t));if(t==='monitor')mk()}
+function mk(){if(map){map.invalidateSize();return}if(!window.L)return;map=L.map('map',{worldCopyJump:true}).setView([-2.5,118],4);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap'}).addTo(map);const col=['#9a9387','#e0a526','#2f8f6a'],b=[];
+PTS.forEach(p=>{const m=L.circleMarker([p.la,p.lo],{radius:p.s===2?9:6,color:'#fff',weight:2,fillColor:col[p.s],fillOpacity:.95}).addTo(map);const e=document.createElement('div');e.innerHTML='<b></b><br><span></span><br><small></small>';e.querySelector('b').textContent=p.n;e.querySelector('span').textContent=p.l;e.querySelector('small').textContent=p.t;m.bindPopup(e);b.push([p.la,p.lo])});if(b.length)map.fitBounds(b,{padding:[30,30],maxZoom:9})}
+window.addEventListener('hashchange',()=>tab(location.hash.slice(1)));tab(location.hash.slice(1));
+let auto=sessionStorage.getItem('baAuto')==='1',at=null;const ab=document.getElementById('autoBtn');function au(){ab.textContent=auto?'⏸ Hentikan penyegaran otomatis':'⟳ Segarkan otomatis (30 dtk)';clearTimeout(at);if(auto)at=setTimeout(()=>{if(!document.querySelector('.setel :focus'))location.reload();else au()},30000)}ab.onclick=e=>{e.preventDefault();auto=!auto;sessionStorage.setItem('baAuto',auto?'1':'0');au()};au();
+if(location.search)history.replaceState(null,'',location.pathname+location.hash);
+function f(v){v=v.toLowerCase();document.querySelectorAll('#tb tbody tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(v)?'':'none'})}</script>
 </body></html>

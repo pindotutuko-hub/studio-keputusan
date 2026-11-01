@@ -54,11 +54,42 @@ function rate(string $act, int $max, int $win): void {
 	if (!$ok) { fail('rate_limited', 429); }
 }
 function uid_of(string $user): string { return substr(hash('sha256', 'ba|' . mb_strtolower($user)), 0, 20); }
+
+
+/* ---------- pengaturan jarak jauh (diubah dari halaman admin) ---------- */
+const CFG_DEF = ['announce' => '', 'announceId' => 0, 'maint' => false, 'maintMsg' => '', 'regOpen' => true, 'guestOk' => true, 'buildMul' => 1.0, 'maxSpeed' => 3, 'disaster' => '', 'botMode' => 'normal', 'autoBan' => false];
+function cfg(): array { $c = rd('cfg.php') ?: []; return array_merge(CFG_DEF, array_intersect_key($c, CFG_DEF)); }
+function cfg_pub(): array { $c = cfg(); unset($c['botMode'], $c['autoBan']); return $c; }
+
+/* ---------- penyaring bot/AI: dinilai dari telemetri interaksi yang dikirim gim saat simpan ---------- */
+const ADMIN_MAIL = 'pindotutuko@gmail.com';
+function bot_reasons($t): array {
+	if (!is_array($t)) { return []; } $mode = cfg()['botMode']; if ($mode === 'off') { return []; } $k = $mode === 'strict' ? 1.6 : 1.0;
+	$r = []; $ptr = (int) ($t['ptr'] ?? 0); $utr = (int) ($t['utr'] ?? 0); $acts = (int) ($t['acts'] ?? 0); $n = (int) ($t['n'] ?? 0);
+	$cv = isset($t['cv']) && $t['cv'] !== null ? (float) $t['cv'] : null; $mean = (int) ($t['mean'] ?? 0);
+	if (!empty($t['wd'])) { $r[] = 'peramban dikendalikan otomatis (webdriver)'; }
+	if (!empty($t['hl'])) { $r[] = 'peramban tanpa layar/skrip (headless)'; }
+	if ($utr > 30 && $utr > $ptr * 0.5) { $r[] = 'klik sintetis dari skrip (' . $utr . ' vs ' . $ptr . ' asli)'; }
+	if ($n >= 40 && $cv !== null && $cv < 0.12 * $k) { $r[] = 'ritme tindakan terlalu teratur (CV ' . $cv . ')'; }
+	if ($n >= 40 && $mean > 0 && $mean < 140 * $k) { $r[] = 'tindakan terlalu cepat (' . $mean . ' ms rata-rata)'; }
+	if ($acts > 30 && $ptr === 0) { $r[] = 'ada tindakan tanpa input pengguna'; }
+	return $r;
+}
+function bot_flag(string $uid, array $u, array $why): void {
+	$first = empty($u['bot']);
+	upd('u_' . $uid . '.php', function ($x) use ($why) { if (!$x) { return ['__ret' => false]; } $b = $x['bot'] ?? []; $x['bot'] = ['why' => array_values(array_unique(array_merge($b['why'] ?? [], $why))), 'at' => time(), 'first' => $b['first'] ?? time(), 'n' => (int) ($b['n'] ?? 0) + 1]; unset($x['botOk']); return ['__write' => $x, '__ret' => true]; });
+	if (cfg()['autoBan']) { upd('u_' . $uid . '.php', function ($x) { if (!$x) { return ['__ret' => false]; } $x['ban'] = time(); $x['banAuto'] = 1; $x['tokens'] = []; return ['__write' => $x, '__ret' => true]; }); upd('dir.php', function ($d) use ($uid) { $d = $d ?: []; unset($d[$uid]); return ['__write' => $d, '__ret' => true]; }); }
+	if ($first) {
+		upd('alerts.php', function ($a) use ($uid, $u, $why) { $a = $a ?: []; $a[] = ['uid' => $uid, 'user' => $u['user'] ?? '', 'why' => $why, 'at' => time()]; return ['__write' => array_slice($a, -300), '__ret' => true]; });
+		@mail(ADMIN_MAIL, 'Babat Alas: pemain dicurigai bot/AI — ' . ($u['user'] ?? $uid), "Pengguna: " . ($u['user'] ?? '') . "\nAlasan: " . implode('; ', $why) . "\n\nTinjau dan ban bila perlu di: https://pindotutuko.id/babat-alas/admin/\n", "From: Babat Alas <noreply@pindotutuko.id>\r\nContent-Type: text/plain; charset=utf-8");
+	}
+}
+
 function auth(): array {
 	$tok = (string) ($_SERVER['HTTP_X_BA_TOKEN'] ?? ''); if (!preg_match('/^[a-f0-9]{20}\.[a-f0-9]{48}$/', $tok)) { fail('auth', 401); }
 	[$uid, $sec] = explode('.', $tok, 2); $u = rd('u_' . $uid . '.php');
 	if (!$u) { fail('auth', 401); }
-	foreach (($u['tokens'] ?? []) as $t) { if (hash_equals($t['h'], hash('sha256', $sec)) && $t['exp'] > time()) { $u['uid'] = $uid; return $u; } }
+	foreach (($u['tokens'] ?? []) as $t) { if (hash_equals($t['h'], hash('sha256', $sec)) && $t['exp'] > time()) { if (!empty($u['ban'])) { fail('banned', 403); } $u['uid'] = $uid; return $u; } }
 	fail('auth', 401);
 }
 function new_token(string $uid): string {
@@ -114,7 +145,7 @@ function audit(array $st, ?array $prev, int $prevAt): array {
 	$eraKK = [3 => 40, 4 => 80, 5 => 160, 6 => 320, 7 => 640]; if (isset($eraKK[$era]) && $kk < $eraKK[$era] * 0.5) { $bad[] = 'eraKK'; }
 	$paths = substr_count(implode('', $land), 'P'); $spentC += $paths;
 	$br = is_array($st['br'] ?? null) ? $st['br'] : []; if (count($br) > 600) { $bad[] = 'br'; $br = []; }
-	foreach ($br as $k) { if (!is_string($k) || !preg_match('/^(\d{1,3}),(\d{1,3})$/', $k, $mm) || (int) $mm[1] >= $n || (int) $mm[2] >= $n || $land[(int) $mm[2]][(int) $mm[1]] !== 'W') { $bad[] = 'br'; break; } }
+	foreach ($br as $k) { if (!is_string($k) || !preg_match('/^(\d{1,3}),(\d{1,3})$/', $k, $mm) || (int) $mm[1] >= $n || (int) $mm[2] >= $n || !in_array($land[(int) $mm[2]][(int) $mm[1]], ['W', 'G'], true)) { $bad[] = 'br'; break; } }
 	$spentC += 6 * count($br); $spentW += 10 * count($br);
 	$cleared = (int) ($st['stats']['cleared'] ?? 0); $spentC += $cleared;
 	for ($i = 0; $i < $ex; $i++) { $spentC += 40 + 30 * $i; $spentW += 15 + 10 * $i; }
@@ -206,7 +237,20 @@ $b = $_SERVER['REQUEST_METHOD'] === 'POST' ? body() : [];
 
 switch ($a) {
 	case 'ping': out(['ok' => true, 'v' => '0.2', 'eula' => EULA_VER, 'sem' => semester()]);
+	case 'cfg': { out(['ok' => true, 'cfg' => cfg_pub()]); }
+	case 'hb': {
+		$sid = preg_replace('/[^a-z0-9]/', '', strtolower((string) ($b['sid'] ?? ''))); if (strlen($sid) < 8 || strlen($sid) > 24) { fail('bad'); }
+		rate('hb' . $sid, 6, 300);
+		$who = ''; $uid = '';
+		$tok = (string) ($_SERVER['HTTP_X_BA_TOKEN'] ?? ''); if (preg_match('/^([a-f0-9]{20})\.([a-f0-9]{48})$/', $tok, $mm)) { $uu = rd('u_' . $mm[1] . '.php'); foreach (($uu['tokens'] ?? []) as $tt) { if (hash_equals($tt['h'], hash('sha256', $mm[2])) && $tt['exp'] > time()) { $uid = $mm[1]; $who = (string) ($uu['user'] ?? ''); } } }
+		$row = ['at' => time(), 'user' => $who, 'uid' => $uid, 'guest' => $uid === '', 'name' => clean((string) ($b['name'] ?? ''), 60), 'loc' => clean((string) ($b['loc'] ?? ''), 80), 'cc' => clean((string) ($b['cc'] ?? ''), 3),
+			'lat' => round((float) ($b['lat'] ?? 0), 3), 'lon' => round((float) ($b['lon'] ?? 0), 3), 'era' => (int) ($b['era'] ?? 0), 'kk' => (int) ($b['kk'] ?? 0), 'dev' => clean((string) ($b['dev'] ?? ''), 12), 'scr' => clean((string) ($b['scr'] ?? ''), 10)];
+		upd('live.php', function ($d) use ($sid, $row) { $d = $d ?: []; $cut = time() - 7 * 86400; foreach ($d as $k => $v) { if (($v['at'] ?? 0) < $cut) { unset($d[$k]); } } $d[$sid] = $row; return ['__write' => $d, '__ret' => true]; });
+		if ($uid) { upd('u_' . $uid . '.php', function ($x) { if (!$x) { return ['__ret' => false]; } $x['seen'] = time(); return ['__write' => $x, '__ret' => true]; }); }
+		out(['ok' => true, 'cfg' => cfg_pub()]);
+	}
 	case 'register': {
+		if (!cfg()['regOpen']) { fail('reg_closed', 403); } if (cfg()['maint']) { fail('maint', 503); }
 		rate('reg', 6, 3600);
 		$user = clean((string) ($b['user'] ?? ''), 32); $pass = (string) ($b['pass'] ?? '');
 		if (!preg_match('/^[A-Za-z0-9_.\-]{3,32}$/', $user)) { fail('bad_user'); }
@@ -224,15 +268,18 @@ switch ($a) {
 		rate('login', 12, 900);
 		$user = clean((string) ($b['user'] ?? ''), 32); $pass = (string) ($b['pass'] ?? ''); $uid = uid_of($user); $u = rd('u_' . $uid . '.php');
 		if (!$u || !password_verify($pass, $u['hash'])) { fail('bad_login', 401); }
+		if (!empty($u['ban'])) { fail('banned', 403); }
 		out(['ok' => true, 'token' => new_token($uid), 'me' => pub($u)]);
 	}
 	case 'me': { $u = auth(); $s = rd('s_' . $u['uid'] . '.php'); $kc = ($u['kelas'] ?? '') !== '' ? (rd('k_' . $u['kelas'] . '.php') ?: []) : []; out(['ok' => true, 'tantangan' => (string) ($kc['tantangan'] ?? ''), 'me' => pub($u), 'hasSave' => (bool) $s, 'saveMeta' => $s ? ($s['meta'] ?? null) : null]); }
 	case 'logout': { $u = auth(); $tok = (string) $_SERVER['HTTP_X_BA_TOKEN']; $sec = explode('.', $tok, 2)[1];
 		upd('u_' . $u['uid'] . '.php', function ($x) use ($sec) { $x['tokens'] = array_values(array_filter($x['tokens'] ?? [], fn($t) => !hash_equals($t['h'], hash('sha256', $sec)))); return ['__write' => $x, '__ret' => true]; }); out(['ok' => true]); }
 	case 'save': {
+		if (cfg()['maint']) { fail('maint', 503); }
 		$u = auth(); rate('save' . $u['uid'], 40, 600);
 		$raw = (string) file_get_contents('php://input'); if (strlen($raw) > MAX_SAVE) { fail('too_big', 413); }
 		$j = json_decode($raw, true); if (!is_array($j) || !isset($j['state']) || !is_array($j['state'])) { fail('bad_save'); }
+		$why = bot_reasons($j['tele'] ?? null); if ($why && empty($u['botOk'])) { bot_flag($u['uid'], $u, $why); }
 		$meta = ['name' => clean((string) ($j['state']['meta']['name'] ?? ''), 60), 'era' => (int) ($j['state']['era'] ?? 1), 'month' => (int) ($j['state']['t'] ?? 0), 'kk' => (int) ($j['state']['kk'] ?? 0),
 			'loc' => clean((string) ($j['state']['loc']['name'] ?? ''), 80), 'lat' => (float) ($j['state']['loc']['lat'] ?? 0), 'lon' => (float) ($j['state']['loc']['lon'] ?? 0), 'score' => (int) ($j['state']['score'] ?? 0), 'at' => time()];
 		$ow = $j['state']['own'] ?? []; $meta += claim_box($ow);

@@ -194,6 +194,9 @@ function pt_jr_landing() {
 	if ( current_user_can( 'mintakat_view' ) ) {
 		$cards[] = array( '/khusus/mintakat/', 'Mintakat Monitoring', 'Pemantau naskah OJS Mintakat: Jurnal Arsitektur — tracker redaksi, rekomendasi tindakan, draf email per kasus, dan ekspor Excel.' );
 	}
+	if ( current_user_can( 'manage_options' ) ) {
+		$cards[] = array( '/babat-alas/admin/', 'Kontrol Gim Babat Alas', 'Monitor pemain dari mana saja (peta, sedang bermain, peringatan bot/AI), pengaturan gim jarak jauh (pengumuman, pemeliharaan, pendaftaran, kecepatan bangun, bencana) dan ban pemain.' );
+	}
 	if ( ! $cards ) {
 		pt_khusus_page( '<h1>Tidak ada akses</h1><p>Akun <b>' . esc_html( wp_get_current_user()->user_login ) . '</b> belum diberi akses ke Aplikasi Khusus. Hubungi pengelola situs.</p><p><a href="' . esc_url( wp_logout_url( home_url( '/khusus/' ) ) ) . '">Keluar dan masuk dengan akun lain</a></p>', 403 );
 	}
