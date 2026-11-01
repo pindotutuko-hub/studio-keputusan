@@ -15,9 +15,9 @@ const TOKEN_DAYS = 45;
 const EULA_VER = '2026-11-01';
 const ERA_MAX = 7;            // era tertinggi di versi ini
 const START = ['coin' => 60, 'wood' => 25];
-const COST = ['house' => [2, 8], 'field' => [3, 2], 'well' => [4, 2], 'barn' => [6, 12], 'pond' => [5, 0], 'tree' => [1, 0], 'hall' => [20, 30], 'worship' => [15, 15], 'market' => [25, 20], 'rt' => [8, 10], 'taman' => [6, 4], 'kebun' => [6, 3], 'bengkel' => [10, 8], 'sekolah' => [30, 25], 'klinik' => [35, 15], 'kom' => [20, 10], 'perum' => [120, 40], 'ruko' => [90, 30], 'rs' => [220, 40], 'tamkot' => [60, 5], 'apartemen' => [400, 60], 'mal' => [350, 50], 'stasiun' => [300, 40], 'balkot' => [500, 60]];
-const SIZE = ['field' => 2, 'hall' => 2, 'market' => 2, 'kebun' => 2, 'sekolah' => 2, 'perum' => 2, 'ruko' => 2, 'rs' => 2, 'tamkot' => 2, 'apartemen' => 2, 'mal' => 2, 'stasiun' => 2, 'balkot' => 2];
-const ERA_OF = ['hall' => 2, 'worship' => 2, 'market' => 2, 'sekolah' => 2, 'klinik' => 2, 'kom' => 2, 'ruko' => 4, 'perum' => 5, 'rs' => 5, 'tamkot' => 5, 'apartemen' => 6, 'mal' => 6, 'stasiun' => 6, 'balkot' => 7];
+const COST = ['house' => [2, 8], 'field' => [3, 2], 'well' => [4, 2], 'barn' => [6, 12], 'pond' => [5, 0], 'tree' => [1, 0], 'hall' => [20, 30], 'worship' => [15, 15], 'market' => [25, 20], 'rt' => [8, 10], 'taman' => [6, 4], 'kebun' => [6, 3], 'bengkel' => [10, 8], 'sekolah' => [30, 25], 'klinik' => [35, 15], 'kom' => [20, 10], 'perum' => [120, 40], 'ruko' => [90, 30], 'rs' => [220, 40], 'tamkot' => [60, 5], 'apartemen' => [400, 60], 'mal' => [350, 50], 'stasiun' => [300, 40], 'balkot' => [500, 60], 'zr' => [2, 0], 'zc' => [2, 0], 'zi' => [2, 0], 'halte' => [8, 2], 'surya' => [25, 2], 'pltmh' => [60, 10], 'menara' => [40, 6], 'tps' => [12, 4], 'ipal' => [70, 8], 'pospol' => [45, 10], 'damkar' => [80, 12], 'pembangkit' => [300, 30], 'tpa' => [150, 10], 'kampus' => [350, 40]];
+const SIZE = ['field' => 2, 'hall' => 2, 'market' => 2, 'kebun' => 2, 'sekolah' => 2, 'perum' => 2, 'ruko' => 2, 'rs' => 2, 'tamkot' => 2, 'apartemen' => 2, 'mal' => 2, 'stasiun' => 2, 'balkot' => 2, 'pembangkit' => 2, 'tpa' => 2, 'kampus' => 2];
+const ERA_OF = ['hall' => 2, 'worship' => 2, 'market' => 2, 'sekolah' => 2, 'klinik' => 2, 'kom' => 2, 'ruko' => 4, 'perum' => 5, 'rs' => 5, 'tamkot' => 5, 'apartemen' => 6, 'mal' => 6, 'stasiun' => 6, 'balkot' => 7, 'zr' => 4, 'zc' => 4, 'zi' => 4, 'halte' => 4, 'surya' => 2, 'pltmh' => 3, 'menara' => 3, 'tps' => 2, 'ipal' => 4, 'pospol' => 3, 'damkar' => 4, 'pembangkit' => 5, 'tpa' => 5, 'kampus' => 6];
 const BADWORDS = ['anjing', 'bangsat', 'kontol', 'memek', 'ngentot', 'jancok', 'jancuk', 'goblok', 'fuck', 'shit', 'bitch', 'asshole', 'nigger', 'pussy', 'dick'];
 
 function out(array $a, int $code = 200): void { http_response_code($code); echo json_encode($a, JSON_UNESCAPED_UNICODE); exit; }
@@ -92,7 +92,7 @@ function audit(array $st, ?array $prev, int $prevAt): array {
 	if ($t < 0 || $t > 100000) { $bad[] = 'time'; }
 	if ($happy < 0 || $happy > 100 || $coh < 0 || $coh > 100) { $bad[] = 'meter'; }
 	if ($coin < -1 || $wood < -1 || $food < -1) { $bad[] = 'neg'; }
-	$occ = []; $spentC = 0; $spentW = 0; $cnt = []; $houses = 0; $barns = 0; $markets = 0;
+	$occ = []; $zrCap = 0; $zLv = 0; $spentC = 0; $spentW = 0; $cnt = []; $houses = 0; $barns = 0; $markets = 0;
 	$bs = $st['b'] ?? []; if (!is_array($bs) || count($bs) > 1600) { $bad[] = 'blds'; $bs = []; }
 	foreach ($bs as $b) {
 		$ty = (string) ($b['t'] ?? ''); if (!isset(COST[$ty])) { $bad[] = 'btype'; continue; }
@@ -102,9 +102,10 @@ function audit(array $st, ?array $prev, int $prevAt): array {
 		for ($dy = 0; $dy < $w; $dy++) { for ($dx = 0; $dx < $w; $dx++) { $k = ($x + $dx) . ',' . ($y + $dy);
 			if (isset($occ[$k])) { $bad[] = 'overlap'; } if ($x + $dx < $o['x0'] || $y + $dy < $o['y0'] || $x + $dx >= $o['x1'] || $y + $dy >= $o['y1']) { $bad[] = 'outside'; } $occ[$k] = 1; if ($land[$y + $dy][$x + $dx] !== 'G') { $bad[] = 'bland'; } } }
 		$spentC += COST[$ty][0]; $spentW += COST[$ty][1]; $cnt[$ty] = ($cnt[$ty] ?? 0) + 1;
+		$lv = max(0, min(3, (int) ($b['lv'] ?? 0))); if ($ty === 'zr') { $zrCap += [0, 2, 6, 16][$lv]; } if ($ty === 'zc' || $ty === 'zi') { $zLv += $lv; }
 	}
 	$houses = $cnt['house'] ?? 0; $barns = $cnt['barn'] ?? 0; $markets = $cnt['market'] ?? 0;
-	if ($kk > $houses + 4 * ($cnt['perum'] ?? 0) + 16 * ($cnt['apartemen'] ?? 0) + 6 || $kk < 0 || $kk > 2000) { $bad[] = 'kk'; }
+	if ($kk > $houses + 4 * ($cnt['perum'] ?? 0) + 16 * ($cnt['apartemen'] ?? 0) + $zrCap + 6 || $kk < 0 || $kk > 2000) { $bad[] = 'kk'; }
 	if ($era >= 2 && $barns < 1) { $bad[] = 'era2'; }
 	$eraKK = [3 => 40, 4 => 80, 5 => 160, 6 => 320, 7 => 640]; if (isset($eraKK[$era]) && $kk < $eraKK[$era] * 0.5) { $bad[] = 'eraKK'; }
 	$paths = substr_count(implode('', $land), 'P'); $spentC += $paths;
@@ -114,7 +115,7 @@ function audit(array $st, ?array $prev, int $prevAt): array {
 	// batas atas pemasukan: kas awal + misi (11×15) + bonus era + iuran/pasar per bulan
 	$nDone = min(count($st['done'] ?? []), 11 + $ex + intdiv(max($kk, 0), 25) + 2);
 	$prodB = ($cnt['kebun'] ?? 0) + ($cnt['bengkel'] ?? 0) + ($cnt['pond'] ?? 0); $links = is_array($st['links'] ?? null) ? min(count($st['links']), 40) : 0;
-	$coinCap = START['coin'] + max(11, $nDone) * 15 + 40 * $era * $era + $t * (0.6 * max($kk, 1) + 4 + 6 * $markets + 10 * $prodB + 8 * $links) + 5;
+	$coinCap = START['coin'] + max(11, $nDone) * 15 + 40 * $era * $era + $t * (0.6 * max($kk, 1) + 4 + 6 * $markets + 10 * $prodB + 8 * $links + 4 * $zLv + 0.8 * max($kk, 1)) + 5;
 	if ($coin + $spentC > $coinCap * 1.15 + 20) { $bad[] = 'coin'; }
 	if ($wood + $spentW > 2 * (START['wood'] + 4 * $cleared) + 5) { $bad[] = 'wood'; }
 	if ($cleared > substr_count(implode('', $land), 'G') + $paths) { $bad[] = 'cleared'; }

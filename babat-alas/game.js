@@ -514,6 +514,112 @@ Object.assign(BT.house,{days:3});Object.assign(BT.field,{days:2});Object.assign(
 const TOOLS=['info','babat','path','house','field','kebun','well','barn','pond','tree','|','rt','taman','bengkel','|','hall','worship','market','sekolah','klinik','kom','|','ruko','perum','rs','tamkot','apartemen','mal','stasiun','balkot','|','bull'];
 const ICON={perum:'🏘️',ruko:'🏬',rs:'🏥',tamkot:'⛲',apartemen:'🏢',mal:'🛍️',stasiun:'🚉',balkot:'🏛️',rt:'🏡',taman:'🛝',kebun:'🌴',bengkel:'🛠️',sekolah:'🏫',klinik:'🏥',kom:'📡',info:'🔍',babat:'🪓',path:'🟫',house:'🏠',field:'🌾',well:'💧',barn:'🛖',pond:'🐟',tree:'🌳',hall:'🏛️',worship:'🕌',market:'🏪',bull:'🧹'};
 
+/* ================= Sistem kota (paket 2A): zonasi R/K/I, utilitas, layanan publik, nilai lahan, polusi, kriminalitas, anggaran & pajak, bencana =================
+   Mekanisme umum gim simulasi kota, disesuaikan dengan istilah perencanaan Indonesia. Data tambahan disimpan di S.city/S.tax/b.lv; simpanan lama tetap valid. */
+const L2=(id,en)=>lang==='en'?en:id;
+Object.assign(BT,{
+ zr:{era:4,w:1,h:1,c:{coin:2,wood:0},zone:'R',days:1},
+ zc:{era:4,w:1,h:1,c:{coin:2,wood:0},zone:'C',days:1},
+ zi:{era:4,w:1,h:1,c:{coin:2,wood:0},zone:'I',days:1},
+ halte:{era:4,w:1,h:1,c:{coin:8,wood:2},tr:6,up:.1,days:2},
+ surya:{era:2,w:1,h:1,c:{coin:25,wood:2},pw:12,up:.2,days:3},
+ pltmh:{era:3,w:1,h:1,c:{coin:60,wood:10},pw:45,up:.5,days:10},
+ menara:{era:3,w:1,h:1,c:{coin:40,wood:6},wat:12,up:.6,days:8},
+ tps:{era:2,w:1,h:1,c:{coin:12,wood:4},gar:40,up:.3,days:3},
+ ipal:{era:4,w:1,h:1,c:{coin:70,wood:8},sew:12,up:.8,days:10},
+ pospol:{era:3,w:1,h:1,c:{coin:45,wood:10},cop:10,up:.8,days:8,emp:3},
+ damkar:{era:4,w:1,h:1,c:{coin:80,wood:12},fire:12,up:1.2,days:10,emp:4},
+ pembangkit:{era:5,w:2,h:2,c:{coin:300,wood:30},pw:420,up:4,days:30,pol:9,emp:12},
+ tpa:{era:5,w:2,h:2,c:{coin:150,wood:10},gar:700,up:2,days:20,pol:5,emp:4},
+ kampus:{era:6,w:2,h:2,c:{coin:350,wood:40},edu:150,up:3,days:40,emp:20}});
+TOOLS.splice(TOOLS.indexOf('bull'),0,'zr','zc','zi','halte','|','surya','pltmh','menara','tps','ipal','pospol','damkar','pembangkit','tpa','kampus','|');
+Object.assign(ICON,{zr:'🟩',zc:'🟦',zi:'🟨',halte:'🚏',surya:'☀️',pltmh:'💧',menara:'🗼',tps:'🗑️',ipal:'🚰',pospol:'👮',damkar:'🚒',pembangkit:'🏭',tpa:'♻️',kampus:'🎓'});
+Object.assign(TX.id.tl,{zr:'Zona hunian',zc:'Zona komersial',zi:'Zona industri',halte:'Halte bus',surya:'PLTS surya',pltmh:'PLTMH',menara:'Menara air',tps:'TPS sampah',ipal:'IPAL',pospol:'Pos polisi',damkar:'Pemadam',pembangkit:'Pembangkit',tpa:'TPA',kampus:'Kampus'});
+Object.assign(TX.en.tl,{zr:'Residential zone',zc:'Commercial zone',zi:'Industrial zone',halte:'Bus stop',surya:'Solar PV',pltmh:'Micro-hydro',menara:'Water tower',tps:'Waste depot',ipal:'Sewage plant',pospol:'Police post',damkar:'Fire station',pembangkit:'Power plant',tpa:'Landfill',kampus:'University'});
+Object.assign(TX.id.tlD,{zr:'Warga membangun rumah sendiri bila ada jalan, listrik & air',zc:'Toko & kantor tumbuh bila ada pembeli',zi:'Pabrik & gudang: kerja, tapi polusi',halte:'Angkutan umum, kurangi macet radius 6',surya:'Listrik bersih 12 unit',pltmh:'Listrik 45 unit, harus di tepi sungai',menara:'Air bersih PDAM radius 12',tps:'Tampung sampah 40 KK',ipal:'Sanitasi limbah radius 12',pospol:'Keamanan radius 10',damkar:'Cegah kebakaran radius 12',pembangkit:'Listrik 420 unit, polusi tinggi',tpa:'Sampah kota 700 KK, polusi',kampus:'Pendidikan tinggi, nilai lahan +'});
+Object.assign(TX.en.tlD,{zr:'Residents build homes if road, power & water exist',zc:'Shops & offices grow with customers',zi:'Factories & warehouses: jobs but pollution',halte:'Public transport, less traffic radius 6',surya:'Clean power 12 units',pltmh:'Power 45 units, must be by a river',menara:'Piped water radius 12',tps:'Holds waste of 40 households',ipal:'Sewage treatment radius 12',pospol:'Safety radius 10',damkar:'Fire cover radius 12',pembangkit:'Power 420 units, heavy pollution',tpa:'City waste 700 households, pollution',kampus:'Higher education, land value +'});
+const ZCAP={zr:[0,2,6,16],zc:[0,2,5,12],zi:[0,4,8,14]};
+const isHome=b=>b.t==='house'||b.t==='perum'||b.t==='apartemen'||(b.t==='zr'&&b.lv);
+function roadNear(b){for(let dy=-1;dy<=b.h;dy++)for(let dx=-1;dx<=b.w;dx++){const X=b.x+dx,Y=b.y+dy;if(inside(X,Y)&&L(X,Y)==='P')return true}return false}
+function nearAny(x,y,types,r){return S.b.some(b=>!b.bt&&types.includes(b.t)&&Math.abs(b.x+(b.w-1)/2-x)<=r&&Math.abs(b.y+(b.h-1)/2-y)<=r)}
+/** nilai lahan 0–100 pada petak */
+function landValue(x,y){const C=S.city||{};let v=35;if(nearAny(x,y,['taman','tamkot','tree'],4))v+=12;if(nearWater(x,y,3))v+=8;if(nearAny(x,y,['sekolah','kampus','klinik','rs'],8))v+=10;if(nearAny(x,y,['mal','stasiun','balkot','halte'],8))v+=10;
+ if(nearAny(x,y,['pospol'],10))v+=6;if(nearAny(x,y,['pembangkit','tpa'],7))v-=28;if(nearAny(x,y,['zi'],3))v-=12;v-=((C.crime||0)*.15);v+=S.era*2;return Math.max(0,Math.min(100,Math.round(v)))}
+function pollutionAt(x,y){let p=0;S.b.forEach(b=>{if(b.bt)return;const s=(BT[b.t].pol||0)+(b.t==='zi'?(b.lv||0)*2.5:0);if(!s)return;const d=Math.hypot(b.x+(b.w-1)/2-x,b.y+(b.h-1)/2-y);if(d<s*1.2)p+=s*(1-d/(s*1.2))*10});
+ if(L(x,y)==='P'&&S.era>=5&&!nearAny(x,y,['halte','stasiun'],6))p+=12;return Math.min(100,Math.round(p))}
+/** simulasi kota bulanan; mengembalikan penyesuaian kebahagiaan & pesan penasihat */
+function citySim(){const R=S.res;S.city=S.city||{};S.tax=S.tax||{r:9,c:9,i:9};const C=S.city,TXR=S.tax;const Bs=built(),cnt=t=>Bs.filter(b=>b.t===t).length;
+ const zones=Bs.filter(b=>BT[b.t].zone);const zl=t=>zones.filter(z=>z.t===t).reduce((a,z)=>a+(z.lv||0),0);
+ // listrik
+ let sup=0;Bs.forEach(b=>{if(BT[b.t].pw&&!b.dmg)sup+=BT[b.t].pw});
+ const big=['sekolah','klinik','rs','mal','stasiun','balkot','kampus','apartemen','ruko','perum','pospol','damkar','menara','ipal'];
+ const dem=S.era>=2?Math.round(S.kk*.3+zl('zr')*1+zl('zc')*2+zl('zi')*4+Bs.filter(b=>big.includes(b.t)).length*3):0;C.pwS=sup;C.pwD=dem;C.pw=dem?Math.min(1,sup/dem):1;
+ const homes=Bs.filter(isHome),cov=(list,types,r)=>list.length?list.filter(h=>nearAny(h.x,h.y,types,r)).length/list.length:1;
+ C.water=homes.length?homes.filter(h=>near(h.x,h.y,'well',5)||near(h.x,h.y,'menara',12)).length/homes.length:1;
+ C.sew=S.era>=4?cov(homes,['ipal'],12):1;
+ const gen=Math.max(1,S.kk),capG=cnt('tps')*40+cnt('tpa')*700+(S.era<=2?40:0);C.garb=Math.min(1,capG/gen);
+ C.cop=cov(homes,['pospol'],10);C.fireCov=cov(Bs.filter(b=>!['tree','field','kebun','pond','zr','zc','zi'].includes(b.t)||b.lv),['damkar'],12);
+ C.health=Math.min(1,(cnt('klinik')*20+cnt('rs')*120)/Math.max(1,S.kk));C.edu=Math.min(1,(cnt('sekolah')*15+cnt('kampus')*150)/Math.max(1,S.kk));
+ // lapangan kerja
+ let jobs=0;Bs.forEach(b=>{jobs+=(BT[b.t].jobs||0)+(BT[b.t].emp||0)});jobs+=zl('zc')*0+zones.reduce((a,z)=>a+(z.t==='zc'||z.t==='zi'?ZCAP[z.t][z.lv||0]:0),0);
+ const workers=Math.max(1,Math.round(S.kk*1.3));C.jobs=jobs;C.workers=workers;C.emp=Math.min(1,jobs/workers);
+ // polusi & lalu lintas & kriminalitas (indeks 0–100)
+ const trees=cnt('tree')+cnt('taman')*2+cnt('tamkot')*6;let polS=Bs.reduce((a,b)=>a+(BT[b.t].pol||0)+(b.t==='zi'?(b.lv||0)*2.5:0),0);
+ const traffic=S.era>=4?Math.max(0,Math.min(100,Math.round((S.kk/6+zl('zc')*1.5+zl('zi')*2)-cnt('halte')*12-cnt('stasiun')*60))):0;C.traffic=traffic;
+ C.pol=Math.max(0,Math.min(100,Math.round(polS*1.1+traffic*.2+(1-C.garb)*25+(1-C.sew)*15-trees*.8-(cnt('tamkot')+cnt('taman'))*1.5)));
+ C.crime=Math.max(0,Math.min(100,Math.round(S.kk/25+(55-S.happy)*.6+(1-C.emp)*35-C.cop*30+(S.era>=4?10:0))));
+ // permintaan R/K/I (−100..100)
+ const capR=homes.reduce((a,b)=>a+(b.t==='house'?1:b.t==='perum'?4:b.t==='apartemen'?16:ZCAP.zr[b.lv||0]),0);
+ C.dR=Math.round(Math.max(-100,Math.min(100,(C.emp-.85)*160+(S.happy-50)*.8-(TXR.r-9)*6+(capR-S.kk<4?25:-5))));
+ C.dC=Math.round(Math.max(-100,Math.min(100,(S.kk*.22-zones.filter(z=>z.t==='zc').reduce((a,z)=>a+ZCAP.zc[z.lv||0],0))*3-(TXR.c-9)*6)));
+ C.dI=Math.round(Math.max(-100,Math.min(100,(S.kk*.3-zones.filter(z=>z.t==='zi').reduce((a,z)=>a+ZCAP.zi[z.lv||0],0))*2.5+((S.links||[]).length)*6-(TXR.i-9)*6)));
+ // pertumbuhan zona (otomatis seperti di gim simulasi kota)
+ let changed=0;zones.forEach(z=>{const lv=z.lv||0,dm=z.t==='zr'?C.dR:z.t==='zc'?C.dC:C.dI;const ok=roadNear(z)&&(S.era<3||C.pw>=.6)&&(z.t!=='zr'||C.water>=.5||nearAny(z.x,z.y,['well','menara'],12));
+  const lvMax=landValue(z.x,z.y)>=55&&S.era>=5?3:S.era>=4?2:1;
+  if(ok&&dm>0&&lv<lvMax&&Math.random()<.18+dm/400){z.lv=lv+1;changed++;if(z.t==='zr'&&Math.random()<.6)S.kk=Math.min(S.kk+1+Math.floor(Math.random()*2),S.kk+3)}
+  else if(lv>0&&(!ok||dm<-45)&&Math.random()<.08){z.lv=lv-1;changed++}});
+ if(changed)zones.forEach(z=>{if(z._lv!==z.lv){z._lv=z.lv;R3.delB(z.id);R3.addB(z)}});
+ // anggaran: pajak & biaya operasional
+ const incR=S.kk*.6*(TXR.r/9)-S.kk*.6,incC=zones.filter(z=>z.t==='zc').reduce((a,z)=>a+(z.lv||0)*1.2,0)*TXR.c/9,incI=zones.filter(z=>z.t==='zi').reduce((a,z)=>a+(z.lv||0)*1.5,0)*TXR.i/9;
+ const up=Bs.reduce((a,b)=>a+(BT[b.t].up||0),0);C.inc=Math.round((S.kk*.6*TXR.r/9+incC+incI)*10)/10;C.exp=Math.round(up*10)/10;
+ R.coin=Math.max(0,R.coin+Math.round(incR+incC+incI-up));
+ // kebahagiaan: dampak layanan kota
+ const adj=(S.era>=3?-(1-C.pw)*14:0)-(1-C.garb)*9-(1-C.sew)*7-(1-C.water)*6-C.pol*.12-C.crime*.1+(S.era>=4?(C.emp-.85)*12:0)-Math.max(0,TXR.r-9)*1.6+Math.max(0,9-TXR.r)*.6+(C.health-.5)*4+(C.edu-.5)*4;
+ // bencana: kebakaran & gempa
+ let msg=null;if(S.era>=3&&Math.random()<.06){const cand=Bs.filter(b=>!['tree','field','kebun','pond','zr','zc','zi'].includes(b.t)||b.lv);const b=cand[Math.floor(Math.random()*cand.length)];
+  if(b&&!near(b.x,b.y,'damkar',12)){b.dmg=4;if(b.t==='house'&&S.kk>3)S.kk--;msg=L2('🔥 Kebakaran di permukiman! Bangun Pemadam (damkar) agar cepat tertangani.','🔥 Fire in the settlement! Build a fire station to respond quickly.');Snd.play('err')}}
+ if(!msg&&S.era>=3&&Math.random()<.006){let n=0;Bs.forEach(b=>{if(Math.random()<.12&&b.t!=='tree'){b.dmg=3;n++}});if(n)msg=L2('🌋 Gempa bumi! '+n+' bangunan rusak. Bangunan tahan gempa & jalur evakuasi penting.','🌋 Earthquake! '+n+' buildings damaged.')}
+ if(!msg&&S._rain&&Math.random()<.03){const steep=Bs.filter(b=>slope(b.x,b.y)>.6&&!S.b.some(q=>q.t==='tree'&&Math.abs(q.x-b.x)<=2&&Math.abs(q.y-b.y)<=2));if(steep.length){const b=steep[0];b.dmg=4;msg=L2('⛰️ Longsor di lereng gundul! Tanam pohon di sekitar bangunan berlereng.','⛰️ Landslide on a bare slope! Plant trees around hillside buildings.')}}
+ // penasihat kota
+ if(!msg){const iss=[];if(S.era>=3&&C.pw<.8)iss.push(L2('⚡ Listrik kurang ('+C.pwS+'/'+C.pwD+' unit). Bangun PLTS, PLTMH, atau pembangkit.','⚡ Power shortage ('+C.pwS+'/'+C.pwD+'). Build solar, micro-hydro or a power plant.'));
+  if(C.garb<.8)iss.push(L2('🗑️ Sampah menumpuk. Tambah TPS/TPA.','🗑️ Waste piling up. Add depots/landfill.'));if(S.era>=4&&C.sew<.6)iss.push(L2('🚰 Sanitasi buruk. Bangun IPAL dekat permukiman.','🚰 Poor sanitation. Build sewage plants.'));
+  if(C.crime>55)iss.push(L2('👮 Kriminalitas tinggi. Tambah pos polisi & lapangan kerja.','👮 Crime is high. Add police posts & jobs.'));if(C.pol>55)iss.push(L2('🏭 Polusi tinggi. Jauhkan industri dari hunian, tanam pohon, bangun taman kota.','🏭 Pollution high. Separate industry, plant trees, add parks.'));
+  if(S.era>=4&&C.traffic>60)iss.push(L2('🚦 Macet. Bangun halte, stasiun, dan jaringan jalan.','🚦 Congestion. Build bus stops, stations and roads.'));if(S.era>=4&&C.emp<.7)iss.push(L2('💼 Banyak penganggur. Buka zona komersial/industri.','💼 Unemployment. Zone commercial/industrial land.'));
+  if(iss.length&&(S.t-(C.advT||0))>=3){C.advT=S.t;msg=iss[Math.floor(Math.random()*iss.length)]}}
+ return {adj,msg,capR}}
+/** Panel Kota & Anggaran */
+function cityPanel(){const C=S.city||{},T=S.tax||(S.tax={r:9,c:9,i:9}),m=$('modal');m.classList.remove('hidden');const pc=v=>Math.round((v==null?1:v)*100);
+ const bar=(lab,v,inv)=>{const p=Math.max(0,Math.min(100,v));const good=inv?100-p:p;return `<div class="cbar"><span>${lab}</span><i><b style="width:${p}%;background:${good>66?'#2f8f6a':good>40?'#e0a526':'#c0392b'}"></b></i><em>${p}</em></div>`};
+ const dem=(lab,v)=>`<div class="rci"><i><b style="height:${Math.abs(v)/2}%;${v>=0?'bottom:50%':'top:50%'};background:${v>=0?'#2f8f6a':'#c0392b'}"></b></i><span>${lab}</span></div>`;
+ const sl=(k,lab)=>`<label class="setr"><span>${lab}</span><input type="range" min="0" max="20" step="1" value="${T[k]}" data-tax="${k}"><b>${T[k]}%</b></label>`;
+ m.innerHTML=`<div class="box wide pzbox"><h2>🏙️ ${L2('Kota & Anggaran','City & Budget')}<button class="x" id="cpX" aria-label="tutup">✕</button></h2><div class="setg">
+ <section><h3>${L2('Permintaan zona','Zone demand')}</h3><div class="rcis">${dem('R',C.dR||0)}${dem(L2('K','C'),C.dC||0)}${dem('I',C.dI||0)}</div><p class="note">${L2('R = hunian, K = komersial, I = industri. Zona tumbuh sendiri bila permintaan positif dan ada jalan, listrik, dan air.','R = residential, C = commercial, I = industrial. Zones grow when demand is positive and road, power and water are present.')}</p>
+  <h3>⚡ ${L2('Listrik','Power')}</h3>${bar(L2('Pasokan/kebutuhan','Supply/demand'),pc(C.pw))}<p class="note">${C.pwS||0} / ${C.pwD||0} ${L2('unit','units')}</p></section>
+ <section><h3>${L2('Layanan publik','Public services')}</h3>${bar(L2('Air bersih','Clean water'),pc(C.water))}${bar(L2('Sanitasi','Sanitation'),pc(C.sew))}${bar(L2('Pengelolaan sampah','Waste collection'),pc(C.garb))}${bar(L2('Keamanan (pos polisi)','Police cover'),pc(C.cop))}${bar(L2('Proteksi kebakaran','Fire cover'),pc(C.fireCov))}${bar(L2('Kesehatan','Health'),pc(C.health))}${bar(L2('Pendidikan','Education'),pc(C.edu))}${bar(L2('Lapangan kerja','Employment'),pc(C.emp))}</section>
+ <section><h3>${L2('Lingkungan & sosial','Environment & society')}</h3>${bar(L2('Polusi','Pollution'),C.pol||0,1)}${bar(L2('Kriminalitas','Crime'),C.crime||0,1)}${bar(L2('Kemacetan','Traffic'),C.traffic||0,1)}
+  <h3>🗺️ ${L2('Peta lapisan','Data layers')}</h3><div class="lbt">${[['lv',L2('Nilai lahan','Land value')],['pol',L2('Polusi','Pollution')],['pw',L2('Listrik','Power')],['wat',L2('Air','Water')],['cop',L2('Keamanan','Safety')],['fire',L2('Kebakaran','Fire')],['zone',L2('Zona','Zones')]].map(([k,l])=>`<button data-ov="${k}" class="${R3.ovKind===k?'on':''}">${l}</button>`).join('')}<button data-ov="">✕</button></div></section>
+ <section><h3>💰 ${L2('Anggaran bulanan','Monthly budget')}</h3><table class="lb"><tr><td>${L2('Pendapatan pajak & retribusi','Tax revenue')}</td><td>${money(C.inc||0)}</td></tr><tr><td>${L2('Biaya operasional layanan','Service upkeep')}</td><td>−${money(C.exp||0)}</td></tr><tr><th>${L2('Saldo','Net')}</th><th>${money((C.inc||0)-(C.exp||0))}</th></tr></table>
+  ${sl('r',L2('Pajak hunian (PBB)','Residential tax'))}${sl('c',L2('Pajak komersial','Commercial tax'))}${sl('i',L2('Pajak industri','Industrial tax'))}<p class="note">${L2('Pajak tinggi menambah kas tetapi menurunkan kepuasan dan permintaan zona.','Higher taxes raise revenue but lower satisfaction and zone demand.')}</p></section></div></div>`;
+ $('cpX').onclick=()=>m.classList.add('hidden');
+ m.querySelectorAll('input[data-tax]').forEach(i=>i.oninput=()=>{T[i.dataset.tax]=+i.value;i.nextElementSibling.textContent=i.value+'%';dirty=true});
+ m.querySelectorAll('[data-ov]').forEach(b=>b.onclick=()=>{R3.overlay(b.dataset.ov||null);m.classList.add('hidden')})}
+/** nilai lapisan data per petak (0..1, makin tinggi makin baik kecuali polusi) */
+function ovVal(kind,x,y){const occB=occ[y][x]?S.b.find(q=>q.id===occ[y][x]):null;
+ if(kind==='lv')return landValue(x,y)/100;if(kind==='pol')return pollutionAt(x,y)/100;
+ if(kind==='pw')return nearAny(x,y,['surya','pltmh','pembangkit'],S.era>=5?40:14)&&(S.city||{}).pw>=.8?1:nearAny(x,y,['surya','pltmh','pembangkit'],30)?.5:0;
+ if(kind==='wat')return near(x,y,'menara',12)?1:near(x,y,'well',5)?.6:0;if(kind==='cop')return near(x,y,'pospol',10)?1:0;if(kind==='fire')return near(x,y,'damkar',12)?1:0;
+ if(kind==='zone')return occB&&BT[occB.t].zone?{zr:.9,zc:.5,zi:.15}[occB.t]:null;return null}
+
 let S=null;          // keadaan permainan
 let occ=null;        // occ[y][x] = id bangunan
 function rebuildOcc(){occ=[];for(let y=0;y<N;y++)occ.push(new Array(N).fill(0));S.b.forEach(b=>{for(let dy=0;dy<b.h;dy++)for(let dx=0;dx<b.w;dx++)occ[b.y+dy][b.x+dx]=b.id})}
@@ -542,13 +648,14 @@ function tick(){S.t++;const R=S.res,m=calM(),cl=S.loc.climate,sea=seasonOf(m);co
  const target=40+(R.food>cons?12:-8)+wc*18+wr*10+green*8+(S.coh-60)*.2-(S.kk>houses.length?10:0);const fac=Math.min(1,count('taman')/Math.max(1,S.kk/10))*5+Math.min(1,count('sekolah')*15/Math.max(1,S.kk))*7+Math.min(1,count('klinik')*20/Math.max(1,S.kk))*7+(sea==='dingin'?-4:0);S.happy+=Math.round((target+fac-S.happy)*.25);
  const cohT=50+count('hall')*12+Math.min(10,count('rt')*3)+(localStyleShare()*15)-(S.kk>30?5:0);S.coh+=Math.round((cohT-S.coh)*.15);
  // pertumbuhan
- const capH=houses.length*BT.house.cap+count('perum')*4+count('apartemen')*16;if(S.happy>=55&&R.food>S.kk*3&&capH>S.kk&&Math.random()<(.6+(count('sekolah')?.15:0))){S.kk++;if(Math.random()<.3)msg=msg||t('ev.born')}
+ const capH=houses.length*BT.house.cap+count('perum')*4+count('apartemen')*16+built().filter(z=>z.t==='zr').reduce((a,z)=>a+ZCAP.zr[z.lv||0],0);if(S.happy>=55&&R.food>S.kk*3&&capH>S.kk&&Math.random()<(.6+(count('sekolah')?.15:0))){S.kk++;if(Math.random()<.3)msg=msg||t('ev.born')}
  if(S.happy<35&&S.kk>2&&Math.random()<(count('klinik')?.18:.35)){S.kk--;msg=t('ev.leave')}
  // banjir musim hujan
  if(rainy&&Math.random()<(sea==='hujan'?.08:.04)){let hit=0;S.b.forEach(b=>{if((b.t==='field'||b.t==='house')&&nearWater(b.x,b.y,1)){b.dmg=3;hit++}});if(hit)msg=t('ev.flood');Snd.play('flood')}
  S.b.forEach(b=>{if(b.dmg){b.dmg--;if(!b.dmg)delete b.dmg}});
  // kejadian acak
  const e=Math.random();if(!msg){if(e<.025&&S.ev.dry<=0){S.ev.dry=3;msg=t('ev.dry')}else if(e<.05&&capH>S.kk){S.kk++;msg=t('ev.migr')}else if(e<.065){S.coh=Math.min(100,S.coh+8);msg=t('ev.fest');R3.gather(25);Snd.play('fest')}else if(e<.08){R.food=Math.max(0,R.food-15);msg=t('ev.pest')}}
+ const cs=citySim();S.happy+=Math.round(cs.adj*.3);if(!msg&&cs.msg)msg=cs.msg;
  S.happy=Math.max(0,Math.min(100,S.happy));S.coh=Math.max(0,Math.min(100,S.coh));
  S.score=Math.round(S.kk*10+S.happy+S.coh+S.era*100+R.coin*.1);
  if(!msg)maybeEvent();if(msg)advise(msg);checkMissions();checkEra();updHUD();dirty=true;R3.villagers();R3.season(rainy)}
@@ -727,6 +834,30 @@ const R3={};
   else if(b.t==='hall'){const pend=new THREE.Group();[[-.6,-.6],[.6,-.6],[-.6,.6],[.6,.6],[-.2,-.2],[.2,-.2],[-.2,.2],[.2,.2]].forEach(([a,c])=>B(pend,mat('#6b4f3a'),a,0,c,.09,.8,.09));B(pend,mat('#d8cbb0'),0,0,0,1.6,.1,1.6);
     const r=s==='gadang'||s==='tongkonan'?saddle(2,1.4,.4,.8,mat('#3b3530')):hipRoof(1.9,1.9,.5,mat('#9c4a33'));r.position.y=.8+(r.geometry.type==='ConeGeometry'?.25:0);pend.add(r);const r2=hipRoof(.9,.9,.5,mat('#9c4a33'));r2.position.y=1.3;if(!(s==='gadang'||s==='tongkonan'))pend.add(r2);pend.position.set(.5,0,.5);g.add(pend)}
   else if(b.t==='worship'){B(g,mat('#f2efe7'),0,0,0,.8,.55,.8);const r=hipRoof(.95,.95,.35,mat('#2f6f4f'));r.position.y=.55+.17;g.add(r);const r2=hipRoof(.55,.55,.35,mat('#2f6f4f'));r2.position.y=.9+.17;g.add(r2)}
+  else if(BT[b.t]&&BT[b.t].zone){const lv=b.lv||0,zc={zr:'#5fae6a',zc:'#4f86c6',zi:'#d9b23a'}[b.t];
+   if(!lv){const pl=new THREE.Mesh(new THREE.PlaneGeometry(.92,.92),new THREE.MeshStandardMaterial({color:zc,transparent:true,opacity:.45,roughness:1}));pl.rotation.x=-Math.PI/2;pl.position.y=.04;g.add(pl);[[-.4,-.4],[.4,-.4],[-.4,.4],[.4,.4]].forEach(([x,z])=>B(g,mat('#f2efe7'),x,0,z,.03,.14,.03))}
+   else if(b.t==='zr'){B(g,mat('#7fb06a'),0,0,0,.96,.03,.96);if(lv===1){const h=house(b.s||curStyle||'modern');h.scale.setScalar(.85);g.add(h)}
+    else if(lv===2){const c=['#f4f1ea','#e9e2d4','#dfe6ea','#f2e8dc'][b.id%4];B(g,mat(c),0,.03,-.05,.8,.62,.7);B(g,mat('#8a3b2a'),0,.65,-.05,.86,.06,.76);for(let f=0;f<2;f++)for(let k=0;k<3;k++)B(g,mat('#a9cbe0',{roughness:.1,metalness:.3}),-.25+k*.25,.12+f*.28,.305,.14,.14,.01)}
+    else{const fl=6+(b.id%3),Hh=fl*.2;B(g,mat(['#e8e4da','#dfe3e8','#efe2d2'][b.id%3]),0,.03,0,.82,Hh,.82);for(let f=0;f<fl;f++)for(let k=0;k<3;k++)B(g,mat(f%2?'#9fbfd2':'#b9d0de',{roughness:.12,metalness:.3}),-.26+k*.26,.1+f*.2,.416,.16,.1,.01);B(g,mat('#3a3a3a'),0,.03+Hh,0,.86,.05,.86)}}
+   else if(b.t==='zc'){B(g,mat('#8f8a80'),0,0,0,.96,.03,.96);
+    if(lv===1){B(g,mat(['#e0a526','#2f8f6a','#c0392b','#2f6fb0'][b.id%4]),0,.03,-.1,.7,.36,.55);B(g,mat('#6b6b6b',{metalness:.5}),0,.03,.18,.6,.24,.01);B(g,mat('#f2efe7'),0,.39,.2,.8,.03,.25)}
+    else if(lv===2){B(g,mat(['#e8dcc0','#f2efe7','#dfe6ea'][b.id%3]),0,.03,-.05,.86,.66,.7);B(g,mat('#6b6b6b',{metalness:.5}),0,.03,.305,.7,.26,.01);B(g,mat(['#d32f2f','#2f6fb0','#2f8f6a'][b.id%3]),0,.3,.31,.8,.07,.01);B(g,mat('#a9cbe0',{roughness:.1,metalness:.3}),0,.42,.305,.6,.18,.01)}
+    else{const fl=10+(b.id%4)*2,Hh=fl*.2;const gl=mat(['#6f9bb8','#5b7f99','#7aa5a5'][b.id%3],{roughness:.08,metalness:.6});B(g,gl,0,.03,0,.8,Hh,.8);for(let f=1;f<fl;f+=2)B(g,mat('#d9d6cf'),0,.03+f*.2,0,.82,.02,.82);B(g,mat('#3a3a3a'),0,.03+Hh,0,.84,.06,.84);}}
+   else{B(g,mat('#8a8578'),0,0,0,.96,.03,.96);
+    if(lv===1){B(g,mat('#b8b0a0'),0,.03,0,.7,.32,.6);const r=hipRoof(.78,.68,.2,mat('#7a7a72'));r.position.y=.45;g.add(r)}
+    else if(lv===2){B(g,mat('#c8c4bc'),0,.03,0,.9,.45,.8);for(let k=0;k<4;k++)B(g,mat('#9a968e'),-.33+k*.22,.48,0,.2,.06,.82);B(g,mat('#5a5a5a',{metalness:.4}),0,.03,.405,.4,.3,.01)}
+    else{B(g,mat('#bdb6a8'),-.05,.03,0,.8,.6,.85);[[.3,-.25],[.3,.1]].forEach(([x,z])=>{const c=new THREE.Mesh(new THREE.CylinderGeometry(.06,.08,1.1,10),mat('#8a3b2a'));c.position.set(x,.58,z);c.castShadow=true;g.add(c);B(g,mat('#f2efe7'),x,1.0,z,.17,.04,.17)});const t=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,.4,14),mat('#d9d6cf',{metalness:.4}));t.position.set(-.25,.25,.3);g.add(t)}}}
+  else if(b.t==='halte'){B(g,mat('#9a9a94'),0,0,0,.9,.03,.5);B(g,mat('#2f6fb0'),0,.03,-.15,.8,.42,.04);B(g,mat('#9cc3dc',{transparent:true,opacity:.6,roughness:.1}),-.38,.03,0,.03,.4,.3);B(g,mat('#2f6fb0'),0,.45,0,.9,.04,.45);B(g,tmat('wood'),0,.03,-.05,.6,.12,.12);B(g,mat('#e0a526'),.42,.03,.2,.04,.6,.04);B(g,mat('#2f6fb0'),.42,.6,.2,.16,.16,.02)}
+  else if(b.t==='surya'){for(let i=0;i<2;i++)for(let k=0;k<2;k++){const p=new THREE.Group();p.position.set(-.22+i*.44,.18,-.2+k*.42);B(p,mat('#8a8a8a'),0,-.18,0,.04,.2,.04);const pn=B(p,mat('#1f3a5a',{metalness:.6,roughness:.2}),0,0,0,.4,.02,.32);p.rotation.x=-.45;g.add(p)}}
+  else if(b.t==='pltmh'){B(g,mat('#d9d6cf'),-.15,0,0,.5,.45,.55);const r=hipRoof(.6,.65,.2,mat('#2f6f4f'));r.position.set(-.15,.55,0);g.add(r);const wh=new THREE.Mesh(new THREE.TorusGeometry(.22,.03,6,16),mat('#6b4f3a'));wh.position.set(.3,.28,0);wh.rotation.y=Math.PI/2;g.add(wh);for(let k=0;k<6;k++){const s=new THREE.Mesh(box,mat('#6b4f3a'));s.scale.set(.03,.44,.05);s.position.copy(wh.position);s.rotation.x=k*Math.PI/6;g.add(s)}g.userData.wheel=wh}
+  else if(b.t==='menara'){[[-.15,-.15],[.15,-.15],[-.15,.15],[.15,.15]].forEach(([x,z])=>B(g,mat('#7a7a72'),x,0,z,.04,.9,.04));const t=new THREE.Mesh(new THREE.CylinderGeometry(.28,.28,.38,18),mat('#4f86ad',{metalness:.3,roughness:.4}));t.position.y=1.08;t.castShadow=true;g.add(t);const c=new THREE.Mesh(new THREE.ConeGeometry(.3,.15,18),mat('#3a6a8a'));c.position.y=1.34;g.add(c)}
+  else if(b.t==='tps'){B(g,mat('#8f8a80'),0,0,0,.9,.03,.9);[['#2f8f6a',-.25],['#e0a526',0],['#c0392b',.25]].forEach(([c,x])=>B(g,mat(c),x,.03,0,.22,.3,.4));B(g,mat('#5a4a3a'),0,.03,.35,.8,.06,.12)}
+  else if(b.t==='ipal'){B(g,mat('#8f8a80'),0,0,0,.94,.03,.94);[[-.2,-.2],[.22,.15]].forEach(([x,z],i)=>{const t=new THREE.Mesh(new THREE.CylinderGeometry(.22-i*.04,.22-i*.04,.18,18),mat('#bdbab2'));t.position.set(x,.12,z);g.add(t);const w=new THREE.Mesh(new THREE.CircleGeometry(.19-i*.04,18),mat('#5f7d5a',{roughness:.2}));w.rotation.x=-Math.PI/2;w.position.set(x,.215,z);g.add(w)});B(g,mat('#e8e4da'),.25,.03,-.28,.3,.25,.25)}
+  else if(b.t==='pospol'){B(g,mat('#f2efe7'),0,.0,0,.7,.42,.6);B(g,mat('#1f3f7a'),0,.42,0,.78,.06,.68);B(g,mat('#1f3f7a'),0,.03,.305,.22,.3,.01);B(g,mat('#e0a526'),0,.36,.31,.5,.06,.01);const l=new THREE.Mesh(new THREE.SphereGeometry(.05,8,6),new THREE.MeshBasicMaterial({color:'#4f86ff'}));l.position.set(.2,.55,0);g.add(l)}
+  else if(b.t==='damkar'){B(g,mat('#c0392b'),0,0,-.05,.85,.5,.75);B(g,mat('#eeeeee'),0,.5,-.05,.9,.05,.8);[-.2,.2].forEach(x=>B(g,mat('#7a7a72',{metalness:.4}),x,.03,.33,.3,.34,.01));B(g,mat('#c0392b'),.32,0,-.3,.18,.95,.18);B(g,mat('#e0a526'),0,.42,.335,.6,.05,.01)}
+  else if(b.t==='pembangkit'){B(g,mat('#8a8578'),.5,0,.5,1.96,.03,1.96);B(g,mat('#b8b4aa'),.25,.03,.6,1.1,.75,1.1);B(g,mat('#7a7a72'),.25,.78,.6,1.15,.06,1.15);[[1.05,.1],[1.05,.6]].forEach(([x,z])=>{const c=new THREE.Mesh(new THREE.CylinderGeometry(.12,.17,1.9,12),mat('#c8c4bc'));c.position.set(x,.95,z);c.castShadow=true;g.add(c);B(g,mat('#c0392b'),x,1.65,z,.26,.1,.26)});const ct=new THREE.Mesh(new THREE.CylinderGeometry(.32,.42,.9,18,1,true),mat('#d9d6cf',{side:THREE.DoubleSide}));ct.position.set(.3,.48,1.35);g.add(ct);g.userData.stacks=1}
+  else if(b.t==='tpa'){const m=new THREE.Mesh(new THREE.SphereGeometry(.9,16,8,0,Math.PI*2,0,Math.PI/2),mat('#6b5a45',{roughness:1}));m.scale.set(1,.35,1);m.position.set(.5,.02,.5);g.add(m);for(let k=0;k<14;k++)B(g,mat(['#c0392b','#2f6fb0','#e0a526','#f2efe7'][k%4]),hash2(k,1,b.id)*1.5-.25,.15+hash2(k,2,b.id)*.12,hash2(k,3,b.id)*1.5-.25,.08,.04,.06);B(g,mat('#2f7d4a'),1.3,.0,1.3,.3,.22,.5)}
+  else if(b.t==='kampus'){B(g,mat('#7fb06a'),.5,0,.5,1.96,.03,1.96);B(g,mat('#e8e4da'),.5,.03,.1,1.6,.9,.5);for(let f=0;f<3;f++)for(let k=0;k<8;k++)B(g,mat('#8fb3c8',{roughness:.15,metalness:.3}),-.2+k*.2,.15+f*.27,.351,.12,.14,.01);B(g,mat('#e8e4da'),-.15,.03,.9,.5,.6,.8);B(g,mat('#e8e4da'),1.15,.03,.9,.5,.6,.8);const r=hipRoof(1.7,.6,.3,mat('#8a3b2a'));r.position.set(.5,1.08,.1);g.add(r);B(g,mat('#f2efe7'),.5,.03,.85,.08,1.2,.08);B(g,mat('#c0392b'),.6,1.05,.85,.18,.12,.01)}
   else if(b.t==='perum'){B(g,mat('#9a9a94'),.5,0,.5,1.96,.03,1.96);[[0,0],[1,0],[0,1],[1,1]].forEach(([a,c],i)=>{const q=new THREE.Group();q.position.set(a,0,c);B(q,mat('#7fb06a'),0,.03,0,.9,.01,.9);
     B(q,mat(['#f4f1ea','#e9e2d4','#dfe6ea','#f2e8dc'][i]),0,.03,-.08,.62,.42,.5);B(q,mat('#3a3a3a'),0,.45,-.08,.68,.05,.56);B(q,mat('#a9cbe0',{metalness:.4,roughness:.08}),-.1,.12,.171,.3,.22,.01);B(q,tmat('wood','#c9a27e'),.2,.03,.171,.12,.3,.012);
     B(q,mat('#d8d4cc'),0,.45,-.2,.4,.28,.25);B(q,mat('#3a3a3a'),0,.73,-.2,.45,.04,.3);[[-.44,0],[.44,0]].forEach(([x])=>B(q,mat('#f2f2f2'),x,.03,.12,.02,.12,.6));B(q,mat('#f2f2f2'),-.25,.03,.42,.38,.12,.02);
@@ -934,6 +1065,13 @@ const R3={};
   if(LIFE.gather>0)LIFE.gather-=dt}
  R3.gather=s=>{LIFE.gather=s;LIFE.people.forEach(p=>{if(!isNight())plan(p)})};
  R3.lifeReset=()=>{[...LIFE.people.map(p=>p.m),...LIFE.veh.map(v=>v.m),...LIFE.hens.map(h=>h.m),...LIFE.birds.map(b=>b.m),...LIFE.smoke,...LIFE.glows].forEach(o=>root.remove(o));Object.assign(LIFE,{leader:null,people:[],veh:[],birds:[],hens:[],smoke:[],glows:[],paths:null,nReal:0})};
+ let ovMesh=null;R3.ovKind=null;
+ R3.overlay=k=>{if(ovMesh){root.remove(ovMesh);ovMesh.geometry.dispose();ovMesh.material.dispose();ovMesh=null}R3.ovKind=k||null;let chip=$('ovChip');if(!k){if(chip)chip.remove();return}if(!S)return;
+  const o=S.own,n=(o.x1-o.x0)*(o.y1-o.y0),geo=new THREE.PlaneGeometry(.96,.96);geo.rotateX(-Math.PI/2);const im=new THREE.InstancedMesh(geo,new THREE.MeshBasicMaterial({transparent:true,opacity:.55,depthWrite:false}),n);let i=0;const d=new THREE.Object3D(),col=new THREE.Color();
+  for(let y=o.y0;y<o.y1;y++)for(let x=o.x0;x<o.x1;x++){if(L(x,y)==='W')continue;const v=ovVal(k,x,y);if(v==null)continue;d.position.set(x+.5,R3.hAt(x+.5,y+.5)+.07,y+.5);d.updateMatrix();im.setMatrixAt(i,d.matrix);const q=k==='pol'?1-v:v;if(k==='zone')col.setHSL(v*.33,.7,.5);else col.setHSL(q*.33,.8,.5);im.setColorAt(i,col);i++}
+  im.count=i;im.renderOrder=5;root.add(im);ovMesh=im;
+  if(!chip){chip=document.createElement('div');chip.id='ovChip';document.body.appendChild(chip)}const nm={lv:L2('Nilai lahan','Land value'),pol:L2('Polusi','Pollution'),pw:L2('Listrik','Power'),wat:L2('Air bersih','Water'),cop:L2('Keamanan','Safety'),fire:L2('Proteksi kebakaran','Fire cover'),zone:L2('Zona R/K/I','Zones R/C/I')}[k];
+  chip.innerHTML=`🗺️ <b>${nm}</b> <span class="lg"><i style="background:#c0392b"></i>${k==='pol'?L2('tinggi','high'):L2('rendah','low')}<i style="background:#2f8f6a"></i>${k==='pol'?L2('rendah','low'):L2('baik','good')}</span><button aria-label="tutup">✕</button>`;chip.querySelector('button').onclick=()=>R3.overlay(null)};
  R3.lifeRebuild=()=>{LIFE.people.forEach(p=>root.remove(p.m));LIFE.people=[];LIFE.leader=null;LIFE.nReal=0;if(S)R3.villagers()};
  R3.pathsDirty=()=>{LIFE.paths=null};
  R3.life=dt=>{if(!S)return;for(const id in bmeshes){const u=bmeshes[id].userData;if(u.train)u.train.position.x=.5+Math.sin(clock.elapsedTime*.35+(+id))*.9}stepPeople(dt);stepHens(dt);stepVeh(dt);stepAmbient(dt)};
@@ -953,14 +1091,15 @@ function act(x,y,silent){const say=m=>{if(!silent){toast(m);Snd.play('err')}};
  if(tool==='path'){if(L(x,y)!=='G'||occ[y][x]){if(L(x,y)==='F')say(t('needClear'));return}if(S.res.coin<1){say(t('noMoney'));return}S.res.coin-=1;setL(x,y,'P');Snd.play('path');R3.tileColor(x,y);R3.path(x,y);R3.pathsDirty();after();return}
  if(tool==='bull'){const id=occ[y][x];if(!id)return;const b=S.b.find(b=>b.id===id);S.res.wood+=Math.floor((BT[b.t].c.wood||0)/2);S.b=S.b.filter(q=>q.id!==id);R3.delB(id);rebuildOcc();Snd.play('bull');if(b.t==='house'&&S.kk>count('house'))S.kk=Math.max(1,count('house'));R3.villagers();after();return}
  const T=BT[tool];if(!T)return;if(T.era>S.era){say(t('locked',{n:T.era}));return}
+ if(tool==='pltmh'&&!nearWater(x,y,1)){say(L2('PLTMH harus di tepi sungai.','Micro-hydro must be next to a river.'));return}
  for(let dy=0;dy<T.h;dy++)for(let dx=0;dx<T.w;dx++){const X=x+dx,Y=y+dy;if(!inside(X,Y)||!inOwn(X,Y)){say(t('outside'));return}const l=L(X,Y);if(l==='W'){say(t('onWater'));return}if(l==='F'){say(t('needClear'));return}if(occ[Y][X]||l==='P'){say(t('occupied'));return}}
  if(!canAfford(T.c)){say(S.res.coin<(T.c.coin||0)?t('noMoney'):t('noWood'));return}
- const stp=slope(x,y)>.6;if(stp&&S.res.wood<(T.c.wood||0)*1.5){say(lang==='en'?'Steep slope: needs 50% more timber.':'Lahan miring: butuh kayu 50% lebih.');return}if(stp)S.res.wood-=Math.ceil((T.c.wood||0)*.5);pay(T.c);Snd.play('build');const b={id:S.nid++,t:tool,x,y,w:T.w,h:T.h,bt:T.days||1};if(tool==='house'||tool==='hall')b.s=curStyle;if(tool==='house'&&Math.random()<.5)b.r=Math.floor(Math.random()*4);S.b.push(b);rebuildOcc();R3.addB(b);R3.villagers();after()}
+ const stp=slope(x,y)>.6;if(stp&&S.res.wood<(T.c.wood||0)*1.5){say(lang==='en'?'Steep slope: needs 50% more timber.':'Lahan miring: butuh kayu 50% lebih.');return}if(stp)S.res.wood-=Math.ceil((T.c.wood||0)*.5);pay(T.c);Snd.play('build');const b={id:S.nid++,t:tool,x,y,w:T.w,h:T.h,bt:T.days||1};if(T.zone){b.lv=0;b.s=curStyle}if(tool==='house'||tool==='hall')b.s=curStyle;if(tool==='house'&&Math.random()<.5)b.r=Math.floor(Math.random()*4);S.b.push(b);rebuildOcc();R3.addB(b);R3.villagers();after()}
 function after(){dirty=true;updHUD();checkMissions();checkEra();tutCheck()}
 function placeOK(x,y){if(!x&&x!==0)return false;if(tool!=='info'&&!inOwn(x,y))return false;if(tool==='babat')return L(x,y)==='F';if(tool==='path')return L(x,y)==='G'&&!occ[y][x];if(tool==='bull')return !!occ[y][x];if(tool==='info')return true;const T=BT[tool];if(!T)return false;
  for(let dy=0;dy<T.h;dy++)for(let dx=0;dx<T.w;dx++){const X=x+dx,Y=y+dy;if(!inside(X,Y)||!inOwn(X,Y)||L(X,Y)!=='G'||occ[Y][X])return false}return T.era<=S.era&&canAfford(T.c)}
 function bindInput(){const el=R3.dom();let down=null,last=null;
- el.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,b:e.button};dragging=false;if((tool==='babat'||tool==='path')&&e.button===0&&e.pointerType!=='touch'){R3.controls().enabled=false;dragging=true;const c=R3.pick(e.clientX,e.clientY);if(c){act(c[0],c[1],true);last=c.join()}}});
+ el.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,b:e.button};dragging=false;if((tool==='babat'||tool==='path'||(BT[tool]&&BT[tool].zone))&&e.button===0&&e.pointerType!=='touch'){R3.controls().enabled=false;dragging=true;const c=R3.pick(e.clientX,e.clientY);if(c){act(c[0],c[1],true);last=c.join()}}});
  el.addEventListener('pointermove',e=>{const c=R3.pick(e.clientX,e.clientY);if(c){const T=BT[tool]||{w:1,h:1};R3.ghost(c[0],c[1],T.w,T.h,placeOK(c[0],c[1]))}else R3.ghost(null);
   if(dragging&&c&&c.join()!==last){act(c[0],c[1],true);last=c.join()}});
  el.addEventListener('pointerup',e=>{R3.controls().enabled=true;if(!down)return;const d=Math.hypot(e.clientX-down.x,e.clientY-down.y);if(!dragging&&d<7&&down.b===0){const c=R3.pick(e.clientX,e.clientY);if(c)act(c[0],c[1])}dragging=false;down=null;last=null});
@@ -991,10 +1130,10 @@ function setSpeed(s){speed=s;if(!$('sp3')){const b=document.createElement('butto
 $('spP').onclick=()=>setSpeed(0);$('sp1').onclick=()=>setSpeed(1);$('sp2').onclick=()=>setSpeed(2);
 (()=>{const b=document.createElement('button');b.id='pBtn';b.title='Pustaka';b.textContent='📚';b.className=$('mBtn').className;$('mBtn').before(b);b.onclick=()=>{Snd.click();pustaka(null,TOOL_TOPIC[tool]||pusTopic)}})();
 $('mBtn').onclick=()=>{const m=$('menu');if(!m.classList.contains('hidden')){m.classList.add('hidden');return}
- m.innerHTML=`<button id="mSave">💾 ${t('save')} <span id="saveDot"></span></button><button id="mNb">🏘️ ${t('neighbors')}</button><button id="mTut">🧭 Tutorial</button><button id="mSet">⚙️ ${SETN[lang].h}</button><button id="mNet">🤝 ${lang==='en'?'Trade network':'Jaringan dagang'}</button><button id="mExp">🗺️ ${t('expH')}</button><button id="mPus">📚 ${PUS[lang].h}</button><button id="mBoard">🏆 ${lt('h')}</button><button id="mSnd">${Snd.on?'🔊':'🔇'} ${lang==='en'?'Sound':'Suara'}</button><button id="mHelp">❓ ${t('help')}</button><button id="mGuide">📘 ${t('guidePdf')}</button><button id="mLang">🌐 ${t('lang')}</button><button id="mExit">🚪 ${t('exit')}</button><button id="mHome">🏠 ${lang==='en'?'Home':'Beranda'} · pindotutuko.id</button>`;m.classList.remove('hidden');
+ m.innerHTML=`<button id="mSave">💾 ${t('save')} <span id="saveDot"></span></button><button id="mNb">🏘️ ${t('neighbors')}</button><button id="mTut">🧭 Tutorial</button><button id="mSet">⚙️ ${SETN[lang].h}</button><button id="mNet">🤝 ${lang==='en'?'Trade network':'Jaringan dagang'}</button><button id="mExp">🗺️ ${t('expH')}</button><button id="mPus">📚 ${PUS[lang].h}</button><button id="mBoard">🏆 ${lt('h')}</button><button id="mSnd">${Snd.on?'🔊':'🔇'} ${lang==='en'?'Sound':'Suara'}</button><button id="mHelp">❓ ${t('help')}</button><button id="mCity">🏙️ ${L2('Kota & Anggaran','City & Budget')}</button><button id="mGuide">📘 ${t('guidePdf')}</button><button id="mLang">🌐 ${t('lang')}</button><button id="mExit">🚪 ${t('exit')}</button><button id="mHome">🏠 ${lang==='en'?'Home':'Beranda'} · pindotutuko.id</button>`;m.classList.remove('hidden');
  $('mSave').onclick=()=>save(true);$('mBoard').onclick=()=>board();$('mTut').onclick=()=>{$('menu').classList.add('hidden');S.tut=0;tutCheck()};$('mSet').onclick=()=>{$('menu').classList.add('hidden');settings()};$('mNet').onclick=()=>{$('menu').classList.add('hidden');network()};$('mExp').onclick=()=>{$('menu').classList.add('hidden');expand()};$('mPus').onclick=()=>{$('menu').classList.add('hidden');pustaka(null,TOOL_TOPIC[tool]||pusTopic)};$('mSnd').onclick=()=>{Snd.toggle();$('mSnd').innerHTML=(Snd.on?'🔊':'🔇')+' '+(lang==='en'?'Sound':'Suara')};$('mNb').onclick=neighbors;$('mHelp').onclick=()=>modal(`<h2>${t('help')}</h2><p>${t('helpTxt')}</p>`);
  $('mLang').onclick=()=>{lang=lang==='id'?'en':'id';store.set('baLang',lang);applyStatic();renderBar();updHUD();renderMissions();m.classList.add('hidden')};
- $('mExit').onclick=async()=>{await safeSave();stopGame();hub()};$('mGuide').onclick=()=>window.open('/babat-alas/Panduan-Babat-Alas.pdf','_blank','noopener');$('mHome').onclick=async()=>{const b=$('mHome');b.disabled=true;b.textContent='⏳ '+t('saving');await safeSave();location.href='https://pindotutuko.id/'}};
+ $('mExit').onclick=async()=>{await safeSave();stopGame();hub()};$('mCity').onclick=()=>{$('menu').classList.add('hidden');cityPanel()};$('mGuide').onclick=()=>window.open('/babat-alas/Panduan-Babat-Alas.pdf','_blank','noopener');$('mHome').onclick=async()=>{const b=$('mHome');b.disabled=true;b.textContent='⏳ '+t('saving');await safeSave();location.href='https://pindotutuko.id/'}};
 /* Simpan sebelum keluar, tetapi jangan pernah macet: gagal jaringan/ditolak server/lebih dari 4 dtk → tetap lanjut (salinan lokal tetap ada). */
 async function safeSave(){try{await Promise.race([save(true),new Promise(r=>setTimeout(r,4000))])}catch(e){}}
 const expCost=n=>({coin:40+30*n,wood:15+10*n,kk:6+5*n});
@@ -1226,7 +1365,7 @@ window.addEventListener('keydown',e=>{if(!SET.keys||!S)return;const tg=e.target;
  if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright','q','e','r','f','+','=','-'].includes(k)){keyHeld.add(k);e.preventDefault();return}
  const tl=TOOLS.filter(x=>x!=='|');if(/^[0-9]$/.test(k)){const i=k==='0'?9:+k-1;const b=$('bar').querySelectorAll('.tool')[i];if(b)b.click();return}
  if(k===' '){e.preventDefault();setSpeed(speed?0:1);return}if(k==='tab'){e.preventDefault();setSpeed(speed>=3?1:speed+1);return}
- if(k==='b')pustaka(null,TOOL_TOPIC[tool]||pusTopic);else if(k==='l')board();else if(k==='p')settings();else if(k==='m')$('mBtn').click();else if(k==='h')modal(`<h2>${t('help')}</h2><p>${t('helpTxt')}</p>`)});
+ if(k==='b')pustaka(null,TOOL_TOPIC[tool]||pusTopic);else if(k==='l')board();else if(k==='p')settings();else if(k==='m')$('mBtn').click();else if(k==='h')modal(`<h2>${t('help')}</h2><p>${t('helpTxt')}</p>`);if(k==='k'&&S)cityPanel()});
 window.addEventListener('keyup',e=>keyHeld.delete(e.key.toLowerCase()));window.addEventListener('blur',()=>keyHeld.clear());
 (function keyCam(){requestAnimationFrame(keyCam);if(!started||!keyHeld.size)return;const {camera,controls}=R3.cam(),sp=.35*SET.cam,fw=new THREE.Vector3();camera.getWorldDirection(fw);fw.y=0;fw.normalize();const rt=new THREE.Vector3(-fw.z,0,fw.x),mv=new THREE.Vector3();
  if(keyHeld.has('w')||keyHeld.has('arrowup'))mv.add(fw);if(keyHeld.has('s')||keyHeld.has('arrowdown'))mv.sub(fw);if(keyHeld.has('d')||keyHeld.has('arrowright'))mv.add(rt);if(keyHeld.has('a')||keyHeld.has('arrowleft'))mv.sub(rt);
