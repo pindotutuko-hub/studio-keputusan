@@ -162,13 +162,19 @@ function indicators(array $st, int $nb): array {
 	$svc = [$cl(($c('tps') * 40 + $c('tpa') * 700 + ($era <= 2 ? 40 : 0)) / $kk), $cl($green / $nb2 / 0.3)];
 	if ($era >= 3) { $svc[] = $cl(($c('surya') * 12 + $c('pltmh') * 45 + $c('pembangkit') * 420) / ($kk * 0.3 + 5)); $svc[] = $cl(($c('pospol') * 60) / $kk); }
 	if ($era >= 4) { $svc[] = $cl(($c('ipal') * 40) / $kk); $svc[] = $cl(($c('damkar') * 80) / $kk); $svc[] = $cl(($c('paud') * 10 + $c('sekolah') * 15 + $c('smp') * 40 + $c('sma') * 60 + $c('kampus') * 150) / $kk); }
-	$C = 0.7 * $C + 30 * array_sum($svc) / count($svc);
+	$C = 0.7 * $C + 30 * array_sum($svc) / count($svc); $RTH = 100 * min(1.0, $green / $nb2); $SVC = 100 * array_sum($svc) / count($svc);
 	$K = 0.6 * (int) ($st['happy'] ?? 0) + 0.4 * (int) ($st['coh'] ?? 0);
 	$P = 70 * $cl(((int) ($st['kk'] ?? 0)) / 50) + 30 * $cl(((int) ($st['era'] ?? 1) - 1) / 5);
-	$r = ['e' => (int) round($E), 'n' => (int) round($N), 'c' => (int) round($C), 'k' => (int) round($K), 'p' => (int) round($P)];
+	$r = ['e' => (int) round($E), 'n' => (int) round($N), 'c' => (int) round($C), 'k' => (int) round($K), 'p' => (int) round($P), 'rth' => (int) round($RTH), 'svc' => (int) round($SVC)];
 	$r['score'] = (int) round(10 * (0.25 * $r['e'] + 0.2 * $r['n'] + 0.2 * $r['c'] + 0.25 * $r['k'] + 0.1 * $r['p']));
+	$r['kk'] = (int) ($st['kk'] ?? 0); $r['era'] = (int) ($st['era'] ?? 1);
 	return $r;
 }
+/** tantangan kelas dari dosen: dinilai server dari indikator (bukan data klien) */
+const CHAL = ['hijau' => 'RTH ≥ 30% & ≥ 100 KK', 'nyaman' => 'Kenyamanan ≥ 75 & ≥ 100 KK', 'ekonomi' => 'Ekonomi warga ≥ 65 & ≥ 100 KK', 'jejaring' => 'Jejaring ≥ 75', 'layanan' => 'Layanan kota ≥ 90 (era Desa+)', 'puas' => 'Kepuasan ≥ 75 & ≥ 150 KK'];
+function chal_ok(string $c, array $i): bool {
+	switch ($c) { case 'hijau': return $i['rth'] >= 30 && $i['kk'] >= 100; case 'nyaman': return $i['c'] >= 75 && $i['kk'] >= 100; case 'ekonomi': return $i['e'] >= 65 && $i['kk'] >= 100;
+		case 'jejaring': return $i['n'] >= 75; case 'layanan': return $i['svc'] >= 90 && $i['era'] >= 4; case 'puas': return $i['k'] >= 75 && $i['kk'] >= 150; } return false; }
 function nb_count(string $me, array $m, array $u): int { $d = rd('dir.php') ?: []; $k = 0;
 	foreach ($d as $id => $x) { if ($id === $me) { continue; } $km = 6371 * 2 * asin(sqrt(sin(deg2rad($x['lat'] - $m['lat']) / 2) ** 2 + cos(deg2rad($m['lat'])) * cos(deg2rad($x['lat'])) * sin(deg2rad($x['lon'] - $m['lon']) / 2) ** 2));
 		if ($km < 25 || (($u['kelas'] ?? '') !== '' && ($x['kelas'] ?? '') === $u['kelas'])) { $k++; } if ($k >= 5) { break; } } return $k; }
@@ -200,7 +206,7 @@ switch ($a) {
 		if (!$u || !password_verify($pass, $u['hash'])) { fail('bad_login', 401); }
 		out(['ok' => true, 'token' => new_token($uid), 'me' => pub($u)]);
 	}
-	case 'me': { $u = auth(); $s = rd('s_' . $u['uid'] . '.php'); out(['ok' => true, 'me' => pub($u), 'hasSave' => (bool) $s, 'saveMeta' => $s ? ($s['meta'] ?? null) : null]); }
+	case 'me': { $u = auth(); $s = rd('s_' . $u['uid'] . '.php'); $kc = ($u['kelas'] ?? '') !== '' ? (rd('k_' . $u['kelas'] . '.php') ?: []) : []; out(['ok' => true, 'tantangan' => (string) ($kc['tantangan'] ?? ''), 'me' => pub($u), 'hasSave' => (bool) $s, 'saveMeta' => $s ? ($s['meta'] ?? null) : null]); }
 	case 'logout': { $u = auth(); $tok = (string) $_SERVER['HTTP_X_BA_TOKEN']; $sec = explode('.', $tok, 2)[1];
 		upd('u_' . $u['uid'] . '.php', function ($x) use ($sec) { $x['tokens'] = array_values(array_filter($x['tokens'] ?? [], fn($t) => !hash_equals($t['h'], hash('sha256', $sec)))); return ['__write' => $x, '__ret' => true]; }); out(['ok' => true]); }
 	case 'save': {
@@ -224,9 +230,10 @@ switch ($a) {
 		// direktori publik ringkas untuk tetangga (tanpa data pribadi selain nama tokoh)
 		upd('dir.php', function ($d) use ($u, $meta) { $d = $d ?: []; $d[$u['uid']] = $meta + ['who' => $u['name'] ?? $u['user'], 'kelas' => $u['kelas'] ?? '', 'kampus' => $u['kampus'] ?? ''];
 			if (count($d) > 5000) { uasort($d, fn($x, $y) => $y['at'] <=> $x['at']); $d = array_slice($d, 0, 5000, true); } return ['__write' => $d, '__ret' => true]; });
+		$kc = ($u['kelas'] ?? '') !== '' ? (rd('k_' . $u['kelas'] . '.php') ?: []) : []; $chal = (string) ($kc['tantangan'] ?? ''); $chalNow = $chal !== '' && !$r['bad'] && isset($meta['ind']['rth']) && chal_ok($chal, $meta['ind']);
 		if (!$r['bad']) { $sem = semester(); $row = ['who' => $u['user'], 'name' => $meta['name'], 'kelas' => $u['kelas'] ?? '', 'kampus' => $u['kampus'] ?? '', 'score' => $meta['score'], 'era' => $meta['era'], 'kk' => $meta['kk'], 'month' => $meta['month'], 'loc' => $meta['loc'], 'ind' => $meta['ind'], 'at' => time()];
-			upd('lb_' . $sem . '.php', function ($d) use ($u, $row) { $d = $d ?: []; $old = $d[$u['uid']] ?? null; if ($row['score'] >= (int) ($old['best'] ?? 0)) { $row['best'] = $row['score']; $row['bestInd'] = $row['ind']; } else { $row['best'] = (int) $old['best']; $row['bestInd'] = $old['bestInd'] ?? $row['ind']; } $row['saves'] = (int) ($old['saves'] ?? 0) + 1; $row['first'] = $old['first'] ?? time(); $d[$u['uid']] = $row; return ['__write' => $d, '__ret' => true]; }); }
-		out(['ok' => true, 'ver' => $r['ver'], 'score' => $meta['score'], 'ind' => $meta['ind'], 'ranked' => !$r['bad'], 'flags' => $r['bad']]);
+			upd('lb_' . $sem . '.php', function ($d) use ($u, $row, $chal, $chalNow) { $d = $d ?: []; $old = $d[$u['uid']] ?? null; if ($row['score'] >= (int) ($old['best'] ?? 0)) { $row['best'] = $row['score']; $row['bestInd'] = $row['ind']; } else { $row['best'] = (int) $old['best']; $row['bestInd'] = $old['bestInd'] ?? $row['ind']; } $row['saves'] = (int) ($old['saves'] ?? 0) + 1; $row['chal'] = $chal; $row['chalAt'] = ($old['chal'] ?? '') === $chal && !empty($old['chalAt']) ? $old['chalAt'] : ($chalNow ? time() : 0); $row['first'] = $old['first'] ?? time(); $d[$u['uid']] = $row; return ['__write' => $d, '__ret' => true]; }); }
+		out(['ok' => true, 'ver' => $r['ver'], 'score' => $meta['score'], 'ind' => $meta['ind'], 'ranked' => !$r['bad'], 'flags' => $r['bad'], 'chal' => $chal, 'chalOk' => $chalNow]);
 	}
 	case 'eula': { $u = auth(); if (($b['ver'] ?? '') !== EULA_VER) { fail('eula'); }
 		upd('u_' . $u['uid'] . '.php', function ($x) { $x['eula'] = EULA_VER; $x['eulaAt'] = time(); return ['__write' => $x, '__ret' => true]; }); out(['ok' => true]); }
@@ -243,14 +250,17 @@ switch ($a) {
 			$ok = upd('k_' . $code . '.php', function ($k) use ($u, $nama) { if ($k) { return ['__ret' => false]; } return ['__write' => ['owner' => $u['uid'], 'ownerUser' => $u['user'], 'nama' => $nama, 'created' => time()], '__ret' => true]; });
 			if ($ok) { upd('u_' . $u['uid'] . '.php', function ($x) use ($code) { $x['owns'] = array_values(array_unique(array_merge($x['owns'] ?? [], [$code]))); return ['__write' => $x, '__ret' => true]; }); out(['ok' => true, 'code' => $code]); } }
 		fail('storage', 500); }
-	case 'kelas_mine': { $u = auth(); $list = []; foreach (($u['owns'] ?? []) as $c) { $k = rd('k_' . $c . '.php'); if ($k) { $list[] = ['code' => $c, 'nama' => $k['nama'], 'created' => $k['created']]; } } out(['ok' => true, 'list' => $list]); }
+	case 'kelas_mine': { $u = auth(); $list = []; foreach (($u['owns'] ?? []) as $c) { $k = rd('k_' . $c . '.php'); if ($k) { $list[] = ['code' => $c, 'nama' => $k['nama'], 'created' => $k['created'], 'tantangan' => (string) ($k['tantangan'] ?? '')]; } } out(['ok' => true, 'list' => $list]); }
+	case 'kelas_tantangan': { $u = auth(); rate('kt' . $u['uid'], 30, 3600); $c = preg_replace('/[^A-Z0-9]/', '', strtoupper((string) ($b['code'] ?? ''))); $t = (string) ($b['t'] ?? '');
+		if ($t !== '' && !isset(CHAL[$t])) { fail('bad'); } $ok = upd('k_' . $c . '.php', function ($k) use ($u, $t) { if (!$k || $k['owner'] !== $u['uid']) { return ['__ret' => false]; } $k['tantangan'] = $t; return ['__write' => $k, '__ret' => true]; });
+		if (!$ok) { fail('forbidden', 403); } out(['ok' => true]); }
 	case 'kelas_join': { $u = auth(); rate('join' . $u['uid'], 10, 3600); $c = preg_replace('/[^A-Z0-9]/', '', strtoupper((string) ($b['code'] ?? ''))); $k = $c ? rd('k_' . $c . '.php') : null; if (!$k) { fail('no_class', 404); }
 		upd('u_' . $u['uid'] . '.php', function ($x) use ($c) { $x['kelas'] = $c; return ['__write' => $x, '__ret' => true]; }); out(['ok' => true, 'kelas' => $c, 'nama' => $k['nama']]); }
 	case 'rekap': {
 		$u = auth(); $c = preg_replace('/[^A-Z0-9]/', '', strtoupper((string) ($_GET['code'] ?? ''))); $k = $c ? rd('k_' . $c . '.php') : null;
 		if (!$k || $k['owner'] !== $u['uid']) { fail('forbidden', 403); }
 		$sem = preg_match('/^\d{4}-(Ganjil|Genap)$/', (string) ($_GET['sem'] ?? '')) ? (string) $_GET['sem'] : semester(); $d = rd('lb_' . $sem . '.php') ?: []; $rows = [];
-		foreach ($d as $r) { if ($r['kelas'] === $c) { $rows[] = ['user' => $r['who'], 'permukiman' => $r['name'], 'lokasi' => $r['loc'], 'skor_terbaik' => $r['best'], 'skor_terakhir' => $r['score'], 'ekonomi' => $r['bestInd']['e'] ?? '', 'jejaring' => $r['bestInd']['n'] ?? '', 'kenyamanan' => $r['bestInd']['c'] ?? '', 'kepuasan' => $r['bestInd']['k'] ?? '', 'pertumbuhan' => $r['bestInd']['p'] ?? '', 'era' => $r['era'], 'kk' => $r['kk'], 'bulan_main' => $r['month'], 'jumlah_simpan' => $r['saves'], 'mulai' => date('Y-m-d', $r['first']), 'terakhir' => date('Y-m-d H:i', $r['at'])]; } }
+		foreach ($d as $r) { if ($r['kelas'] === $c) { $rows[] = ['user' => $r['who'], 'permukiman' => $r['name'], 'lokasi' => $r['loc'], 'skor_terbaik' => $r['best'], 'skor_terakhir' => $r['score'], 'ekonomi' => $r['bestInd']['e'] ?? '', 'jejaring' => $r['bestInd']['n'] ?? '', 'kenyamanan' => $r['bestInd']['c'] ?? '', 'kepuasan' => $r['bestInd']['k'] ?? '', 'pertumbuhan' => $r['bestInd']['p'] ?? '', 'era' => $r['era'], 'kk' => $r['kk'], 'bulan_main' => $r['month'], 'jumlah_simpan' => $r['saves'], 'tantangan' => $r['chal'] ?? '', 'tantangan_tercapai' => !empty($r['chalAt']) ? date('Y-m-d', $r['chalAt']) : '', 'rth' => $r['bestInd']['rth'] ?? '', 'layanan_kota' => $r['bestInd']['svc'] ?? '', 'mulai' => date('Y-m-d', $r['first']), 'terakhir' => date('Y-m-d H:i', $r['at'])]; } }
 		usort($rows, fn($a, $b) => $b['skor_terbaik'] <=> $a['skor_terbaik']); out(['ok' => true, 'kelas' => $c, 'nama' => $k['nama'], 'sem' => $sem, 'rows' => $rows]);
 	}
 	case 'delete': { $u = auth(); rate('del', 5, 3600); $full = rd('u_' . $u['uid'] . '.php'); if (!$full || !password_verify((string) ($b['pass'] ?? ''), $full['hash'])) { fail('bad_login', 401); }

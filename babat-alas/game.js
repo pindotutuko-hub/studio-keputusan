@@ -106,7 +106,7 @@ $('fAuth').onsubmit=async e=>{e.preventDefault();$('aErr').textContent='';$('aGo
 $('aGuest').onclick=()=>{GUEST=true;ME={user:'tamu',name:lang==='en'?'Guest':'Tamu'};hub()};
 async function hub(){show('scHub');let meta=null;$('hubErr').textContent='';
  if(GUEST){$('hubHello').textContent=t('guestHi');$('hubSub').textContent=t('guestWarn');const s=store.get('baGuestSave');if(s){try{const j=JSON.parse(s);meta={name:j.meta.name,loc:j.loc.name,era:j.era,kk:j.kk,month:j.t}}catch(e){}}}
- else{try{const j=await api('me');ME=j.me;meta=j.saveMeta}catch(e){TOKEN=null;store.del('baTok');show('scAuth');$('aErr').textContent=t('e.auth');return}$('hubHello').textContent=t('hello',{n:ME.name});$('hubSub').textContent=(ME.kampus||'')+(ME.kelas?' · '+ME.kelas:'')}
+ else{try{const j=await api('me');ME=j.me;ME.tantangan=j.tantangan||'';meta=j.saveMeta}catch(e){TOKEN=null;store.del('baTok');show('scAuth');$('aErr').textContent=t('e.auth');return}$('hubHello').textContent=t('hello',{n:ME.name});$('hubSub').textContent=(ME.kampus||'')+(ME.kelas?' · '+ME.kelas:'')}
  $('hubSave').innerHTML='<p>'+(meta?t('saveInfo',{name:esc(meta.name),loc:esc(meta.loc),era:meta.era,kk:meta.kk,m:meta.month}):t('noSave'))+'</p>';
  $('hubCont').classList.toggle('hidden',!meta);let armed=false;
  $('hubNew').onclick=()=>{if(meta&&!armed){armed=true;$('hubErr').textContent=t('confirmNew');setTimeout(()=>{armed=false},4000);return}newChar()};
@@ -605,7 +605,7 @@ function citySim(){const R=S.res;S.city=S.city||{};S.tax=S.tax||{r:9,c:9,i:9};co
   if(iss.length&&(S.t-(C.advT||0))>=3){C.advT=S.t;msg=iss[Math.floor(Math.random()*iss.length)]}}
  return {adj,msg,capR}}
 /** Panel Kota & Anggaran */
-function cityPanel(){const C=S.city||{},T=S.tax||(S.tax={r:9,c:9,i:9}),m=$('modal');m.classList.remove('hidden');const pc=v=>Math.round((v==null?1:v)*100);
+function cityPanel(){if(!S._cpOpen){S._cpOpen=1;setTimeout(tutCheck,0)}const C=S.city||{},T=S.tax||(S.tax={r:9,c:9,i:9}),m=$('modal');m.classList.remove('hidden');const pc=v=>Math.round((v==null?1:v)*100);
  const bar=(lab,v,inv)=>{const p=Math.max(0,Math.min(100,v));const good=inv?100-p:p;return `<div class="cbar"><span>${lab}</span><i><b style="width:${p}%;background:${good>66?'#2f8f6a':good>40?'#e0a526':'#c0392b'}"></b></i><em>${p}</em></div>`};
  const dem=(lab,v)=>`<div class="rci"><i><b style="height:${Math.abs(v)/2}%;${v>=0?'bottom:50%':'top:50%'};background:${v>=0?'#2f8f6a':'#c0392b'}"></b></i><span>${lab}</span></div>`;
  const sl=(k,lab)=>`<label class="setr"><span>${lab}</span><input type="range" min="0" max="20" step="1" value="${T[k]}" data-tax="${k}"><b>${T[k]}%</b></label>`;
@@ -617,10 +617,12 @@ function cityPanel(){const C=S.city||{},T=S.tax||(S.tax={r:9,c:9,i:9}),m=$('moda
   <h3>🗺️ ${L2('Peta lapisan','Data layers')}</h3><div class="lbt">${[['lv',L2('Nilai lahan','Land value')],['pol',L2('Polusi','Pollution')],['pw',L2('Listrik','Power')],['wat',L2('Air','Water')],['cop',L2('Keamanan','Safety')],['fire',L2('Kebakaran','Fire')],['fl',L2('Rawan genangan','Flood-prone')],['zone',L2('Zona','Zones')]].map(([k,l])=>`<button data-ov="${k}" class="${R3.ovKind===k?'on':''}">${l}</button>`).join('')}<button data-ov="">✕</button></div></section>
  <section><h3>💰 ${L2('Anggaran bulanan','Monthly budget')}</h3><table class="lb"><tr><td>${L2('Pendapatan pajak & retribusi','Tax revenue')}</td><td>${money(C.inc||0)}</td></tr><tr><td>${L2('Biaya operasional layanan','Service upkeep')}</td><td>−${money(C.exp||0)}</td></tr><tr><th>${L2('Saldo','Net')}</th><th>${money((C.inc||0)-(C.exp||0))}</th></tr></table>
   ${sl('r',L2('Pajak hunian (PBB)','Residential tax'))}${sl('c',L2('Pajak komersial','Commercial tax'))}${sl('i',L2('Pajak industri','Industrial tax'))}<p class="note">${L2('Pajak tinggi menambah kas tetapi menurunkan kepuasan dan permintaan zona.','Higher taxes raise revenue but lower satisfaction and zone demand.')}${C.tour?' '+L2('Termasuk pemasukan wisata','Includes tourism')+' '+money(C.tour)+'.':''}</p>
+  <h3>📈 ${L2('Riwayat kota','City history')}</h3>${(S.hist||[]).length>1?`<div class="spks">${sparkSVG('kk','KK','#2f6fb0')}${sparkSVG('coin',L2('Kas','Funds'),'#e0a526')}${sparkSVG('happy',L2('Kepuasan','Satisfaction'),'#2f8f6a')}${sparkSVG('pol',L2('Polusi','Pollution'),'#8a5a3a')}${sparkSVG('crime',L2('Kriminalitas','Crime'),'#c0392b')}${sparkSVG('emp',L2('Kerja %','Jobs %'),'#7a3b6b')}</div><button class="bigbtn alt" id="cpCsv">⬇ ${L2('Unduh riwayat (CSV)','Download history (CSV)')}</button>`:`<p class="note">${L2('Grafik muncul setelah beberapa bulan permainan (dicatat tiap 3 bulan).','Charts appear after a few game months (recorded every 3 months).')}</p>`}
   <h3>📋 ${L2('Kebijakan kota','City policies')}</h3>${POLICY.map(([k,c,id,en,di,de])=>`<label class="setr chk" title="${lang==='en'?de:di}"><span>${lang==='en'?en:id}<br><small class="note">${lang==='en'?de:di} · ${money(c)}/${L2('bln','mo')}</small></span><input type="checkbox" data-kbj="${k}" ${kbjOn(k)?'checked':''}></label>`).join('')}
   <h3>🏅 ${L2('Penghargaan kota','City awards')}</h3><div class="awl">${AWARDS.map(([k,f,id,en])=>`<span class="${(S.awards||{})[k]?'on':''}" title="${(S.awards||{})[k]?L2('Diraih ','Won ')+(S.awards||{})[k]:L2('Belum diraih','Not yet won')}">${lang==='en'?en:id}</span>`).join('')}</div><p class="note">${L2('Dinilai tiap awal tahun permainan. Jalan kolektor/arteri: ','Assessed every game year. Collector/arterial roads: ')}${Object.values(S.rc||{}).filter(v=>v===2).length} / ${Object.values(S.rc||{}).filter(v=>v===3).length}</p></section></div></div>`;
  $('cpX').onclick=()=>m.classList.add('hidden');
  m.querySelectorAll('input[data-tax]').forEach(i=>i.oninput=()=>{T[i.dataset.tax]=+i.value;i.nextElementSibling.textContent=i.value+'%';dirty=true});
+ if($('cpCsv'))$('cpCsv').onclick=histCSV;
  m.querySelectorAll('input[data-kbj]').forEach(i=>i.onchange=()=>{S.kbj=S.kbj||{};S.kbj[i.dataset.kbj]=i.checked?1:0;dirty=true;Snd.click()});
  m.querySelectorAll('[data-ov]').forEach(b=>b.onclick=()=>{R3.overlay(b.dataset.ov||null);m.classList.add('hidden')})}
 /** nilai lapisan data per petak (0..1, makin tinggi makin baik kecuali polusi) */
@@ -703,6 +705,32 @@ const POLICY=[['cfd',3,'🚲 Hari bebas kendaraan (car-free day)','🚲 Car-free
  ['umkm',3,'🏪 Dukungan UMKM','🏪 Small business support','Permintaan komersial naik, lapangan kerja +.','More commercial demand & jobs.']];
 const kbjOn=k=>!!(S&&S.kbj&&S.kbj[k]);
 
+/* ================= Paket 2E: tutorial kota, riwayat & grafik kota, tantangan kelas dari dosen ================= */
+const TUT2={id:[
+ {k:'zr',h:'Tandai zona hunian',p:'Kampungmu kini Desa. Pilih 🟩 <b>Zona hunian</b> lalu seret <b>4 petak</b> di samping jalan. Warga akan membangun rumah sendiri.',ok:()=>S.b.filter(b=>b.t==='zr').length>=4,n:()=>Math.min(4,S.b.filter(b=>b.t==='zr').length)+'/4'},
+ {k:'surya',h:'Sediakan listrik',p:'Zona butuh listrik. Bangun ☀️ <b>PLTS surya</b> (atau PLTMH di tepi sungai). Pantau pasokan di panel Kota.',ok:()=>S.b.some(b=>['surya','pltmh','pembangkit'].includes(b.t)),n:()=>''},
+ {k:'menara',h:'Air bersih untuk zona',p:'Bangun 🗼 <b>Menara air</b> agar hunian dalam radius 12 petak mendapat air bersih.',ok:()=>S.b.some(b=>b.t==='menara'),n:()=>''},
+ {k:'zc',h:'Zona komersial',p:'Warga butuh toko dan kerja. Tandai 🟦 <b>Zona komersial</b> 2 petak dekat jalan.',ok:()=>S.b.filter(b=>b.t==='zc').length>=2,n:()=>Math.min(2,S.b.filter(b=>b.t==='zc').length)+'/2'},
+ {k:'tps',h:'Kelola sampah',p:'Bangun 🗑️ <b>TPS</b>. Sampah yang menumpuk menambah polusi dan menurunkan kepuasan.',ok:()=>S.b.some(b=>b.t==='tps'),n:()=>''},
+ {k:'cityp',h:'Buka panel Kota & Anggaran',p:'Tekan <b>K</b> atau Menu → <b>Kota & Anggaran</b>: lihat permintaan R/K/I, layanan, anggaran, pajak, kebijakan, peta lapisan, dan grafik riwayat.',ok:()=>!!S._cpOpen,n:()=>''},
+ {k:null,end:1,h:'Kota siap tumbuh',p:'Zona akan tumbuh sendiri bila permintaannya positif dan ada jalan, listrik, dan air. Jaga polusi, sampah, keamanan, dan anggaran. Selamat memimpin!',ok:()=>false,n:()=>''}],
+ en:[{h:'Mark a residential zone',p:'You are now a Village. Pick 🟩 <b>Residential zone</b> and drag <b>4 tiles</b> next to a road. Residents will build their own homes.'},
+ {h:'Provide power',p:'Zones need power. Build ☀️ <b>Solar PV</b> (or micro-hydro by a river). Watch supply in the City panel.'},
+ {h:'Clean water for zones',p:'Build a 🗼 <b>Water tower</b> so homes within 12 tiles get piped water.'},
+ {h:'Commercial zone',p:'People need shops and jobs. Mark 2 tiles of 🟦 <b>Commercial zone</b> near a road.'},
+ {h:'Manage waste',p:'Build a 🗑️ <b>Waste depot</b>. Piled-up waste adds pollution and lowers satisfaction.'},
+ {h:'Open City & Budget',p:'Press <b>K</b> or Menu → <b>City & Budget</b>: zone demand, services, budget, taxes, policies, data layers and history charts.'},
+ {h:'Your city is ready to grow',p:'Zones grow by themselves when demand is positive and road, power and water exist. Watch pollution, waste, safety and the budget. Enjoy leading!'}]};
+const TUTS=()=>S&&S.tutSet==='kota'?TUT2:TUT;
+/** riwayat kota: rekam tiap 3 bulan (maks. 240 titik ≈ 60 tahun) */
+function histRec(){if(S.t%3)return;const C=S.city||{};S.hist=S.hist||[];S.hist.push({t:S.t,y:calY(),kk:S.kk,coin:Math.round(S.res.coin),happy:S.happy,coh:S.coh,pol:C.pol||0,crime:C.crime||0,emp:Math.round((C.emp==null?1:C.emp)*100),traffic:C.traffic||0,flood:C.flood||0,score:S.score||0});if(S.hist.length>240)S.hist.splice(0,S.hist.length-240)}
+function sparkSVG(key,lab,col){const H=S.hist||[];if(H.length<2)return '';const v=H.map(h=>h[key]||0),mx=Math.max(1,...v),mn=Math.min(0,...v),w=220,h=54;const pts=v.map((y,i)=>`${(i/(v.length-1)*w).toFixed(1)},${(h-4-(y-mn)/(mx-mn||1)*(h-10)).toFixed(1)}`).join(' ');
+ return `<div class="spk"><span>${lab} <b>${key==='coin'?money(v[v.length-1],true):v[v.length-1]}</b></span><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="${lab}"><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2"/></svg></div>`}
+function histCSV(){const H=S.hist||[];const head=['bulan_ke','tahun','kk','kas','kepuasan','kohesi','polusi','kriminalitas','lapangan_kerja_persen','kemacetan','risiko_banjir','skor'];const keys=['t','y','kk','coin','happy','coh','pol','crime','emp','traffic','flood','score'];
+ const csv='﻿'+[head.join(',')].concat(H.map(r=>keys.map(k=>r[k]).join(','))).join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=`riwayat-${(S.meta.name||'kota').replace(/[^\w-]+/g,'_')}.csv`;document.body.appendChild(a);a.click();a.remove()}
+const CHAL_N={id:{hijau:'🌳 RTH ≥ 30% & ≥ 100 KK',nyaman:'🏡 Kenyamanan ≥ 75 & ≥ 100 KK',ekonomi:'💰 Ekonomi warga ≥ 65 & ≥ 100 KK',jejaring:'🤝 Jejaring ≥ 75',layanan:'🏙️ Layanan kota ≥ 90 (era Desa+)',puas:'😊 Kepuasan ≥ 75 & ≥ 150 KK'},
+ en:{hijau:'🌳 Green space ≥ 30% & ≥ 100 households',nyaman:'🏡 Comfort ≥ 75 & ≥ 100 households',ekonomi:'💰 Economy ≥ 65 & ≥ 100 households',jejaring:'🤝 Networking ≥ 75',layanan:'🏙️ City services ≥ 90 (village era+)',puas:'😊 Satisfaction ≥ 75 & ≥ 150 households'}};
+
 let S=null;          // keadaan permainan
 let occ=null;        // occ[y][x] = id bangunan
 function rebuildOcc(){occ=[];for(let y=0;y<N;y++)occ.push(new Array(N).fill(0));S.b.forEach(b=>{for(let dy=0;dy<b.h;dy++)for(let dx=0;dx<b.w;dx++)occ[b.y+dy][b.x+dx]=b.id})}
@@ -738,7 +766,7 @@ function tick(){S.t++;const R=S.res,m=calM(),cl=S.loc.climate,sea=seasonOf(m);co
  S.b.forEach(b=>{if(b.dmg){b.dmg--;if(!b.dmg)delete b.dmg}});
  // kejadian acak
  const e=Math.random();if(!msg){if(e<.025&&S.ev.dry<=0){S.ev.dry=3;msg=t('ev.dry')}else if(e<.05&&capH>S.kk){S.kk++;msg=t('ev.migr')}else if(e<.065){S.coh=Math.min(100,S.coh+8);msg=t('ev.fest');R3.gather(25);Snd.play('fest')}else if(e<.08){R.food=Math.max(0,R.food-15);msg=t('ev.pest')}}
- const cs=citySim();S.happy+=Math.round(cs.adj*.3);if(!msg&&cs.msg)msg=cs.msg;checkAwards();if(S.t%12===0)syncDeals();
+ const cs=citySim();S.happy+=Math.round(cs.adj*.3);if(!msg&&cs.msg)msg=cs.msg;checkAwards();histRec();if(S.t%12===0)syncDeals();
  S.happy=Math.max(0,Math.min(100,S.happy));S.coh=Math.max(0,Math.min(100,S.coh));
  S.score=Math.round(S.kk*10+S.happy+S.coh+S.era*100+R.coin*.1);
  if(!msg)maybeEvent();if(msg)advise(msg);checkMissions();checkEra();updHUD();dirty=true;R3.villagers();R3.season(rainy)}
@@ -752,7 +780,7 @@ function missList(){const L0=(MISS[S.era]||[]).slice();if(!MISS[S.era]&&ERA_REQ[
 function msLabel(k){if(/^kk\d+$/.test(k))return (lang==='en'?'Reach ':'Capai ')+k.slice(2)+(lang==='en'?' households':' KK');if(/^nx\d+$/.test(k))return (lang==='en'?'Next: ':'Naik ke ')+t('eras')[+k.slice(2)-1]+' — '+NEXTREQ[lang][k.slice(2)];if(/^ex\d+$/.test(k))return (lang==='en'?'Expand territory (#':'Perluas wilayah (ke-')+k.slice(2)+')';return t('ms.'+k)}
 function checkMissions(){missList().forEach(([k,f])=>{if(S.done.indexOf(k)<0&&f()){S.done.push(k);S.res.coin+=15;Snd.play('mission');toast('✅ '+msLabel(k)+' · +15')}});renderMissions()}
 const ERA_REQ={2:()=>S.kk>=20&&count('barn')>=1,3:()=>S.kk>=50&&count('hall')&&count('worship')&&count('market'),4:()=>S.kk>=100&&count('sekolah')&&count('klinik')&&count('rt')>=2,5:()=>S.kk>=200&&(S.links||[]).length>=3&&count('kom'),6:()=>S.kk>=400,7:()=>S.kk>=800};
-function checkEra(){const nx=S.era+1;if(ERA_REQ[nx]&&ERA_REQ[nx]()){S.era=nx;S.res.coin+=40*nx;eraModal();renderBar()}}
+function checkEra(){const nx=S.era+1;if(ERA_REQ[nx]&&ERA_REQ[nx]()){S.era=nx;if(nx===4&&!S.tut2&&(S.tut==null||S.tut<0)){S.tut2=1;S.tutSet='kota';S.tut=0;setTimeout(tutRender,1500)}S.res.coin+=40*nx;eraModal();renderBar()}}
 function eraModal(){Snd.play('era');const m=$('modal');m.classList.remove('hidden');m.innerHTML=`<div class="box eraUp"><div class="big">🎉</div><h2>${t('eraUp',{e:t('eras')[S.era-1]})}</h2><p>${t('eraUpP',{t:esc(titleOf(S.loc.cc,S.era))})}</p><button class="bigbtn gold" id="eOk">${t('ok')}</button></div>`;$('eOk').onclick=()=>{m.classList.add('hidden');eraDialog()};save(true)}
 
 /* ================= 3D ================= */
@@ -1240,7 +1268,7 @@ function updHUD(){const R=S.res;$('hName').textContent=S.char.name;$('hTitle').t
  const cap=40+count('barn')*BT.barn.store,houses=count('house');
  const sea=seasonOf(calM());const st=[[SEAS_IC[sea],SEASN[lang][sea],WX_IC[S.wx||'cerah']+' '+WXN[lang][S.wx||'cerah'],false],['💰',t('coin'),money(R.coin,true),R.coin<5],['🪵',t('wood'),Math.floor(R.wood),R.wood<5],['🌾',t('food'),Math.floor(R.food)+'/'+cap,R.food<S.kk*3],['👪',t('kk'),S.kk+'/'+houses,S.kk>houses],['😊',t('happy'),S.happy,S.happy<45],['🤝',t('coh'),S.coh,S.coh<45]];
  $('hStats').innerHTML=st.map(s=>`<div class="st${s[3]?' warn':''}"><small>${s[0]} ${s[1]}</small><b>${s[2]}</b></div>`).join('')}
-function renderMissions(){const list=missList();$('missions').innerHTML=`<h3>🎯 ${t('missions')} · ${t('eras')[S.era-1]}<button id="msX">–</button></h3>`+list.map(([k])=>`<div class="ms${S.done.indexOf(k)>=0?' done':''}"><i>${S.done.indexOf(k)>=0?'✅':'⬜'}</i><span>${msLabel(k)}</span></div>`).join('')+rapor()+`<p class="note" style="color:var(--muted);margin:6px 0 0">${esc(S.meta.name)} · ${esc(S.loc.name)}</p>`;
+function renderMissions(){const list=missList();$('missions').innerHTML=`<h3>🎯 ${t('missions')} · ${t('eras')[S.era-1]}<button id="msX">–</button></h3>`+list.map(([k])=>`<div class="ms${S.done.indexOf(k)>=0?' done':''}"><i>${S.done.indexOf(k)>=0?'✅':'⬜'}</i><span>${msLabel(k)}</span></div>`).join('')+(ME&&ME.tantangan&&!GUEST?`<div class="ms${S._chalDone===ME.tantangan?' done':''}"><i>${S._chalDone===ME.tantangan?'✅':'🎯'}</i><span>${L2('Tantangan kelas: ','Class challenge: ')}${CHAL_N[lang][ME.tantangan]||ME.tantangan}</span></div>`:'')+rapor()+`<p class="note" style="color:var(--muted);margin:6px 0 0">${esc(S.meta.name)} · ${esc(S.loc.name)}</p>`;
  $('msX').onclick=()=>{msMini=!msMini;msApply()};msApply()}
 let msMini=false;function msApply(){const m=$('missions');if(!m)return;m.classList.toggle('mini',msMini);m.querySelectorAll('.ms,.note').forEach(e=>e.classList.toggle('hidden',msMini));const x=$('msX');if(x)x.textContent=msMini?'+':'–'}
 const RAPN={id:{h:'Rapor permukiman',e:'Ekonomi warga',n:'Jejaring',c:'Kenyamanan',k:'Kepuasan',p:'Pertumbuhan',s:'Skor peringkat',w:'Dinilai server saat tersimpan.'},en:{h:'Settlement report',e:'Resident economy',n:'Networking',c:'Comfort',k:'Satisfaction',p:'Growth',s:'Ranking score',w:'Assessed by the server on save.'}};
@@ -1255,7 +1283,7 @@ $('spP').onclick=()=>setSpeed(0);$('sp1').onclick=()=>setSpeed(1);$('sp2').oncli
 (()=>{const b=document.createElement('button');b.id='pBtn';b.title='Pustaka';b.textContent='📚';b.className=$('mBtn').className;$('mBtn').before(b);b.onclick=()=>{Snd.click();pustaka(null,TOOL_TOPIC[tool]||pusTopic)}})();
 $('mBtn').onclick=()=>{const m=$('menu');if(!m.classList.contains('hidden')){m.classList.add('hidden');return}
  m.innerHTML=`<button id="mSave">💾 ${t('save')} <span id="saveDot"></span></button><button id="mNb">🏘️ ${t('neighbors')}</button><button id="mTut">🧭 Tutorial</button><button id="mSet">⚙️ ${SETN[lang].h}</button><button id="mNet">🤝 ${lang==='en'?'Trade network':'Jaringan dagang'}</button><button id="mExp">🗺️ ${t('expH')}</button><button id="mPus">📚 ${PUS[lang].h}</button><button id="mBoard">🏆 ${lt('h')}</button><button id="mSnd">${Snd.on?'🔊':'🔇'} ${lang==='en'?'Sound':'Suara'}</button><button id="mHelp">❓ ${t('help')}</button><button id="mCity">🏙️ ${L2('Kota & Anggaran','City & Budget')}</button><button id="mGuide">📘 ${t('guidePdf')}</button><button id="mLang">🌐 ${t('lang')}</button><button id="mExit">🚪 ${t('exit')}</button><button id="mHome">🏠 ${lang==='en'?'Home':'Beranda'} · pindotutuko.id</button>`;m.classList.remove('hidden');
- $('mSave').onclick=()=>save(true);$('mBoard').onclick=()=>board();$('mTut').onclick=()=>{$('menu').classList.add('hidden');S.tut=0;tutCheck()};$('mSet').onclick=()=>{$('menu').classList.add('hidden');settings()};$('mNet').onclick=()=>{$('menu').classList.add('hidden');network()};$('mExp').onclick=()=>{$('menu').classList.add('hidden');expand()};$('mPus').onclick=()=>{$('menu').classList.add('hidden');pustaka(null,TOOL_TOPIC[tool]||pusTopic)};$('mSnd').onclick=()=>{Snd.toggle();$('mSnd').innerHTML=(Snd.on?'🔊':'🔇')+' '+(lang==='en'?'Sound':'Suara')};$('mNb').onclick=neighbors;$('mHelp').onclick=()=>modal(`<h2>${t('help')}</h2><p>${t('helpTxt')}</p>`);
+ $('mSave').onclick=()=>save(true);$('mBoard').onclick=()=>board();$('mTut').onclick=()=>{$('menu').classList.add('hidden');S.tutSet=S.era>=4&&S.tutSet!=='kota'?'kota':null;S.tut=0;tutCheck()};$('mSet').onclick=()=>{$('menu').classList.add('hidden');settings()};$('mNet').onclick=()=>{$('menu').classList.add('hidden');network()};$('mExp').onclick=()=>{$('menu').classList.add('hidden');expand()};$('mPus').onclick=()=>{$('menu').classList.add('hidden');pustaka(null,TOOL_TOPIC[tool]||pusTopic)};$('mSnd').onclick=()=>{Snd.toggle();$('mSnd').innerHTML=(Snd.on?'🔊':'🔇')+' '+(lang==='en'?'Sound':'Suara')};$('mNb').onclick=neighbors;$('mHelp').onclick=()=>modal(`<h2>${t('help')}</h2><p>${t('helpTxt')}</p>`);
  $('mLang').onclick=()=>{lang=lang==='id'?'en':'id';store.set('baLang',lang);applyStatic();renderBar();updHUD();renderMissions();m.classList.add('hidden')};
  $('mExit').onclick=async()=>{await safeSave();stopGame();hub()};$('mCity').onclick=()=>{$('menu').classList.add('hidden');cityPanel()};$('mGuide').onclick=()=>window.open('/babat-alas/Panduan-Babat-Alas.pdf','_blank','noopener');$('mHome').onclick=async()=>{const b=$('mHome');b.disabled=true;b.textContent='⏳ '+t('saving');await safeSave();location.href='https://pindotutuko.id/'}};
 /* Simpan sebelum keluar, tetapi jangan pernah macet: gagal jaringan/ditolak server/lebih dari 4 dtk → tetap lanjut (salinan lokal tetap ada). */
@@ -1274,7 +1302,7 @@ async function neighbors(){if(GUEST){modal(`<h2>${t('nbH')}</h2><p>${t('guestWar
 /* ================= Simpan / muat ================= */
 let saveVer=0,saving=false,lastSave=0;
 async function save(force){if(!S||saving)return;if(!force&&!dirty)return;saving=true;const dot=$('saveDot');if(dot)dot.textContent=t('saving');
- try{if(GUEST)store.set('baGuestSave',JSON.stringify(S));else{const j=await fetch(API+'?a=save',{method:'POST',headers:{'Content-Type':'application/json','X-BA-Token':TOKEN},body:JSON.stringify({state:S,base:saveVer,force:true},(k,v)=>k==='_shot'?undefined:v)}).then(r=>r.json());if(!j.ok)throw new Error(j.error);saveVer=j.ver;if(j.ind){S._ind=j.ind;renderMissions()}if(j.ranked===false&&!S._warned){S._warned=1;advise(lt('notRanked',{f:(j.flags||[]).join(', ')}),'eco')}}
+ try{if(GUEST)store.set('baGuestSave',JSON.stringify(S));else{const j=await fetch(API+'?a=save',{method:'POST',headers:{'Content-Type':'application/json','X-BA-Token':TOKEN},body:JSON.stringify({state:S,base:saveVer,force:true},(k,v)=>k==='_shot'?undefined:v)}).then(r=>r.json());if(!j.ok)throw new Error(j.error);saveVer=j.ver;if(j.chal!==undefined){if(ME)ME.tantangan=j.chal;if(j.chalOk&&S._chalDone!==j.chal){S._chalDone=j.chal;advise(L2('🎯 Tantangan kelas tercapai! Tercatat di rekap dosen.','🎯 Class challenge achieved! Recorded for your lecturer.'),'eco');Snd.play('mission')}}if(j.ind){S._ind=j.ind;renderMissions()}if(j.ranked===false&&!S._warned){S._warned=1;advise(lt('notRanked',{f:(j.flags||[]).join(', ')}),'eco')}}
   dirty=false;lastSave=Date.now();if(dot)dot.textContent='✓ '+t('saved');if(force)toast('💾 '+t('saved'))}
  catch(e){if(dot)dot.textContent=t('saveFail');if(force)toast(t('saveFail'))}finally{saving=false}}
 async function loadGame(){try{let st=null;if(GUEST){st=JSON.parse(store.get('baGuestSave')||'null')}else{const j=await api('load');st=j.save&&j.save.state;saveVer=j.save?j.save.ver:0}if(!st||!st.own||!st.land||st.land.length!==N)throw new Error('none');startGame(st,false)}catch(e){$('hubErr').textContent=t('errNet')}}
@@ -1339,11 +1367,12 @@ async function board(scope){scope=scope||(ME&&ME.kelas?'kelas':'publik');if(GUES
 async function joinClass(){modal(`<h2>🎓 ${lt('join')}</h2><p>${lt('joinP')}</p><div class="fld"><input id="jcCode" maxlength="12" style="text-transform:uppercase"></div><div class="row"><button class="bigbtn gold" id="jcGo">${lt('join')}</button></div><div class="err" id="jcErr"></div>`);
  $('jcGo').onclick=async()=>{try{const j=await api('kelas_join',{code:$('jcCode').value});ME.kelas=j.kelas;$('modal').classList.add('hidden');toast(lt('joined',{k:j.kelas+' · '+j.nama}));if($('hubSub'))$('hubSub').textContent=(ME.kampus||'')+' · '+ME.kelas}catch(e){$('jcErr').textContent=t('e.'+e.message)}}}
 async function dosenRoom(){let list=[];try{list=(await api('kelas_mine')).list}catch(e){}
- modal(`<h2>👩‍🏫 ${lt('dosen')}</h2><h3>${lt('myC')}</h3>`+(list.length?list.map(c=>`<div class="nb"><div><b>${esc(c.nama)}</b><br><small>${lt('code')}: <b style="font-size:16px;letter-spacing:2px">${c.code}</b></small></div><div><button class="bigbtn alt dl" data-c="${c.code}">⬇ ${lt('dl')}</button></div></div>`).join('')+`<p class="note">${lt('share')}</p>`:`<p>${lt('noC')}</p>`)+
+ modal(`<h2>👩‍🏫 ${lt('dosen')}</h2><h3>${lt('myC')}</h3>`+(list.length?list.map(c=>`<div class="nb"><div><b>${esc(c.nama)}</b><br><small>${lt('code')}: <b style="font-size:16px;letter-spacing:2px">${c.code}</b></small></div><div><button class="bigbtn alt dl" data-c="${c.code}">⬇ ${lt('dl')}</button></div></div><label class="setr"><span>🎯 ${L2('Tantangan kelas','Class challenge')}</span><select class="kt" data-c="${c.code}"><option value="">${L2('— tanpa tantangan —','— none —')}</option>${Object.keys(CHAL_N.id).map(k=>`<option value="${k}" ${c.tantangan===k?'selected':''}>${CHAL_N[lang][k]}</option>`).join('')}</select></label>`).join('')+`<p class="note">${lt('share')}</p>`:`<p>${lt('noC')}</p>`)+
   `<h3 style="margin-top:14px">${lt('mk')}</h3><div class="fld"><input id="kcName" maxlength="80" placeholder="${esc(lt('mkP'))}"></div><div class="row"><button class="bigbtn gold" id="kcGo">${lt('mk')}</button></div><div class="err" id="kcErr"></div>`);
  $('kcGo').onclick=async()=>{try{await api('kelas_new',{nama:$('kcName').value});dosenRoom()}catch(e){$('kcErr').textContent=t('e.'+e.message)}};
- document.querySelectorAll('.dl').forEach(b=>b.onclick=()=>rekapCSV(b.dataset.c))}
-async function rekapCSV(code){try{const j=await api('rekap',null,'&code='+code);const head=['peringkat','user','permukiman','lokasi','skor_terbaik','skor_terakhir','ekonomi','jejaring','kenyamanan','kepuasan','pertumbuhan','era','kk','bulan_main','jumlah_simpan','mulai','terakhir'];
+ document.querySelectorAll('.dl').forEach(b=>b.onclick=()=>rekapCSV(b.dataset.c));
+ document.querySelectorAll('select.kt').forEach(sl=>sl.onchange=async()=>{try{await api('kelas_tantangan',{code:sl.dataset.c,t:sl.value});toast(L2('🎯 Tantangan kelas disimpan. Dinilai server saat mahasiswa menyimpan permainan.','🎯 Class challenge saved. Assessed by the server when students save.'))}catch(e){toast(t('e.'+e.message))}})}
+async function rekapCSV(code){try{const j=await api('rekap',null,'&code='+code);const head=['peringkat','user','permukiman','lokasi','skor_terbaik','skor_terakhir','ekonomi','jejaring','kenyamanan','kepuasan','pertumbuhan','era','kk','bulan_main','jumlah_simpan','rth','layanan_kota','tantangan','tantangan_tercapai','mulai','terakhir'];
  const q=v=>{let s=String(v==null?'':v);if(/^[=+\-@]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'};
  const csv='﻿'+[head.join(',')].concat(j.rows.map((r,i)=>[i+1].concat(head.slice(1).map(h=>r[h])).map(q).join(','))).join('\r\n');
  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=`rekap-babat-alas-${j.kelas}-${j.sem}.csv`;document.body.appendChild(a);a.click();a.remove()}catch(e){toast(t('e.'+e.message))}}
@@ -1594,19 +1623,19 @@ en:[
  {h:'Raise a granary',p:'Pick 🛖 <b>Granary</b> to store harvest for the dry season.'},
  {h:'More houses',p:'Build up to <b>3 houses</b>. Empty houses attract new households. Need timber? Clear a little more.'},
  {h:'Your kampung stands!',p:'Continue the <b>missions</b> on the left. Open 📚 <b>Library</b> for terms and photos, ☰ Menu for expansion, trade and settings.'}]};
-function tutStep(){if(!S||S.tut==null||S.tut<0)return null;return TUT.id[S.tut]}
+function tutStep(){if(!S||S.tut==null||S.tut<0)return null;return TUTS().id[S.tut]}
 function tutRender(){let el=$('tut');const st=tutStep();document.querySelectorAll('.tool.hl,#sp2.hl').forEach(e=>e.classList.remove('hl'));
  if(!st||Dlg.busy){if(el)el.classList.add('hidden');return}
  if(!el){el=document.createElement('div');el.id='tut';document.body.appendChild(el)}
  if(innerWidth<760&&!S.tutMini){S.tutMini=1;msMini=true;msApply()}
- const tx=lang==='en'?Object.assign({},st,TUT.en[S.tut]):st,N=TUT.id.length-1;
- el.className='';el.innerHTML=`<div class="th"><span>🧭 ${lang==='en'?'Tutorial':'Tutorial'} ${Math.min(S.tut+1,N)}/${N}</span><button id="tutX">${lang==='en'?'Skip':'Lewati'}</button></div><b>${tx.h}</b> <em>${st.n()}</em><p>${tx.p}</p>`+(st.end?`<button class="bigbtn gold" id="tutOk">${lang==='en'?'Finish':'Selesai'}</button>`:(st.k&&st.k!=='sp2'?`<button class="bigbtn alt" id="tutShow">👉 ${lang==='en'?'Select tool':'Pilih alatnya'}</button>`:''));
+ const TT=TUTS(),tx=lang==='en'?Object.assign({},st,TT.en[S.tut]):st,N=TT.id.length-1;
+ el.className='';el.innerHTML=`<div class="th"><span>🧭 ${S.tutSet==='kota'?L2('Tutorial kota','City tutorial'):'Tutorial'} ${Math.min(S.tut+1,N)}/${N}</span><button id="tutX">${lang==='en'?'Skip':'Lewati'}</button></div><b>${tx.h}</b> <em>${st.n()}</em><p>${tx.p}</p>`+(st.end?`<button class="bigbtn gold" id="tutOk">${lang==='en'?'Finish':'Selesai'}</button>`:(st.k&&st.k!=='sp2'?`<button class="bigbtn alt" id="tutShow">👉 ${lang==='en'?'Select tool':'Pilih alatnya'}</button>`:''));
  $('tutX').onclick=()=>{S.tut=-1;tutRender();dirty=true};if($('tutOk'))$('tutOk').onclick=()=>{S.tut=-1;tutRender();dirty=true;Snd.play('mission')};
- if($('tutShow'))$('tutShow').onclick=()=>{const b=document.querySelector(`.tool[data-k="${st.k}"]`);if(b){b.click();b.scrollIntoView({inline:'center',block:'nearest'})}};
- if(st.k){const b=st.k==='sp2'?$('sp2'):document.querySelector(`.tool[data-k="${st.k}"]`);if(b&&!(st.k!=='sp2'&&tool===st.k))b.classList.add('hl')}}
-function tutCheck(){const st=tutStep();if(!st||st.end)return;if(st.ok()){S.tut++;Snd.play('mission');toast('✅ '+(lang==='en'?TUT.en[S.tut-1].h:st.h));dirty=true}tutRender()}
+ if($('tutShow'))$('tutShow').onclick=()=>{if(st.k==='cityp'){cityPanel();return}const b=document.querySelector(`.tool[data-k="${st.k}"]`);if(b){b.click();b.scrollIntoView({inline:'center',block:'nearest'})}};
+ if(st.k&&st.k!=='cityp'){const b=st.k==='sp2'?$('sp2'):document.querySelector(`.tool[data-k="${st.k}"]`);if(b&&!(st.k!=='sp2'&&tool===st.k))b.classList.add('hl')}}
+function tutCheck(){const st=tutStep();if(!st||st.end)return;if(st.ok()){S.tut++;Snd.play('mission');toast('✅ '+(lang==='en'?TUTS().en[S.tut-1].h:st.h));dirty=true}tutRender()}
 
 /* ================= Mulai ================= */
 applyStatic();
-(async()=>{const go=async()=>{if(TOKEN){try{const j=await api('me');ME=j.me;if(!ME.eula){try{await api('eula',{ver:EULA_VER})}catch(e){}}hub();return}catch(e){TOKEN=null;store.del('baTok')}}show('scAuth')};if(!eulaOK())showEula(go);else go()})();
+(async()=>{const go=async()=>{if(TOKEN){try{const j=await api('me');ME=j.me;ME.tantangan=j.tantangan||'';if(!ME.eula){try{await api('eula',{ver:EULA_VER})}catch(e){}}hub();return}catch(e){TOKEN=null;store.del('baTok')}}show('scAuth')};if(!eulaOK())showEula(go);else go()})();
 if(/^(127\.0\.0\.1|localhost)$/.test(location.hostname))window.__BA={h:(x,z)=>R3.hAt(x,z),setAva:a=>{draft.char.ava=a;renderAvEditor()},rebuild:()=>{R3.world()},weather:w=>{S.wx=w;R3.weather(w,seasonOf(calM()));R3.daylight(S.clk.h/24)},ui:()=>{updHUD();renderMissions()},style:v=>{curStyle=v},cam:(x,y,z,tx,ty,tz)=>{const o=R3.cam();o.controls.target.set(tx,ty,tz);o.camera.position.set(x,y,z)},look:(x,z,d)=>R3.look(x,z,d),lp:()=>{const v=R3.leaderPos();return v?[v.x,v.y,v.z]:null},real:()=>REAL.ok,dbg:()=>R3.dbg(),state:()=>S,tick,act:(k,x,y)=>{tool=k;act(x,y,true)},BT};
