@@ -1538,7 +1538,8 @@ function startGame(st,fresh){S=st;rebuildOcc();show('game');if(!started){R3.init
   if(SET.autosave&&Date.now()-lastSave>60000)save(false)},500)}
 function stopGame(){clearInterval(loopT);S=null;try{Snd.silence()}catch(e){}}
 window.addEventListener('beforeunload',()=>{if(S&&S.scen&&dirty){try{store.set('baScen',JSON.stringify(S))}catch(e){}return}if(S&&dirty&&GUEST)store.set('baGuestSave',JSON.stringify(S))});
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&S)save(false)});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){try{Snd.pause()}catch(e){}if(S)save(false)}else if(S){try{Snd.resume()}catch(e){}}});
+window.addEventListener('pagehide',()=>{try{Snd.pause()}catch(e){}});window.addEventListener('pageshow',e=>{if(e.persisted&&S)try{Snd.resume()}catch(x){}});
 
 
 /* ================= Ketentuan penggunaan (EULA) & disclaimer ================= */
@@ -1635,15 +1636,18 @@ const Snd=(()=>{let ctx=null,master=null,fxB=null,ambB=null,cur=null,noiseBuf=nu
  const api2={get on(){return on},cc:'XX',
   toggle(){on=!on;store.set('baSnd',on?'1':'0');if(init())master.gain.setTargetAtTime(on?SET.vol:0,now(),.1);return on},
   levels(){if(!ctx)return;master.gain.setTargetAtTime(on?SET.vol:0,now(),.05);fxB.gain.setTargetAtTime(SET.sfx,now(),.05);ambB.gain.setTargetAtTime(SET.amb,now(),.05)},
-  unlock(){if(init()&&ctx.state==='suspended')ctx.resume();try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
+  unlock(){if(this._paused&&(!S||document.hidden))return;if(init()&&ctx.state==='suspended')ctx.resume();try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
    if(!this._el){try{const a=document.createElement('audio');a.setAttribute('playsinline','');a.loop=true;a.volume=.01;a.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';a.play().catch(()=>{});this._el=a}catch(e){}}},
   welcome(){if(!on||!ctx)return;const go=()=>{try{if(ctx.state!=='running')return;rooster();setTimeout(chirp,700);setTimeout(chirp,1500)}catch(e){}};if(ctx.state==='running')go();else ctx.resume().then(go).catch(()=>{})},
   play(k){if(!on||!ctx||ctx.state!=='running')return;const f=ALIAS[k];if(f)try{f()}catch(e){}},
   click(){this.play('click')},
   /** Dipanggil tiap 0,5 detik: suasana mengikuti jam, musim, iklim, negara, dan isi kampung. */
   /** hentikan semua suara latar (keluar dari permainan) */
-  silence(){if(!ctx)return;this._mute=true;ambB.gain.cancelScheduledValues(now());ambB.gain.setTargetAtTime(0,now(),.08);for(const k in beds)try{level(k,0)}catch(e){}},
-  update(o){if(!on||!ctx||ctx.state!=='running')return;if(this._mute){this._mute=false;ambB.gain.setTargetAtTime(SET.amb,now(),.4)}cur=ambB;try{this._u(o)}finally{cur=fxB}},
+  /** jeda total (iOS/iPadOS: hentikan sesi audio agar tidak berbunyi di latar belakang) */
+  pause(){this._paused=true;if(this._el)try{this._el.pause()}catch(e){}try{if(navigator.audioSession)navigator.audioSession.type='ambient'}catch(e){}if(ctx&&ctx.state==='running')ctx.suspend().catch(()=>{})},
+  resume(){if(!this._paused)return;this._paused=false;try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}if(ctx&&ctx.state!=='running')ctx.resume().catch(()=>{});if(this._el)this._el.play().catch(()=>{})},
+  silence(){this.pause();if(!ctx)return;this._mute=true;ambB.gain.cancelScheduledValues(now());ambB.gain.setTargetAtTime(0,now(),.08);for(const k in beds)try{level(k,0)}catch(e){}},
+  update(o){if(this._paused&&!document.hidden)this.resume();if(!on||!ctx||ctx.state!=='running')return;if(this._mute){this._mute=false;ambB.gain.setTargetAtTime(SET.amb,now(),.4)}cur=ambB;try{this._u(o)}finally{cur=fxB}},
   _u(o){this.cc=o.cc;const h=o.hour,night=h<5.5||h>18.6,dawn=h>=4.8&&h<6.6,trop=o.climate==='trop'||o.climate==='tropdry',temp=o.climate==='temp';
    bed('river',700,.6,'bandpass');bed('wind',350,.4,'lowpass');bed('rain',3000,.3,'highpass');bed('market',650,.8,'bandpass');bed('forest',5200,1.2,'bandpass');
    level('river',o.water?.06:0);level('wind',(temp?.07:.03)+(o.dry?.05:0));level('rain',o.rainy&&o.rainNow?.11:0);level('market',o.market&&!night&&h>6&&h<15?.035:0);level('forest',!night?Math.min(.04,.012+o.forest*.00004):0);
