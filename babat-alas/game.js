@@ -1679,13 +1679,26 @@ function act(x,y,silent){const say=m=>{if(!silent){toast(m);Snd.play('err')}};if
 function after(){dirty=true;updHUD();checkMissions();checkEra();tutCheck()}
 function placeOK(x,y){if(!x&&x!==0)return false;if(tool!=='info'&&!inOwn(x,y))return false;if(tool==='babat')return L(x,y)==='F';if(tool==='path')return L(x,y)==='G'&&!occ[y][x]&&tileRise(x,y)<=STEEP;if(tool==='jembatan')return (L(x,y)==='W'||(L(x,y)==='G'&&!occ[y][x]&&tileRise(x,y)>STEEP))&&!isBr(x,y)&&[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>isRoad(x+a,y+b));if(tool==='jalan2')return L(x,y)==='P'&&((S.rc||{})[x+','+y]||1)<3;if(tool==='bull')return !!occ[y][x]||isBr(x,y)||L(x,y)==='P';if(tool==='move'){const b=S.b.find(q=>q.id===moveId);return !!b&&!moveOK(b,x,y)}if(tool==='info')return true;const T=BT[tool];if(!T)return false;
  for(let dy=0;dy<T.h;dy++)for(let dx=0;dx<T.w;dx++){const X=x+dx,Y=y+dy;if(!inside(X,Y)||!inOwn(X,Y)||L(X,Y)!=='G'||occ[Y][X])return false}return T.era<=S.era&&canAfford(T.c)}
-function bindInput(){const el=R3.dom();let down=null,last=null;
- el.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,b:e.button};dragging=false;if((tool==='babat'||tool==='path'||tool==='jalan2'||(BT[tool]&&BT[tool].zone))&&e.button===0&&e.pointerType!=='touch'){R3.controls().enabled=false;dragging=true;const c=R3.pick(e.clientX,e.clientY);if(c){act(c[0],c[1],true);last=c.join()}}});
+function bindInput(){const el=R3.dom();let down=null,last=null,nPtr=0,multi=false;
+ /* zoom cubit (pinch) sendiri: layar sentuh iPad/ponsel dan trackpad (gesture Safari); OrbitControls tetap menggeser dua jari */
+ (()=>{const C=R3.controls(),cam=C.object,clampR=r=>Math.max(C.minDistance,Math.min(C.maxDistance,r));
+  const setR=r=>{const o=cam.position.clone().sub(C.target),l=o.length()||1;o.multiplyScalar(clampR(r)/l);cam.position.copy(C.target).add(o);C.update()};
+  const radius=()=>cam.position.distanceTo(C.target),td=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+  let p0=null,tch=0,g0=null;
+  el.addEventListener('touchstart',e=>{tch=e.touches.length;C.enableZoom=false;if(e.touches.length===2)p0={d:td(e.touches)||1,r:radius()}},{passive:true});
+  el.addEventListener('touchmove',e=>{if(e.touches.length===2&&p0){const d=td(e.touches);if(d>0)setR(p0.r*p0.d/d)}},{passive:true});
+  const tEnd=e=>{tch=e.touches.length;if(tch<2)p0=null;if(tch===0)C.enableZoom=true};el.addEventListener('touchend',tEnd,{passive:true});el.addEventListener('touchcancel',tEnd,{passive:true});
+  el.addEventListener('gesturestart',e=>{if(!tch)g0=radius()});
+  el.addEventListener('gesturechange',e=>{if(!tch&&g0&&e.scale>0)setR(g0/e.scale)});
+  el.addEventListener('gestureend',()=>{g0=null});
+  window.__BA&&(window.__BA.pinchR=radius)})();
+ el.addEventListener('pointerdown',e=>{nPtr++;if(nPtr>1)multi=true;down={x:e.clientX,y:e.clientY,b:e.button};dragging=false;if((tool==='babat'||tool==='path'||tool==='jalan2'||(BT[tool]&&BT[tool].zone))&&e.button===0&&e.pointerType!=='touch'){R3.controls().enabled=false;dragging=true;const c=R3.pick(e.clientX,e.clientY);if(c){act(c[0],c[1],true);last=c.join()}}});
  el.addEventListener('pointermove',e=>{const c=R3.pick(e.clientX,e.clientY);if(down&&!dragging&&Math.hypot(e.clientX-down.x,e.clientY-down.y)>6){el.style.cursor='grabbing'}
   else if(!c)el.style.cursor='default';else if(tool==='info')el.style.cursor=occ[c[1]][c[0]]?'pointer':'default';else el.style.cursor=placeOK(c[0],c[1])?(tool==='bull'?'pointer':'crosshair'):'not-allowed';
   if(c&&tool!=='info'){const T=tool==='move'?(S.b.find(q=>q.id===moveId)||{w:1,h:1}):BT[tool]||{w:1,h:1};R3.ghost(c[0],c[1],T.w,T.h,placeOK(c[0],c[1]))}else R3.ghost(null);
   if(dragging&&c&&c.join()!==last){act(c[0],c[1],true);last=c.join()}});
- el.addEventListener('pointerup',e=>{R3.controls().enabled=true;el.style.cursor='';if(!down)return;const d=Math.hypot(e.clientX-down.x,e.clientY-down.y);if(!dragging&&d<7&&down.b===0){const c=R3.pick(e.clientX,e.clientY);if(c)act(c[0],c[1])}dragging=false;down=null;last=null});
+ el.addEventListener('pointercancel',()=>{nPtr=Math.max(0,nPtr-1);if(!nPtr)multi=false;down=null;dragging=false;R3.controls().enabled=true});
+ el.addEventListener('pointerup',e=>{nPtr=Math.max(0,nPtr-1);const wasMulti=multi;if(!nPtr)multi=false;R3.controls().enabled=true;el.style.cursor='';if(!down)return;const d=Math.hypot(e.clientX-down.x,e.clientY-down.y);if(!wasMulti&&!dragging&&d<7&&down.b===0){const c=R3.pick(e.clientX,e.clientY);if(c)act(c[0],c[1])}dragging=false;down=null;last=null});
  el.addEventListener('pointerleave',()=>R3.ghost(null))}
 
 /* ================= UI gim ================= */
