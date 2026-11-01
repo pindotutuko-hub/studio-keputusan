@@ -179,6 +179,13 @@ body.ui-l #hud,body.ui-l #bar,body.ui-l #missions{zoom:1.15}body.ui-s #hud,body.
 /* HUD: tombol kecepatan & menu selalu tampil di kanan atas, statistik bergeser/menggulir bila layar sempit */
 #hud .stats{flex:1 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none}#hud .stats::-webkit-scrollbar{display:none}
 #hud .ctl{flex-shrink:0;margin-left:auto}#hud .who,#hud .date{flex-shrink:0}
+@media (max-width:1366px) and (min-width:761px){
+ #hud{flex-wrap:wrap;row-gap:6px}
+ #hud .stats{order:3;flex:1 1 100%;flex-wrap:wrap;overflow:visible;justify-content:flex-start}
+ #hud .st{min-width:0;padding:3px 9px}#hud .st small{font-size:10px}#hud .st b{font-size:14px;white-space:nowrap}
+ #missions,#info{top:124px;max-height:calc(100vh - 240px)}
+ #advisor{top:124px}#tut{top:calc(env(safe-area-inset-top) + 124px)}
+}
 @media (max-width:1280px) and (min-width:761px){#hud .who small{font-size:11px}#hud .stats .st{padding-left:8px;padding-right:8px}}
 </style>
 </head>
@@ -270,6 +277,6 @@ body.ui-l #hud,body.ui-l #bar,body.ui-l #missions{zoom:1.15}body.ui-s #hud,body.
 <div id="toast"></div>
 <div id="modal" class="modal hidden"></div>
 
-<script type="module" src="game.js?v=33"></script>
+<script type="module" src="game.js?v=34"></script>
 </body>
 </html>

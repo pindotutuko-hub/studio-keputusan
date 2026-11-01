@@ -1025,8 +1025,8 @@ const R3={};
  function riverGeo(){const SUB=4,M=N*SUB,W1=M+1;const wt=(x,y)=>{x=Math.max(0,Math.min(N-1,x));y=Math.max(0,Math.min(N-1,y));return L(x,y)==='W'?1:0};
   let f=new Float32Array(W1*W1);for(let j=0;j<=M;j++)for(let i=0;i<=M;i++){const tx=i/SUB-.5,ty=j/SUB-.5,x0=Math.floor(tx),y0=Math.floor(ty),fx=tx-x0,fy=ty-y0;
    f[j*W1+i]=(wt(x0,y0)*(1-fx)+wt(x0+1,y0)*fx)*(1-fy)+(wt(x0,y0+1)*(1-fx)+wt(x0+1,y0+1)*fx)*fy}
-  for(let pass=0;pass<2;pass++){const g=new Float32Array(W1*W1);for(let j=0;j<=M;j++)for(let i=0;i<=M;i++){let v=0,n=0;for(let dj=-1;dj<=1;dj++)for(let di=-1;di<=1;di++){const I=i+di,J=j+dj;if(I<0||J<0||I>M||J>M)continue;v+=f[J*W1+I];n++}g[j*W1+i]=v/n}f=g}
-  const wp=[],wu=[],T=.5;for(let j=0;j<M;j++)for(let i=0;i<M;i++){const c=[[i,j],[i+1,j],[i+1,j+1],[i,j+1]],v=c.map(([a,b])=>f[b*W1+a]);if(v[0]<T&&v[1]<T&&v[2]<T&&v[3]<T)continue;const poly=[];
+  for(let pass=0;pass<9;pass++){const g=new Float32Array(W1*W1);for(let j=0;j<=M;j++)for(let i=0;i<=M;i++){let v=0,n=0;for(let dj=-1;dj<=1;dj++)for(let di=-1;di<=1;di++){const I=i+di,J=j+dj;if(I<0||J<0||I>M||J>M)continue;v+=f[J*W1+I];n++}g[j*W1+i]=v/n}f=g}
+  const wp=[],wu=[],T=.42;for(let j=0;j<M;j++)for(let i=0;i<M;i++){const c=[[i,j],[i+1,j],[i+1,j+1],[i,j+1]],v=c.map(([a,b])=>f[b*W1+a]);if(v[0]<T&&v[1]<T&&v[2]<T&&v[3]<T)continue;const poly=[];
    for(let k=0;k<4;k++){const a=c[k],b=c[(k+1)%4],va=v[k],vb=v[(k+1)%4];if(va>=T)poly.push(a);if((va>=T)!==(vb>=T)){const q=(T-va)/(vb-va);poly.push([a[0]+(b[0]-a[0])*q,a[1]+(b[1]-a[1])*q])}}
    for(let k=1;k<poly.length-1;k++)[poly[0],poly[k+1],poly[k]].forEach(([a,b])=>{wp.push(a/SUB,-b/SUB,0);wu.push(a/SUB/5,b/SUB/5)})}
   const wg=new THREE.BufferGeometry();wg.setAttribute('position',new THREE.Float32BufferAttribute(wp,3));wg.setAttribute('uv',new THREE.Float32BufferAttribute(wu,2));wg.computeVertexNormals();return [wg,wp.length]}
