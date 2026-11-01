@@ -58,9 +58,9 @@ function uid_of(string $user): string { return substr(hash('sha256', 'ba|' . mb_
 
 
 /* ---------- pengaturan jarak jauh (diubah dari halaman admin) ---------- */
-const CFG_DEF = ['announce' => '', 'announceId' => 0, 'maint' => false, 'maintMsg' => '', 'regOpen' => true, 'guestOk' => true, 'buildMul' => 1.0, 'maxSpeed' => 3, 'disaster' => '', 'botMode' => 'normal', 'autoBan' => false];
+const CFG_DEF = ['announce' => '', 'announceId' => 0, 'maint' => false, 'maintMsg' => '', 'regOpen' => true, 'guestOk' => true, 'buildMul' => 1.0, 'maxSpeed' => 3, 'disaster' => '', 'botMode' => 'normal', 'autoBan' => false, 'tgToken' => '', 'tgChat' => ''];
 function cfg(): array { $c = rd('cfg.php') ?: []; return array_merge(CFG_DEF, array_intersect_key($c, CFG_DEF)); }
-function cfg_pub(): array { $c = cfg(); unset($c['botMode'], $c['autoBan']); return $c; }
+function cfg_pub(): array { $c = cfg(); unset($c['botMode'], $c['autoBan'], $c['tgToken'], $c['tgChat']); return $c; }
 
 /* ---------- penyaring bot/AI: dinilai dari telemetri interaksi yang dikirim gim saat simpan ---------- */
 const ADMIN_MAIL = 'pindotutuko@gmail.com';
@@ -76,12 +76,19 @@ function bot_reasons($t): array {
 	if ($acts > 30 && $ptr === 0) { $r[] = 'ada tindakan tanpa input pengguna'; }
 	return $r;
 }
+/** kirim pesan ke Telegram admin (bila diatur di Kontrol Gim) — pengganti email karena paket hosting tanpa layanan email */
+function tg_send(string $text): bool { $c = cfg(); $tok = (string) $c['tgToken']; $chat = (string) $c['tgChat']; if ($tok === '' || $chat === '') { return false; }
+	$url = 'https://api.telegram.org/bot' . $tok . '/sendMessage'; $data = http_build_query(['chat_id' => $chat, 'text' => $text, 'disable_web_page_preview' => 'true']);
+	if (function_exists('curl_init')) { $ch = curl_init($url); curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_POSTFIELDS => $data, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 5]); $r = curl_exec($ch); curl_close($ch); }
+	else { $r = @file_get_contents($url, false, stream_context_create(['http' => ['method' => 'POST', 'header' => 'Content-Type: application/x-www-form-urlencoded', 'content' => $data, 'timeout' => 5]])); }
+	return is_string($r) && strpos($r, '"ok":true') !== false; }
 function bot_flag(string $uid, array $u, array $why): void {
 	$first = empty($u['bot']);
 	upd('u_' . $uid . '.php', function ($x) use ($why) { if (!$x) { return ['__ret' => false]; } $b = $x['bot'] ?? []; $x['bot'] = ['why' => array_values(array_unique(array_merge($b['why'] ?? [], $why))), 'at' => time(), 'first' => $b['first'] ?? time(), 'n' => (int) ($b['n'] ?? 0) + 1]; unset($x['botOk']); return ['__write' => $x, '__ret' => true]; });
 	if (cfg()['autoBan']) { upd('u_' . $uid . '.php', function ($x) { if (!$x) { return ['__ret' => false]; } $x['ban'] = time(); $x['banAuto'] = 1; $x['tokens'] = []; return ['__write' => $x, '__ret' => true]; }); upd('dir.php', function ($d) use ($uid) { $d = $d ?: []; unset($d[$uid]); return ['__write' => $d, '__ret' => true]; }); }
 	if ($first) {
 		upd('alerts.php', function ($a) use ($uid, $u, $why) { $a = $a ?: []; $a[] = ['uid' => $uid, 'user' => $u['user'] ?? '', 'why' => $why, 'at' => time()]; return ['__write' => array_slice($a, -300), '__ret' => true]; });
+		tg_send('⚠ Babat Alas: pemain dicurigai bot/AI — ' . ($u['user'] ?? $uid) . "\nAlasan: " . implode('; ', $why) . "\nTinjau: https://pindotutuko.id/babat-alas/admin/");
 		@mail(ADMIN_MAIL, 'Babat Alas: pemain dicurigai bot/AI — ' . ($u['user'] ?? $uid), "Pengguna: " . ($u['user'] ?? '') . "\nAlasan: " . implode('; ', $why) . "\n\nTinjau dan ban bila perlu di: https://pindotutuko.id/babat-alas/admin/\n", "From: Babat Alas <noreply@pindotutuko.id>\r\nContent-Type: text/plain; charset=utf-8");
 	}
 }

@@ -19,8 +19,12 @@ function ba_upd(string $f, callable $fn): void { $p = BA_DATA . '/' . $f; if (!i
 	$s = stream_get_contents($h); $cur = json_decode(substr((string) $s, strlen(BA_GUARD)), true); $new = $fn(is_array($cur) ? $cur : []);
 	ftruncate($h, 0); rewind($h); fwrite($h, BA_GUARD . json_encode($new, JSON_UNESCAPED_UNICODE)); fflush($h); flock($h, LOCK_UN); fclose($h); }
 function ba_put(string $f, array $v): void { $p = BA_DATA . '/' . $f; $h = fopen($p, 'c+'); if (!$h) { return; } flock($h, LOCK_EX); ftruncate($h, 0); rewind($h); fwrite($h, BA_GUARD . json_encode($v, JSON_UNESCAPED_UNICODE)); fflush($h); flock($h, LOCK_UN); fclose($h); }
-const BA_CFG_DEF = ['announce' => '', 'announceId' => 0, 'maint' => false, 'maintMsg' => '', 'regOpen' => true, 'guestOk' => true, 'buildMul' => 1.0, 'maxSpeed' => 3, 'disaster' => '', 'botMode' => 'normal', 'autoBan' => false];
+const BA_CFG_DEF = ['announce' => '', 'announceId' => 0, 'maint' => false, 'maintMsg' => '', 'regOpen' => true, 'guestOk' => true, 'buildMul' => 1.0, 'maxSpeed' => 3, 'disaster' => '', 'botMode' => 'normal', 'autoBan' => false, 'tgToken' => '', 'tgChat' => ''];
 function ba_cfg(): array { $c = ba_rd('cfg.php') ?: []; return array_merge(BA_CFG_DEF, array_intersect_key($c, BA_CFG_DEF)); }
+function ba_tg(string $tok, string $path, array $data = []): ?array { if ($tok === '') { return null; } $url = 'https://api.telegram.org/bot' . $tok . '/' . $path; $q = http_build_query($data);
+	if (function_exists('curl_init')) { $ch = curl_init($url); curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_POSTFIELDS => $q, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 8]); $r = curl_exec($ch); curl_close($ch); }
+	else { $r = @file_get_contents($url, false, stream_context_create(['http' => ['method' => 'POST', 'header' => 'Content-Type: application/x-www-form-urlencoded', 'content' => $q, 'timeout' => 8]])); }
+	$j = is_string($r) ? json_decode($r, true) : null; return is_array($j) ? $j : null; }
 function ba_free_claim(string $uid): void { ba_upd('dir.php', function ($d) use ($uid) { unset($d[$uid]); return $d; }); }
 function ba_delete_user(string $uid, bool $account): void {
 	@unlink(BA_DATA . '/s_' . $uid . '.php'); ba_free_claim($uid);
@@ -41,12 +45,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			'buildMul' => max(0.25, min(10.0, round((float) ($_POST['buildMul'] ?? 1), 2))), 'maxSpeed' => max(1, min(3, (int) ($_POST['maxSpeed'] ?? 3))),
 			'disaster' => in_array($_POST['disaster'] ?? '', ['', 'normal', 'rendah', 'mati'], true) ? (string) $_POST['disaster'] : '',
 			'botMode' => in_array($_POST['botMode'] ?? '', ['off', 'normal', 'strict'], true) ? (string) $_POST['botMode'] : 'normal', 'autoBan' => !empty($_POST['autoBan']),
+			'tgToken' => !empty($_POST['tgClear']) ? '' : (preg_match('/^\d{5,15}:[A-Za-z0-9_-]{30,60}$/', trim((string) ($_POST['tgToken'] ?? ''))) ? trim((string) $_POST['tgToken']) : (string) $old['tgToken']), 'tgChat' => !empty($_POST['tgClear']) ? '' : preg_replace('/[^0-9-]/', '', (string) ($_POST['tgChat'] ?? $old['tgChat'])),
 			'by' => wp_get_current_user()->user_login, 'at' => time()];
 		ba_put('cfg.php', $new); $msg = '✅ Pengaturan gim disimpan. Pemain menerimanya dalam ±1 menit (saat sinyal berikutnya) atau saat membuka gim.';
 	} elseif ($act === 'testmail') {
 		$to = 'pindotutuko@gmail.com';
 		$ok = @mail($to, 'Babat Alas: uji email peringatan', "Ini email uji dari Kontrol Gim Babat Alas.\nJika email ini sampai, peringatan pemain yang dicurigai bot/AI juga akan sampai ke alamat ini.\n\nDikirim oleh: " . wp_get_current_user()->user_login . "\nWaktu: " . wp_date('d M Y H:i') . "\n", "From: Babat Alas <noreply@pindotutuko.id>\r\nContent-Type: text/plain; charset=UTF-8");
 		$msg = $ok ? '✉ Email uji dikirim ke ' . esc_html($to) . '. Periksa kotak masuk (dan folder Spam) dalam beberapa menit.' : '⚠ Server menolak mengirim email (fungsi mail() gagal). Peringatan bot hanya tampil di halaman ini.';
+	} elseif ($act === 'tgchat') {
+		$c = ba_cfg(); $j = ba_tg((string) $c['tgToken'], 'getUpdates'); $chat = '';
+		foreach (array_reverse($j['result'] ?? []) as $up) { $m = $up['message'] ?? $up['my_chat_member'] ?? null; if ($m && isset($m['chat']['id'])) { $chat = (string) $m['chat']['id']; break; } }
+		if ($chat !== '') { $raw = ba_rd('cfg.php') ?: []; $raw['tgChat'] = $chat; ba_put('cfg.php', $raw); $msg = '✅ Chat ID Telegram ditemukan dan disimpan: ' . esc_html($chat) . '. Sekarang tekan “Kirim notifikasi uji”.'; }
+		else { $msg = $c['tgToken'] === '' ? '⚠ Isi dan simpan token bot dulu.' : '⚠ Belum ada pesan ke bot. Buka bot Anda di Telegram, kirim /start, lalu tekan tombol ini lagi.'; }
+	} elseif ($act === 'tgtest') {
+		$c = ba_cfg(); $j = ba_tg((string) $c['tgToken'], 'sendMessage', ['chat_id' => $c['tgChat'], 'text' => '✅ Uji notifikasi Kontrol Gim Babat Alas berhasil. Peringatan pemain yang dicurigai bot/AI akan dikirim ke sini.']);
+		$msg = !empty($j['ok']) ? '📲 Notifikasi uji terkirim ke Telegram.' : '⚠ Gagal mengirim ke Telegram' . (!empty($j['description']) ? ': ' . esc_html((string) $j['description']) : ' (periksa token & chat ID, atau server tidak bisa menghubungi Telegram).');
 	} elseif ($act === 'clearalerts') { ba_put('alerts.php', []); $msg = 'Log peringatan dikosongkan.';
 	} elseif (strlen($uid) === 20 && is_file(BA_DATA . '/u_' . $uid . '.php')) {
 		$u = ba_rd('u_' . $uid . '.php');
@@ -57,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		elseif ($act === 'reset') { ba_delete_user($uid, false); $msg = 'Simpanan & wilayah “' . esc_html($u['user'] ?? $uid) . '” sudah direset (akun tetap ada).'; }
 	} else { $msg = 'Pengguna tidak ditemukan.'; }
 	set_transient('ba_adm_msg_' . get_current_user_id(), $msg, 120);
-	wp_safe_redirect(strtok((string) $_SERVER['REQUEST_URI'], '?') . '#' . (in_array($act, ['cfg', 'testmail'], true) ? 'setel' : ($act === 'clearalerts' ? 'log' : 'pemain'))); exit;
+	wp_safe_redirect(strtok((string) $_SERVER['REQUEST_URI'], '?') . '#' . (in_array($act, ['cfg', 'testmail', 'tgchat', 'tgtest'], true) ? 'setel' : ($act === 'clearalerts' ? 'log' : 'pemain'))); exit;
 }
 if (!$msg && ($tm = get_transient('ba_adm_msg_' . get_current_user_id()))) { $msg = (string) $tm; delete_transient('ba_adm_msg_' . get_current_user_id()); }
 
@@ -169,9 +182,12 @@ input[type=search]{padding:8px 11px;border:1px solid var(--line);border-radius:9
 <label>Bencana <select name="disaster"><?php foreach (['' => 'Ikuti pilihan pemain', 'normal' => 'Paksa normal', 'rendah' => 'Paksa rendah', 'mati' => 'Paksa mati'] as $k => $l): ?><option value="<?= $k ?>" <?= $cfg['disaster'] === $k ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></label></fieldset>
 <fieldset><legend>🤖 Penyaring bot/AI</legend><label>Kepekaan <select name="botMode"><?php foreach (['off' => 'Mati', 'normal' => 'Normal', 'strict' => 'Ketat'] as $k => $l): ?><option value="<?= $k ?>" <?= $cfg['botMode'] === $k ? 'selected' : '' ?>><?= $l ?></option><?php endforeach; ?></select></label>
 <label><input type="checkbox" name="autoBan" value="1" <?= $cfg['autoBan'] ? 'checked' : '' ?>> Ban otomatis saat terdeteksi (tanpa menunggu saya)</label><span class="mut">Peringatan pertama juga dikirim ke email admin situs.</span></fieldset>
+<fieldset><legend>📲 Notifikasi Telegram (pengganti email)</legend><span class="mut">Paket hosting ini tidak punya layanan email. Peringatan bot/AI bisa dikirim ke Telegram: (1) di Telegram buka <b>@BotFather</b> → /newbot → salin token; (2) tempel token di bawah lalu Simpan; (3) buka bot baru Anda, kirim <b>/start</b>; (4) tekan “Ambil chat ID”, lalu “Kirim notifikasi uji”.</span>
+<label>Token bot <input type="password" name="tgToken" autocomplete="off" placeholder="<?= $cfg['tgToken'] !== '' ? 'tersimpan (••••' . esc_attr(substr($cfg['tgToken'], -4)) . ') — kosongkan bila tidak diganti' : '123456789:AA…' ?>" style="width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px"></label>
+<label>Chat ID <input type="text" name="tgChat" value="<?= esc_attr($cfg['tgChat']) ?>" placeholder="otomatis lewat tombol di bawah" style="padding:5px 8px;border:1px solid var(--line);border-radius:8px"></label><label><input type="checkbox" name="tgClear" value="1"> Hapus pengaturan Telegram</label></fieldset>
 <button class="save">💾 Simpan pengaturan</button> <span class="mut"><?= !empty($cfgRaw['at']) ? 'Terakhir diubah ' . esc_html(wp_date('d M Y H:i', (int) $cfgRaw['at'])) . ' oleh ' . esc_html((string) ($cfgRaw['by'] ?? '')) : 'Belum pernah diubah (nilai bawaan).' ?></span>
 </form>
-<form method="post" style="margin-top:10px"><input type="hidden" name="_wpnonce" value="<?= $nonce ?>"><input type="hidden" name="act" value="testmail"><button class="rst">✉ Kirim email uji ke pindotutuko@gmail.com</button> <span class="mut">untuk memastikan peringatan bot/AI sampai ke email Anda.</span></form>
+<form method="post" style="margin-top:10px"><input type="hidden" name="_wpnonce" value="<?= $nonce ?>"><input type="hidden" name="act" value="testmail"><button class="rst">✉ Kirim email uji ke pindotutuko@gmail.com</button> <button class="rst" name="act" value="tgchat" formnovalidate>🔎 Ambil chat ID Telegram</button> <button class="rst" name="act" value="tgtest">📲 Kirim notifikasi uji (Telegram)</button> <span class="mut">untuk memastikan peringatan bot/AI sampai ke email Anda.</span></form>
 </section>
 <section id="t-log" class="pane">
 <h2>⚠ Log peringatan bot/AI</h2>
