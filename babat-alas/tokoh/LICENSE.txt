@@ -1,0 +1,13 @@
+Aset tokoh 3D Babat Alas (folder tokoh/)
+
+Model tubuh, kepala, rambut, pakaian dasar, dan animasi berasal dari paket Quaternius:
+- Universal Base Characters
+- Modular Character Outfits - Fantasy
+- Universal Animation Library
+Lisensi: CC0 1.0 Universal (Public Domain Dedication)
+https://creativecommons.org/publicdomain/zero/1.0/
+Sumber: https://quaternius.com (salinan di GitHub: kirbycope/godot-npc-village, Mesh2Motion/mesh2motion-assets)
+
+Diolah ulang (tekstur diperkecil, kompresi meshopt, pemilihan klip animasi) untuk Babat Alas.
+Busana Nusantara dan berbagai negara (jarik, kebaya, blangkon, peci, kerudung, kimono, thobe, sari, kente, poncho, dll.)
+dibuat secara prosedural di dalam game.js.

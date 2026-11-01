@@ -16,7 +16,7 @@ const API='api/';
 const N=128,START=40;     // dunia 128×128 petak (1 petak ≈ 10 m); wilayah awal 40×40 di tengah
 const store={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
 let lang=store.get('baLang')==='en'?'en':'id';
-const SET=Object.assign({vol:.7,amb:.8,sfx:1,q:'auto',shadow:true,crowd:1,keys:true,cam:1,touch:true,autosave:true,tips:true,ui:1},(()=>{try{return JSON.parse(store.get('baSet')||'{}')}catch(e){return {}}})());
+const SET=Object.assign({vol:.7,amb:.8,sfx:1,q:'auto',shadow:true,real:true,crowd:1,keys:true,cam:1,touch:true,autosave:true,tips:true,ui:1},(()=>{try{return JSON.parse(store.get('baSet')||'{}')}catch(e){return {}}})());
 const saveSet=()=>store.set('baSet',JSON.stringify(SET));
 
 /* ================= Teks ================= */
@@ -119,14 +119,14 @@ async function hub(){show('scHub');let meta=null;$('hubErr').textContent='';
 /* ---------- Tokoh ---------- */
 const STYLES=['jawa','joglo','panggung','gadang','tongkonan','bali','honai','kolonial','modern','machiya','eropa'];
 /* ---------- Editor avatar (SVG berlapis; semua bagian bisa diatur) ---------- */
-const AVO={sex:2,face:4,skin:7,eyes:5,brow:3,mouth:4,nose:3,hair:8,hairC:7,beard:4,hat:9,cloth:7,clothC:10,acc:4,bg:6};
+const AVO={sex:2,reg:10,face:4,skin:7,eyes:5,brow:3,mouth:4,nose:3,hair:8,hairC:7,beard:4,hat:9,cloth:7,clothC:10,acc:4,bg:6};
 const AVP={skin:['#f1c9a5','#e0ac7e','#c68c5a','#b97a48','#a86b3d','#8d5a35','#6b4128'],hairC:['#1b1b1b','#3b2a1a','#5a3a22','#8a5a2b','#b9873a','#9a9a9a','#e8e2d6'],clothC:['#1f6f4f','#a33a2a','#2f4f7f','#e0a526','#7a3b6b','#efe6d6','#3b3b3b','#c25b8a','#5b3b25','#2f8f8f'],bg:['#e9f1e6','#f6e7cf','#dfe9f3','#f3dfe6','#e6e1f3','#2b3a33']};
-const AVN={id:{sex:'Jenis kelamin',face:'Bentuk wajah',skin:'Warna kulit',eyes:'Mata',brow:'Alis',mouth:'Mulut',nose:'Hidung',hair:'Rambut',hairC:'Warna rambut',beard:'Kumis/jenggot',hat:'Penutup kepala',cloth:'Pakaian',clothC:'Warna pakaian',acc:'Aksesori',bg:'Latar',rnd:'🎲 Acak',
-  v:{face:['Oval','Bulat','Persegi','Hati'],eyes:['Titik','Bulat','Sipit','Besar','Teduh'],brow:['Tipis','Tebal','Melengkung'],mouth:['Senyum','Tertawa','Datar','Bicara'],nose:['Kecil','Sedang','Mancung'],hair:['Botak','Pendek','Belah samping','Keriting','Panjang','Sanggul','Jabrik','Kuncir'],beard:['Tanpa','Kumis','Jenggot','Brewok'],hat:['Tanpa','Blangkon','Peci','Udeng Bali','Caping','Kerudung','Iket','Topi','Mahkota adat'],cloth:['Kemeja','Beskap/surjan','Kaos','Jas','Kebaya & jarik','Baju kurung/gamis','Blus & rok'],sex:['Pria','Wanita'],acc:['Tanpa','Kacamata','Anting','Kalung']}},
- en:{sex:'Sex',face:'Face shape',skin:'Skin tone',eyes:'Eyes',brow:'Brows',mouth:'Mouth',nose:'Nose',hair:'Hair',hairC:'Hair colour',beard:'Moustache/beard',hat:'Headwear',cloth:'Clothing',clothC:'Clothing colour',acc:'Accessory',bg:'Background',rnd:'🎲 Random',
-  v:{face:['Oval','Round','Square','Heart'],eyes:['Dots','Round','Narrow','Big','Gentle'],brow:['Thin','Thick','Arched'],mouth:['Smile','Laugh','Neutral','Talking'],nose:['Small','Medium','Pointed'],hair:['Bald','Short','Side part','Curly','Long','Bun','Spiky','Ponytail'],beard:['None','Moustache','Beard','Full beard'],hat:['None','Blangkon','Peci','Balinese udeng','Caping','Headscarf','Iket','Cap','Ceremonial crown'],cloth:['Shirt','Beskap/surjan','T-shirt','Jacket','Kebaya & batik skirt','Baju kurung/long dress','Blouse & skirt'],sex:['Male','Female'],acc:['None','Glasses','Earrings','Necklace']}}};
-const avDefault=()=>({sex:0,face:0,skin:2,eyes:1,brow:0,mouth:0,nose:0,hair:1,hairC:0,beard:0,hat:1,cloth:1,clothC:0,acc:0,bg:0});
-function avRandom(){const a={};for(const k in AVO)a[k]=Math.floor(Math.random()*AVO[k]);a.bg=Math.floor(Math.random()*5);if(a.sex){a.beard=0;a.hair=[4,5,7,1][a.hair%4];a.cloth=[4,5,6,0][a.cloth%4];if([1,2,3,6].includes(a.hat))a.hat=[0,5][a.hat%2]}else if(a.cloth>3)a.cloth%=4;return a}
+const AVN={id:{sex:'Jenis kelamin',reg:'Busana negara',face:'Bentuk wajah',skin:'Warna kulit',eyes:'Mata',brow:'Alis',mouth:'Mulut',nose:'Hidung',hair:'Rambut',hairC:'Warna rambut',beard:'Kumis/jenggot',hat:'Penutup kepala',cloth:'Pakaian',clothC:'Warna pakaian',acc:'Aksesori',bg:'Latar',rnd:'🎲 Acak',
+  v:{face:['Oval','Bulat','Persegi','Hati'],eyes:['Titik','Bulat','Sipit','Besar','Teduh'],brow:['Tipis','Tebal','Melengkung'],mouth:['Senyum','Tertawa','Datar','Bicara'],nose:['Kecil','Sedang','Mancung'],hair:['Botak','Pendek','Belah samping','Keriting','Panjang','Sanggul','Jabrik','Kuncir'],beard:['Tanpa','Kumis','Jenggot','Brewok'],hat:['Tanpa','Blangkon','Peci','Udeng Bali','Caping','Kerudung','Iket','Topi','Mahkota adat'],cloth:['Kemeja','Beskap/surjan','Kaos','Jas','Kebaya & jarik','Baju kurung/gamis','Blus & rok'],sex:['Pria','Wanita'],reg:['Nusantara','Melayu','Jepang','Tiongkok','Filipina','Asia Selatan','Timur Tengah','Afrika','Eropa','Amerika Latin'],acc:['Tanpa','Kacamata','Anting','Kalung']}},
+ en:{sex:'Sex',reg:'Country costume',face:'Face shape',skin:'Skin tone',eyes:'Eyes',brow:'Brows',mouth:'Mouth',nose:'Nose',hair:'Hair',hairC:'Hair colour',beard:'Moustache/beard',hat:'Headwear',cloth:'Clothing',clothC:'Clothing colour',acc:'Accessory',bg:'Background',rnd:'🎲 Random',
+  v:{face:['Oval','Round','Square','Heart'],eyes:['Dots','Round','Narrow','Big','Gentle'],brow:['Thin','Thick','Arched'],mouth:['Smile','Laugh','Neutral','Talking'],nose:['Small','Medium','Pointed'],hair:['Bald','Short','Side part','Curly','Long','Bun','Spiky','Ponytail'],beard:['None','Moustache','Beard','Full beard'],hat:['None','Blangkon','Peci','Balinese udeng','Caping','Headscarf','Iket','Cap','Ceremonial crown'],cloth:['Shirt','Beskap/surjan','T-shirt','Jacket','Kebaya & batik skirt','Baju kurung/long dress','Blouse & skirt'],sex:['Male','Female'],reg:['Indonesia','Malay','Japan','China','Philippines','South Asia','Middle East','Africa','Europe','Latin America'],acc:['None','Glasses','Earrings','Necklace']}}};
+const avDefault=()=>({sex:0,reg:0,face:0,skin:2,eyes:1,brow:0,mouth:0,nose:0,hair:1,hairC:0,beard:0,hat:1,cloth:1,clothC:0,acc:0,bg:0});
+function avRandom(){const a={};for(const k in AVO)a[k]=Math.floor(Math.random()*AVO[k]);a.bg=Math.floor(Math.random()*5);a.reg=0;if(a.sex){a.beard=0;a.hair=[4,5,7,1][a.hair%4];a.cloth=[4,5,6,0][a.cloth%4];if([1,2,3,6].includes(a.hat))a.hat=[0,5][a.hat%2]}else if(a.cloth>3)a.cloth%=4;return a}
 /* Ganti jenis kelamin: set bawaan yang wajar (tetap bisa diubah bebas). */
 function avSex(a){if(a.sex){a.beard=0;if(a.hair<4||a.hair===6)a.hair=4;if(a.cloth<4)a.cloth=4;if([1,2,3,6].includes(a.hat))a.hat=0;if(a.acc===0)a.acc=2}else{if(a.hair===4||a.hair===5)a.hair=1;if(a.cloth>3)a.cloth=1;if(a.acc===2)a.acc=0}}
 function avatarCustom(a,opt){const sk=AVP.skin[a.skin],hc=AVP.hairC[a.hairC],cc=AVP.clothC[a.clothC],dk='#2a1d14',cx=60,cy=58;
@@ -166,10 +166,10 @@ function avatarCustom(a,opt){const sk=AVP.skin[a.skin],hc=AVP.hairC[a.hairC],cc=
  const hideHair=a.hat===5;
  return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="${AVP.bg[a.bg]}"/>${hideHair?'':back}${body}${a.hat===5?hats:''}${ears}${face}${ey}${lash}${br}${no}${mo}${lips}${be}${hideHair?'':ha}${a.hat===5?'':hats}${acc}</svg>`}
 function avatarOf(c){return c&&c.ava?avatarCustom(c.ava):avatarSVG(c?c.av||0:0)}
-function renderAvEditor(){const c=draft.char;c.ava=c.ava||avDefault();const a=c.ava,T=AVN[lang];a.sex=a.sex||0;
+function renderAvEditor(){const c=draft.char;c.ava=c.ava||avDefault();const a=c.ava,T=AVN[lang];a.sex=a.sex||0;a.reg=a.reg||0;
  const row=k=>{const isCol=AVP[k],n=AVO[k];if(isCol)return `<div class="avr"><span>${T[k]}</span><div class="sw">${AVP[k].slice(0,n).map((col,i)=>`<button type="button" class="${i===a[k]?'on':''}" style="background:${col}" data-k="${k}" data-i="${i}" aria-label="${T[k]} ${i+1}"></button>`).join('')}</div></div>`;
   return `<div class="avr"><span>${T[k]}</span><div class="avst"><button type="button" data-k="${k}" data-d="-1">◀</button><b>${T.v[k][a[k]]}</b><button type="button" data-k="${k}" data-d="1">▶</button></div></div>`};
- $('cAvs').innerHTML=`<div class="aved"><div class="avprev"><div id="av3d" class="av3d"></div><div class="av2d">${avatarCustom(a)}</div><button type="button" class="bigbtn alt" id="avRnd">${T.rnd}</button></div><div class="avopts">${['sex','face','skin','hair','hairC','eyes','brow','nose','mouth','beard','hat','cloth','clothC','acc','bg'].map(row).join('')}</div></div>`;
+ $('cAvs').innerHTML=`<div class="aved"><div class="avprev"><div id="av3d" class="av3d"></div><div class="av2d">${avatarCustom(a)}</div><button type="button" class="bigbtn alt" id="avRnd">${T.rnd}</button></div><div class="avopts">${['sex','reg','face','skin','hair','hairC','eyes','brow','nose','mouth','beard','hat','cloth','clothC','acc','bg'].map(row).join('')}</div></div>`;
  $('cAvs').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const k=b.dataset.k;if(b.dataset.d)a[k]=(a[k]+(+b.dataset.d)+AVO[k])%AVO[k];else a[k]=+b.dataset.i;if(k==='sex')avSex(a);Snd.click();renderAvEditor()});
  $('avRnd').onclick=()=>{c.ava=avRandom();Snd.click();renderAvEditor()};
  try{AvPrev.mount($('av3d'));AvPrev.set(a)}catch(e){$('av3d').remove()}}
@@ -233,6 +233,130 @@ function buildAvatar3D(a){a=a||avDefault();const M=(c,o)=>new THREE.MeshStandard
  if(a.cloth>=4){const skirtC=a.cloth===4?M('#6b4a2a',{roughness:.9}):a.cloth===5?cc:M(AVP.clothC[(a.clothC+2)%AVP.clothC.length]);const len=a.cloth===6?.5:.7;const sk2=add(new THREE.CylinderGeometry(.19*sw,.25,len,20,1,true),skirtC,0,.8-len/2);sk2.material.side=THREE.DoubleSide;g.add(sk2);
   if(a.cloth===4)for(let i=0;i<5;i++)g.add(add(new THREE.TorusGeometry(.19*sw+(.25-.19*sw)*(i+1)/6,.006,4,24),M('#e0c070'),0,.8-len*(i+1)/6).rotateX(Math.PI/2))}
  return {m:g,up,legs,arms,head,ph:Math.random()*6}}
+/* ================= Tokoh realistis (aset CC0 Quaternius: Universal Base Characters, Modular Character Outfits, Universal Animation Library) =================
+   Dimuat malas (lazy) hanya bila perangkat mampu; bila gagal, permainan tetap memakai tokoh prosedural lama. Tidak mengubah data simpanan. */
+/** negara → gaya busana (dipakai warga & pilihan bawaan) */
+const REG_OF=cc=>{cc=(cc||'').toUpperCase();if(cc==='ID'||!cc)return 0;if(/^(MY|BN|SG)$/.test(cc))return 1;if(cc==='JP')return 2;if(/^(CN|TW|HK|MO)$/.test(cc))return 3;if(cc==='PH')return 4;if(/^(IN|PK|BD|LK|NP|BT|MV)$/.test(cc))return 5;
+ if(/^(SA|AE|QA|KW|OM|BH|YE|JO|IQ|SY|LB|PS|EG|LY|TN|DZ|MA|SD|TR|IR|AF)$/.test(cc))return 6;if(/^(NG|GH|KE|TZ|ZA|ET|SN|CI|CM|UG|RW|ML|BF|NE|TD|CD|CG|GA|AO|MZ|ZM|ZW|MW|BW|NA|MG|SO|ER|BJ|TG|SL|LR|GN|GM)$/.test(cc))return 7;if(/^(MX|GT|HN|SV|NI|CR|PA|CU|DO|CO|VE|EC|PE|BO|CL|AR|UY|PY|BR)$/.test(cc))return 9;return /^(TH|VN|KH|LA|MM|TL|KR|KP|MN)$/.test(cc)?0:8};
+const rpick=a=>a[Math.floor(Math.random()*a.length)];
+const REAL={ok:false,busy:null,T:{},clips:{},mats:{},
+ base:'/babat-alas/tokoh/',
+ load(){if(this.busy)return this.busy;this.busy=(async()=>{
+   const [{GLTFLoader},{MeshoptDecoder},SU]=await Promise.all([import('three/addons/loaders/GLTFLoader.js'),import('three/addons/libs/meshopt_decoder.module.js'),import('three/addons/utils/SkeletonUtils.js')]);
+   this.SU=SU;const L=new GLTFLoader();L.setMeshoptDecoder(MeshoptDecoder);const ld=f=>new Promise((a,b)=>L.load(this.base+f+'.glb?v=1',a,null,b));
+   const names=['body_m','body_f','head_m','head_f','hair_long','hair_bob','hair_buzzed','hair_slickback','hair_balding','hair_beard','hair_moustache','anims'];
+   const got=await Promise.all(names.map(ld));names.forEach((n,i)=>this.T[n]=got[i]);
+   this.T.anims.animations.forEach(c=>this.clips[c.name]=c);
+   // tekstur pakaian versi abu-abu agar bisa diwarnai sesuai pilihan pemain
+   const pm=this.findMat(this.T.body_m.scene,/Peasant/);if(pm&&pm.map&&pm.map.image){const im=pm.map.image,c=document.createElement('canvas');c.width=im.width;c.height=im.height;const g=c.getContext('2d');g.drawImage(im,0,0);const d=g.getImageData(0,0,c.width,c.height),p=d.data;
+     for(let i=0;i<p.length;i+=4){const y=(.3*p[i]+.59*p[i+1]+.11*p[i+2]);const v=Math.min(255,60+y*1.25);p[i]=p[i+1]=p[i+2]=v}g.putImageData(d,0,0);const tx=new THREE.CanvasTexture(c);tx.colorSpace=THREE.SRGBColorSpace;tx.flipY=pm.map.flipY;tx.anisotropy=4;this.grayCloth=tx}
+   this.ok=true;return true})().catch(e=>{console.warn('REAL',e);this.ok=false;return false});return this.busy},
+ findMat(root,re){let m=null;root.traverse(o=>{if(!m&&o.isMesh&&re.test(o.material.name))m=o.material});return m},
+ // warna kulit: tekstur dasar berkulit terang → dikalikan agar sesuai pilihan
+ skinMat(src,hex){const k=src.uuid+hex;if(this.mats[k])return this.mats[k];const m=src.clone();const c=new THREE.Color(hex),ref=new THREE.Color('#e7b48f');m.color.setRGB(c.r/ref.r,c.g/ref.g,c.b/ref.b);m.roughness=.62;return this.mats[k]=m},
+ tintMat(src,hex,key){const k=src.uuid+hex+key;if(this.mats[k])return this.mats[k];const m=src.clone();if(this.grayCloth)m.map=this.grayCloth;m.color.set(hex);m.roughness=.85;return this.mats[k]=m},
+ hairMat(src,hex){const k=src.uuid+hex;if(this.mats[k])return this.mats[k];const m=src.clone();m.color.set(hex);m.roughness=.7;m.side=THREE.DoubleSide;m.alphaTest=Math.max(m.alphaTest||0,.4);return this.mats[k]=m},
+ batik(seed,c1,c2){const k='btk'+seed+c1+c2;if(this.mats[k])return this.mats[k];const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');g.fillStyle=c1;g.fillRect(0,0,128,128);g.fillStyle=c2;g.strokeStyle=c2;
+   if(seed%2){for(let y=0;y<4;y++)for(let x=0;x<4;x++){const cx=x*32+16,cy=y*32+16;[[0,-8],[8,0],[0,8],[-8,0]].forEach(([a,b])=>{g.beginPath();g.ellipse(cx+a,cy+b,6,3.5,a?0:Math.PI/2,0,7);g.fill()})}}else{g.lineWidth=5;for(let i=-4;i<8;i++){g.beginPath();g.moveTo(i*24,0);g.lineTo(i*24+128,128);g.stroke()}}
+   const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(3,1.5);return this.mats[k]=new THREE.MeshStandardMaterial({map:t,roughness:.9,side:THREE.DoubleSide})},
+ /** Tokoh dari pilihan avatar a (pakai field yang sama dengan editor; data simpanan lama tetap berlaku). Tinggi ±1,8 satuan. */
+ make(a){a=a||avDefault();const fem=a.sex===1,sx=fem?'f':'m',SU=this.SU;
+  const root=SU.clone(this.T['body_'+sx].scene);let sk=null;root.traverse(o=>{if(o.isSkinnedMesh&&!sk)sk=o.skeleton});const bone={};sk.bones.forEach(b=>bone[b.name]=b);
+  const attach=(tpl,fn)=>{const sc=SU.clone(tpl.scene);const ms=[];sc.traverse(o=>{if(o.isSkinnedMesh)ms.push(o)});ms.forEach(m=>{const s2=new THREE.Skeleton(m.skeleton.bones.map(b=>bone[b.name]||b),m.skeleton.boneInverses);root.add(m);m.bind(s2,m.bindMatrix);if(fn)fn(m)})};
+  const skinHex=AVP.skin[a.skin]||AVP.skin[2],hairHex=AVP.hairC[a.hairC]||'#1b1b1b',clothHex=AVP.clothC[a.clothC]||'#1f6f4f';
+  const veil=a.hat===5||(a.hat===0&&((a.reg===1||a.reg===6)&&a.sex===1||(a.reg===6&&a.sex!==1)));
+  attach(this.T['head_'+sx],m=>{if(/Regular/.test(m.material.name))m.material=this.skinMat(m.material,skinHex);else if(/Hair/.test(m.material.name))m.material=this.hairMat(m.material,hairHex)});
+  // rambut (disesuaikan dengan pilihan editor) & kumis/jenggot
+  const HM={0:null,1:'buzzed',2:'slickback',3:'buzzed',4:'long',5:'bob',6:'buzzed',7:'long'};let hn=HM[a.hair];if(fem&&hn==='buzzed')hn='bob';if(!fem&&a.hair===5)hn='slickback';
+  const capHat=[1,2,3,6,7,8].includes(a.hat);if(capHat&&(hn==='long'||hn==='bob')&&!fem)hn='buzzed';
+  if(hn&&!veil)attach(this.T['hair_'+hn],m=>m.material=this.hairMat(m.material,hairHex));
+  if(!fem){if(a.beard===1||a.beard===3)attach(this.T.hair_moustache,m=>m.material=this.hairMat(m.material,hairHex));if(a.beard>=2)attach(this.T.hair_beard,m=>m.material=this.hairMat(m.material,hairHex))}
+  // pakaian: atasan = warna pilihan, bawahan & alas kaki gelap; kulit tangan ikut warna kulit
+  const legHex=fem?'#4a3424':(a.cloth===1?'#5a3a22':a.cloth===3?'#2b2b33':'#34302b');
+  root.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;const n=o.name,mn=o.material.name;
+   if(/Regular/.test(mn)&&!/Eye|Hair/.test(mn)){if(!o.material.userData.real)o.material=this.skinMat(o.material,skinHex);return}
+   if(/Peasant/.test(mn)){o.material=/Legs/.test(n)?this.tintMat(o.material,legHex,'L'):/Feet/.test(n)?this.tintMat(o.material,'#3a2a1f','F'):this.tintMat(o.material,clothHex,'B')}});
+  // ukur kepala pada pose dasar untuk menempatkan penutup kepala
+  root.updateMatrixWorld(true);const hb=bone.Head;const hp=new THREE.Vector3();hb.getWorldPosition(hp);
+  const bb=new THREE.Box3();root.traverse(o=>{if(o.isSkinnedMesh&&/^(RegularMale|Female_Regular)/.test(o.name)){o.computeBoundingBox();const b=o.boundingBox.clone().applyMatrix4(o.matrixWorld);const top=new THREE.Box3().setFromPoints([new THREE.Vector3(b.min.x,Math.max(b.min.y,hp.y-.05),b.min.z),b.max]);bb.union(top)}});
+  const H=bb.isEmpty()?{cy:hp.y+.1,top:hp.y+.22,r:.11}:{cy:(Math.max(bb.min.y,hp.y)+bb.max.y)/2+.01,top:bb.max.y,r:Math.min(.13,(bb.max.x-bb.min.x)/2)};
+  const hat=this.hat(a,H,clothHex);if(hat){root.add(hat);hb.attach(hat)}
+  // kain bawahan: jarik batik / gamis / rok, dan sarung untuk beskap
+  if(a.reg)this.costume(a,root,bone,H,fem,clothHex);
+  else if(fem&&a.cloth>=4||(!fem&&a.cloth===1)){const pv=bone.pelvis;const pp=new THREE.Vector3();pv.getWorldPosition(pp);const top=pp.y+.08,len=a.cloth===6?top-.5:top-.06;
+   const mat=a.cloth===5?(this.mats['gm'+clothHex]||(this.mats['gm'+clothHex]=new THREE.MeshStandardMaterial({color:clothHex,roughness:.9,side:THREE.DoubleSide}))):this.batik(a.clothC+(a.cloth===1?1:0),a.cloth===1?'#3b2a1a':'#5a3a22',a.cloth===1?'#c8a14b':'#e3c99a');
+   const sk2=new THREE.Mesh(new THREE.CylinderGeometry(fem?.17:.18,a.cloth===1?.22:a.cloth===5?.27:.23,len,28,1,true),mat);sk2.position.set(pp.x,top-len/2,pp.z);sk2.castShadow=true;root.add(sk2);pv.attach(sk2);if(a.cloth!==6)root.traverse(o=>{if(o.isMesh&&/Legs/.test(o.name))o.visible=false})}
+  root.traverse(o=>{if(o.isSkinnedMesh)o.frustumCulled=false});
+  const mixer=new THREE.AnimationMixer(root),acts={};let cur=null;
+  const play=(n,fade)=>{const c=this.clips[n]||this.clips.Idle_Loop;if(!acts[n])acts[n]=mixer.clipAction(c);const a2=acts[n];if(cur===a2)return a2;a2.reset().play();if(cur)a2.crossFadeFrom(cur,fade==null?.25:fade,false);cur=a2;return a2};
+  play('Idle_Loop',0);mixer.update(Math.random()*2);
+  return {m:root,mixer,play,real:true,ph:Math.random()*6}},
+ /** pola kain: songket, kimono, kente, garis poncho, check (ghutra), sari */
+ pat(kind,c1,c2){const k='pat'+kind+c1+c2;if(this.mats[k])return this.mats[k];const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');g.fillStyle=c1;g.fillRect(0,0,128,128);g.fillStyle=c2;g.strokeStyle=c2;
+   if(kind==='songket'){for(let y=0;y<8;y++)for(let x=0;x<8;x++)if((x+y)%2){g.beginPath();g.moveTo(x*16+8,y*16+2);g.lineTo(x*16+14,y*16+8);g.lineTo(x*16+8,y*16+14);g.lineTo(x*16+2,y*16+8);g.fill()}g.fillRect(0,110,128,10)}
+   else if(kind==='kimono'){for(let i=0;i<9;i++){const x=(i*47)%128,y=(i*29)%128;for(let p=0;p<5;p++){g.beginPath();g.ellipse(x+Math.cos(p*1.256)*6,y+Math.sin(p*1.256)*6,4,4,0,0,7);g.fill()}}}
+   else if(kind==='kente'){const cs=[c2,'#e0a526','#1f6f4f','#a33a2a'];for(let y=0;y<8;y++)for(let x=0;x<8;x++){g.fillStyle=cs[(x*3+y)%4];if((x+y)%2)g.fillRect(x*16,y*16,16,16);else{g.fillRect(x*16,y*16+5,16,6)}}}
+   else if(kind==='stripe'){const cs=[c2,'#e0a526','#2f6fb0','#f2efe7'];for(let y=0;y<16;y++){g.fillStyle=cs[y%4];g.fillRect(0,y*8,128,y%2?3:5)}}
+   else if(kind==='check'){g.lineWidth=4;for(let i=0;i<8;i++){g.beginPath();g.moveTo(i*16,0);g.lineTo(i*16,128);g.moveTo(0,i*16);g.lineTo(128,i*16);g.stroke()}}
+   else if(kind==='sari'){g.fillRect(0,100,128,28);g.fillStyle='#e0a526';g.fillRect(0,96,128,4);for(let i=0;i<12;i++){g.beginPath();g.arc(i*11+5,40+(i%3)*20,3,0,7);g.fill()}}
+   const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(3,1.5);return this.mats[k]=new THREE.MeshStandardMaterial({map:t,roughness:.88,side:THREE.DoubleSide})},
+ plain(hex,rough){const k='pl'+hex+(rough||'');return this.mats[k]||(this.mats[k]=new THREE.MeshStandardMaterial({color:hex,roughness:rough||.85,side:THREE.DoubleSide}))},
+ /** Busana berbagai negara (reg 1–9). Mengatur warna atasan & menambah kain/jubah/penutup kepala khas. */
+ costume(a,root,bone,H,fem,cc){const reg=a.reg,pv=bone.pelvis,pp=new THREE.Vector3();pv.getWorldPosition(pp);const top=pp.y+.08;
+  const tint=(re,hex)=>root.traverse(o=>{if(o.isMesh&&/Peasant/.test(o.material.name)&&re.test(o.name))o.material=this.tintMat(o.material,hex,'R'+hex)});
+  const hideLegs=()=>root.traverse(o=>{if(o.isMesh&&/Legs/.test(o.name))o.visible=false});
+  const robe=(bottomY,rT,rB,mat,par)=>{const len=top-bottomY;const m=new THREE.Mesh(new THREE.CylinderGeometry(rT,rB,len,28,1,true),mat);m.position.set(pp.x,top-len/2,pp.z);m.castShadow=true;root.add(m);(par||pv).attach(m);return m};
+  const band=(y,r,h,mat)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,28,1,true),mat);m.position.set(pp.x,y,pp.z);root.add(m);pv.attach(m);return m};
+  const head=(geo,mat,px,py,pz,rx)=>{const m=new THREE.Mesh(geo,mat);m.position.set(px||0,py,pz||0);if(rx)m.rotation.x=rx;m.castShadow=true;root.add(m);bone.Head.attach(m);return m};
+  const r=H.r,y=H.top,ankle=.07,knee=.5,noHat=a.hat===0;
+  switch(reg){
+   case 1:// Melayu: baju melayu + sampin songket + songkok / baju kurung + tudung
+    if(fem){robe(ankle,.18,.25,this.plain(cc));hideLegs();if(noHat)this.veil(head,H,cc)}
+    else{tint(/Legs/,cc);robe(knee,.19,.22,this.pat('songket','#3b2a5a','#e0a526'));if(noHat)head(new THREE.CylinderGeometry(r*.98,r*1.03,r*.7,24),this.plain('#151515',.55),0,y-r*.12)}break;
+   case 2:// Jepang: kimono/yukata + obi
+    robe(ankle,.17,.2,this.pat('kimono',cc,'#f2efe7'));hideLegs();band(pp.y+.13,fem?.155:.165,fem?.13:.06,this.plain(fem?'#e0a526':'#2b2b33'));
+    if(fem&&noHat){head(new THREE.SphereGeometry(r*.55,16,12),this.plain(AVP.hairC[a.hairC]||'#1b1b1b',.7),0,y-r*.35,-r*.85)}break;
+   case 3:// Tiongkok: changshan / qipao
+    robe(fem?.32:.18,.17,fem?.17:.21,fem?this.pat('kimono',cc,'#e0a526'):this.plain(cc));if(!fem){hideLegs();if(noHat)head(new THREE.SphereGeometry(r*1.04,24,10,0,Math.PI*2,0,Math.PI*.38),this.plain('#151515'),0,y-r*.9)}break;
+   case 4:// Filipina: barong tagalog / baro't saya
+    if(fem){tint(/Body|Arms/,'#f3ead8');robe(ankle,.18,.27,this.pat('stripe',cc,'#f2efe7'));hideLegs()}else{tint(/Body|Arms/,'#efe6d0');tint(/Legs/,'#2b2b33')}break;
+   case 5:// Asia Selatan: kurta / sari
+    if(fem){robe(ankle,.18,.24,this.pat('sari',cc,'#e0a526'));hideLegs();const d=new THREE.Mesh(new THREE.TorusGeometry(.2,.035,8,24,Math.PI*1.2),this.pat('sari',cc,'#e0a526'));d.position.set(pp.x,pp.y+.38,pp.z);d.rotation.set(0,Math.PI/2,.9);root.add(d);bone.spine_03.attach(d)}
+    else{tint(/Body|Arms/,cc);tint(/Legs/,'#efe6d6');robe(knee,.18,.22,this.plain(cc));if(noHat&&Math.random()<.5){const t=head(new THREE.TorusGeometry(r*.95,r*.32,10,24),this.plain(rpick(['#e0a526','#f2efe7','#a33a2a'])),0,y-r*.35,0,Math.PI/2);t.scale.set(1,1,1.4)}}break;
+   case 6:// Timur Tengah: thobe + ghutra & agal / abaya + hijab
+    if(fem){tint(/Body|Arms/,'#1b1b1b');robe(ankle,.18,.27,this.plain('#1b1b1b'));hideLegs();if(noHat)this.veil(head,H,'#1b1b1b')}
+    else{tint(/Body|Arms/,'#f4f1ea');robe(ankle,.18,.24,this.plain('#f4f1ea'));hideLegs();if(noHat){const gm=Math.random()<.5?this.plain('#f4f1ea'):this.pat('check','#f4f1ea','#b03a2e');
+      const h=head(new THREE.SphereGeometry(r*1.15,24,14,Math.PI/2+.95,Math.PI*2-1.9,0,Math.PI*.62),gm,0,H.cy+.01,-.01);h.scale.set(1,1.1,1.1);head(new THREE.CylinderGeometry(r*1.2,r*1.9,r*2.2,24,1,true,.9,Math.PI*2-1.8),gm,0,H.cy-r*1.5,-.02);head(new THREE.TorusGeometry(r*.95,r*.09,8,24),this.plain('#151515'),0,y-r*.3,0,Math.PI/2)}}break;
+   case 7:// Afrika: kente / dashiki, kufi, gele
+    tint(/Body|Arms/,cc);if(fem){robe(ankle,.18,.24,this.pat('kente',cc,'#2b2b33'));hideLegs();if(noHat){for(let i=0;i<3;i++)head(new THREE.TorusGeometry(r*(1-i*.12),r*.28,8,20),this.pat('kente',cc,'#2b2b33'),0,y-r*.35+i*r*.32,-r*.1,Math.PI/2+.3)}}
+    else{robe(knee,.19,.22,this.pat('kente',cc,'#2b2b33'));if(noHat)head(new THREE.CylinderGeometry(r*.98,r*1.02,r*.75,24),this.pat('kente',cc,'#2b2b33'),0,y-r*.12)}break;
+   case 8:// Eropa: kemeja/jaket, rok panjang, topi pet/baret
+    if(fem){robe(.2,.18,.25,this.plain(rpick(['#3b4a6a','#5a3a2a','#2f4f3f','#6b2a3a'])));hideLegs()}else{tint(/Legs/,'#2f3442');if(noHat&&Math.random()<.6){head(new THREE.SphereGeometry(r*1.06,24,10,0,Math.PI*2,0,Math.PI*.36),this.plain('#3b3b3b'),0,y-r*.92).scale.set(1,1,1.1);head(new THREE.BoxGeometry(r*1.3,r*.08,r*.6),this.plain('#3b3b3b'),0,y-r*.6,r*.95)}}break;
+   case 9:{// Amerika Latin: poncho/ruana & sombrero; rok rimpel & rebozo
+    if(fem){robe(ankle,.18,.3,this.pat('stripe',cc,'#a33a2a'));hideLegs()}
+    const sp=bone.neck_01.getWorldPosition(new THREE.Vector3());const ph=fem?.24:.46;const pc=new THREE.Mesh(new THREE.CylinderGeometry(fem?.17:.19,fem?.3:.36,ph,28,1,true),this.pat('stripe',fem?'#6b2a3a':cc,'#f2efe7'));pc.position.set(sp.x,sp.y-ph/2-.02,sp.z);pc.scale.z=.8;pc.castShadow=true;root.add(pc);bone.spine_03.attach(pc);
+    if(!fem&&noHat){head(new THREE.CylinderGeometry(r*3,r*3,.012,32),this.plain('#c8a14b',.95),0,y-r*.25);head(new THREE.ConeGeometry(r*1.05,r*1.4,24),this.plain('#c8a14b',.95),0,y+r*.35)}}break}
+ },
+ veil(head,H,cc){const r=H.r,m=this.plain(cc);const h=head(new THREE.SphereGeometry(r*1.12,28,18,Math.PI/2+.95,Math.PI*2-1.9,0,Math.PI*.7),m,0,H.cy+.005,-.008);h.scale.set(1,1.12,1.08);
+   head(new THREE.SphereGeometry(r*1.13,28,6,0,Math.PI*2,0,Math.PI*.22),m,0,H.cy+.005,-.008).scale.set(1,1.12,1.08);head(new THREE.CylinderGeometry(r*1.05,r*2.1,r*2.2,28,1,true,.85,Math.PI*2-1.7),m,0,H.cy-r*1.75,-.01)},
+ /** Penutup kepala Nusantara pada kepala realistis (H: pusat, puncak, jari-jari kepala dalam meter). */
+ hat(a,H,cc){const M=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.8},o||{})),G=new THREE.Group(),r=H.r,y=H.top,add=(geo,m,px,py,pz)=>{const o=new THREE.Mesh(geo,m);o.position.set(px||0,py||0,pz||0);o.castShadow=true;G.add(o);return o};
+  const gold=M('#d4a32a',{metalness:.6,roughness:.35});
+  switch(a.hat){
+   case 1:{const b=add(new THREE.SphereGeometry(r*1.06,28,14,0,Math.PI*2,0,Math.PI*.42),M('#3b2a1a'),0,y-r*.95,-.005);b.scale.set(1,1.05,1.08);add(new THREE.TorusGeometry(r*1.02,.006,6,30),gold,0,y-r*.62,0).rotation.x=Math.PI/2;add(new THREE.SphereGeometry(r*.32,12,10),M('#3b2a1a'),0,y-r*.95,-r*1.02);break}
+   case 2:add(new THREE.CylinderGeometry(r*.98,r*1.03,r*.7,24),M('#151515',{roughness:.55}),0,y-r*.12,-.005);break;
+   case 3:{const t=add(new THREE.TorusGeometry(r*.98,r*.2,8,24),M('#f3f3f3'),0,y-r*.45,0);t.rotation.x=Math.PI/2;add(new THREE.ConeGeometry(r*.3,r*.8,4),M('#f3f3f3'),0,y-r*.05,r*.7).rotation.x=-.4;break}
+   case 4:add(new THREE.ConeGeometry(r*2.6,r*1.1,32),M('#d9b66a',{roughness:.95}),0,y+r*.15,0);break;
+   case 5:{// kerudung: membungkus kepala dan leher, wajah terbuka
+    const m=M(cc,{side:THREE.DoubleSide});const h=add(new THREE.SphereGeometry(r*1.12,28,18,Math.PI/2+.95,Math.PI*2-1.9,0,Math.PI*.7),m,0,H.cy+.005,-.008);h.scale.set(1,1.12,1.08);
+    add(new THREE.SphereGeometry(r*1.13,28,6,0,Math.PI*2,0,Math.PI*.22),m,0,H.cy+.005,-.008).scale.set(1,1.12,1.08);
+    add(new THREE.CylinderGeometry(r*1.05,r*2.1,r*2.2,28,1,true,.85,Math.PI*2-1.7),m,0,H.cy-r*1.75,-.01);break}
+   case 6:{const t=add(new THREE.TorusGeometry(r*1.0,r*.2,8,24),M('#7a3a2a'),0,y-r*.5,0);t.rotation.x=Math.PI/2;add(new THREE.BoxGeometry(r*.15,r*.6,r*.6),M('#7a3a2a'),r*.7,y-r*.1,-r*.5);break}
+   case 7:{const c=add(new THREE.SphereGeometry(r*1.06,24,12,0,Math.PI*2,0,Math.PI*.45),M(cc),0,y-r*.98,0);add(new THREE.BoxGeometry(r*1.2,.01,r*.9),M(cc),0,y-r*.5,r*1.05);break}
+   case 8:{add(new THREE.CylinderGeometry(r*.98,r*1.03,r*.38,24),gold,0,y-r*.25,0);for(let i=0;i<8;i++){const t=i/8*Math.PI*2;add(new THREE.ConeGeometry(r*.16,r*.55,4),gold,Math.cos(t)*r*.92,y+r*.1,Math.sin(t)*r*.92)}break}
+  }
+  if(a.acc===1){const gm=M('#222');[-1,1].forEach(s=>add(new THREE.TorusGeometry(r*.26,.0025,6,18),gm,s*r*.36,H.cy+r*.12,r*.95))}
+  return G.children.length?G:null}};
 /* ---------- Pratinjau 3D di layar pembuatan tokoh ---------- */
 const AvPrev={r:null,scene:null,cam:null,ctl:null,obj:null,raf:0,
  mount(host){if(!this.r){this.r=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});this.r.setPixelRatio(Math.min(2,devicePixelRatio));this.r.toneMapping=THREE.ACESFilmicToneMapping;this.r.shadowMap.enabled=true;
@@ -242,9 +366,13 @@ const AvPrev={r:null,scene:null,cam:null,ctl:null,obj:null,raf:0,
    this.ctl.addEventListener('start',()=>{this.ctl.autoRotate=false})}
   host.innerHTML='';host.appendChild(this.r.domElement);const w=host.clientWidth||150,h=host.clientHeight||190;this.r.setSize(w,h,false);this.r.domElement.style.width='100%';this.r.domElement.style.height='100%';this.cam.aspect=w/h;this.cam.updateProjectionMatrix();
   cancelAnimationFrame(this.raf);const t0=performance.now();const loop=()=>{this.raf=requestAnimationFrame(loop);if(!document.body.contains(this.r.domElement))return cancelAnimationFrame(this.raf);const t=(performance.now()-t0)/1000;
-   if(this.obj){const o=this.obj;o.up.position.y=.78+Math.sin(t*2)*.008;o.arms[1].rotation.x=Math.sin(t*.9)>.85?-2.4+Math.sin(t*12)*.25:0;o.head.rotation.y=Math.sin(t*.6)*.25}
+   const dt=Math.min(.1,t-(this._lt||t));this._lt=t;
+   if(this.obj&&this.obj.real){const o=this.obj;o.play(Math.sin(t*.35)>.55?'Idle_Talking_Loop':'Idle_Loop',.5);o.mixer.update(dt)}
+   else if(this.obj){const o=this.obj;o.up.position.y=.78+Math.sin(t*2)*.008;o.arms[1].rotation.x=Math.sin(t*.9)>.85?-2.4+Math.sin(t*12)*.25:0;o.head.rotation.y=Math.sin(t*.6)*.25}
    this.ctl.update();this.r.render(this.scene,this.cam)};loop()},
- set(a){if(this.obj)this.scene.remove(this.obj.m);this.obj=buildAvatar3D(a);this.scene.add(this.obj.m)},
+ set(a){this._a=a;const put=o=>{if(this.obj)this.scene.remove(this.obj.m);this.obj=o;this.scene.add(o.m);if(this.cam&&o.real&&!this._rc){this._rc=1;this.cam.position.set(.55,1.5,3.1);this.ctl.target.set(0,1.05,0);this.ctl.minDistance=1.2}};
+  if(REAL.ok&&SET.real!==false){try{const o=REAL.make(a);put(o);return}catch(e){console.warn(e)}}
+  put(buildAvatar3D(a));if(SET.real!==false&&!REAL.ok)REAL.load().then(ok=>{if(ok&&this._a===a)this.set(a)})},
  shot(){try{return this.r.domElement.toDataURL('image/png')}catch(e){return null}}};
 let draft={char:{name:'',av:0,origin:'',motto:'',style:'jawa'}};
 function renderCharForm(){const c=draft.char;renderAvEditor();
@@ -700,8 +828,8 @@ const R3={};
   else if(!fem&&jav&&Math.random()<.35){const sr=new THREE.Mesh(new THREE.CylinderGeometry(.052,.058,.17,14,1,true),new THREE.MeshStandardMaterial({map:sarungT(pick(['#2f5a3a','#5a2a2a','#2a3a5a']),'#e8dcc0'),roughness:.9,side:THREE.DoubleSide}));sr.position.y=.15;sr.castShadow=true;g.add(sr)}
   g.scale.setScalar(child?.3:.46);if(child)head.scale.setScalar(1.25);
   return {m:g,up,legs,arms,ph:Math.random()*6,uy:.24}}
- function walkPose(p,dt,rate){p.ph+=dt*rate;const s=Math.sin(p.ph);p.legs[0].rotation.x=s*.6;p.legs[1].rotation.x=-s*.6;p.arms[0].rotation.x=-s*.5;p.arms[1].rotation.x=s*.5;p.up.rotation.x=.05;p.up.position.y=(p.uy||.2)+Math.abs(Math.cos(p.ph))*.012}
- function workPose(p,dt,kind){p.ph+=dt*4;const s=Math.sin(p.ph);p.legs[0].rotation.x=p.legs[1].rotation.x=0;
+ function walkPose(p,dt,rate){if(p.real){p.play(p.child?'Jog_Fwd_Loop':'Walk_Loop');p.mixer.update(dt*(rate/9)*(p.child?.8:1.15));return}p.ph+=dt*rate;const s=Math.sin(p.ph);p.legs[0].rotation.x=s*.6;p.legs[1].rotation.x=-s*.6;p.arms[0].rotation.x=-s*.5;p.arms[1].rotation.x=s*.5;p.up.rotation.x=.05;p.up.position.y=(p.uy||.2)+Math.abs(Math.cos(p.ph))*.012}
+ function workPose(p,dt,kind){if(p.real){p.play({hoe:'Fixing_Kneeling',chat:'Idle_Talking_Loop',pray:'Crouch_Idle_Loop',draw:'PickUp_Table',play:'Dance_Loop'}[kind]||'Idle_Loop',.35);p.mixer.update(dt);return}p.ph+=dt*4;const s=Math.sin(p.ph);p.legs[0].rotation.x=p.legs[1].rotation.x=0;
   if(kind==='hoe'){p.up.rotation.x=.45+s*.2;p.arms[0].rotation.x=p.arms[1].rotation.x=-1.1-s*.7}
   else if(kind==='chat'){p.up.rotation.x=0;p.arms[0].rotation.x=-.3-Math.max(0,Math.sin(p.ph*.7))*.8;p.arms[1].rotation.x=0;p.m.rotation.y+=Math.sin(p.ph*.3)*dt*.3}
   else if(kind==='pray'){p.up.rotation.x=.25+Math.max(0,s)*.9;p.arms[0].rotation.x=p.arms[1].rotation.x=-.4}
@@ -737,12 +865,19 @@ const R3={};
   else{p.t-=dt;if(p.act!=='home')workPose(p,dt,p.act);if(p.t<=0||(p.act==='home'&&!isNight()&&hour()<17))plan(p)}
   m.position.y=R3.hAt(m.position.x,m.position.z);if(p.mk)p.mk.position.y=2.55+Math.sin(clock.elapsedTime*3)*.1}}
  let spd=()=>1;R3.speedFn=f=>{spd=f};
+ /* warga realistis: jumlah dibatasi menurut kualitas grafis agar ringan di ponsel */
+ const realOK=()=>REAL.ok&&SET.real!==false;
+ const realCap=()=>{const q=SET.q==='auto'?(Math.min(innerWidth,innerHeight)<700?'med':'high'):SET.q;return q==='low'?0:q==='med'?14:32};
+ function realPerson(child){const fem=Math.random()<.5,jav=S&&S.loc&&S.loc.cc==='ID';const a={sex:fem?1:0,skin:2+Math.floor(Math.random()*5),hairC:Math.random()<.85?Math.floor(Math.random()*3):5,clothC:Math.floor(Math.random()*10),acc:0,
+   hair:fem?pick([4,4,5,7]):pick([1,2,1,6]),beard:fem?0:pick([0,0,0,1,2]),cloth:fem?(jav?pick([4,4,5,6,0]):pick([0,6,5])):pick([0,0,2,1,3]),
+   hat:child?0:fem?(jav&&Math.random()<.45?5:0):pick([0,0,4,2,jav?1:0,6])};a.reg=REG_OF(S&&S.loc&&S.loc.cc);if(a.reg&&!jav)a.hat=Math.random()<.85?0:a.hat;
+  const p=REAL.make(a);p.m.scale.setScalar(child?.1:.15);p.uy=0;LIFE.nReal=(LIFE.nReal||0)+1;return p}
  R3.villagers=()=>{if(!S)return;const houses=bOf('house').concat(bOf('perum'),bOf('apartemen'));const cf=SET.crowd;const adults=Math.min(Math.round((48+(S.era>=5?(S.era-4)*30:0))*cf),Math.max(2,S.kk*2)),kids=Math.min(Math.round(18*cf),Math.floor(S.kk*.7));const want=adults+kids;const P=LIFE.people;
-  while(P.filter(q=>!q.leader).length>want){let i=P.length-1;while(i>=0&&P[i].leader)i--;const p=P.splice(i,1)[0];root.remove(p.m)}
-  while(P.filter(q=>!q.leader).length<want){const child=P.length>=adults;const p=mkPerson(child,child?null:pick(['caping','peci','kerudung',null,null]));p.child=child;const h=houses.length?houses[P.length%houses.length]:null;p.home=h?h.id:0;
+  while(P.filter(q=>!q.leader).length>want){let i=P.length-1;while(i>=0&&P[i].leader)i--;const p=P.splice(i,1)[0];if(p.real)LIFE.nReal--;root.remove(p.m)}
+  while(P.filter(q=>!q.leader).length<want){const child=P.length>=adults;const p=realOK()&&(LIFE.nReal||0)<realCap()?realPerson(child):mkPerson(child,child?null:pick(['caping','peci','kerudung',null,null]));p.child=child;const h=houses.length?houses[P.length%houses.length]:null;p.home=h?h.id:0;
    const s=h?spotIn(h,true):[N/2+Math.random()*2,N/2+Math.random()*2];p.m.position.set(s[0],R3.hAt(s[0],s[1]),s[1]);root.add(p.m);P.push(p);plan(p)}
   P.forEach((p,i)=>{if(!S.b.some(b=>b.id===p.home)&&houses.length)p.home=houses[i%houses.length].id});
-  if(!LIFE.leader&&S.char.ava){try{const L1=buildAvatar3D(S.char.ava);L1.m.scale.setScalar(.15);L1.uy=.78;const mk=new THREE.Mesh(new THREE.ConeGeometry(.12,.22,4),new THREE.MeshBasicMaterial({color:'#ffd166'}));mk.rotation.x=Math.PI;mk.position.y=2.55;L1.m.add(mk);L1.mk=mk;
+  if(!LIFE.leader&&S.char.ava){try{const L1=realOK()?REAL.make(S.char.ava):buildAvatar3D(S.char.ava);L1.m.scale.setScalar(.15);L1.uy=.78;const mk=new THREE.Mesh(new THREE.ConeGeometry(.12,.22,4),new THREE.MeshBasicMaterial({color:'#ffd166'}));mk.rotation.x=Math.PI;mk.position.y=2.55;L1.m.add(mk);L1.mk=mk;
    const oc=ownC();L1.m.position.set(oc[0]+.5,R3.hAt(oc[0],oc[1]),oc[1]+.5);root.add(L1.m);L1.home=houses[0]?houses[0].id:0;L1.leader=1;LIFE.leader=L1;P.push(L1);plan(L1)}catch(e){}}
   // ayam di sekitar rumah
   const wantH=Math.min(30,houses.length*2);while(LIFE.hens.length>wantH){root.remove(LIFE.hens.pop().m)}
@@ -798,7 +933,8 @@ const R3={};
   LIFE.glows.forEach(g=>{g.visible=night&&(h>18.6||h<4.5+g.userData.f);g.material.opacity=.75+Math.sin(clock.elapsedTime*3+g.userData.f*9)*.1});
   if(LIFE.gather>0)LIFE.gather-=dt}
  R3.gather=s=>{LIFE.gather=s;LIFE.people.forEach(p=>{if(!isNight())plan(p)})};
- R3.lifeReset=()=>{[...LIFE.people.map(p=>p.m),...LIFE.veh.map(v=>v.m),...LIFE.hens.map(h=>h.m),...LIFE.birds.map(b=>b.m),...LIFE.smoke,...LIFE.glows].forEach(o=>root.remove(o));Object.assign(LIFE,{leader:null,people:[],veh:[],birds:[],hens:[],smoke:[],glows:[],paths:null})};
+ R3.lifeReset=()=>{[...LIFE.people.map(p=>p.m),...LIFE.veh.map(v=>v.m),...LIFE.hens.map(h=>h.m),...LIFE.birds.map(b=>b.m),...LIFE.smoke,...LIFE.glows].forEach(o=>root.remove(o));Object.assign(LIFE,{leader:null,people:[],veh:[],birds:[],hens:[],smoke:[],glows:[],paths:null,nReal:0})};
+ R3.lifeRebuild=()=>{LIFE.people.forEach(p=>root.remove(p.m));LIFE.people=[];LIFE.leader=null;LIFE.nReal=0;if(S)R3.villagers()};
  R3.pathsDirty=()=>{LIFE.paths=null};
  R3.life=dt=>{if(!S)return;for(const id in bmeshes){const u=bmeshes[id].userData;if(u.train)u.train.position.x=.5+Math.sin(clock.elapsedTime*.35+(+id))*.9}stepPeople(dt);stepHens(dt);stepVeh(dt);stepAmbient(dt)};
  R3.hour=hour;R3.leaderPos=()=>LIFE.leader?LIFE.leader.m.position:null;R3.lifeStats=()=>({bikes:LIFE.veh.filter(v=>v.kind==='sepeda').length,motors:LIFE.veh.filter(v=>v.kind==='motor'||v.kind==='mobil').length,hens:LIFE.hens.length});R3.look=(x,z,d)=>{controls.target.set(x,R3.hAt(x,z),z);camera.position.set(x-d*.3,R3.hAt(x,z)+d*1.1,z+d*.6)};R3.dbg=()=>({veh:LIFE.veh.map(v=>v.kind+':'+v.a+'>'+v.b),paths:pathNet().length,people:LIFE.people.length});
@@ -881,6 +1017,7 @@ async function save(force){if(!S||saving)return;if(!force&&!dirty)return;saving=
 async function loadGame(){try{let st=null;if(GUEST){st=JSON.parse(store.get('baGuestSave')||'null')}else{const j=await api('load');st=j.save&&j.save.state;saveVer=j.save?j.save.ver:0}if(!st||!st.own||!st.land||st.land.length!==N)throw new Error('none');startGame(st,false)}catch(e){$('hubErr').textContent=t('errNet')}}
 let started=false,loopT=0,clockS='';
 function startGame(st,fresh){S=st;rebuildOcc();show('game');if(!started){R3.init($('view'));bindInput();started=true}
+ if(SET.real!==false&&!REAL.ok)REAL.load().then(ok=>{if(ok&&S&&R3.lifeRebuild)R3.lifeRebuild()});
  Snd.unlock();setTimeout(()=>Snd.welcome(),1500);applySet();if(S.char.ava&&!S.char._shot){try{const h=document.createElement('div');h.style.cssText='position:fixed;left:-400px;top:0;width:180px;height:220px';document.body.appendChild(h);AvPrev.mount(h);AvPrev.set(S.char.ava);AvPrev.ctl.autoRotate=false;setTimeout(()=>{S.char._shot=AvPrev.shot();h.remove();updHUD()},400)}catch(e){}}R3.world();curStyle=S.char.style||'jawa';tool='info';renderBar();updHUD();renderMissions();setSpeed(1);
  if(fresh){S.tut=0;save(true);setTimeout(prolog,900)}else if(S.tut==null)S.tut=-1;setTimeout(tutRender,1200)
  clearInterval(loopT);R3.speedFn(()=>speed);S.clk=S.clk||{h:7,d:1};S.m0=S.m0==null?new Date().getMonth():S.m0;S.wx=S.wx||rollWeather();S.links=S.links||[];S.stock=S.stock||{};R3.weather(S.wx,seasonOf(calM()));R3.daylight(S.clk.h/24);if(window.__BA)window.__BA.setTod=v=>{S.clk.h=v*24;R3.daylight(v)};
@@ -1062,9 +1199,9 @@ function pustaka(tab,topic){if(tab)pusTab=tab;if(topic)pusTopic=topic;const P=PU
 
 
 /* ================= Pengaturan & kontrol keyboard ================= */
-const SETN={id:{h:'Pengaturan',snd:'🔊 Suara',gfx:'🖥️ Grafis',ctl:'🎮 Kontrol',play:'⚙️ Permainan',vol:'Volume utama',amb:'Suasana (alam, kampung)',sfx:'Efek (membangun, kendaraan)',mute:'Suara aktif',q:'Kualitas grafis',qv:{auto:'Otomatis',low:'Rendah (hemat baterai)',med:'Sedang',high:'Tinggi'},shadow:'Bayangan',crowd:'Kepadatan warga & kendaraan',keys:'Pintasan keyboard',cam:'Kecepatan kamera',touch:'Kontrol sentuh: 1 jari putar, 2 jari geser & zoom',autosave:'Simpan otomatis tiap menit',tips:'Saran penasihat',ui:'Ukuran antarmuka',lang:'Bahasa',keysH:'Daftar tombol',reset:'Kembalikan bawaan',
+const SETN={id:{h:'Pengaturan',snd:'🔊 Suara',gfx:'🖥️ Grafis',ctl:'🎮 Kontrol',play:'⚙️ Permainan',vol:'Volume utama',amb:'Suasana (alam, kampung)',sfx:'Efek (membangun, kendaraan)',mute:'Suara aktif',q:'Kualitas grafis',qv:{auto:'Otomatis',low:'Rendah (hemat baterai)',med:'Sedang',high:'Tinggi'},shadow:'Bayangan',real:'Tokoh & warga realistis (3D)',crowd:'Kepadatan warga & kendaraan',keys:'Pintasan keyboard',cam:'Kecepatan kamera',touch:'Kontrol sentuh: 1 jari putar, 2 jari geser & zoom',autosave:'Simpan otomatis tiap menit',tips:'Saran penasihat',ui:'Ukuran antarmuka',lang:'Bahasa',keysH:'Daftar tombol',reset:'Kembalikan bawaan',
   keyList:[['W A S D / panah','Geser kamera'],['Q / E','Putar kamera'],['+ / −  (atau R / F)','Perbesar / perkecil'],['1–9, 0','Pilih alat bangun'],['Spasi','Jeda / lanjut'],['Tab','Ganti kecepatan ▶ / ⏩'],['B','Pustaka'],['L','Peringkat'],['P','Pengaturan'],['M','Menu'],['H','Cara bermain'],['Ctrl+S','Simpan'],['Esc','Tutup jendela / kembali ke Info']]},
- en:{h:'Settings',snd:'🔊 Sound',gfx:'🖥️ Graphics',ctl:'🎮 Controls',play:'⚙️ Gameplay',vol:'Master volume',amb:'Ambience (nature, village)',sfx:'Effects (building, vehicles)',mute:'Sound on',q:'Graphics quality',qv:{auto:'Automatic',low:'Low (battery saver)',med:'Medium',high:'High'},shadow:'Shadows',crowd:'Density of people & vehicles',keys:'Keyboard shortcuts',cam:'Camera speed',touch:'Touch: 1 finger rotate, 2 fingers pan & zoom',autosave:'Autosave every minute',tips:'Advisor tips',ui:'Interface size',lang:'Language',keysH:'Key bindings',reset:'Restore defaults',
+ en:{h:'Settings',snd:'🔊 Sound',gfx:'🖥️ Graphics',ctl:'🎮 Controls',play:'⚙️ Gameplay',vol:'Master volume',amb:'Ambience (nature, village)',sfx:'Effects (building, vehicles)',mute:'Sound on',q:'Graphics quality',qv:{auto:'Automatic',low:'Low (battery saver)',med:'Medium',high:'High'},shadow:'Shadows',real:'Realistic leader & villagers (3D)',crowd:'Density of people & vehicles',keys:'Keyboard shortcuts',cam:'Camera speed',touch:'Touch: 1 finger rotate, 2 fingers pan & zoom',autosave:'Autosave every minute',tips:'Advisor tips',ui:'Interface size',lang:'Language',keysH:'Key bindings',reset:'Restore defaults',
   keyList:[['W A S D / arrows','Pan camera'],['Q / E','Rotate camera'],['+ / −  (or R / F)','Zoom in / out'],['1–9, 0','Select build tool'],['Space','Pause / resume'],['Tab','Toggle speed ▶ / ⏩'],['B','Library'],['L','Leaderboard'],['P','Settings'],['M','Menu'],['H','How to play'],['Ctrl+S','Save'],['Esc','Close window / back to Info']]}};
 function applySet(){document.documentElement.style.setProperty('--uiScale',SET.ui);document.body.style.zoom='';document.body.classList.toggle('ui-l',SET.ui>1.05);document.body.classList.toggle('ui-s',SET.ui<.95);if(started)R3.quality();if(started)R3.camSpeed(SET.cam);Snd.levels()}
 function settings(){const T=SETN[lang],m=$('modal');m.classList.remove('hidden');
@@ -1072,15 +1209,15 @@ function settings(){const T=SETN[lang],m=$('modal');m.classList.remove('hidden')
  const chk=(k,v,lab)=>`<label class="setr chk"><span>${lab||T[k]}</span><input type="checkbox" data-c="${k}" ${v?'checked':''}></label>`;
  m.innerHTML=`<div class="box wide pzbox"><h2>⚙️ ${T.h}<button class="x" id="stX" aria-label="tutup">✕</button></h2><div class="setg">
   <section><h3>${T.snd}</h3>${chk('mute',Snd.on,T.mute)}${rng('vol',0,1,.05)}${rng('amb',0,1,.05)}${rng('sfx',0,1,.05)}</section>
-  <section><h3>${T.gfx}</h3><label class="setr"><span>${T.q}</span><select data-s="q">${Object.keys(T.qv).map(k=>`<option value="${k}" ${SET.q===k?'selected':''}>${T.qv[k]}</option>`).join('')}</select></label>${chk('shadow',SET.shadow)}${rng('crowd',.3,1,.1)}${rng('ui',.85,1.25,.05)}</section>
+  <section><h3>${T.gfx}</h3><label class="setr"><span>${T.q}</span><select data-s="q">${Object.keys(T.qv).map(k=>`<option value="${k}" ${SET.q===k?'selected':''}>${T.qv[k]}</option>`).join('')}</select></label>${chk('shadow',SET.shadow)}${chk('real',SET.real!==false)}${rng('crowd',.3,1,.1)}${rng('ui',.85,1.25,.05)}</section>
   <section><h3>${T.ctl}</h3>${chk('keys',SET.keys)}${rng('cam',.4,2,.1)}<p class="note">${T.touch}</p><table class="lb keys"><tr><th colspan="2">${T.keysH}</th></tr>${T.keyList.map(([k,v])=>`<tr><td><kbd>${k}</kbd></td><td>${v}</td></tr>`).join('')}</table></section>
   <section><h3>${T.play}</h3>${chk('autosave',SET.autosave)}${chk('tips',SET.tips)}<label class="setr"><span>${T.lang}</span><select data-s="lang"><option value="id" ${lang==='id'?'selected':''}>Bahasa Indonesia</option><option value="en" ${lang==='en'?'selected':''}>English</option></select></label><button class="bigbtn alt" id="stReset">${T.reset}</button></section></div></div>`;
  $('stX').onclick=()=>m.classList.add('hidden');
  m.querySelectorAll('input[type=range]').forEach(i=>i.oninput=()=>{SET[i.dataset.k]=+i.value;i.nextElementSibling.textContent=Math.round(i.value*100)+'%';saveSet();applySet()});
- m.querySelectorAll('input[data-c]').forEach(i=>i.onchange=()=>{const k=i.dataset.c;if(k==='mute'){if(Snd.on!==i.checked)Snd.toggle()}else SET[k]=i.checked;saveSet();applySet();if(k==='crowd'&&S)R3.villagers()});
+ m.querySelectorAll('input[data-c]').forEach(i=>i.onchange=()=>{const k=i.dataset.c;if(k==='mute'){if(Snd.on!==i.checked)Snd.toggle()}else SET[k]=i.checked;saveSet();applySet();if(k==='real'&&S&&R3.lifeRebuild)R3.lifeRebuild();if(k==='crowd'&&S)R3.villagers()});
  m.querySelectorAll('select[data-s]').forEach(sel=>sel.onchange=()=>{const k=sel.dataset.s;if(k==='lang'){lang=sel.value;store.set('baLang',lang);applyStatic();if(S){renderBar();updHUD();renderMissions()}settings();return}SET[k]=sel.value;saveSet();applySet()});
  m.querySelector('input[data-k=crowd]').onchange=()=>{if(S)R3.villagers()};
- $('stReset').onclick=()=>{Object.assign(SET,{vol:.7,amb:.8,sfx:1,q:'auto',shadow:true,crowd:1,keys:true,cam:1,autosave:true,tips:true,ui:1});saveSet();applySet();settings()}}
+ $('stReset').onclick=()=>{Object.assign(SET,{vol:.7,amb:.8,sfx:1,q:'auto',shadow:true,real:true,crowd:1,keys:true,cam:1,autosave:true,tips:true,ui:1});saveSet();applySet();settings()}}
 const keyHeld=new Set();
 window.addEventListener('keydown',e=>{if(!SET.keys||!S)return;const tg=e.target;if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA'||tg.tagName==='SELECT'))return;const k=e.key.toLowerCase(),modalOpen=!$('modal').classList.contains('hidden');
  if(k==='escape'){if(modalOpen)$('modal').classList.add('hidden');else{$('menu').classList.add('hidden');$('info').classList.add('hidden');tool='info';renderBar()}return}
@@ -1203,4 +1340,4 @@ function tutCheck(){const st=tutStep();if(!st||st.end)return;if(st.ok()){S.tut++
 /* ================= Mulai ================= */
 applyStatic();
 (async()=>{const go=async()=>{if(TOKEN){try{const j=await api('me');ME=j.me;if(!ME.eula){try{await api('eula',{ver:EULA_VER})}catch(e){}}hub();return}catch(e){TOKEN=null;store.del('baTok')}}show('scAuth')};if(!eulaOK())showEula(go);else go()})();
-if(/^(127\.0\.0\.1|localhost)$/.test(location.hostname))window.__BA={h:(x,z)=>R3.hAt(x,z),setAva:a=>{draft.char.ava=a;renderAvEditor()},rebuild:()=>{R3.world()},weather:w=>{S.wx=w;R3.weather(w,seasonOf(calM()));R3.daylight(S.clk.h/24)},ui:()=>{updHUD();renderMissions()},style:v=>{curStyle=v},cam:(x,y,z,tx,ty,tz)=>{const o=R3.cam();o.controls.target.set(tx,ty,tz);o.camera.position.set(x,y,z)},look:(x,z,d)=>R3.look(x,z,d),dbg:()=>R3.dbg(),state:()=>S,tick,act:(k,x,y)=>{tool=k;act(x,y,true)},BT};
+if(/^(127\.0\.0\.1|localhost)$/.test(location.hostname))window.__BA={h:(x,z)=>R3.hAt(x,z),setAva:a=>{draft.char.ava=a;renderAvEditor()},rebuild:()=>{R3.world()},weather:w=>{S.wx=w;R3.weather(w,seasonOf(calM()));R3.daylight(S.clk.h/24)},ui:()=>{updHUD();renderMissions()},style:v=>{curStyle=v},cam:(x,y,z,tx,ty,tz)=>{const o=R3.cam();o.controls.target.set(tx,ty,tz);o.camera.position.set(x,y,z)},look:(x,z,d)=>R3.look(x,z,d),lp:()=>{const v=R3.leaderPos();return v?[v.x,v.y,v.z]:null},real:()=>REAL.ok,dbg:()=>R3.dbg(),state:()=>S,tick,act:(k,x,y)=>{tool=k;act(x,y,true)},BT};
