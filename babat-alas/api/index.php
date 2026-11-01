@@ -15,9 +15,9 @@ const TOKEN_DAYS = 45;
 const EULA_VER = '2026-11-01';
 const ERA_MAX = 7;            // era tertinggi di versi ini
 const START = ['coin' => 60, 'wood' => 25];
-const COST = ['house' => [2, 8], 'field' => [3, 2], 'well' => [4, 2], 'barn' => [6, 12], 'pond' => [5, 0], 'tree' => [1, 0], 'hall' => [20, 30], 'worship' => [15, 15], 'market' => [25, 20], 'rt' => [8, 10], 'taman' => [6, 4], 'kebun' => [6, 3], 'bengkel' => [10, 8], 'sekolah' => [30, 25], 'klinik' => [35, 15], 'kom' => [20, 10], 'perum' => [120, 40], 'ruko' => [90, 30], 'rs' => [220, 40], 'tamkot' => [60, 5], 'apartemen' => [400, 60], 'mal' => [350, 50], 'stasiun' => [300, 40], 'balkot' => [500, 60], 'zr' => [2, 0], 'zc' => [2, 0], 'zi' => [2, 0], 'halte' => [8, 2], 'surya' => [25, 2], 'pltmh' => [60, 10], 'menara' => [40, 6], 'tps' => [12, 4], 'ipal' => [70, 8], 'pospol' => [45, 10], 'damkar' => [80, 12], 'pembangkit' => [300, 30], 'tpa' => [150, 10], 'kampus' => [350, 40], 'paud' => [10, 6], 'smp' => [60, 30], 'sma' => [90, 30], 'terminal' => [120, 20], 'alun' => [30, 5], 'tugu' => [40, 10], 'museum' => [90, 15], 'stadion' => [260, 40]];
-const SIZE = ['field' => 2, 'hall' => 2, 'market' => 2, 'kebun' => 2, 'sekolah' => 2, 'perum' => 2, 'ruko' => 2, 'rs' => 2, 'tamkot' => 2, 'apartemen' => 2, 'mal' => 2, 'stasiun' => 2, 'balkot' => 2, 'pembangkit' => 2, 'tpa' => 2, 'kampus' => 2, 'smp' => 2, 'sma' => 2, 'terminal' => 2, 'alun' => 2, 'stadion' => 2];
-const ERA_OF = ['hall' => 2, 'worship' => 2, 'market' => 2, 'sekolah' => 2, 'klinik' => 2, 'kom' => 2, 'ruko' => 4, 'perum' => 5, 'rs' => 5, 'tamkot' => 5, 'apartemen' => 6, 'mal' => 6, 'stasiun' => 6, 'balkot' => 7, 'zr' => 4, 'zc' => 4, 'zi' => 4, 'halte' => 4, 'surya' => 2, 'pltmh' => 3, 'menara' => 3, 'tps' => 2, 'ipal' => 4, 'pospol' => 3, 'damkar' => 4, 'pembangkit' => 5, 'tpa' => 5, 'kampus' => 6, 'paud' => 2, 'smp' => 4, 'sma' => 5, 'terminal' => 5, 'alun' => 3, 'tugu' => 4, 'museum' => 5, 'stadion' => 6];
+const COST = ['house' => [2, 8], 'field' => [3, 2], 'well' => [4, 2], 'barn' => [6, 12], 'pond' => [5, 0], 'tree' => [1, 0], 'hall' => [20, 30], 'worship' => [15, 15], 'market' => [25, 20], 'rt' => [8, 10], 'taman' => [6, 4], 'kebun' => [6, 3], 'bengkel' => [10, 8], 'sekolah' => [30, 25], 'klinik' => [35, 15], 'kom' => [20, 10], 'perum' => [120, 40], 'ruko' => [90, 30], 'rs' => [220, 40], 'tamkot' => [60, 5], 'apartemen' => [400, 60], 'mal' => [350, 50], 'stasiun' => [300, 40], 'balkot' => [500, 60], 'zr' => [2, 0], 'zc' => [2, 0], 'zi' => [2, 0], 'halte' => [8, 2], 'surya' => [25, 2], 'pltmh' => [60, 10], 'menara' => [40, 6], 'tps' => [12, 4], 'ipal' => [70, 8], 'pospol' => [45, 10], 'damkar' => [80, 12], 'pembangkit' => [300, 30], 'tpa' => [150, 10], 'kampus' => [350, 40], 'paud' => [10, 6], 'smp' => [60, 30], 'sma' => [90, 30], 'terminal' => [120, 20], 'alun' => [30, 5], 'tugu' => [40, 10], 'museum' => [90, 15], 'stadion' => [260, 40], 'saluran' => [6, 2], 'retensi' => [60, 5], 'rel' => [12, 4]];
+const SIZE = ['field' => 2, 'hall' => 2, 'market' => 2, 'kebun' => 2, 'sekolah' => 2, 'perum' => 2, 'ruko' => 2, 'rs' => 2, 'tamkot' => 2, 'apartemen' => 2, 'mal' => 2, 'stasiun' => 2, 'balkot' => 2, 'pembangkit' => 2, 'tpa' => 2, 'kampus' => 2, 'smp' => 2, 'sma' => 2, 'terminal' => 2, 'alun' => 2, 'stadion' => 2, 'retensi' => 2];
+const ERA_OF = ['hall' => 2, 'worship' => 2, 'market' => 2, 'sekolah' => 2, 'klinik' => 2, 'kom' => 2, 'ruko' => 4, 'perum' => 5, 'rs' => 5, 'tamkot' => 5, 'apartemen' => 6, 'mal' => 6, 'stasiun' => 6, 'balkot' => 7, 'zr' => 4, 'zc' => 4, 'zi' => 4, 'halte' => 4, 'surya' => 2, 'pltmh' => 3, 'menara' => 3, 'tps' => 2, 'ipal' => 4, 'pospol' => 3, 'damkar' => 4, 'pembangkit' => 5, 'tpa' => 5, 'kampus' => 6, 'paud' => 2, 'smp' => 4, 'sma' => 5, 'terminal' => 5, 'alun' => 3, 'tugu' => 4, 'museum' => 5, 'stadion' => 6, 'saluran' => 3, 'retensi' => 4, 'rel' => 6];
 const BADWORDS = ['anjing', 'bangsat', 'kontol', 'memek', 'ngentot', 'jancok', 'jancuk', 'goblok', 'fuck', 'shit', 'bitch', 'asshole', 'nigger', 'pussy', 'dick'];
 
 function out(array $a, int $code = 200): void { http_response_code($code); echo json_encode($a, JSON_UNESCAPED_UNICODE); exit; }
@@ -258,6 +258,32 @@ switch ($a) {
 			$rel = $km < 25 ? 'dekat' : (($u['kelas'] ?? '') !== '' && ($m['kelas'] ?? '') === $u['kelas'] ? 'kelas' : (($u['kampus'] ?? '') !== '' && ($m['kampus'] ?? '') === $u['kampus'] ? 'kampus' : ''));
 			if ($rel) { $out[] = ['id' => substr(hash('sha256', $id), 0, 10), 'who' => $m['who'], 'name' => $m['name'], 'era' => $m['era'], 'kk' => $m['kk'], 'loc' => $m['loc'], 'km' => round($km, 1), 'rel' => $rel, 'score' => $m['score']]; } }
 		usort($out, fn($x, $y) => $x['km'] <=> $y['km']); out(['ok' => true, 'list' => array_slice($out, 0, 30)]);
+	}
+	// ---- perjanjian dagang dua arah antarpemain ----
+	case 'deal_offer': {
+		$u = auth(); rate('deal' . $u['uid'], 20, 3600); $to = preg_replace('/[^a-f0-9]/', '', (string) ($b['to'] ?? '')); $com = preg_replace('/[^a-z_]/', '', (string) ($b['com'] ?? ''));
+		if (strlen($to) !== 10 || $com === '' || strlen($com) > 20) { fail('bad'); }
+		$d = rd('dir.php') ?: []; $tid = null; foreach ($d as $id => $m) { if (substr(hash('sha256', $id), 0, 10) === $to) { $tid = $id; break; } }
+		if (!$tid || $tid === $u['uid']) { fail('no_user', 404); }
+		$r = upd('deals.php', function ($x) use ($u, $tid, $com) { $x = $x ?: [];
+			$mine = 0; foreach ($x as $k => $v) { if ($v['from'] === $u['uid'] && $v['st'] === 'pending') { $mine++; } if (($v['from'] === $u['uid'] && $v['to'] === $tid || $v['from'] === $tid && $v['to'] === $u['uid']) && $v['st'] !== 'ended') { return ['__ret' => 'dup']; } }
+			if ($mine >= 10) { return ['__ret' => 'limit']; } if (count($x) > 5000) { return ['__ret' => 'full']; }
+			$id = bin2hex(random_bytes(6)); $x[$id] = ['from' => $u['uid'], 'to' => $tid, 'com' => $com, 'st' => 'pending', 't' => time()]; return ['__write' => $x, '__ret' => $id]; });
+		if (in_array($r, ['dup', 'limit', 'full'], true)) { fail($r); } out(['ok' => true, 'id' => $r]);
+	}
+	case 'deals': {
+		$u = auth(); $x = rd('deals.php') ?: []; $d = rd('dir.php') ?: []; $me = $u['uid']; $res = [];
+		foreach ($x as $id => $v) { if ($v['st'] === 'ended' || ($v['from'] !== $me && $v['to'] !== $me)) { continue; } $other = $v['from'] === $me ? $v['to'] : $v['from'];
+			$res[] = ['id' => $id, 'dir' => $v['from'] === $me ? 'out' : 'in', 'st' => $v['st'], 'com' => $v['com'], 'name' => $d[$other]['name'] ?? '?', 'who' => $d[$other]['who'] ?? '?', 'loc' => $d[$other]['loc'] ?? '', 'pid' => substr(hash('sha256', $other), 0, 10)]; }
+		out(['ok' => true, 'list' => $res]);
+	}
+	case 'deal_reply': {
+		$u = auth(); rate('dealr' . $u['uid'], 60, 3600); $id = preg_replace('/[^a-f0-9]/', '', (string) ($b['id'] ?? '')); $acc = !empty($b['accept']); $end = !empty($b['end']);
+		$r = upd('deals.php', function ($x) use ($u, $id, $acc, $end) { $x = $x ?: []; if (!isset($x[$id])) { return ['__ret' => false]; } $v = $x[$id];
+			if ($end) { if ($v['from'] !== $u['uid'] && $v['to'] !== $u['uid']) { return ['__ret' => false]; } $x[$id]['st'] = 'ended'; }
+			else { if ($v['to'] !== $u['uid'] || $v['st'] !== 'pending') { return ['__ret' => false]; } $x[$id]['st'] = $acc ? 'active' : 'ended'; $x[$id]['ta'] = time(); }
+			return ['__write' => $x, '__ret' => true]; });
+		if (!$r) { fail('forbidden', 403); } out(['ok' => true]);
 	}
 	default: fail('unknown', 404);
 }
