@@ -562,7 +562,7 @@ Object.assign(TX.en.tlD,{zr:'Residents build homes if road, power & water exist'
 const ZCAP={zr:[0,2,6,16],zc:[0,2,5,12],zi:[0,4,8,14]};
 const isHome=b=>b.t==='house'||b.t==='perum'||b.t==='apartemen'||(b.t==='zr'&&b.lv);
 function roadCap(){const rc=S.rc||{};let c=0;for(const k in rc){const [x,y]=k.split(',').map(Number);if(inside(x,y)&&L(x,y)==='P')c+=rc[k]===3?2.5:rc[k]===2?.8:0}return c}
-function roadNear(b){for(let dy=-1;dy<=b.h;dy++)for(let dx=-1;dx<=b.w;dx++){const X=b.x+dx,Y=b.y+dy;if(inside(X,Y)&&L(X,Y)==='P')return true}return false}
+function roadNear(b){for(let dy=-1;dy<=b.h;dy++)for(let dx=-1;dx<=b.w;dx++){const X=b.x+dx,Y=b.y+dy;if(isRoad(X,Y))return true}return false}
 function nearAny(x,y,types,r){return S.b.some(b=>!b.bt&&types.includes(b.t)&&Math.abs(b.x+(b.w-1)/2-x)<=r&&Math.abs(b.y+(b.h-1)/2-y)<=r)}
 /** nilai lahan 0–100 pada petak */
 function landValue(x,y){const C=S.city||{};let v=35;if(nearAny(x,y,['taman','tamkot','tree'],4))v+=12;if(nearWater(x,y,3))v+=8;if(nearAny(x,y,['sekolah','kampus','klinik','rs'],8))v+=10;if(nearAny(x,y,['mal','stasiun','balkot','halte'],8))v+=10;
@@ -824,6 +824,15 @@ Object.assign(TX.id.tlD,{kandang:'Ayam & telur: pangan +3, ternak dijual',petern
 Object.assign(TX.en.tlD,{kandang:'Chickens & eggs: food +3, livestock to sell',peternakan:'Cattle/goats: food +5, milk & livestock to sell',pemburu:'Hunt & forage in nearby forest: food +4 (needs forest)',dapur:'Turn harvests into food & drinks: high sale value'});
 Object.assign(COMN.id,{telur:'Telur',olahan:'Olahan makanan & minuman'});Object.assign(COMN.en,{telur:'Eggs',olahan:'Processed food & drinks'});PRICE.olahan=6;PRICE.telur=2.5;COM_IC.olahan='🍲';COM_IC.telur='🥚';
 
+/* ---------- jembatan: jalan melintasi sungai (disimpan di S.br, petak tetap air) ---------- */
+const BRC={coin:6,wood:10,stone:4};let _brS=null,_brN=-1;
+const brSet=()=>{const a=(S&&S.br)||[];if(!_brS||a.length!==_brN){_brS=new Set(a);_brN=a.length}return _brS};
+const isBr=(x,y)=>brSet().has(x+','+y);
+const isRoad=(x,y)=>inside(x,y)&&(L(x,y)==='P'||isBr(x,y));
+TOOLS.splice(TOOLS.indexOf('path')+1,0,'jembatan');ICON.jembatan='🌉';
+Object.assign(TX.id.tl,{jembatan:'Jembatan'});Object.assign(TX.en.tl,{jembatan:'Bridge'});
+Object.assign(TX.id.tlD,{jembatan:'Jalan melintasi sungai; mulai dari ujung jalan di tepi sungai'});Object.assign(TX.en.tlD,{jembatan:'Road across a river; start from a road end at the bank'});
+
 /* ---------- bahan baku: batu & besi (selain kas & kayu) ---------- */
 Object.assign(BT,{tambang:{era:1,w:1,h:1,c:{coin:4,wood:4},jobs:2,days:2}});
 TOOLS.splice(TOOLS.indexOf('dapur')+1,0,'tambang');ICON.tambang='⛏️';
@@ -1041,6 +1050,7 @@ const R3={};
   let f=new Float32Array(W1*W1);for(let j=0;j<=M;j++)for(let i=0;i<=M;i++){const tx=i/SUB-.5,ty=j/SUB-.5,x0=Math.floor(tx),y0=Math.floor(ty),fx=tx-x0,fy=ty-y0;
    f[j*W1+i]=(wt(x0,y0)*(1-fx)+wt(x0+1,y0)*fx)*(1-fy)+(wt(x0,y0+1)*(1-fx)+wt(x0+1,y0+1)*fx)*fy}
   for(let pass=0;pass<9;pass++){const g=new Float32Array(W1*W1);for(let j=0;j<=M;j++)for(let i=0;i<=M;i++){let v=0,n=0;for(let dj=-1;dj<=1;dj++)for(let di=-1;di<=1;di++){const I=i+di,J=j+dj;if(I<0||J<0||I>M||J>M)continue;v+=f[J*W1+I];n++}g[j*W1+i]=v/n}f=g}
+  {const g=new Float32Array(W1*W1);for(let j=0;j<=M;j++)for(let i=0;i<=M;i++){const tx=i/SUB-.5,ty=j/SUB-.5,x0=Math.floor(tx),y0=Math.floor(ty),fx=tx-x0,fy=ty-y0;g[j*W1+i]=(wt(x0,y0)*(1-fx)+wt(x0+1,y0)*fx)*(1-fy)+(wt(x0,y0+1)*(1-fx)+wt(x0+1,y0+1)*fx)*fy}for(let q=0;q<f.length;q++)f[q]=Math.min(f[q],g[q]+.08)}
   const wp=[],wu=[],T=.42;for(let j=0;j<M;j++)for(let i=0;i<M;i++){const c=[[i,j],[i+1,j],[i+1,j+1],[i,j+1]],v=c.map(([a,b])=>f[b*W1+a]);if(v[0]<T&&v[1]<T&&v[2]<T&&v[3]<T)continue;const poly=[];
    for(let k=0;k<4;k++){const a=c[k],b=c[(k+1)%4],va=v[k],vb=v[(k+1)%4];if(va>=T)poly.push(a);if((va>=T)!==(vb>=T)){const q=(T-va)/(vb-va);poly.push([a[0]+(b[0]-a[0])*q,a[1]+(b[1]-a[1])*q])}}
    for(let k=1;k<poly.length-1;k++)[poly[0],poly[k+1],poly[k]].forEach(([a,b])=>{wp.push(a/SUB,-b/SUB,0);wu.push(a/SUB/5,b/SUB/5)})}
@@ -1100,7 +1110,7 @@ const R3={};
   R3.forest();
   // jalan setapak
   for(let y=0;y<N;y++)for(let x=0;x<N;x++)if(L(x,y)==='P'){road(x,y);if(S.era>=5&&(x*7+y*3)%6===0&&!(isP(x+1,y)&&isP(x,y+1))){const pl=new THREE.Mesh(new THREE.CylinderGeometry(.015,.02,.7,6),mat('#7a7a7a',{metalness:.6}));pl.position.set(x+.08,R3.hAt(x,y)+.35,y+.08);root.add(pl);const lbm=new THREE.MeshStandardMaterial({color:'#fff3c4',emissive:'#ffd27a',emissiveIntensity:.6});CITYM.push(lbm);const lb=new THREE.Mesh(new THREE.SphereGeometry(.04,8,6),lbm);lb.position.set(x+.08,R3.hAt(x,y)+.72,y+.08);root.add(lb)}}
-  S.b.forEach(b=>R3.addB(b));R3.border();const oc=ownC();R3.focus(oc[0],oc[1],34);R3.villagers();try{R3.backdrop()}catch(e){console.warn(e)}R3.daylight(tod||.4)};
+  (S.br||[]).forEach(k=>{const [bx,by]=k.split(',').map(Number);road(bx,by)});S.b.forEach(b=>R3.addB(b));R3.border();const oc=ownC();R3.focus(oc[0],oc[1],34);R3.villagers();try{R3.backdrop()}catch(e){console.warn(e)}R3.daylight(tod||.4)};
  /* ---------- bangunan prosedural ---------- */
  function B(g,m,x,y,z,sx,sy,sz){const o=new THREE.Mesh(box,m);o.scale.set(sx,sy,sz);o.position.set(x,y+sy/2,z);o.castShadow=true;o.receiveShadow=true;g.add(o);return o}
  function hipRoof(w,d,h,m){const g=new THREE.ConeGeometry(.7071,1,4,1);g.rotateY(Math.PI/4);const o=new THREE.Mesh(g,m);o.scale.set(w*1.06,h,d*1.06);o.castShadow=true;return o}
@@ -1274,16 +1284,25 @@ const R3={};
   border=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:'#ffd166'}));root.add(border)};
  R3.recolor=()=>{const a=terrain.geometry.attributes.color;tcAll();for(let y=0;y<N;y++)for(let x=0;x<N;x++)paintTile(a,x,y);a.needsUpdate=true;R3.border()};
  R3.focus=(x,z,d)=>{controls.target.set(x,0,z);camera.position.set(x-d*.45,d*.9,z+d*.9)};
- const roads={};const isP=(x,y)=>inside(x,y)&&L(x,y)==='P';
- function road(x,y){const k=x+','+y;if(roads[k]){root.remove(roads[k]);roads[k].geometry.dispose();delete roads[k]}if(!isP(x,y))return;
+ const roads={};const isP=(x,y)=>isRoad(x,y);
+ function road(x,y){const k=x+','+y;if(roads[k]){root.remove(roads[k]);if(roads[k].geometry)roads[k].geometry.dispose();delete roads[k]}if(!isP(x,y))return;if(isBr(x,y)){const m=bridgeMesh(x,y);root.add(m);roads[k]=m;return}
   const E=isP(x+1,y)||isP(x-1,y),Nn=isP(x,y+1)||isP(x,y-1);const horiz=E&&!Nn,vert=Nn&&!E,rcl=(S.rc||{})[k]||1,asp=S.era>=5||rcl>=2;
   const pe=isP(x+1,y),pw=isP(x-1,y),ps=isP(x,y+1),pn=isP(x,y-1),corner=(pe+pw+ps+pn===2)&&(pe||pw)&&(ps||pn);let g;if(corner){const ox=x+(pe?1:0),oz=y+(ps?1:0),th0=Math.atan2(ps?-1:1,pe?-1:1)-Math.PI/4,SG=12,RS=4,P=[],U=[],I=[];for(let i=0;i<=SG;i++){const th=th0+Math.PI/2*i/SG;for(let j=0;j<=RS;j++){const r=.002+j/RS*.998,px=ox+Math.cos(th)*r,pz=oz+Math.sin(th)*r;P.push(px,R3.hAt(px,pz)+.035,pz);U.push(r,i/SG*.8)}}for(let i=0;i<SG;i++)for(let j=0;j<RS;j++){const a0=i*(RS+1)+j,b0=a0+RS+1;I.push(a0,a0+1,b0,b0,a0+1,b0+1)}g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));g.setIndex(I);g.computeVertexNormals();if(g.attributes.normal.getY(RS)<0){I.reverse();g.setIndex(I);g.computeVertexNormals()}}else{g=new THREE.PlaneGeometry(1.0,1.0,4,4);g.rotateX(-Math.PI/2);if(horiz)g.rotateY(Math.PI/2);g.translate(x+.5,0,y+.5);const a=g.attributes.position;for(let i=0;i<a.count;i++)a.setY(i,R3.hAt(a.getX(i),a.getZ(i))+.035);g.computeVertexNormals()}
   const m=new THREE.Mesh(g,asp?tmat(horiz||vert||corner?'aspal':'aspalX'):tmat('gravel'));m.receiveShadow=true;
   if(rcl===3&&(horiz||vert)){const md=new THREE.Mesh(box,mat('#5f9a4a'));md.scale.set(horiz?1:.08,.05,horiz?.08:1);md.position.set(x+.5,R3.hAt(x+.5,y+.5)+.06,y+.5);m.add(md);if((x+y)%3===0){const pl=new THREE.Mesh(box,mat('#9a9a9a',{metalness:.5}));pl.scale.set(.03,.55,.03);pl.position.set(x+.5,R3.hAt(x+.5,y+.5)+.33,y+.5);m.add(pl);const lm=new THREE.Mesh(new THREE.SphereGeometry(.04,8,6),new THREE.MeshBasicMaterial({color:'#fff2c0'}));lm.position.set(x+.5,R3.hAt(x+.5,y+.5)+.62,y+.5);m.add(lm)}}
   else if(rcl===2&&(horiz||vert)){[-1,1].forEach(sd=>{const e=new THREE.Mesh(box,mat('#f2f2f2'));e.scale.set(horiz?1:.025,.012,horiz?.025:1);e.position.set(x+.5+(horiz?0:sd*.42),R3.hAt(x+.5,y+.5)+.045,y+.5+(horiz?sd*.42:0));m.add(e)})}
   root.add(m);roads[k]=m}
+ function bridgeMesh(x,y){const g=new THREE.Group(),hz=isRoad(x-1,y)||isRoad(x+1,y),vt=isRoad(x,y-1)||isRoad(x,y+1),along=hz||!vt;
+  let h=.46;[[1,0],[-1,0],[0,1],[0,-1]].forEach(([a,b])=>{const X=x+a,Y=y+b;if(inside(X,Y)&&L(X,Y)!=='W')h=Math.max(h,R3.hAt(X+.5,Y+.5)+.02)});h=Math.min(h,1.6);
+  const modern=S.era>=3,deck=modern?mat('#9a9893',{roughness:.85}):tmat('wood','#8a6a45'),rail=modern?mat('#c9c6bf'):tmat('wood','#6b4a2c');
+  const d=new THREE.Mesh(box,deck);d.scale.set(along?1.02:.82,.08,along?.82:1.02);d.position.set(x+.5,h-.04,y+.5);d.castShadow=true;d.receiveShadow=true;g.add(d);
+  if(modern){const a=new THREE.Mesh(box,tmat('aspalX'));a.scale.set(along?1.02:.7,.012,along?.7:1.02);a.position.set(x+.5,h+.006,y+.5);g.add(a)}
+  [-1,1].forEach(sd=>{const r=new THREE.Mesh(box,rail);r.scale.set(along?1.02:.04,.035,along?.04:1.02);r.position.set(x+.5+(along?0:sd*.39),h+.17,y+.5+(along?sd*.39:0));g.add(r);
+   for(let i=0;i<3;i++){const p=new THREE.Mesh(box,rail);p.scale.set(.035,.18,.035);const o=-.42+i*.42;p.position.set(x+.5+(along?o:sd*.39),h+.08,y+.5+(along?sd*.39:o));g.add(p)}});
+  [-.3,.3].forEach(o=>{const pr=new THREE.Mesh(new THREE.CylinderGeometry(.05,.06,h,8),modern?mat('#8f8c86'):tmat('wood','#5a3a22'));pr.position.set(x+.5+(along?o:0),h/2-.04,y+.5+(along?0:o));g.add(pr)});
+  return g}
  R3.path=(x,y)=>{[[0,0],[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy])=>road(x+dx,y+dy))};
- R3.roadsClear=()=>{for(const k in roads){roads[k].geometry.dispose();delete roads[k]}};
+ R3.roadsClear=()=>{for(const k in roads){if(roads[k].geometry)roads[k].geometry.dispose();delete roads[k]}};
  R3.pick=(cx,cy)=>{const r=renderer.domElement.getBoundingClientRect(),v=new THREE.Vector2((cx-r.left)/r.width*2-1,-(cy-r.top)/r.height*2+1),ray=new THREE.Raycaster();ray.setFromCamera(v,camera);const h=ray.intersectObject(terrain,false)[0];if(!h)return null;const x=Math.floor(h.point.x),y=Math.floor(h.point.z);return inside(x,y)?[x,y]:null};
  /* ================= Kehidupan: warga, kendaraan, suasana ================= */
  const LIFE={people:[],veh:[],birds:[],hens:[],smoke:[],glows:[],truckT:20,smokeT:0,gather:0};
@@ -1392,8 +1411,8 @@ const R3={};
   if(d>.03){m.position.x+=dx/d*dt*.35;m.position.z+=dz/d*dt*.35;m.rotation.y=Math.atan2(dx,dz);c.hd.position.y=.11}else{c.hd.position.y=.11-Math.max(0,Math.sin(clock.elapsedTime*9+c.cx))*.06;if(c.t<0){c.t=1+Math.random()*3;c.tx=c.cx+(Math.random()-.5)*1.4;c.tz=c.cz+(Math.random()-.5)*1.4}}
   m.position.y=R3.hAt(m.position.x,m.position.z);m.visible=!isNight()}}
  /* ---------- kendaraan di jaringan jalan ---------- */
- function pathNet(){if(LIFE.paths)return LIFE.paths;const T=[];for(let y=0;y<N;y++)for(let x=0;x<N;x++)if(L(x,y)==='P')T.push([x,y]);LIFE.paths=T;return T}
- const nb=(x,y)=>[[1,0],[-1,0],[0,1],[0,-1]].map(([a,b])=>[x+a,y+b]).filter(([X,Y])=>inside(X,Y)&&L(X,Y)==='P');
+ function pathNet(){if(LIFE.paths)return LIFE.paths;const T=[];for(let y=0;y<N;y++)for(let x=0;x<N;x++)if(isRoad(x,y))T.push([x,y]);LIFE.paths=T;return T}
+ const nb=(x,y)=>[[1,0],[-1,0],[0,1],[0,-1]].map(([a,b])=>[x+a,y+b]).filter(([X,Y])=>isRoad(X,Y));
  const wheel=r=>{const w=new THREE.Mesh(new THREE.TorusGeometry(r,r*.18,6,14),mat('#1e1e1e'));w.rotation.y=Math.PI/2;return w};
  function mkVehicle(kind){const g=new THREE.Group(),ws=[];let rider=null,len=.5;
   if(kind==='sepeda'||kind==='motor'){const r=kind==='motor'?.075:.085;[-.14,.14].forEach(z=>{const w=wheel(r);w.position.set(0,r,z);g.add(w);ws.push(w)});
@@ -1472,6 +1491,8 @@ function act(x,y,silent){const say=m=>{if(!silent){toast(m);Snd.play('err')}};
  if(tool==='info'){showInfo(x,y);return}
  if(tool!=='info'&&!inOwn(x,y)){say(t('outside'));return}
  if(tool==='babat'){if(L(x,y)!=='F')return;if(S.res.coin<1){say(t('noMoney'));return}S.res.coin-=1;S.res.wood+=4;setL(x,y,'G');S.stats.cleared++;Snd.play('chop');R3.tileColor(x,y);R3.trees();after();return}
+ if(tool==='bull'&&isBr(x,y)){S.br=S.br.filter(k=>k!==x+','+y);Snd.play('bull');R3.path(x,y);R3.pathsDirty();after();return}
+ if(tool==='jembatan'){if(L(x,y)!=='W'){say(L2('Jembatan hanya di atas sungai/air.','Bridges go over water only.'));return}if(isBr(x,y))return;if(![[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>isRoad(x+a,y+b))){say(L2('Sambungkan jembatan dari ujung jalan atau jembatan lain.','Connect the bridge to a road end or another bridge.'));return}if(!canAfford(BRC)){say(lackMsg(BRC));return}pay(BRC);S.br=(S.br||[]).concat([x+','+y]);Snd.play('build');R3.path(x,y);R3.pathsDirty();after();return}
  if(tool==='path'){if(L(x,y)!=='G'||occ[y][x]){if(L(x,y)==='F')say(t('needClear'));return}if(S.res.coin<1){say(t('noMoney'));return}S.res.coin-=1;setL(x,y,'P');Snd.play('path');R3.tileColor(x,y);R3.path(x,y);R3.pathsDirty();after();return}
  if(tool==='jalan2'){if(L(x,y)!=='P'){say(L2('Pilih petak jalan yang sudah ada.','Pick an existing road tile.'));return}S.rc=S.rc||{};const k=x+','+y,c=S.rc[k]||1,nx=c+1;if(nx>3){say(L2('Sudah jalan arteri.','Already an arterial road.'));return}const need=nx===2?4:5;if(S.era<need){say(t('locked',{n:need}));return}const cost=nx===2?6:15;if(S.res.coin<cost){say(t('noMoney'));return}S.res.coin-=cost;S.rc[k]=nx;Snd.play('path');R3.path(x,y);after();return}
  if(tool==='bull'){const id=occ[y][x];if(!id)return;const b=S.b.find(b=>b.id===id);S.res.wood+=Math.floor((BT[b.t].c.wood||0)/2);S.b=S.b.filter(q=>q.id!==id);R3.delB(id);rebuildOcc();Snd.play('bull');if(b.t==='house'&&S.kk>popCap())S.kk=Math.max(1,popCap());R3.villagers();after();return}
@@ -1482,7 +1503,7 @@ function act(x,y,silent){const say=m=>{if(!silent){toast(m);Snd.play('err')}};
  if(!canAfford(T.c)){say(lackMsg(T.c));return}
  const stp=slope(x,y)>.6;if(stp&&S.res.wood<(T.c.wood||0)*1.5){say(lang==='en'?'Steep slope: needs 50% more timber.':'Lahan miring: butuh kayu 50% lebih.');return}if(stp)S.res.wood-=Math.ceil((T.c.wood||0)*.5);pay(T.c);Snd.play('build');const b={id:S.nid++,t:tool,x,y,w:T.w,h:T.h,bt:T.days||1};if(T.zone){b.lv=0;b.s=curStyle}if(tool==='house'||tool==='hall')b.s=curStyle;if(tool==='house'&&Math.random()<.5)b.r=Math.floor(Math.random()*4);S.b.push(b);rebuildOcc();R3.addB(b);if(tool==='rel'||tool==='saluran')[[1,0],[-1,0],[0,1],[0,-1]].forEach(([a,c])=>{const X=x+a,Y=y+c;if(inside(X,Y)&&occ[Y][X]){const q=S.b.find(z=>z.id===occ[Y][X]);if(q&&q.t===tool){R3.delB(q.id);R3.addB(q)}}});R3.villagers();after()}
 function after(){dirty=true;updHUD();checkMissions();checkEra();tutCheck()}
-function placeOK(x,y){if(!x&&x!==0)return false;if(tool!=='info'&&!inOwn(x,y))return false;if(tool==='babat')return L(x,y)==='F';if(tool==='path')return L(x,y)==='G'&&!occ[y][x];if(tool==='jalan2')return L(x,y)==='P'&&((S.rc||{})[x+','+y]||1)<3;if(tool==='bull')return !!occ[y][x];if(tool==='info')return true;const T=BT[tool];if(!T)return false;
+function placeOK(x,y){if(!x&&x!==0)return false;if(tool!=='info'&&!inOwn(x,y))return false;if(tool==='babat')return L(x,y)==='F';if(tool==='path')return L(x,y)==='G'&&!occ[y][x];if(tool==='jembatan')return L(x,y)==='W'&&!isBr(x,y)&&[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>isRoad(x+a,y+b));if(tool==='jalan2')return L(x,y)==='P'&&((S.rc||{})[x+','+y]||1)<3;if(tool==='bull')return !!occ[y][x]||isBr(x,y);if(tool==='info')return true;const T=BT[tool];if(!T)return false;
  for(let dy=0;dy<T.h;dy++)for(let dx=0;dx<T.w;dx++){const X=x+dx,Y=y+dy;if(!inside(X,Y)||!inOwn(X,Y)||L(X,Y)!=='G'||occ[Y][X])return false}return T.era<=S.era&&canAfford(T.c)}
 function bindInput(){const el=R3.dom();let down=null,last=null;
  el.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,b:e.button};dragging=false;if((tool==='babat'||tool==='path'||tool==='jalan2'||(BT[tool]&&BT[tool].zone))&&e.button===0&&e.pointerType!=='touch'){R3.controls().enabled=false;dragging=true;const c=R3.pick(e.clientX,e.clientY);if(c){act(c[0],c[1],true);last=c.join()}}});
@@ -1495,7 +1516,7 @@ function bindInput(){const el=R3.dom();let down=null,last=null;
 
 /* ================= UI gim ================= */
 function renderBar(){$('bar').innerHTML=TOOLS.map(k=>{if(k==='|')return '<div class="sep"></div>';const T=BT[k],lock=T&&T.era>S.era,c=T?T.c:null;
-  return `<button class="tool${k===tool?' on':''}${lock?' lock':''}" data-k="${k}" title="${esc(t('tlD.'+k))}"><i>${ICON[k]}</i><span>${tlN(k)}</span><em>${c?costTxt(c):k==='babat'?money(1,true)+' →🪵4':k==='path'?money(1,true):k==='jalan2'?money(6,true)+'+':''}</em></button>`}).join('');
+  return `<button class="tool${k===tool?' on':''}${lock?' lock':''}" data-k="${k}" title="${esc(t('tlD.'+k))}"><i>${ICON[k]}</i><span>${tlN(k)}</span><em>${c?costTxt(c):k==='babat'?money(1,true)+' →🪵4':k==='path'?money(1,true):k==='jembatan'?costTxt(BRC):k==='jalan2'?money(6,true)+'+':''}</em></button>`}).join('');
  $('bar').querySelectorAll('.tool').forEach(b=>b.onclick=()=>{Snd.click();setTimeout(tutRender,0);const k=b.dataset.k,T=BT[k];if(T&&T.era>S.era){toast(t('locked',{n:T.era}));return}tool=k;renderBar();$('styleBar').classList.toggle('hidden',!(k==='house'||k==='hall'));if(k!=='info')$('info').classList.add('hidden')});
  $('styleBar').innerHTML=STYLES.map(s=>`<button class="${s===curStyle?'on':''}" data-s="${s}">${t('st.'+s)[0]}</button>`).join('');$('styleBar').querySelectorAll('button').forEach(b=>b.onclick=()=>{curStyle=b.dataset.s;renderBar()})}
 function dateStr(){const c=S.clk||{h:7,d:1};return String(c.d).padStart(2,'0')+' '+t('months')[calM()]+' · '+t('year')+' '+calY()+' · '+String(Math.floor(c.h)).padStart(2,'0')+':'+String(Math.floor(c.h%1*4)*15).padStart(2,'0')}
@@ -1544,7 +1565,7 @@ async function save(force){if(!S||saving)return;if(!force&&!dirty)return;if(S.sc
  catch(e){if(dot)dot.textContent=t('saveFail');if(force)toast(t('saveFail'))}finally{saving=false}}
 async function loadGame(){try{let st=null;if(GUEST){st=JSON.parse(store.get('baGuestSave')||'null')}else{const j=await api('load');st=j.save&&j.save.state;saveVer=j.save?j.save.ver:0}if(!st||!st.own||!st.land||st.land.length!==N)throw new Error('none');startGame(st,false)}catch(e){$('hubErr').textContent=t('errNet')}}
 let started=false,loopT=0,clockS='';
-function startGame(st,fresh){S=st;if(S.res.stone==null)S.res.stone=20;if(S.res.iron==null)S.res.iron=0;rebuildOcc();show('game');if(!started){R3.init($('view'));bindInput();started=true}
+function startGame(st,fresh){S=st;_brN=-1;if(S.res.stone==null)S.res.stone=20;if(S.res.iron==null)S.res.iron=0;rebuildOcc();show('game');if(!started){R3.init($('view'));bindInput();started=true}
  /* permainan lama (dibuat sebelum kas awal Rp 100 miliar): tambah dana awal sekali */
  if(!S.capFix&&!S.scen&&(S.meta.created||0)<1793500200000){S.capFix=1;S.res.coin+=607;dirty=true;setTimeout(()=>advise(L2('💰 Dana awal kampung disesuaikan: +'+money(607)+' (setara kas awal ±Rp 100 miliar).','💰 Starting funds adjusted: +'+money(607)+'.'),'eco'),2500)}else if(!S.capFix)S.capFix=1;
  setTimeout(()=>syncDeals().then(()=>{if(S)updHUD()}),3000);

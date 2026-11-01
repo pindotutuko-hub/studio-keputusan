@@ -113,6 +113,9 @@ function audit(array $st, ?array $prev, int $prevAt): array {
 	if ($era >= 2 && $barns < 1) { $bad[] = 'era2'; }
 	$eraKK = [3 => 40, 4 => 80, 5 => 160, 6 => 320, 7 => 640]; if (isset($eraKK[$era]) && $kk < $eraKK[$era] * 0.5) { $bad[] = 'eraKK'; }
 	$paths = substr_count(implode('', $land), 'P'); $spentC += $paths;
+	$br = is_array($st['br'] ?? null) ? $st['br'] : []; if (count($br) > 600) { $bad[] = 'br'; $br = []; }
+	foreach ($br as $k) { if (!is_string($k) || !preg_match('/^(\d{1,3}),(\d{1,3})$/', $k, $mm) || (int) $mm[1] >= $n || (int) $mm[2] >= $n || $land[(int) $mm[2]][(int) $mm[1]] !== 'W') { $bad[] = 'br'; break; } }
+	$spentC += 6 * count($br); $spentW += 10 * count($br);
 	$cleared = (int) ($st['stats']['cleared'] ?? 0); $spentC += $cleared;
 	for ($i = 0; $i < $ex; $i++) { $spentC += 40 + 30 * $i; $spentW += 15 + 10 * $i; }
 	if ($food > 40 + $bStore + 120 + 1) { $bad[] = 'food'; }
