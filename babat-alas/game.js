@@ -790,7 +790,7 @@ function scenStart(k){const D=SCEN[k],ch=(draft&&draft.char&&draft.char.ava)?dra
   let p=0;for(let y=o.y0;y<o.y1&&p<4;y++)for(let x=o.x0;x<o.x1&&p<4;x++)if(L(x,y)==='G'&&nearWater(x,y,1)&&(x+y)%7===0&&put('pond',x,y))p++;put('well',cx+2,cy+2);put('well',cx-3,cy-2);put('field',cx+4,cy-4);for(let i=0;i<6;i++)put('field',cx-12+(i%3)*3,cy-10+Math.floor(i/3)*3);put('barn',cx-12,cy-4);put('market',cx+5,cy+5);S.b.filter(b=>b.t==='house').forEach((h,i)=>{if(i%6===0)[[1,0],[0,1],[-1,0],[0,-1]].some(([a,c])=>put('well',h.x+a,h.y+c))});put('kebun',cx-6,cy+3);put('barn',cx+1,cy-2);put('hall',cx-5,cy-4);put('worship',cx+2,cy-3);put('rt',cx-1,cy+3)}
  if(k==='hijau'){for(let y=cy-6;y<cy+6;y++)for(let x=cx-6;x<cx+6;x++){if(x===cx||y===cy)continue;put((x+y)%4?'zr':'zc',x,y,{lv:1})}
   put('surya',cx+10,cy-10);put('surya',cx+11,cy-10);put('surya',cx+12,cy-10);put('menara',cx-10,cy);put('tps',cx-10,cy+3);put('tps',cx+10,cy+3);put('sekolah',cx-11,cy-6);put('klinik',cx+10,cy-6);put('market',cx+10,cy+6);put('worship',cx-10,cy+6);put('hall',cx-11,cy-10);put('barn',cx+10,cy+10);put('rt',cx-10,cy-3);put('rt',cx-10,cy-1);put('kom',cx+12,cy)}
- const cap=S.b.reduce((a,b)=>a+(b.t==='house'?1:b.t==='zr'?ZCAP.zr[b.lv||0]:0),0);S.kk=Math.max(10,Math.round(cap*.92));S.scen.kk0=S.kk;S.happy=60;R0.food=40+barnStore();S.coh=55;S.stats.cleared=200;
+ const cap=S.b.reduce((a,b)=>a+(b.t==='house'?1:b.t==='zr'?ZCAP.zr[b.lv||0]:0),0);S.kk=Math.max(10,Math.round(cap*.92));S.scen.kk0=S.kk;S.happy=60;R0.food=60+barnStore();S.coh=55;S.stats.cleared=200;
  S.done=['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11'].slice(0,D.era>=3?11:6);startGame(S,false);
  setTimeout(()=>modal(`<h2>${D.ic} ${D[lang][0]}</h2><p>${D[lang][1]}</p><p><b>${L2('Target','Goal')}:</b> ${D[lang][2]}</p><p class="note">${L2('Mode latihan: tersimpan di peramban ini saja.','Practice mode: saved in this browser only.')}</p>`),1200)}
 function scenCheck(){if(!S||!S.scen||S.scen.done)return;const D=SCEN[S.scen.k];if(D&&D.goal(S.scen)){S.scen.done=S.t;Snd.play('era');modal(`<div class="box eraUp"><div class="big">🏆</div><h2>${L2('Skenario berhasil!','Scenario complete!')}</h2><p>${D[lang][0]} — ${D[lang][2]}</p><p class="note">${L2('Selesai pada bulan ke-','Completed in month ')}${S.t}. ${L2('Silakan lanjut bermain atau coba skenario lain.','Keep playing or try another scenario.')}</p></div>`)}}
@@ -865,7 +865,7 @@ const built=()=>S.b.filter(b=>!b.bt);
 function tick(){S.t++;const R=S.res,m=calM(),cl=S.loc.climate,sea=seasonOf(m);const rainy=sea==='hujan'||sea==='pancaroba'||sea==='gugur';S._sea=sea;
  S._rain=rainy;const workers=S.kk*2;let jobsNeed=0;S.b.forEach(b=>{if(BT[b.t].jobs)jobsNeed+=BT[b.t].jobs});const staff=jobsNeed?Math.min(1,workers/jobsNeed):1;
  const smul={hujan:1.1,pancaroba:.95,kemarau:.75,semi:.9,panas:1,gugur:1.2,dingin:.25}[sea];let prod=0;built().forEach(b=>{if(BT[b.t].food){let f=BT[b.t].food*LVM(b)*staff*(b.dmg?0.3:1);if(b.t==='pemburu'){let fr=0;for(let dy=-6;dy<=6;dy++)for(let dx=-6;dx<=6;dx++){const X=b.x+dx,Y=b.y+dy;if(inside(X,Y)&&L(X,Y)==='F')fr++}f*=Math.min(1,fr/40)}if(b.t==='field'){f*=(fert(b.x,b.y)+fert(b.x+1,b.y+1))/2;f*=sea==='kemarau'&&nearWater(b.x,b.y,4)?1.25:1;f*=smul}prod+=f}});if(S.ev.dry>0){prod*=.6;S.ev.dry--}
- const cons=S.kk*2,cap=40+barnStore();R.food=Math.min(cap,R.food+prod-cons);
+ const cons=S.kk*2,cap=60+barnStore();R.food=Math.min(cap,R.food+prod-cons);
  /* impor pangan lewat pasar/pusat belanja/zona komersial bila kurang (dibayar kas) */
  if(R.food<0){const capI=count('market')*40+count('ruko')*30+count('mal')*150+built().filter(b=>b.t==='zc').reduce((a,z)=>a+(z.lv||0)*10,0)+count('dermaga')*10;const need=Math.min(-R.food,capI),cost=Math.ceil(need*.35);if(need>0&&R.coin>=cost){R.coin-=cost;R.food+=need;S._imp=need}}
  let msg=null;if(R.food<0){R.food=0;S.happy-=12;if(S.kk>1){S.kk--;msg=t('ev.hunger')}}
@@ -1449,7 +1449,7 @@ function renderBar(){$('bar').innerHTML=TOOLS.map(k=>{if(k==='|')return '<div cl
 function dateStr(){const c=S.clk||{h:7,d:1};return String(c.d).padStart(2,'0')+' '+t('months')[calM()]+' · '+t('year')+' '+calY()+' · '+String(Math.floor(c.h)).padStart(2,'0')+':'+String(Math.floor(c.h%1*4)*15).padStart(2,'0')}
 function updHUD(){const R=S.res;$('hName').textContent=S.char.name;$('hTitle').textContent=titleOf(S.loc.cc,S.era);$('hAv').innerHTML=S.char._shot?`<img src="${S.char._shot}" alt="">`:avatarOf(S.char);
  $('hDate').textContent=dateStr();$('hEra').textContent=t('era',{n:S.era})+' · '+t('eras')[S.era-1];
- const cap=40+barnStore(),houses=popCap();
+ const cap=60+barnStore(),houses=popCap();
  const sea=seasonOf(calM());const st=[[SEAS_IC[sea],SEASN[lang][sea],WX_IC[S.wx||'cerah']+' '+WXN[lang][S.wx||'cerah'],false],['💰',t('coin'),money(R.coin,true),R.coin<5],['🪵',t('wood'),Math.floor(R.wood),R.wood<5],['🌾',t('food'),Math.floor(R.food)+'/'+cap,R.food<S.kk*3],['👪',t('kk'),S.kk+'/'+houses,S.kk>houses],['😊',t('happy'),S.happy,S.happy<45],['🤝',t('coh'),S.coh,S.coh<45]];
  $('hStats').innerHTML=st.map(s=>`<div class="st${s[3]?' warn':''}"><small>${s[0]} ${s[1]}</small><b>${s[2]}</b></div>`).join('')}
 function renderMissions(){const list=missList();$('missions').innerHTML=`<h3>🎯 ${t('missions')} · ${t('eras')[S.era-1]}<button id="msX">–</button></h3>`+list.map(([k])=>`<div class="ms${S.done.indexOf(k)>=0?' done':''}"><i>${S.done.indexOf(k)>=0?'✅':'⬜'}</i><span>${msLabel(k)}</span></div>`).join('')+(S.scen?`<div class="ms${S.scen.done?' done':''}"><i>${S.scen.done?'🏆':SCEN[S.scen.k].ic}</i><span><b>${SCEN[S.scen.k][lang][0]}</b>: ${SCEN[S.scen.k][lang][2]}<br><small>${SCEN[S.scen.k].prog(S.scen)}</small></span></div>`:'')+(ME&&ME.tantangan&&!GUEST?`<div class="ms${S._chalDone===ME.tantangan?' done':''}"><i>${S._chalDone===ME.tantangan?'✅':'🎯'}</i><span>${L2('Tantangan kelas: ','Class challenge: ')}${CHAL_N[lang][ME.tantangan]||ME.tantangan}</span></div>`:'')+rapor()+`<p class="note" style="color:var(--muted);margin:6px 0 0">${esc(S.meta.name)} · ${esc(S.loc.name)}</p>`;
@@ -1739,7 +1739,7 @@ const Dlg={busy:false,
     else C.innerHTML=`<button class="dlb nx">${lang==='en'?'Continue ▸':'Lanjut ▸'}</button>`,C.querySelector('.nx').onclick=e=>{e.stopPropagation();Snd.click();next()}};
    box.onclick=()=>{if(!full){clearInterval(tw);P.textContent=txt;full=true;opts()}}};
   show(start||'#0')}};
-const clampRes=()=>{S.res.food=Math.max(0,Math.min(40+barnStore(),S.res.food));S.res.wood=Math.max(0,S.res.wood);S.res.coin=Math.max(0,S.res.coin);S.happy=Math.max(0,Math.min(100,S.happy));S.coh=Math.max(0,Math.min(100,S.coh))};
+const clampRes=()=>{S.res.food=Math.max(0,Math.min(60+barnStore(),S.res.food));S.res.wood=Math.max(0,S.res.wood);S.res.coin=Math.max(0,S.res.coin);S.happy=Math.max(0,Math.min(100,S.happy));S.coh=Math.max(0,Math.min(100,S.coh))};
 const fx=f=>()=>{f();clampRes();dirty=true};
 function prolog(){const nm=S.char.name;Dlg.play([
  {who:'elder',t:D('Sugeng rawuh, {name}. Hutan di {loc} ini belum pernah dibuka. Warga memilihmu untuk memimpin babat alas.','Welcome, {name}. The forest at {loc} has never been opened. The people chose you to lead the clearing.')},
