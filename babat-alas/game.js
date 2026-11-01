@@ -475,12 +475,13 @@ function npcVillages(st){const r=rng(st.seed+9),L=SYL[st.loc.cc]||SYL.XX,P=ecoPr
 
 /* ---------- perdagangan bulanan ---------- */
 function tradeMonth(staff,smul){const P=S.eco||(S.eco=ecoProfile(S)),out={income:0,items:[]};const kom=count('kom'),mk=count('market');const links=(S.links||[]).length,mult=1+.12*Math.min(links,8)+(kom?.15:0)+.1*Math.min(count('dermaga'),3);
- const prod={};const add=(k,v)=>{prod[k]=(prod[k]||0)+v};built().forEach(b=>{if(b.t==='kebun')add(P.crop,6*staff*smul*fert(b.x,b.y));if(b.t==='bengkel')add(P.craft,3*staff);if(b.t==='pond')add('ikan',1.5*staff)});
+ const prod={};const add=(k,v)=>{prod[k]=(prod[k]||0)+v};built().forEach(b=>{if(b.t==='kandang'){add('telur',2*staff);add('ternak',.5*staff)}if(b.t==='peternakan'){add('susu',3*staff);add('ternak',1.5*staff)}if(b.t==='dapur'&&S.res.food>25){const u=Math.min(4*staff,S.res.food-25);S.res.food-=u;add('olahan',u)}if(b.t==='kebun')add(P.crop,6*staff*smul*fert(b.x,b.y));if(b.t==='bengkel')add(P.craft,3*staff);if(b.t==='pond')add('ikan',1.5*staff)});
  if(P.nat.includes('madu'))add('madu',Math.min(3,(S.land.join('').split('F').length-1)/2500));
  for(const k in prod){S.stock[k]=(S.stock[k]||0)+prod[k]}
- if(!mk&&!links)return out;const cap=(mk?14:0)+links*10;let sold=0;
- for(const k in S.stock){const q=Math.min(S.stock[k],Math.max(0,cap-sold));if(q<=0)continue;const want=(S.links||[]).some(l=>(l.want||[]).includes(k))?1.3:1;const v=q*PRICE[k]*.5*mult*want;S.stock[k]-=q;sold+=q;out.income+=v;out.items.push([k,+q.toFixed(1),Math.round(v)])}
- out.income=Math.min(Math.round(out.income),6*mk+10*(count('kebun')+count('bengkel')+count('pond'))+8*links+4);return out}
+ /* tanpa pasar & tetangga: pedagang keliling membeli sedikit dengan harga lebih rendah */
+ const ped=!mk&&!links;const cap=(mk?14:0)+links*10+(ped?6:2);let sold=0;
+ for(const k in S.stock){const q=Math.min(S.stock[k],Math.max(0,cap-sold));if(q<=0)continue;const want=(S.links||[]).some(l=>(l.want||[]).includes(k))?1.3:1;const v=q*(PRICE[k]||2)*.5*mult*want*(ped?.7:1);S.stock[k]-=q;sold+=q;out.income+=v;out.items.push([k,+q.toFixed(1),Math.round(v)])}
+ out.income=Math.min(Math.round(out.income),6*mk+10*(count('kebun')+count('bengkel')+count('pond')+count('kandang')+count('peternakan')+count('dapur'))+8*links+8);return out}
 /* ---------- hari: cuaca & pembangunan ---------- */
 function dayTick(){setTimeout(tutCheck,0);S.wx=rollWeather();R3.weather(S.wx,seasonOf(calM()));if(S.wx==='badai'&&Math.random()<.15)advise(lang==='en'?'Thunderstorm! Keep away from the river.':'Hujan badai! Jauhi tepi sungai.','eng');
  // pembangunan: tiap lokasi butuh 2 tukang; tukang = pekerja yang belum bekerja
@@ -810,6 +811,19 @@ function cityReport(){const C=S.city||{},I=S._ind||{},esc2=v=>esc(String(v==null
  <p class="m">${L2('Angka di dalam gim adalah model latihan, bukan angka regulasi.','Numbers in the game are a training model, not regulatory values.')} pindotutuko.id/babat-alas</p></body></html>`;
  const w=window.open('','_blank');if(!w){toast(L2('Izinkan jendela munculan (pop-up) untuk membuka laporan.','Allow pop-ups to open the report.'));return}w.document.open();w.document.write(html);w.document.close()}
 
+/* ================= Ekonomi kampung awal: ternak, berburu, olahan makanan-minuman, pedagang keliling ================= */
+Object.assign(BT,{kandang:{era:1,w:1,h:1,c:{coin:4,wood:6},jobs:1,food:3,days:2},
+ peternakan:{era:1,w:2,h:2,c:{coin:10,wood:12},jobs:2,food:5,days:5},
+ pemburu:{era:1,w:1,h:1,c:{coin:3,wood:4},jobs:1,food:4,days:2},
+ dapur:{era:1,w:1,h:1,c:{coin:8,wood:6},jobs:2,days:3}});
+TOOLS.splice(TOOLS.indexOf('pond')+1,0,'kandang','peternakan','pemburu','dapur');
+Object.assign(ICON,{kandang:'🐔',peternakan:'🐄',pemburu:'🏹',dapur:'🍲'});
+Object.assign(TX.id.tl,{kandang:'Kandang ayam',peternakan:'Peternakan',pemburu:'Pondok berburu',dapur:'Dapur olahan'});
+Object.assign(TX.en.tl,{kandang:'Chicken coop',peternakan:'Livestock farm',pemburu:'Hunting lodge',dapur:'Food workshop'});
+Object.assign(TX.id.tlD,{kandang:'Ayam & telur: pangan +3, ternak dijual',peternakan:'Sapi/kambing: pangan +5, susu & ternak dijual',pemburu:'Berburu & meramu di hutan sekitar: pangan +4 (butuh hutan)',dapur:'Olah hasil panen jadi makanan & minuman: nilai jual tinggi'});
+Object.assign(TX.en.tlD,{kandang:'Chickens & eggs: food +3, livestock to sell',peternakan:'Cattle/goats: food +5, milk & livestock to sell',pemburu:'Hunt & forage in nearby forest: food +4 (needs forest)',dapur:'Turn harvests into food & drinks: high sale value'});
+Object.assign(COMN.id,{telur:'Telur',olahan:'Olahan makanan & minuman'});Object.assign(COMN.en,{telur:'Eggs',olahan:'Processed food & drinks'});PRICE.olahan=6;PRICE.telur=2.5;COM_IC.olahan='🍲';COM_IC.telur='🥚';
+
 let S=null;          // keadaan permainan
 let occ=null;        // occ[y][x] = id bangunan
 function rebuildOcc(){occ=[];for(let y=0;y<N;y++)occ.push(new Array(N).fill(0));S.b.forEach(b=>{for(let dy=0;dy<b.h;dy++)for(let dx=0;dx<b.w;dx++)occ[b.y+dy][b.x+dx]=b.id})}
@@ -826,7 +840,7 @@ const built=()=>S.b.filter(b=>!b.bt);
 /** Satu langkah = satu bulan. */
 function tick(){S.t++;const R=S.res,m=calM(),cl=S.loc.climate,sea=seasonOf(m);const rainy=sea==='hujan'||sea==='pancaroba'||sea==='gugur';S._sea=sea;
  S._rain=rainy;const workers=S.kk*2;let jobsNeed=0;S.b.forEach(b=>{if(BT[b.t].jobs)jobsNeed+=BT[b.t].jobs});const staff=jobsNeed?Math.min(1,workers/jobsNeed):1;
- const smul={hujan:1.1,pancaroba:.95,kemarau:.75,semi:.9,panas:1,gugur:1.2,dingin:.25}[sea];let prod=0;built().forEach(b=>{if(BT[b.t].food){let f=BT[b.t].food*staff*(b.dmg?0.3:1);if(b.t==='field'){f*=(fert(b.x,b.y)+fert(b.x+1,b.y+1))/2;f*=sea==='kemarau'&&nearWater(b.x,b.y,4)?1.25:1;f*=smul}prod+=f}});if(S.ev.dry>0){prod*=.6;S.ev.dry--}
+ const smul={hujan:1.1,pancaroba:.95,kemarau:.75,semi:.9,panas:1,gugur:1.2,dingin:.25}[sea];let prod=0;built().forEach(b=>{if(BT[b.t].food){let f=BT[b.t].food*staff*(b.dmg?0.3:1);if(b.t==='pemburu'){let fr=0;for(let dy=-6;dy<=6;dy++)for(let dx=-6;dx<=6;dx++){const X=b.x+dx,Y=b.y+dy;if(inside(X,Y)&&L(X,Y)==='F')fr++}f*=Math.min(1,fr/40)}if(b.t==='field'){f*=(fert(b.x,b.y)+fert(b.x+1,b.y+1))/2;f*=sea==='kemarau'&&nearWater(b.x,b.y,4)?1.25:1;f*=smul}prod+=f}});if(S.ev.dry>0){prod*=.6;S.ev.dry--}
  const cons=S.kk*2,cap=40+count('barn')*BT.barn.store;R.food=Math.min(cap,R.food+prod-cons);
  /* impor pangan lewat pasar/pusat belanja/zona komersial bila kurang (dibayar kas) */
  if(R.food<0){const capI=count('market')*40+count('ruko')*30+count('mal')*150+built().filter(b=>b.t==='zc').reduce((a,z)=>a+(z.lv||0)*10,0)+count('dermaga')*10;const need=Math.min(-R.food,capI),cost=Math.ceil(need*.35);if(need>0&&R.coin>=cost){R.coin-=cost;R.food+=need;S._imp=need}}
@@ -1035,6 +1049,13 @@ const R3={};
   else if(b.t==='retensi'){const lawn=new THREE.Mesh(new THREE.PlaneGeometry(1.94,1.94),mat('#6fae55'));lawn.rotation.x=-Math.PI/2;lawn.position.set(.5,.035,.5);g.add(lawn);const w=new THREE.Mesh(new THREE.PlaneGeometry(1.5,1.3),mat('#4f86ad',{roughness:.1,metalness:.2}));w.rotation.x=-Math.PI/2;w.position.set(.5,.045,.5);g.add(w);
    for(let k=0;k<4;k++)B(g,mat('#8f8a80'),k<2?.5:(k===2?-.27:1.27),.03,k<2?(k?1.17:-.17):.5,k<2?1.56:.04,.05,k<2?.04:1.36);[[-.3,-.3],[1.3,1.3],[-.3,1.3]].forEach(([x,z])=>{const c=new THREE.Mesh(new THREE.IcosahedronGeometry(.2,0),mat('#3f8a3a'));c.position.set(x,.35,z);c.castShadow=true;g.add(c)})}
   else if(b.t==='rel'){const nb=relNb(b.x,b.y),hz=nb.some(([a])=>a!==0)&&!nb.some(([a,c])=>c!==0)||nb.length===0;B(g,mat('#8a847a'),0,0,0,hz?1:.5,.05,hz?.5:1);for(let k=0;k<5;k++)B(g,tmat('wood','#6b4f3a'),hz?-.4+k*.2:0,.05,hz?0:-.4+k*.2,hz?.06:.42,.025,hz?.42:.06);[-1,1].forEach(sd=>B(g,mat('#bdbdbd',{metalness:.7,roughness:.3}),hz?0:sd*.12,.075,hz?sd*.12:0,hz?1:.025,.025,hz?.025:1));if((b.x+b.y)%3===0){B(g,mat('#7a7a72'),hz?0:.22,.05,hz?.22:0,.03,.6,.03);B(g,mat('#7a7a72'),0,.62,0,hz?.03:.5,.02,hz?.5:.03)}}
+  else if(b.t==='kandang'){B(g,tmat('wood','#8a6a45'),-.12,0,-.12,.5,.32,.4);const r=hipRoof(.6,.5,.16,tmat('thatch'));r.position.set(-.12,.32+.08,-.12);g.add(r);for(let k=0;k<8;k++){const a=k/8*Math.PI*2;B(g,tmat('wood','#6b4f3a'),Math.cos(a)*.42,0,Math.sin(a)*.42,.03,.18,.03)}
+   for(let k=0;k<4;k++){const c=new THREE.Group();const bd=new THREE.Mesh(new THREE.SphereGeometry(.045,8,6),mat(['#f2efe7','#8a4b2a','#c8a14b','#2b2b2b'][k]));bd.scale.set(1,.85,1.3);bd.position.y=.06;c.add(bd);const hd=new THREE.Mesh(new THREE.SphereGeometry(.025,6,5),bd.material);hd.position.set(0,.11,.05);c.add(hd);c.position.set(.12+(k%2)*.14,0,.1+Math.floor(k/2)*.14);c.rotation.y=k;g.add(c)}}
+  else if(b.t==='peternakan'){const gr=new THREE.Mesh(new THREE.PlaneGeometry(1.94,1.94),mat('#7fae55'));gr.rotation.x=-Math.PI/2;gr.position.set(.5,.035,.5);g.add(gr);for(let k=0;k<12;k++){const t=k/12;[[-.45+t*1.9,-.45],[-.45+t*1.9,1.45],[-.45,-.45+t*1.9],[1.45,-.45+t*1.9]].forEach(([x,z])=>B(g,tmat('wood','#6b4f3a'),x,0,z,.03,.2,.03))}
+   B(g,tmat('wood','#8a6a45'),1.1,0,1.1,.5,.35,.5);const r=hipRoof(.6,.6,.18,tmat('thatch'));r.position.set(1.1,.35+.09,1.1);g.add(r);
+   for(let k=0;k<3;k++){const cw=new THREE.Group();const col=['#f2efe7','#6b4a2a','#2b2b2b'][k];const bd=new THREE.Mesh(box,mat(col));bd.scale.set(.14,.12,.28);bd.position.y=.17;cw.add(bd);const hd=new THREE.Mesh(box,mat(col));hd.scale.set(.09,.09,.1);hd.position.set(0,.22,.18);cw.add(hd);for(const [x,z] of [[-.05,-.1],[.05,-.1],[-.05,.1],[.05,.1]])B(cw,mat('#3a2a1f'),x,0,z,.03,.11,.03);cw.position.set(.1+k*.35,0,.2+(k%2)*.4);cw.rotation.y=k*1.3;g.add(cw)}}
+  else if(b.t==='pemburu'){B(g,tmat('wood','#7a5a3a'),0,0,0,.5,.35,.45);const r=hipRoof(.62,.56,.2,tmat('ijuk'));r.position.y=.35+.1;g.add(r);B(g,tmat('wood','#5a3a22'),.32,0,.2,.03,.4,.03);const bw=new THREE.Mesh(new THREE.TorusGeometry(.12,.012,6,12,Math.PI),mat('#6b4f3a'));bw.position.set(.35,.32,.2);bw.rotation.y=Math.PI/2;g.add(bw);B(g,mat('#8a5a3a'),-.32,0,.22,.12,.06,.12)}
+  else if(b.t==='dapur'){B(g,tmat('plaster'),0,0,-.05,.6,.4,.5);const r=hipRoof(.7,.6,.2,tmat('tile'));r.position.set(0,.4+.1,-.05);g.add(r);B(g,mat('#8a3b2a'),.2,.4,-.15,.08,.3,.08);B(g,mat('#c8a14b'),-.15,0,.3,.35,.25,.2);[[-.25],[-.05]].forEach(([x])=>{const j=new THREE.Mesh(new THREE.CylinderGeometry(.04,.05,.1,8),mat('#a0522d'));j.position.set(x,.3,.3);g.add(j)})}
   else if(b.t==='dermaga'){B(g,tmat('wood','#8a6a45'),0,.0,0,.9,.06,.5);for(const x of [-.4,.4])for(const z of [-.2,.2])B(g,tmat('wood','#5a3a22'),x,-.25,z,.06,.36,.06);B(g,tmat('wood','#8a6a45'),0,.06,.32,.9,.03,.06);const bt=new THREE.Mesh(new THREE.CylinderGeometry(.06,.045,.42,8),mat('#2f6fb0'));bt.rotation.z=Math.PI/2;bt.scale.y=1;bt.position.set(0,.02,.45);g.add(bt)}
   else if(b.t==='paud'){B(g,mat('#8fd0a0'),0,0,0,.92,.03,.92);B(g,mat(['#f6d36b','#9fd3e8','#f4a6a6'][b.id%3]),0,.03,-.12,.7,.38,.5);const r=hipRoof(.8,.6,.22,mat('#e07a26'));r.position.set(0,.48,-.12);g.add(r);B(g,mat('#e0a526'),-.25,.03,.3,.04,.22,.04);B(g,mat('#e0a526'),.05,.03,.3,.04,.22,.04);B(g,mat('#c0392b'),-.1,.22,.3,.36,.03,.06);const sl=new THREE.Mesh(box,mat('#2f6fb0'));sl.scale.set(.1,.02,.4);sl.position.set(.3,.13,.28);sl.rotation.x=.5;g.add(sl)}
   else if(b.t==='smp'||b.t==='sma'){const fl=b.t==='sma'?3:2;B(g,mat('#8f8a80'),.5,0,.5,1.9,.05,1.6);B(g,tmat('plaster'),.5,.05,.25,1.75,fl*.32,.6);for(let f=0;f<fl;f++)for(let i=0;i<6;i++)B(g,mat('#2c3a44',{roughness:.2}),-.2+i*.28,.14+f*.32,.551,.16,.14,.01);B(g,mat(b.t==='sma'?'#6b7a8a':'#3b6fb0'),.5,.05+fl*.32,.25,1.8,.05,.66);
@@ -1333,9 +1354,11 @@ function placeOK(x,y){if(!x&&x!==0)return false;if(tool!=='info'&&!inOwn(x,y))re
  for(let dy=0;dy<T.h;dy++)for(let dx=0;dx<T.w;dx++){const X=x+dx,Y=y+dy;if(!inside(X,Y)||!inOwn(X,Y)||L(X,Y)!=='G'||occ[Y][X])return false}return T.era<=S.era&&canAfford(T.c)}
 function bindInput(){const el=R3.dom();let down=null,last=null;
  el.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,b:e.button};dragging=false;if((tool==='babat'||tool==='path'||tool==='jalan2'||(BT[tool]&&BT[tool].zone))&&e.button===0&&e.pointerType!=='touch'){R3.controls().enabled=false;dragging=true;const c=R3.pick(e.clientX,e.clientY);if(c){act(c[0],c[1],true);last=c.join()}}});
- el.addEventListener('pointermove',e=>{const c=R3.pick(e.clientX,e.clientY);if(c){const T=BT[tool]||{w:1,h:1};R3.ghost(c[0],c[1],T.w,T.h,placeOK(c[0],c[1]))}else R3.ghost(null);
+ el.addEventListener('pointermove',e=>{const c=R3.pick(e.clientX,e.clientY);if(down&&!dragging&&Math.hypot(e.clientX-down.x,e.clientY-down.y)>6){el.style.cursor='grabbing'}
+  else if(!c)el.style.cursor='default';else if(tool==='info')el.style.cursor=occ[c[1]][c[0]]?'pointer':'default';else el.style.cursor=placeOK(c[0],c[1])?(tool==='bull'?'pointer':'crosshair'):'not-allowed';
+  if(c&&tool!=='info'){const T=BT[tool]||{w:1,h:1};R3.ghost(c[0],c[1],T.w,T.h,placeOK(c[0],c[1]))}else R3.ghost(null);
   if(dragging&&c&&c.join()!==last){act(c[0],c[1],true);last=c.join()}});
- el.addEventListener('pointerup',e=>{R3.controls().enabled=true;if(!down)return;const d=Math.hypot(e.clientX-down.x,e.clientY-down.y);if(!dragging&&d<7&&down.b===0){const c=R3.pick(e.clientX,e.clientY);if(c)act(c[0],c[1])}dragging=false;down=null;last=null});
+ el.addEventListener('pointerup',e=>{R3.controls().enabled=true;el.style.cursor='';if(!down)return;const d=Math.hypot(e.clientX-down.x,e.clientY-down.y);if(!dragging&&d<7&&down.b===0){const c=R3.pick(e.clientX,e.clientY);if(c)act(c[0],c[1])}dragging=false;down=null;last=null});
  el.addEventListener('pointerleave',()=>R3.ghost(null))}
 
 /* ================= UI gim ================= */
@@ -1390,6 +1413,8 @@ async function save(force){if(!S||saving)return;if(!force&&!dirty)return;if(S.sc
 async function loadGame(){try{let st=null;if(GUEST){st=JSON.parse(store.get('baGuestSave')||'null')}else{const j=await api('load');st=j.save&&j.save.state;saveVer=j.save?j.save.ver:0}if(!st||!st.own||!st.land||st.land.length!==N)throw new Error('none');startGame(st,false)}catch(e){$('hubErr').textContent=t('errNet')}}
 let started=false,loopT=0,clockS='';
 function startGame(st,fresh){S=st;rebuildOcc();show('game');if(!started){R3.init($('view'));bindInput();started=true}
+ /* permainan lama (dibuat sebelum kas awal Rp 100 miliar): tambah dana awal sekali */
+ if(!S.capFix&&!S.scen&&(S.meta.created||0)<1793500200000){S.capFix=1;S.res.coin+=607;dirty=true;setTimeout(()=>advise(L2('💰 Dana awal kampung disesuaikan: +'+money(607)+' (setara kas awal ±Rp 100 miliar).','💰 Starting funds adjusted: +'+money(607)+'.'),'eco'),2500)}else if(!S.capFix)S.capFix=1;
  setTimeout(()=>syncDeals().then(()=>{if(S)updHUD()}),3000);
  if(SET.real!==false&&!REAL.ok)REAL.load().then(ok=>{if(ok&&S&&R3.lifeRebuild)R3.lifeRebuild()});
  Snd.unlock();setTimeout(()=>Snd.welcome(),1500);applySet();if(S.char.ava&&!S.char._shot){try{const h=document.createElement('div');h.style.cssText='position:fixed;left:-400px;top:0;width:180px;height:220px';document.body.appendChild(h);AvPrev.mount(h);AvPrev.set(S.char.ava);AvPrev.ctl.autoRotate=false;setTimeout(()=>{S.char._shot=AvPrev.shot();h.remove();updHUD()},400)}catch(e){}}R3.world();curStyle=S.char.style||'jawa';tool='info';renderBar();updHUD();renderMissions();setSpeed(1);
