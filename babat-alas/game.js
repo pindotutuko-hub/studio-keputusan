@@ -1745,7 +1745,9 @@ const Snd=(()=>{let ctx=null,master=null,fxB=null,ambB=null,cur=null,noiseBuf=nu
  const api2={get on(){return on},cc:'XX',
   toggle(){on=!on;store.set('baSnd',on?'1':'0');if(init())master.gain.setTargetAtTime(on?SET.vol:0,now(),.1);return on},
   levels(){if(!ctx)return;master.gain.setTargetAtTime(on?SET.vol:0,now(),.05);fxB.gain.setTargetAtTime(SET.sfx,now(),.05);ambB.gain.setTargetAtTime(SET.amb,now(),.05)},
-  unlock(){if(this._paused&&(!S||document.hidden))return;if(init()&&ctx.state==='suspended')ctx.resume();try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
+  /* dipanggil pada setiap sentuhan/klik (gestur pengguna): di iPad/iPhone hanya saat gestur audio boleh dinyalakan ulang */
+  unlock(){if(document.hidden)return;if(this._paused){if(!S)return;this._paused=false}if(init()&&ctx.state!=='running')ctx.resume().catch(()=>{});try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
+   if(this._el&&this._el.paused){try{this._el.play().catch(()=>{})}catch(e){}}
    if(!this._el){try{const a=document.createElement('audio');a.setAttribute('playsinline','');a.loop=true;a.volume=.01;a.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';a.play().catch(()=>{});this._el=a}catch(e){}}},
   welcome(){if(!on||!ctx)return;const go=()=>{try{if(ctx.state!=='running')return;rooster();setTimeout(chirp,700);setTimeout(chirp,1500)}catch(e){}};if(ctx.state==='running')go();else ctx.resume().then(go).catch(()=>{})},
   play(k){if(!on||!ctx||ctx.state!=='running')return;const f=ALIAS[k];if(f)try{f()}catch(e){}},
