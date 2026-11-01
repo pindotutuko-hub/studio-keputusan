@@ -95,6 +95,7 @@ body.ui-l #hud,body.ui-l #bar,body.ui-l #missions{zoom:1.15}body.ui-s #hud,body.
 #missions h3 button,#info h3 button{border:0;background:transparent;color:var(--muted);font-size:16px}
 .ms{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:12.5px}.ms i{font-style:normal}.ms.done{color:var(--muted);text-decoration:line-through}
 #info{right:max(10px,env(safe-area-inset-right));top:72px;width:280px;max-height:calc(100vh - 190px);overflow:auto}
+#info .prog{margin:8px 0;padding:8px 10px;border-radius:10px;background:rgba(224,165,38,.14)}#info .pl{display:flex;justify-content:space-between;font-size:13px}#info .pb{height:9px;border-radius:6px;background:rgba(0,0,0,.18);overflow:hidden;margin:6px 0}#info .pb i{display:block;height:100%;background:linear-gradient(90deg,#e0a526,#2f8f6a);transition:width .4s}#info .mut{font-size:12px;opacity:.78}#info .upg{margin-top:8px;padding:8px 10px;border-radius:10px;background:rgba(47,143,106,.14);font-size:13px}#info .rq{font-size:12.5px;margin-top:3px}#info .rq.no{opacity:.8}#info button[disabled]{opacity:.55;cursor:not-allowed}
 .kv{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:3px 0;border-bottom:1px dashed var(--line)}.kv span{color:var(--muted)}
 #styleBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(max(10px,env(safe-area-inset-bottom)) + 84px);z-index:10;display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px;max-width:calc(100vw - 20px);overflow-x:auto;scrollbar-width:none;backdrop-filter:blur(10px)}
 #styleBar button{flex:none;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:10px;padding:6px 10px;font-weight:700;font-size:12px}#styleBar button.on{background:var(--acc);color:#1f1c18;border-color:var(--acc)}
@@ -269,6 +270,6 @@ body.ui-l #hud,body.ui-l #bar,body.ui-l #missions{zoom:1.15}body.ui-s #hud,body.
 <div id="toast"></div>
 <div id="modal" class="modal hidden"></div>
 
-<script type="module" src="game.js?v=25"></script>
+<script type="module" src="game.js?v=26"></script>
 </body>
 </html>
