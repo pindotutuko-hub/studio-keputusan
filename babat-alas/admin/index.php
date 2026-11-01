@@ -4,9 +4,9 @@
  * Menampilkan pemain, aktivitas, kampung, kelas, perjanjian dagang; admin dapat menghapus akun atau mereset simpanan.
  */
 declare(strict_types=1);
-$wp = dirname(__DIR__, 2) . '/wp-load.php';
-if (!is_file($wp)) { http_response_code(500); exit('WordPress tidak ditemukan.'); }
-require $wp;
+$ba_wpl = dirname(__DIR__, 2) . '/wp-load.php';
+if (!is_file($ba_wpl)) { http_response_code(500); exit('WordPress tidak ditemukan.'); }
+require $ba_wpl;
 if (!is_user_logged_in()) { auth_redirect(); exit; }
 if (!current_user_can('manage_options')) { wp_die('Hanya administrator situs yang boleh membuka monitor ini.', 403); }
 nocache_headers();
