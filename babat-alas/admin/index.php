@@ -7,8 +7,8 @@ declare(strict_types=1);
 $ba_wpl = dirname(__DIR__, 2) . '/wp-load.php';
 if (!is_file($ba_wpl)) { http_response_code(500); exit('WordPress tidak ditemukan.'); }
 require $ba_wpl;
-if (!is_user_logged_in()) { auth_redirect(); exit; }
-if (!current_user_can('manage_options')) { wp_die('Hanya administrator situs yang boleh membuka monitor ini.', 403); }
+if (!is_user_logged_in()) { nocache_headers(); wp_safe_redirect(home_url('/khusus/?to=' . rawurlencode('/babat-alas/admin/') . '#masuk')); exit; }
+if (!current_user_can('manage_options')) { wp_die('Akun ini bukan administrator, jadi tidak bisa membuka Kontrol Gim Babat Alas. <a href="' . esc_url(wp_logout_url(home_url('/khusus/?to=' . rawurlencode('/babat-alas/admin/') . '#masuk'))) . '">Keluar dan masuk dengan akun lain</a>.', 'Kontrol Gim Babat Alas', ['response' => 403]); }
 nocache_headers();
 header('X-Robots-Tag: noindex, nofollow');
 
@@ -99,7 +99,7 @@ input[type=search]{padding:8px 11px;border:1px solid var(--line);border-radius:9
 .setel{display:grid;gap:12px;max-width:760px}.setel fieldset{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:grid;gap:8px}.setel legend{font-weight:700;padding:0 6px}.setel textarea,.setel input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:9px;font:inherit}.setel input[type=number],.setel select{padding:5px 8px;border:1px solid var(--line);border-radius:8px;font:inherit}.save{background:var(--g);color:#fff;font-size:14px;padding:9px 16px}
 </style></head><body>
 <header><a href="/khusus/">← Aplikasi Khusus</a><h1>🛰️ Kontrol Gim Babat Alas</h1><span class="mut" style="color:#cfc8b8">Diperbarui <?= esc_html(wp_date('d M Y H:i:s')) ?></span>
-<a href="#" id="autoBtn">⟳ Segarkan otomatis (30 dtk)</a><a href="/babat-alas/">▶ Buka gim</a></header>
+<a href="#" id="autoBtn">⟳ Segarkan otomatis (30 dtk)</a><a href="/babat-alas/">▶ Buka gim</a><span style="margin-left:auto;color:#cfc8b8">👤 <?= esc_html(wp_get_current_user()->user_login) ?></span><a href="<?= esc_url(wp_logout_url(home_url('/khusus/'))) ?>">⎋ Keluar</a></header>
 <main>
 <?php if ($msg): ?><div class="msg"><?= $msg ?></div><?php endif; ?>
 <?php if ($cfg['maint']): ?><div class="alert" style="background:#fff4d6;border-color:#e0c06a"><b>🛠 Mode pemeliharaan AKTIF — pemain tidak bisa bermain/menyimpan.</b><span class="mut">Matikan di tab Pengaturan bila sudah selesai.</span></div><?php endif; ?>

@@ -120,7 +120,7 @@ function pt_jr_route() {
 /* Login Aplikasi Khusus: halaman masuk sendiri di /khusus/ (formulir dikirim ke WordPress; kata sandi tidak disimpan aplikasi). */
 function pt_jr_to( $to ) {
 	$to = is_string( $to ) ? $to : '';
-	return preg_match( '#^/khusus/[a-z0-9_/-]*$#i', $to ) ? $to : '/khusus/';
+	return ( preg_match( '#^/khusus/[a-z0-9_/-]*$#i', $to ) || '/babat-alas/admin/' === $to ) ? $to : '/khusus/';
 }
 add_filter(
 	'login_url',
@@ -163,8 +163,9 @@ function pt_jr_landing_public() {
 		array( '/khusus/jurnal/', 'Monitor Jurnal UNMER', 'Pemantau terbitan seluruh jurnal di jurnal.unmer.ac.id — grafik dan rekap per jurnal maupun semua jurnal.', '🔒 Login untuk membuka', false ),
 		array( '/khusus/pjpi/', 'PJPI Monitoring', 'Pemantau naskah OJS semua jurnal UNMER untuk PJPI — cek naskah per jurnal, rekomendasi tindakan, draf email per kasus.', '🔒 Login untuk membuka', false ),
 		array( '/khusus/mintakat/', 'Mintakat Monitoring', 'Pemantau naskah OJS Mintakat: Jurnal Arsitektur — tracker redaksi, rekomendasi tindakan, draf email per kasus.', '🔒 Login untuk membuka', false ),
+		array( '/babat-alas/admin/', 'Kontrol Gim Babat Alas', 'Monitor pemain, pengaturan gim jarak jauh, dan ban pemain Babat Alas (khusus administrator).', '🔒 Login untuk membuka', false ),
 	);
-	$names = array( '/khusus/jurnal/' => 'Monitor Jurnal UNMER', '/khusus/pjpi/' => 'PJPI Monitoring', '/khusus/mintakat/' => 'Mintakat Monitoring' );
+	$names = array( '/khusus/jurnal/' => 'Monitor Jurnal UNMER', '/khusus/pjpi/' => 'PJPI Monitoring', '/khusus/mintakat/' => 'Mintakat Monitoring', '/babat-alas/admin/' => 'Kontrol Gim Babat Alas' );
 	$h     = '';
 	foreach ( $apps as $a ) {
 		$href = $a[4] ? home_url( $a[0] ) : home_url( '/khusus/?to=' . rawurlencode( $a[0] ) . '#masuk' );
