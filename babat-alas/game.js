@@ -1070,7 +1070,7 @@ const R3={};
   scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(45,1,.1,500);controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.maxPolarAngle=1.35;controls.minDistance=6;controls.maxDistance=150;controls.target.set(N/2,0,N/2);camera.position.set(N/2-14,30,N/2+30);controls.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN};
   hemi=new THREE.HemisphereLight('#ffffff','#7d6b4a',.9);scene.add(hemi);sun=new THREE.DirectionalLight('#fff3dc',2.2);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-40,right:40,top:40,bottom:-40,far:200});sun.shadow.bias=-.0005;scene.add(sun);scene.add(sun.target);sun.target.position.set(N/2,0,N/2);
   root=new THREE.Group();scene.add(root);
-  ghost=new THREE.Mesh(new THREE.BoxGeometry(1,.3,1),new THREE.MeshBasicMaterial({color:'#ffffff',transparent:true,opacity:.35}));ghost.visible=false;scene.add(ghost);
+  ghost=new THREE.Mesh(new THREE.BoxGeometry(1,.3,1),new THREE.MeshBasicMaterial({color:'#ffffff',transparent:true,opacity:.5,depthWrite:false}));ghost.renderOrder=5;ghost.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1,.3,1)),new THREE.LineBasicMaterial({color:'#ffd23f'})));ghost.visible=false;scene.add(ghost);
   new ResizeObserver(()=>{const w=el.clientWidth,h=el.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();R3.resizePost(w,h)}).observe(el);R3.setupSky();
   loop()};
  function loop(){requestAnimationFrame(loop);const dt=Math.min(.05,clock.getDelta());controls.update();
@@ -1435,7 +1435,7 @@ const R3={};
     const lb=new THREE.Mesh(box,fr);lb.scale.set(W2+.03,.025,D2+.03);lb.position.set(mx,walls.min.y+wh*.3,mz);d.add(lb)}}
   d.traverse(o=>{if(o.isMesh)o.castShadow=true});g.attach(d)}
  R3.delB=id=>{const g=bmeshes[id];if(g){root.remove(g);delete bmeshes[id]}};
- R3.ghost=(x,y,w,h,ok)=>{if(x==null){ghost.visible=false;return}ghost.visible=true;ghost.scale.set(w,1,h);ghost.position.set(x+w/2,R3.hAt(x+w/2,y+h/2)+.15,y+h/2);ghost.material.color.set(ok?'#7dffb0':'#ff7d6b')};
+ R3.ghost=(x,y,w,h,ok)=>{if(x==null){ghost.visible=false;return}ghost.visible=true;ghost.scale.set(w,1,h);ghost.position.set(x+w/2,R3.hAt(x+w/2,y+h/2)+.15,y+h/2);ghost.material.color.set(ok?'#7dffb0':'#ff7d6b');ghost.children[0].material.color.set(ok?'#ffd23f':'#ff2a00')};
  R3.trees=()=>{clearTimeout(R3._ft);R3._ft=setTimeout(()=>R3.forest(),120)};
  function tcol(c,x,y){const l=L(x,y);c.set(l==='P'?'#8ea65e':l==='W'?'#7a7154':(TCOL[l]||TCOL.G));if(l==='G'||l==='F'){c.offsetHSL(0,0,(hash2(x,y,3)-.5)*.06);if(S.loc.climate==='tropdry'&&l==='G')c.set('#b9ad6c')}if(!inOwn(x,y))c.lerp(new THREE.Color('#5d6a72'),.42);return c}
  R3.tileColor=(x,y)=>{const a=terrain.geometry.attributes.color,c=tcol(new THREE.Color(),x,y);if(!TCa)tcAll();TCa.set([c.r,c.g,c.b],(y*N+x)*3);for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy;if(inside(X,Y))paintTile(a,X,Y)}a.needsUpdate=true};
@@ -1679,7 +1679,7 @@ function act(x,y,silent){const say=m=>{if(!silent){toast(m);Snd.play('err')}};if
 function after(){dirty=true;updHUD();checkMissions();checkEra();tutCheck()}
 function placeOK(x,y){if(!x&&x!==0)return false;if(tool!=='info'&&!inOwn(x,y))return false;if(tool==='babat')return L(x,y)==='F';if(tool==='path')return L(x,y)==='G'&&!occ[y][x]&&tileRise(x,y)<=STEEP;if(tool==='jembatan')return (L(x,y)==='W'||(L(x,y)==='G'&&!occ[y][x]&&tileRise(x,y)>STEEP))&&!isBr(x,y)&&[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>isRoad(x+a,y+b));if(tool==='jalan2')return L(x,y)==='P'&&((S.rc||{})[x+','+y]||1)<3;if(tool==='bull')return !!occ[y][x]||isBr(x,y)||L(x,y)==='P';if(tool==='move'){const b=S.b.find(q=>q.id===moveId);return !!b&&!moveOK(b,x,y)}if(tool==='info')return true;const T=BT[tool];if(!T)return false;
  for(let dy=0;dy<T.h;dy++)for(let dx=0;dx<T.w;dx++){const X=x+dx,Y=y+dy;if(!inside(X,Y)||!inOwn(X,Y)||L(X,Y)!=='G'||occ[Y][X])return false}return T.era<=S.era&&canAfford(T.c)}
-function bindInput(){const el=R3.dom();let down=null,last=null,nPtr=0,multi=false;
+function bindInput(){const el=R3.dom();let down=null,last=null,nPtr=0,multi=false,lastDn=0;
  /* zoom cubit (pinch) sendiri: layar sentuh iPad/ponsel dan trackpad (gesture Safari); OrbitControls tetap menggeser dua jari */
  (()=>{const C=R3.controls(),cam=C.object,clampR=r=>Math.max(C.minDistance,Math.min(C.maxDistance,r));
   const setR=r=>{const o=cam.position.clone().sub(C.target),l=o.length()||1;o.multiplyScalar(clampR(r)/l);cam.position.copy(C.target).add(o);C.update()};
@@ -1692,18 +1692,18 @@ function bindInput(){const el=R3.dom();let down=null,last=null,nPtr=0,multi=fals
   el.addEventListener('gesturechange',e=>{if(!tch&&g0&&e.scale>0)setR(g0/e.scale)});
   el.addEventListener('gestureend',()=>{g0=null});
   window.__BA&&(window.__BA.pinchR=radius)})();
- el.addEventListener('pointerdown',e=>{nPtr++;if(nPtr>1)multi=true;down={x:e.clientX,y:e.clientY,b:e.button};dragging=false;if((tool==='babat'||tool==='path'||tool==='jalan2'||(BT[tool]&&BT[tool].zone))&&e.button===0&&e.pointerType!=='touch'){R3.controls().enabled=false;dragging=true;const c=R3.pick(e.clientX,e.clientY);if(c){act(c[0],c[1],true);last=c.join()}}});
+ el.addEventListener('pointerdown',e=>{nPtr++;lastDn=performance.now();tapY=e.clientY;if(nPtr>1)multi=true;down={x:e.clientX,y:e.clientY,b:e.button};dragging=false;if(e.pointerType!=='mouse'&&!ghostPin&&tool!=='info'&&nPtr===1){const c=R3.pick(e.clientX,e.clientY);if(c){const T=tool==='move'?(S.b.find(q=>q.id===moveId)||{w:1,h:1}):BT[tool]||{w:1,h:1};R3.ghost(c[0],c[1],T.w,T.h,placeOK(c[0],c[1]))}}if((tool==='babat'||tool==='path'||tool==='jalan2'||(BT[tool]&&BT[tool].zone))&&e.button===0&&e.pointerType!=='touch'){R3.controls().enabled=false;dragging=true;const c=R3.pick(e.clientX,e.clientY);if(c){act(c[0],c[1],true);last=c.join()}}});
  el.addEventListener('pointermove',e=>{const c=R3.pick(e.clientX,e.clientY);if(down&&!dragging&&Math.hypot(e.clientX-down.x,e.clientY-down.y)>6){el.style.cursor='grabbing'}
   else if(!c)el.style.cursor='default';else if(tool==='info')el.style.cursor=occ[c[1]][c[0]]?'pointer':'default';else el.style.cursor=placeOK(c[0],c[1])?(tool==='bull'?'pointer':'crosshair'):'not-allowed';
-  if(c&&tool!=='info'){const T=tool==='move'?(S.b.find(q=>q.id===moveId)||{w:1,h:1}):BT[tool]||{w:1,h:1};R3.ghost(c[0],c[1],T.w,T.h,placeOK(c[0],c[1]))}else R3.ghost(null);
+  if(ghostPin){}else if(c&&tool!=='info'){const T=tool==='move'?(S.b.find(q=>q.id===moveId)||{w:1,h:1}):BT[tool]||{w:1,h:1};R3.ghost(c[0],c[1],T.w,T.h,placeOK(c[0],c[1]))}else R3.ghost(null);
   if(dragging&&c&&c.join()!==last){act(c[0],c[1],true);last=c.join()}});
  el.addEventListener('pointercancel',()=>{nPtr=Math.max(0,nPtr-1);if(!nPtr)multi=false;down=null;dragging=false;R3.controls().enabled=true});
  el.addEventListener('pointerup',e=>{nPtr=Math.max(0,nPtr-1);const wasMulti=multi;if(!nPtr)multi=false;R3.controls().enabled=true;el.style.cursor='';if(!down)return;const d=Math.hypot(e.clientX-down.x,e.clientY-down.y);if(!wasMulti&&!dragging&&d<7&&down.b===0){const c=R3.pick(e.clientX,e.clientY);if(c)act(c[0],c[1])}dragging=false;down=null;last=null});
- el.addEventListener('pointerleave',()=>R3.ghost(null))}
+ el.addEventListener('pointerleave',e=>{if(ghostPin)return;if(e.pointerType==='mouse')R3.ghost(null);else{const t0=performance.now();setTimeout(()=>{if(!ghostPin&&lastDn<t0)R3.ghost(null)},1500)}})}
 
 /* ================= UI gim ================= */
 /** kembali ke mode tangan (pilih/geser peta): tutup dialog kecil, batalkan alat & mode pindah */
-function cancelTool(){['bAsk','catMenu'].forEach(id=>{const e=$(id);if(e)e.remove()});bConfirm=null;if(typeof moveId!=='undefined')moveId=null;try{R3.ghost(null)}catch(e){}$('menu').classList.add('hidden');$('info').classList.add('hidden');tool='info';renderBar()}
+function cancelTool(){['bAsk','catMenu'].forEach(id=>{const e=$(id);if(e)e.remove()});bConfirm=null;ghostPin=false;if(typeof moveId!=='undefined')moveId=null;try{R3.ghost(null)}catch(e){}$('menu').classList.add('hidden');$('info').classList.add('hidden');tool='info';renderBar()}
 function renderBar(){if(tool&&tool!=='info'&&tool!=='move'&&!catTools(curCat).includes(tool))curCat=catOf(tool);const C=CATS.find(c=>c.k===curCat)||CATS[0],li=lang==='en'?1:0;$('bar').innerHTML=`<button class="catbtn handbtn${tool==='info'?' on':''}" id="handBtn" title="${L2('Tangan: pilih bangunan & geser peta (Esc)','Hand: select & pan (Esc)')}"><i>✋</i><span>${L2('Pilih','Select')}</span></button><button class="catbtn" id="catBtn" title="${L2('Pilih kategori','Choose category')}"><i>${C.ic}</i><span>${C.n[li]} ▾</span></button><div class="sep"></div>`+catTools(curCat).map(k=>{const T=BT[k],lock=T&&T.era>S.era,c=T?T.c:null;
   return `<button class="tool${k===tool?' on':''}${lock?' lock':''}" data-k="${k}" title="${esc(t('tlD.'+k))}"><i>${ICON[k]}</i><span>${tlN(k)}</span><em>${c?costTxt(c):k==='babat'?money(1,true)+' →🪵4':k==='path'?money(1,true):k==='jembatan'?costTxt(BRC):k==='jalan2'?money(6,true)+'+':''}</em></button>`}).join('');
  $('catBtn').onclick=e=>{e.stopPropagation();catMenu()};$('handBtn').onclick=e=>{e.stopPropagation();Snd.click();cancelTool()};barNav();
@@ -1718,10 +1718,10 @@ function barNav(){const bar=$('bar');if(!bar._wheel){bar._wheel=1;bar.addEventLi
  setTimeout(barNavUpd,30)}
 function barNavUpd(){const bar=$('bar'),l=$('barL'),r=$('barR');if(!bar||!l)return;const over=bar.scrollWidth>bar.clientWidth+4,hid=bar.classList.contains('hidden')||getComputedStyle(bar).display==='none'||!bar.getClientRects().length;l.style.display=r.style.display=over&&!hid?'':'none';l.disabled=bar.scrollLeft<4;r.disabled=bar.scrollLeft+bar.clientWidth>=bar.scrollWidth-4}
 /* konfirmasi sebelum membangun */
-let bConfirm=null;
+let bConfirm=null,ghostPin=false,tapY=-1;
 function askBuild(x,y,T){const old=$('bAsk');if(old)old.remove();const d=document.createElement('div');d.id='bAsk';
  d.innerHTML=`<b>${ICON[tool]} ${L2('Bangun','Build')} ${tlN(tool)}?</b><small>${costTxt(T.c)} · ${L2('petak','tile')} ${x},${y}</small><div class="row"><button class="bigbtn gold" id="bAskY">✓ ${L2('Bangun','Build')}</button><button class="bigbtn alt" id="bAskN">✕</button></div><label class="mut"><input type="checkbox" id="bAskOff"> ${L2('Jangan tanya lagi','Don\'t ask again')}</label>`;
- document.body.appendChild(d);const close=()=>d.remove();$('bAskN').onclick=close;
+ if(tapY>=0)d.className=tapY<innerHeight*.5?'lo':'hi';document.body.appendChild(d);R3.ghost(x,y,T.w||1,T.h||1,true);ghostPin=true;const close=()=>{d.remove();ghostPin=false;R3.ghost(null)};$('bAskN').onclick=close;
  $('bAskY').onclick=()=>{if($('bAskOff').checked){SET.confirm=false;try{saveSet()}catch(e){}}bConfirm=tool+'|'+x+'|'+y;close();act(x,y)}}
 /* edit bangunan: putar, pindah, jual, bongkar */
 function bRotate(b){b.r=((b.r||0)+1)%4;R3.delB(b.id);R3.addB(b);Snd.play('build');after();showInfo(b.x,b.y)}
