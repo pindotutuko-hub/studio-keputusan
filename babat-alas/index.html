@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="theme-color" content="#14211b">
 <title>Babat Alas — simulasi permukiman 3D</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -191,6 +191,7 @@ body.ui-l #hud,body.ui-l #bar,body.ui-l #missions{zoom:1.15}body.ui-s #hud,body.
 
 /* v38: kategori alat, navigasi bilah, konfirmasi, edit, muat tokoh, kunci zoom UI */
 html,body{touch-action:manipulation}#hud,#bar,#missions,#info,#menu,#modal,#advisor,#catMenu,#bAsk{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}
+button,.tool,#hud,#bar,.hud,.screen{touch-action:manipulation}html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 #bar .catbtn{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:92px;padding:6px 8px;border-radius:12px;border:1px solid var(--line);background:rgba(224,165,38,.16);color:inherit;font:600 11.5px/1.15 inherit;cursor:pointer}
 #bar .catbtn i{font-style:normal;font-size:20px}#bar .catbtn span{white-space:nowrap}
 #catMenu{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 104px);z-index:30;background:var(--panel2,#fffdf8);color:var(--ink2,#1f1c18);border-radius:16px;padding:8px;box-shadow:0 16px 40px rgba(0,0,0,.4);display:grid;grid-template-columns:repeat(2,minmax(170px,1fr));gap:6px;max-width:calc(100vw - 20px)}
@@ -296,6 +297,6 @@ html,body{touch-action:manipulation}#hud,#bar,#missions,#info,#menu,#modal,#advi
 <div id="toast"></div>
 <div id="modal" class="modal hidden"></div>
 
-<script type="module" src="game.js?v=38c"></script>
+<script type="module" src="game.js?v=38d"></script>
 </body>
 </html>

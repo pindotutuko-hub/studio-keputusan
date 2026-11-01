@@ -43,6 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			'botMode' => in_array($_POST['botMode'] ?? '', ['off', 'normal', 'strict'], true) ? (string) $_POST['botMode'] : 'normal', 'autoBan' => !empty($_POST['autoBan']),
 			'by' => wp_get_current_user()->user_login, 'at' => time()];
 		ba_put('cfg.php', $new); $msg = '✅ Pengaturan gim disimpan. Pemain menerimanya dalam ±1 menit (saat sinyal berikutnya) atau saat membuka gim.';
+	} elseif ($act === 'testmail') {
+		$to = 'pindotutuko@gmail.com';
+		$ok = @mail($to, 'Babat Alas: uji email peringatan', "Ini email uji dari Kontrol Gim Babat Alas.\nJika email ini sampai, peringatan pemain yang dicurigai bot/AI juga akan sampai ke alamat ini.\n\nDikirim oleh: " . wp_get_current_user()->user_login . "\nWaktu: " . wp_date('d M Y H:i') . "\n", "From: Babat Alas <noreply@pindotutuko.id>\r\nContent-Type: text/plain; charset=UTF-8");
+		$msg = $ok ? '✉ Email uji dikirim ke ' . esc_html($to) . '. Periksa kotak masuk (dan folder Spam) dalam beberapa menit.' : '⚠ Server menolak mengirim email (fungsi mail() gagal). Peringatan bot hanya tampil di halaman ini.';
 	} elseif ($act === 'clearalerts') { ba_put('alerts.php', []); $msg = 'Log peringatan dikosongkan.';
 	} elseif (strlen($uid) === 20 && is_file(BA_DATA . '/u_' . $uid . '.php')) {
 		$u = ba_rd('u_' . $uid . '.php');
@@ -53,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		elseif ($act === 'reset') { ba_delete_user($uid, false); $msg = 'Simpanan & wilayah “' . esc_html($u['user'] ?? $uid) . '” sudah direset (akun tetap ada).'; }
 	} else { $msg = 'Pengguna tidak ditemukan.'; }
 	set_transient('ba_adm_msg_' . get_current_user_id(), $msg, 120);
-	wp_safe_redirect(strtok((string) $_SERVER['REQUEST_URI'], '?') . '#' . ($act === 'cfg' ? 'setel' : ($act === 'clearalerts' ? 'log' : 'pemain'))); exit;
+	wp_safe_redirect(strtok((string) $_SERVER['REQUEST_URI'], '?') . '#' . (in_array($act, ['cfg', 'testmail'], true) ? 'setel' : ($act === 'clearalerts' ? 'log' : 'pemain'))); exit;
 }
 if (!$msg && ($tm = get_transient('ba_adm_msg_' . get_current_user_id()))) { $msg = (string) $tm; delete_transient('ba_adm_msg_' . get_current_user_id()); }
 
@@ -166,6 +170,7 @@ input[type=search]{padding:8px 11px;border:1px solid var(--line);border-radius:9
 <label><input type="checkbox" name="autoBan" value="1" <?= $cfg['autoBan'] ? 'checked' : '' ?>> Ban otomatis saat terdeteksi (tanpa menunggu saya)</label><span class="mut">Peringatan pertama juga dikirim ke email admin situs.</span></fieldset>
 <button class="save">💾 Simpan pengaturan</button> <span class="mut"><?= !empty($cfgRaw['at']) ? 'Terakhir diubah ' . esc_html(wp_date('d M Y H:i', (int) $cfgRaw['at'])) . ' oleh ' . esc_html((string) ($cfgRaw['by'] ?? '')) : 'Belum pernah diubah (nilai bawaan).' ?></span>
 </form>
+<form method="post" style="margin-top:10px"><input type="hidden" name="_wpnonce" value="<?= $nonce ?>"><input type="hidden" name="act" value="testmail"><button class="rst">✉ Kirim email uji ke pindotutuko@gmail.com</button> <span class="mut">untuk memastikan peringatan bot/AI sampai ke email Anda.</span></form>
 </section>
 <section id="t-log" class="pane">
 <h2>⚠ Log peringatan bot/AI</h2>
