@@ -1909,8 +1909,8 @@ const Snd=(()=>{let ctx=null,master=null,fxB=null,ambB=null,cur=null,noiseBuf=nu
   silence(){this.pause();if(!ctx)return;this._mute=true;ambB.gain.cancelScheduledValues(now());ambB.gain.setTargetAtTime(0,now(),.08);for(const k in beds)try{level(k,0)}catch(e){}},
   update(o){if(this._paused&&!document.hidden)this.resume();if(!on||!ctx||ctx.state!=='running')return;if(this._mute){this._mute=false;ambB.gain.setTargetAtTime(SET.amb,now(),.4)}cur=ambB;try{this._u(o)}finally{cur=fxB}},
   _u(o){this.cc=o.cc;const h=o.hour,night=h<5.5||h>18.6,dawn=h>=4.8&&h<6.6,trop=o.climate==='trop'||o.climate==='tropdry',temp=o.climate==='temp';
-   bed('river',700,.6,'bandpass');bed('wind',350,.4,'lowpass');bed('rain',3000,.3,'highpass');bed('market',650,.8,'bandpass');bed('forest',5200,1.2,'bandpass');
-   level('river',o.water?.06:0);level('wind',(temp?.07:.03)+(o.dry?.05:0));level('rain',o.rainy&&o.rainNow?.11:0);level('market',o.market&&!night&&h>6&&h<15&&!SBUF['keramaian']?.035:0);level('forest',!night?Math.min(.04,.012+o.forest*.00004):0);
+   bed('river',700,.6,'bandpass');bed('wind',350,.4,'lowpass');bed('rain',3000,.3,'highpass');bed('market',650,.8,'bandpass');bed('forest',2600,.9,'bandpass');
+   level('river',o.water?.035:0);level('wind',(temp?.07:.03)+(o.dry?.05:0));level('rain',o.rainy&&o.rainNow?.11:0);level('market',o.market&&!night&&h>6&&h<15&&!SBUF['keramaian']?.035:0);level('forest',!night&&!o.rainNow?Math.min(.012,.003+o.forest*.00001):0);
    const r=Math.random(),tick=(k,p,min)=>{if(r<p&&(now()-(last[k]||0))>min){last[k]=now();return true}return false};
    if(!night&&h<17.5&&o.forest>8&&tick('birdR',.12,(h<9?10:22)+Math.random()*12)){cur=fxB;smp('bird',h<9?.3:.18);cur=ambB}if(!night&&tick('bird',(trop?.14:.08)*(o.forest>50?1.2:.8)*(SBUF['burung-kacer-1']?.35:1),1.6))chirp();if(!night&&tick('ayam',.025,18))[0,.12,.24].forEach(t=>tone(600+Math.random()*200,.06,{type:'triangle',vol:.05,at:t,f2:450}));if(h>=6.6&&h<9&&['ID','MY','PH','TH','VN'].includes(o.cc)&&tick('rooster2',.02,45))smp('rooster',.32)||rooster();
    if(night&&(trop||o.climate==='sub')&&tick('cricket',.35,.45))cricket();
