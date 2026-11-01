@@ -1,0 +1,21 @@
+# Babat Alas v42: cache peramban untuk berkas besar (model 3D, suara, gambar, video) agar hemat bandwidth.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(wav|glb|gltf|bin|jpg|jpeg|png|webp|mp4|woff2)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+  <FilesMatch "\.(js|css|pdf)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+  <FilesMatch "^(index\.html)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType audio/x-wav "access plus 30 days"
+  ExpiresByType audio/wav "access plus 30 days"
+  ExpiresByType model/gltf-binary "access plus 30 days"
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType video/mp4 "access plus 30 days"
+</IfModule>

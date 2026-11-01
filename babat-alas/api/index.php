@@ -47,8 +47,9 @@ function body(): array { $j = json_decode((string) file_get_contents('php://inpu
 function clean(string $s, int $max): string { $s = trim(preg_replace('/[\x00-\x1F\x7F<>]/u', '', $s) ?? ''); return mb_substr($s, 0, $max); }
 function ip(): string { return (string) ($_SERVER['REMOTE_ADDR'] ?? '0'); }
 /** Batas laju sederhana per IP & aksi. */
-function rate(string $act, int $max, int $win): void {
-	$key = 'r_' . substr(hash('sha256', $act . ip()), 0, 24) . '.php'; $now = time();
+function rate(string $act, int $max, int $win, bool $byIp = true): void {
+	$key = 'r_' . substr(hash('sha256', $act . ($byIp ? ip() : '')), 0, 24) . '.php'; $now = time();
+	if (mt_rand(1, 400) === 1) { foreach (glob(DATA . '/r_*.php') ?: [] as $f) { if (@filemtime($f) < $now - 2 * 86400) { @unlink($f); } } }
 	$ok = upd($key, function ($c) use ($now, $max, $win) { $c = $c ?: ['t' => []]; $c['t'] = array_values(array_filter($c['t'], fn($t) => $t > $now - $win));
 		if (count($c['t']) >= $max) { return ['__ret' => false]; } $c['t'][] = $now; return ['__write' => $c, '__ret' => true]; });
 	if (!$ok) { fail('rate_limited', 429); }
@@ -240,18 +241,20 @@ switch ($a) {
 	case 'cfg': { out(['ok' => true, 'cfg' => cfg_pub()]); }
 	case 'hb': {
 		$sid = preg_replace('/[^a-z0-9]/', '', strtolower((string) ($b['sid'] ?? ''))); if (strlen($sid) < 8 || strlen($sid) > 24) { fail('bad'); }
-		rate('hb' . $sid, 6, 300);
+		rate('hb' . $sid, 8, 300, false);
 		$who = ''; $uid = '';
 		$tok = (string) ($_SERVER['HTTP_X_BA_TOKEN'] ?? ''); if (preg_match('/^([a-f0-9]{20})\.([a-f0-9]{48})$/', $tok, $mm)) { $uu = rd('u_' . $mm[1] . '.php'); foreach (($uu['tokens'] ?? []) as $tt) { if (hash_equals($tt['h'], hash('sha256', $mm[2])) && $tt['exp'] > time()) { $uid = $mm[1]; $who = (string) ($uu['user'] ?? ''); } } }
 		$row = ['at' => time(), 'user' => $who, 'uid' => $uid, 'guest' => $uid === '', 'name' => clean((string) ($b['name'] ?? ''), 60), 'loc' => clean((string) ($b['loc'] ?? ''), 80), 'cc' => clean((string) ($b['cc'] ?? ''), 3),
 			'lat' => round((float) ($b['lat'] ?? 0), 3), 'lon' => round((float) ($b['lon'] ?? 0), 3), 'era' => (int) ($b['era'] ?? 0), 'kk' => (int) ($b['kk'] ?? 0), 'dev' => clean((string) ($b['dev'] ?? ''), 12), 'scr' => clean((string) ($b['scr'] ?? ''), 10)];
-		upd('live.php', function ($d) use ($sid, $row) { $d = $d ?: []; $cut = time() - 7 * 86400; foreach ($d as $k => $v) { if (($v['at'] ?? 0) < $cut) { unset($d[$k]); } } $d[$sid] = $row; return ['__write' => $d, '__ret' => true]; });
+		if (!is_dir(DATA . '/live')) { @mkdir(DATA . '/live', 0750); @file_put_contents(DATA . '/live/index.php', GUARD); }
+		@file_put_contents(DATA . '/live/' . $sid . '.php', GUARD . json_encode($row, JSON_UNESCAPED_UNICODE), LOCK_EX);
+		if (mt_rand(1, 200) === 1) { $cut = time() - 7 * 86400; foreach (glob(DATA . '/live/*.php') ?: [] as $f) { if (basename($f) !== 'index.php' && @filemtime($f) < $cut) { @unlink($f); } } }
 		if ($uid) { upd('u_' . $uid . '.php', function ($x) { if (!$x) { return ['__ret' => false]; } $x['seen'] = time(); return ['__write' => $x, '__ret' => true]; }); }
 		out(['ok' => true, 'cfg' => cfg_pub()]);
 	}
 	case 'register': {
 		if (!cfg()['regOpen']) { fail('reg_closed', 403); } if (cfg()['maint']) { fail('maint', 503); }
-		rate('reg', 6, 3600);
+		rate('reg', 200, 3600); rate('reg_burst', 150, 60);
 		$user = clean((string) ($b['user'] ?? ''), 32); $pass = (string) ($b['pass'] ?? '');
 		if (!preg_match('/^[A-Za-z0-9_.\-]{3,32}$/', $user)) { fail('bad_user'); }
 		if (strlen($pass) < 6 || strlen($pass) > 200) { fail('bad_pass'); }
@@ -265,8 +268,7 @@ switch ($a) {
 		$u = rd('u_' . $uid . '.php'); out(['ok' => true, 'token' => new_token($uid), 'me' => pub($u)]);
 	}
 	case 'login': {
-		rate('login', 12, 900);
-		$user = clean((string) ($b['user'] ?? ''), 32); $pass = (string) ($b['pass'] ?? ''); $uid = uid_of($user); $u = rd('u_' . $uid . '.php');
+		$user = clean((string) ($b['user'] ?? ''), 32); rate('login_u' . mb_strtolower($user), 10, 900, false); rate('login_ip', 600, 900); $pass = (string) ($b['pass'] ?? ''); $uid = uid_of($user); $u = rd('u_' . $uid . '.php');
 		if (!$u || !password_verify($pass, $u['hash'])) { fail('bad_login', 401); }
 		if (!empty($u['ban'])) { fail('banned', 403); }
 		out(['ok' => true, 'token' => new_token($uid), 'me' => pub($u)]);
@@ -298,17 +300,22 @@ switch ($a) {
 			return ['__write' => ['ver' => $ver + 1, 'meta' => $meta, 'state' => $j['state'], 'flagged' => $bad], '__ret' => ['ver' => $ver + 1, 'bad' => $bad]]; });
 		if (isset($r['conflict'])) { out(['ok' => false, 'error' => 'conflict', 'ver' => $r['conflict']], 409); }
 		// direktori publik ringkas untuk tetangga (tanpa data pribadi selain nama tokoh)
-		upd('dir.php', function ($d) use ($u, $meta) { $d = $d ?: []; $d[$u['uid']] = $meta + ['who' => $u['name'] ?? $u['user'], 'kelas' => $u['kelas'] ?? '', 'kampus' => $u['kampus'] ?? ''];
+		// v42: berkas bersama (direktori & peringkat) hanya ditulis bila ada perubahan berarti atau sudah 15 menit → aman untuk ratusan pemain bersamaan
+		$dirSig = md5(json_encode([$meta['name'], $meta['loc'], round((float) $meta['lat'], 3), round((float) $meta['lon'], 3), $meta['era'], intdiv((int) $meta['kk'], 5), $u['kelas'] ?? '', $u['name'] ?? '']));
+		$doDir = $fresh || $dirSig !== ($u['dirSig'] ?? '') || time() - (int) ($u['dirAt'] ?? 0) > 900;
+		if ($doDir) upd('dir.php', function ($d) use ($u, $meta) { $d = $d ?: []; $d[$u['uid']] = $meta + ['who' => $u['name'] ?? $u['user'], 'kelas' => $u['kelas'] ?? '', 'kampus' => $u['kampus'] ?? ''];
 			if (count($d) > 5000) { uasort($d, fn($x, $y) => $y['at'] <=> $x['at']); $d = array_slice($d, 0, 5000, true); } return ['__write' => $d, '__ret' => true]; });
 		$kc = ($u['kelas'] ?? '') !== '' ? (rd('k_' . $u['kelas'] . '.php') ?: []) : []; $chal = (string) ($kc['tantangan'] ?? ''); $chalNow = $chal !== '' && !$r['bad'] && isset($meta['ind']['rth']) && chal_ok($chal, $meta['ind']);
-		if (!$r['bad']) { $sem = semester(); $row = ['who' => $u['user'], 'name' => $meta['name'], 'kelas' => $u['kelas'] ?? '', 'kampus' => $u['kampus'] ?? '', 'score' => $meta['score'], 'era' => $meta['era'], 'kk' => $meta['kk'], 'month' => $meta['month'], 'loc' => $meta['loc'], 'ind' => $meta['ind'], 'at' => time()];
-			upd('lb_' . $sem . '.php', function ($d) use ($u, $row, $chal, $chalNow) { $d = $d ?: []; $old = $d[$u['uid']] ?? null; if ($row['score'] >= (int) ($old['best'] ?? 0)) { $row['best'] = $row['score']; $row['bestInd'] = $row['ind']; } else { $row['best'] = (int) $old['best']; $row['bestInd'] = $old['bestInd'] ?? $row['ind']; } $row['saves'] = (int) ($old['saves'] ?? 0) + 1; $row['chal'] = $chal; $row['chalAt'] = ($old['chal'] ?? '') === $chal && !empty($old['chalAt']) ? $old['chalAt'] : ($chalNow ? time() : 0); $row['first'] = $old['first'] ?? time(); $d[$u['uid']] = $row; return ['__write' => $d, '__ret' => true]; }); }
+		$lbSig = $meta['score'] . '|' . $meta['era'] . '|' . ($u['kelas'] ?? ''); $doLb = $chalNow || $lbSig !== ($u['lbSig'] ?? '') || time() - (int) ($u['lbAt'] ?? 0) > 900;
+		if (!$r['bad'] && $doLb) { $sem = semester(); $row = ['who' => $u['user'], 'name' => $meta['name'], 'kelas' => $u['kelas'] ?? '', 'kampus' => $u['kampus'] ?? '', 'score' => $meta['score'], 'era' => $meta['era'], 'kk' => $meta['kk'], 'month' => $meta['month'], 'loc' => $meta['loc'], 'ind' => $meta['ind'], 'at' => time()];
+			upd('lb_' . $sem . '.php', function ($d) use ($u, $row, $chal, $chalNow) { $d = $d ?: []; $old = $d[$u['uid']] ?? null; if ($row['score'] >= (int) ($old['best'] ?? 0)) { $row['best'] = $row['score']; $row['bestInd'] = $row['ind']; } else { $row['best'] = (int) $old['best']; $row['bestInd'] = $old['bestInd'] ?? $row['ind']; } $row['saves'] = (int) ($old['saves'] ?? 0) + 1; $row['chal'] = $chal; $row['chalAt'] = ($old['chal'] ?? '') === $chal && !empty($old['chalAt']) ? $old['chalAt'] : ($chalNow ? time() : 0); $row['first'] = $old['first'] ?? time(); $d[$u['uid']] = $row; return ['__write' => $d, '__ret' => true]; });
+		if ($doDir || (!$r['bad'] && $doLb)) { upd('u_' . $u['uid'] . '.php', function ($x) use ($doDir, $dirSig, $doLb, $lbSig, $r) { if (!$x) { return ['__ret' => false]; } if ($doDir) { $x['dirSig'] = $dirSig; $x['dirAt'] = time(); } if (!$r['bad'] && $doLb) { $x['lbSig'] = $lbSig; $x['lbAt'] = time(); } return ['__write' => $x, '__ret' => true]; }); } }
 		out(['ok' => true, 'ver' => $r['ver'], 'score' => $meta['score'], 'ind' => $meta['ind'], 'ranked' => !$r['bad'], 'flags' => $r['bad'], 'chal' => $chal, 'chalOk' => $chalNow]);
 	}
 	case 'eula': { $u = auth(); if (($b['ver'] ?? '') !== EULA_VER) { fail('eula'); }
 		upd('u_' . $u['uid'] . '.php', function ($x) { $x['eula'] = EULA_VER; $x['eulaAt'] = time(); return ['__write' => $x, '__ret' => true]; }); out(['ok' => true]); }
 	case 'board': {
-		$u = auth(); rate('board', 60, 300); $sem = preg_match('/^\d{4}-(Ganjil|Genap)$/', (string) ($_GET['sem'] ?? '')) ? (string) $_GET['sem'] : semester();
+		$u = auth(); rate('board', 1200, 300); $sem = preg_match('/^\d{4}-(Ganjil|Genap)$/', (string) ($_GET['sem'] ?? '')) ? (string) $_GET['sem'] : semester();
 		$scope = (string) ($_GET['scope'] ?? 'publik'); $d = rd('lb_' . $sem . '.php') ?: []; $rows = [];
 		foreach ($d as $id => $r) { if ($scope === 'kelas' && (($u['kelas'] ?? '') === '' || $r['kelas'] !== $u['kelas'])) { continue; } if ($scope === 'kampus' && (($u['kampus'] ?? '') === '' || mb_strtolower($r['kampus']) !== mb_strtolower($u['kampus']))) { continue; }
 			$rows[] = ['me' => $id === $u['uid'], 'who' => $r['who'], 'name' => $r['name'], 'kampus' => $scope === 'publik' ? $r['kampus'] : '', 'best' => $r['best'], 'ind' => $r['bestInd'] ?? null, 'era' => $r['era'], 'kk' => $r['kk']]; }
@@ -333,7 +340,7 @@ switch ($a) {
 		foreach ($d as $r) { if ($r['kelas'] === $c) { $rows[] = ['user' => $r['who'], 'permukiman' => $r['name'], 'lokasi' => $r['loc'], 'skor_terbaik' => $r['best'], 'skor_terakhir' => $r['score'], 'ekonomi' => $r['bestInd']['e'] ?? '', 'jejaring' => $r['bestInd']['n'] ?? '', 'kenyamanan' => $r['bestInd']['c'] ?? '', 'kepuasan' => $r['bestInd']['k'] ?? '', 'pertumbuhan' => $r['bestInd']['p'] ?? '', 'era' => $r['era'], 'kk' => $r['kk'], 'bulan_main' => $r['month'], 'jumlah_simpan' => $r['saves'], 'tantangan' => $r['chal'] ?? '', 'tantangan_tercapai' => !empty($r['chalAt']) ? date('Y-m-d', $r['chalAt']) : '', 'rth' => $r['bestInd']['rth'] ?? '', 'layanan_kota' => $r['bestInd']['svc'] ?? '', 'mulai' => date('Y-m-d', $r['first']), 'terakhir' => date('Y-m-d H:i', $r['at'])]; } }
 		usort($rows, fn($a, $b) => $b['skor_terbaik'] <=> $a['skor_terbaik']); out(['ok' => true, 'kelas' => $c, 'nama' => $k['nama'], 'sem' => $sem, 'rows' => $rows]);
 	}
-	case 'delete': { $u = auth(); rate('del', 5, 3600); $full = rd('u_' . $u['uid'] . '.php'); if (!$full || !password_verify((string) ($b['pass'] ?? ''), $full['hash'])) { fail('bad_login', 401); }
+	case 'delete': { $u = auth(); rate('del' . $u['uid'], 5, 3600, false); $full = rd('u_' . $u['uid'] . '.php'); if (!$full || !password_verify((string) ($b['pass'] ?? ''), $full['hash'])) { fail('bad_login', 401); }
 		@unlink(DATA . '/s_' . $u['uid'] . '.php'); @unlink(DATA . '/u_' . $u['uid'] . '.php');
 		upd('dir.php', function ($d) use ($u) { $d = $d ?: []; unset($d[$u['uid']]); return ['__write' => $d, '__ret' => true]; });
 		foreach (glob(DATA . '/lb_*.php') ?: [] as $f) { upd(basename($f), function ($d) use ($u) { $d = $d ?: []; unset($d[$u['uid']]); return ['__write' => $d, '__ret' => true]; }); }
@@ -348,7 +355,7 @@ switch ($a) {
 	}
 	// ---- perjanjian dagang dua arah antarpemain ----
 	case 'claimed': {
-		rate('claimed', 120, 600); $lat = (float) ($_GET['lat'] ?? 0); $lon = (float) ($_GET['lon'] ?? 0); $me = '';
+		rate('claimed', 2400, 600); $lat = (float) ($_GET['lat'] ?? 0); $lon = (float) ($_GET['lon'] ?? 0); $me = '';
 		$tok = (string) ($_SERVER['HTTP_X_BA_TOKEN'] ?? ''); if (preg_match('/^([a-f0-9]{20})\.([a-f0-9]{48})$/', $tok, $mm)) { $uu = rd('u_' . $mm[1] . '.php'); foreach (($uu['tokens'] ?? []) as $tt) { if (hash_equals($tt['h'], hash('sha256', $mm[2])) && $tt['exp'] > time()) { $me = $mm[1]; } } }
 		$res = []; foreach (claim_list($lat, $lon, 15) as $id => $m) { $res[] = ['lat' => $m['lat'], 'lon' => $m['lon'], 'hx' => $m['hx'], 'hy' => $m['hy'], 'dx' => $m['dx'], 'dy' => $m['dy'], 'name' => $m['name'] ?? '', 'who' => $m['who'] ?? '', 'mine' => $id === $me]; }
 		out(['ok' => true, 'list' => array_slice($res, 0, 300)]);

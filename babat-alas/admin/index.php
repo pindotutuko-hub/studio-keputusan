@@ -79,7 +79,8 @@ $classes = []; foreach (glob(BA_DATA . '/k_*.php') ?: [] as $f) { $k = ba_rd(bas
 $deals = ba_rd('deals.php') ?: []; $activeDeals = count(array_filter($deals, fn($d) => ($d['st'] ?? '') === 'active'));
 $byUid = []; foreach ($users as $x) { $byUid[$x['uid']] = $x['user']; }
 $cfg = ba_cfg(); $cfgRaw = ba_rd('cfg.php') ?: [];
-$live = ba_rd('live.php') ?: []; uasort($live, fn($a, $b) => ($b['at'] ?? 0) <=> ($a['at'] ?? 0));
+$live = ba_rd('live.php') ?: []; foreach (glob(BA_DATA . '/live/*.php') ?: [] as $lf) { $sid = basename($lf, '.php'); if ($sid === 'index') { continue; } $row = json_decode(substr((string) @file_get_contents($lf), strlen(BA_GUARD)), true); if (is_array($row) && ($row['at'] ?? 0) > $now - 7 * 86400) { $live[$sid] = $row; } }
+uasort($live, fn($a, $b) => ($b['at'] ?? 0) <=> ($a['at'] ?? 0));
 $liveOn = array_filter($live, fn($v) => $now - (int) ($v['at'] ?? 0) < 300); $liveDay = array_filter($live, fn($v) => $now - (int) ($v['at'] ?? 0) < 86400);
 $guestOn = count(array_filter($liveOn, fn($v) => !empty($v['guest'])));
 $alerts = array_reverse(ba_rd('alerts.php') ?: []);
