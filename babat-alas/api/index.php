@@ -175,6 +175,15 @@ const CHAL = ['hijau' => 'RTH ≥ 30% & ≥ 100 KK', 'nyaman' => 'Kenyamanan ≥
 function chal_ok(string $c, array $i): bool {
 	switch ($c) { case 'hijau': return $i['rth'] >= 30 && $i['kk'] >= 100; case 'nyaman': return $i['c'] >= 75 && $i['kk'] >= 100; case 'ekonomi': return $i['e'] >= 65 && $i['kk'] >= 100;
 		case 'jejaring': return $i['n'] >= 75; case 'layanan': return $i['svc'] >= 90 && $i['era'] >= 4; case 'puas': return $i['k'] >= 75 && $i['kk'] >= 150; } return false; }
+/** wilayah pemain (meter, relatif ke titik lokasi): 1 petak ≈ 10 m; wilayah awal 40×40 petak ≈ 400×400 m */
+function claim_box(array $o): array { $x0 = (int) ($o['x0'] ?? 44); $x1 = (int) ($o['x1'] ?? 84); $y0 = (int) ($o['y0'] ?? 44); $y1 = (int) ($o['y1'] ?? 84);
+	return ['hx' => max(200, ($x1 - $x0) * 5), 'hy' => max(200, ($y1 - $y0) * 5), 'dx' => (($x0 + $x1) / 2 - 64) * 10, 'dy' => (($y0 + $y1) / 2 - 64) * 10]; }
+function claim_list(float $lat, float $lon, float $km, string $me = ''): array { $d = rd('dir.php') ?: []; $out = []; $cut = time() - 180 * 86400;
+	foreach ($d as $id => $m) { if (($m['at'] ?? 0) < $cut || !isset($m['lat'])) { continue; } $dy = ($m['lat'] - $lat) * 111320; $dx = ($m['lon'] - $lon) * 111320 * cos(deg2rad($lat));
+		if (abs($dx) > $km * 1000 || abs($dy) > $km * 1000) { continue; } $out[$id] = $m + ['hx' => 200, 'hy' => 200, 'dx' => 0, 'dy' => 0]; } return $out; }
+function claim_hit(string $me, array $meta): ?string { foreach (claim_list($meta['lat'], $meta['lon'], 5) as $id => $m) { if ($id === $me) { continue; }
+		$cx = ($m['lon'] - $meta['lon']) * 111320 * cos(deg2rad($meta['lat'])) + $m['dx'] - $meta['dx']; $cy = -($m['lat'] - $meta['lat']) * 111320 + $m['dy'] - $meta['dy'];
+		if (abs($cx) < $m['hx'] + $meta['hx'] && abs($cy) < $m['hy'] + $meta['hy']) { return (string) ($m['name'] ?? '?'); } } return null; }
 function nb_count(string $me, array $m, array $u): int { $d = rd('dir.php') ?: []; $k = 0;
 	foreach ($d as $id => $x) { if ($id === $me) { continue; } $km = 6371 * 2 * asin(sqrt(sin(deg2rad($x['lat'] - $m['lat']) / 2) ** 2 + cos(deg2rad($m['lat'])) * cos(deg2rad($x['lat'])) * sin(deg2rad($x['lon'] - $m['lon']) / 2) ** 2));
 		if ($km < 25 || (($u['kelas'] ?? '') !== '' && ($x['kelas'] ?? '') === $u['kelas'])) { $k++; } if ($k >= 5) { break; } } return $k; }
@@ -215,8 +224,11 @@ switch ($a) {
 		$j = json_decode($raw, true); if (!is_array($j) || !isset($j['state']) || !is_array($j['state'])) { fail('bad_save'); }
 		$meta = ['name' => clean((string) ($j['state']['meta']['name'] ?? ''), 60), 'era' => (int) ($j['state']['era'] ?? 1), 'month' => (int) ($j['state']['t'] ?? 0), 'kk' => (int) ($j['state']['kk'] ?? 0),
 			'loc' => clean((string) ($j['state']['loc']['name'] ?? ''), 80), 'lat' => (float) ($j['state']['loc']['lat'] ?? 0), 'lon' => (float) ($j['state']['loc']['lon'] ?? 0), 'score' => (int) ($j['state']['score'] ?? 0), 'at' => time()];
+		$ow = $j['state']['own'] ?? []; $meta += claim_box($ow);
 		if (($u['eula'] ?? '') !== EULA_VER) { fail('eula', 403); }
 		$base = (int) ($j['base'] ?? 0);
+		$old = rd('s_' . $u['uid'] . '.php'); $fresh = !$old || (($old['state']['meta']['created'] ?? 0) !== ($j['state']['meta']['created'] ?? 0));
+		if ($fresh && ($who = claim_hit($u['uid'], $meta))) { out(['ok' => false, 'error' => 'claimed', 'by' => $who], 409); }
 		$nbc = nb_count($u['uid'], $meta, $u);
 		$r = upd('s_' . $u['uid'] . '.php', function ($s) use ($j, &$meta, $base, $nbc) { $ver = (int) ($s['ver'] ?? 0);
 			if ($s && $base && $base !== $ver && empty($j['force'])) { return ['__ret' => ['conflict' => $ver]]; }
@@ -277,6 +289,12 @@ switch ($a) {
 		usort($out, fn($x, $y) => $x['km'] <=> $y['km']); out(['ok' => true, 'list' => array_slice($out, 0, 30)]);
 	}
 	// ---- perjanjian dagang dua arah antarpemain ----
+	case 'claimed': {
+		rate('claimed', 120, 600); $lat = (float) ($_GET['lat'] ?? 0); $lon = (float) ($_GET['lon'] ?? 0); $me = '';
+		$tok = (string) ($_SERVER['HTTP_X_BA_TOKEN'] ?? ''); if (preg_match('/^([a-f0-9]{20})\.([a-f0-9]{48})$/', $tok, $mm)) { $uu = rd('u_' . $mm[1] . '.php'); foreach (($uu['tokens'] ?? []) as $tt) { if (hash_equals($tt['h'], hash('sha256', $mm[2])) && $tt['exp'] > time()) { $me = $mm[1]; } } }
+		$res = []; foreach (claim_list($lat, $lon, 15) as $id => $m) { $res[] = ['lat' => $m['lat'], 'lon' => $m['lon'], 'hx' => $m['hx'], 'hy' => $m['hy'], 'dx' => $m['dx'], 'dy' => $m['dy'], 'name' => $m['name'] ?? '', 'who' => $m['who'] ?? '', 'mine' => $id === $me]; }
+		out(['ok' => true, 'list' => array_slice($res, 0, 300)]);
+	}
 	case 'deal_offer': {
 		$u = auth(); rate('deal' . $u['uid'], 20, 3600); $to = preg_replace('/[^a-f0-9]/', '', (string) ($b['to'] ?? '')); $com = preg_replace('/[^a-z_]/', '', (string) ($b['com'] ?? ''));
 		if (strlen($to) !== 10 || $com === '' || strlen($com) > 20) { fail('bad'); }
