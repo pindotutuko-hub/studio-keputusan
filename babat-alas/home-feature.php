@@ -25,9 +25,9 @@ function pindotutuko_babat_feature() {
 			<source src="<?php echo esc_url( home_url( '/babat-alas/teaser.mp4' ) ); ?>" type="video/mp4">
 		</video>
 		<div class="ba-teaser__txt">
-			<b>▶ Tonton teaser · Watch the teaser <small>(1:52)</small></b>
-			<span>Dari lahan kosong di tanah Jawa: kampung joglo dan limasan, desa, perumahan dan real estate, sampai kota dengan apartemen, mal, rumah sakit, stasiun, dan balai kota.</span>
-			<span class="ba-teaser__en" lang="en">From empty land in Java to a kampung, a village, housing estates and a city.</span>
+			<b>▶ Tonton trailer · Watch the trailer <small>(1:01)</small></b>
+			<span>Bermain dan belajar bersama: dari lahan kosong, membangun kampung, desa, sampai kota. Tokoh 3D berbusana daerah, lokasi nyata di seluruh dunia, naik level bangunan, ekonomi dan bahan baku, serta peringkat kelas.</span>
+			<span class="ba-teaser__en" lang="en">Play and learn together: from empty land to a kampung, a village and a city.</span>
 			<a class="ba-teaser__cta" href="<?php echo $url; ?>" target="_blank" rel="noopener">Main sekarang · Play now →</a>
 		</div>
 	</div>
