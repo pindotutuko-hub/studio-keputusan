@@ -1781,8 +1781,12 @@ function startGame(st,fresh){S=st;_brN=-1;if(S.res.stone==null)S.res.stone=20;if
  loopT=setInterval(()=>{if(!S)return;/* ▶ = 1 jam permainan per 1 menit nyata; ⏩ ×10 (1 jam / 6 dtk); ⏩⏩ ×60 (1 jam / dtk) */
  const mult=[0,1,10,60][speed]||0;if(!Dlg.busy&&mult){S.clk.h+=mult/120;buildStep(mult/120);while(S.clk.h>=24){S.clk.h-=24;S.clk.d++;dayTick();if(S.clk.d>30){S.clk.d=1;tick()}}}
   R3.daylight(S.clk.h/24);$('hDate').textContent=dateStr();const ls=R3.lifeStats();const sea=seasonOf(calM());
-  Snd.update({hour:S.clk.h,month:calM(),cc:S.loc.cc,climate:S.loc.climate,rainy:sea==='hujan'||sea==='pancaroba',rainNow:['hujan','badai','gerimis'].includes(S.wx),dry:S.ev.dry>0||sea==='kemarau',water:S.land.some(r=>r.indexOf('W')>=0),market:count('market')>0,forest:S.land.join('').split('F').length-1,bikes:ls.bikes,motors:ls.motors,chickens:ls.hens,cows:count('peternakan'),kk:S.kk,kids:count('sekolah')+count('paud')+count('taman')});
+  Snd.update({near:nearAmb(),hour:S.clk.h,month:calM(),cc:S.loc.cc,climate:S.loc.climate,rainy:sea==='hujan'||sea==='pancaroba',rainNow:['hujan','badai','gerimis'].includes(S.wx),dry:S.ev.dry>0||sea==='kemarau',water:S.land.some(r=>r.indexOf('W')>=0),market:count('market')>0,forest:S.land.join('').split('F').length-1,bikes:ls.bikes,motors:ls.motors,chickens:ls.hens,cows:count('peternakan'),kk:S.kk,kids:count('sekolah')+count('paud')+count('taman')});
   if(SET.autosave&&Date.now()-lastSave>60000)save(false)},500)}
+/** suara sungai & hutan hanya terdengar bila kamera dekat (zoom in) ke sungai/hutan: 0..1 */
+function nearAmb(){try{const {camera,controls}=R3.cam(),tg=controls.target,zd=camera.position.distanceTo(tg),zf=Math.max(0,Math.min(1,(16-zd)/10));if(zf<=0)return {w:0,f:0};
+ const cx=Math.floor(tg.x),cz=Math.floor(tg.z);let dw=99,nf=0;for(let y=cz-8;y<=cz+8;y++)for(let x=cx-8;x<=cx+8;x++){if(!inside(x,y))continue;const l=S.land[y][x];if(l==='W'){const d=Math.hypot(x+.5-tg.x,y+.5-tg.z);if(d<dw)dw=d}else if(l==='F'&&Math.abs(x-cx)<=4&&Math.abs(y-cz)<=4)nf++}
+ return {w:zf*Math.max(0,Math.min(1,(7-dw)/6)),f:zf*Math.min(1,nf/40)}}catch(e){return {w:0,f:0}}}
 function stopGame(){clearInterval(loopT);S=null;try{Snd.silence()}catch(e){}}
 window.addEventListener('beforeunload',()=>{if(S&&S.scen&&dirty){try{store.set('baScen',JSON.stringify(S))}catch(e){}return}if(S&&dirty&&GUEST)store.set('baGuestSave',JSON.stringify(S))});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){try{Snd.pause()}catch(e){}if(S)save(false)}else if(S){try{Snd.resume()}catch(e){}}});
@@ -1910,7 +1914,7 @@ const Snd=(()=>{let ctx=null,master=null,fxB=null,ambB=null,cur=null,noiseBuf=nu
   update(o){if(this._paused&&!document.hidden)this.resume();if(!on||!ctx||ctx.state!=='running')return;if(this._mute){this._mute=false;ambB.gain.setTargetAtTime(SET.amb,now(),.4)}cur=ambB;try{this._u(o)}finally{cur=fxB}},
   _u(o){this.cc=o.cc;const h=o.hour,night=h<5.5||h>18.6,dawn=h>=4.8&&h<6.6,trop=o.climate==='trop'||o.climate==='tropdry',temp=o.climate==='temp';
    bed('river',700,.6,'bandpass');bed('wind',350,.4,'lowpass');bed('rain',3000,.3,'highpass');bed('market',650,.8,'bandpass');bed('forest',2600,.9,'bandpass');
-   level('river',o.water?.035:0);level('wind',(temp?.07:.03)+(o.dry?.05:0));level('rain',o.rainy&&o.rainNow?.11:0);level('market',o.market&&!night&&h>6&&h<15&&!SBUF['keramaian']?.035:0);level('forest',!night&&!o.rainNow?Math.min(.012,.003+o.forest*.00001):0);
+   level('river',o.near?o.near.w*.05:0);level('wind',(temp?.07:.03)+(o.dry?.05:0));level('rain',o.rainy&&o.rainNow?.11:0);level('market',o.market&&!night&&h>6&&h<15&&!SBUF['keramaian']?.035:0);level('forest',!night&&!o.rainNow&&o.near?o.near.f*.008:0);
    const r=Math.random(),tick=(k,p,min)=>{if(r<p&&(now()-(last[k]||0))>min){last[k]=now();return true}return false};
    if(!night&&h<17.5&&o.forest>8&&tick('birdR',.12,(h<9?10:22)+Math.random()*12)){cur=fxB;smp('bird',h<9?.3:.18);cur=ambB}if(!night&&tick('bird',(trop?.14:.08)*(o.forest>50?1.2:.8)*(SBUF['burung-kacer-1']?.35:1),1.6))chirp();if(!night&&tick('ayam',.025,18))[0,.12,.24].forEach(t=>tone(600+Math.random()*200,.06,{type:'triangle',vol:.05,at:t,f2:450}));if(h>=6.6&&h<9&&['ID','MY','PH','TH','VN'].includes(o.cc)&&tick('rooster2',.02,45))smp('rooster',.32)||rooster();
    if(night&&(trop||o.climate==='sub')&&tick('cricket',.35,.45))cricket();
