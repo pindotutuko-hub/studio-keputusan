@@ -130,7 +130,7 @@ async function hub(){try{Snd.silence()}catch(e){}if(SET.real!==false&&!REAL.ok)s
 const STYLES=['jawa','joglo','panggung','gadang','tongkonan','bali','honai','kolonial','modern','machiya','eropa'];
 /* ---------- Editor avatar (SVG berlapis; semua bagian bisa diatur) ---------- */
 const AVO={sex:2,reg:10,face:4,skin:7,eyes:5,brow:3,mouth:4,nose:3,hair:8,hairC:7,beard:4,hat:9,cloth:7,clothC:10,acc:4,bg:6};
-const AVP={skin:['#f1c9a5','#e0ac7e','#c68c5a','#b97a48','#a86b3d','#8d5a35','#6b4128'],hairC:['#1b1b1b','#3b2a1a','#5a3a22','#8a5a2b','#b9873a','#9a9a9a','#e8e2d6'],clothC:['#1f6f4f','#a33a2a','#2f4f7f','#e0a526','#7a3b6b','#efe6d6','#3b3b3b','#c25b8a','#5b3b25','#2f8f8f'],bg:['#e9f1e6','#f6e7cf','#dfe9f3','#f3dfe6','#e6e1f3','#2b3a33']};
+const AVP={skin:['#ffecdb','#f7d6b8','#c68c5a','#b97a48','#a86b3d','#8d5a35','#6b4128'],hairC:['#1b1b1b','#3b2a1a','#5a3a22','#8a5a2b','#b9873a','#9a9a9a','#e8e2d6'],clothC:['#1f6f4f','#a33a2a','#2f4f7f','#e0a526','#7a3b6b','#efe6d6','#3b3b3b','#c25b8a','#5b3b25','#2f8f8f'],bg:['#e9f1e6','#f6e7cf','#dfe9f3','#f3dfe6','#e6e1f3','#2b3a33']};
 const AVN={id:{sex:'Jenis kelamin',reg:'Busana negara',face:'Bentuk wajah',skin:'Warna kulit',eyes:'Mata',brow:'Alis',mouth:'Mulut',nose:'Hidung',hair:'Rambut',hairC:'Warna rambut',beard:'Kumis/jenggot',hat:'Penutup kepala',cloth:'Pakaian',clothC:'Warna pakaian',acc:'Aksesori',bg:'Latar',rnd:'🎲 Acak',
   v:{face:['Oval','Bulat','Persegi','Hati'],eyes:['Titik','Bulat','Sipit','Besar','Teduh'],brow:['Tipis','Tebal','Melengkung'],mouth:['Senyum','Tertawa','Datar','Bicara'],nose:['Kecil','Sedang','Mancung'],hair:['Botak','Pendek','Belah samping','Keriting','Panjang','Sanggul','Jabrik','Kuncir'],beard:['Tanpa','Kumis','Jenggot','Brewok'],hat:['Tanpa','Blangkon','Peci','Udeng Bali','Caping','Kerudung','Iket','Topi','Mahkota adat'],cloth:['Kemeja','Beskap/surjan','Kaos','Jas','Kebaya & jarik','Baju kurung/gamis','Blus & rok'],sex:['Pria','Wanita'],reg:['Nusantara','Melayu','Jepang','Tiongkok','Filipina','Asia Selatan','Timur Tengah','Afrika','Eropa','Amerika Latin'],acc:['Tanpa','Kacamata','Anting','Kalung']}},
  en:{sex:'Sex',reg:'Country costume',face:'Face shape',skin:'Skin tone',eyes:'Eyes',brow:'Brows',mouth:'Mouth',nose:'Nose',hair:'Hair',hairC:'Hair colour',beard:'Moustache/beard',hat:'Headwear',cloth:'Clothing',clothC:'Clothing colour',acc:'Accessory',bg:'Background',rnd:'🎲 Random',
@@ -933,7 +933,8 @@ function catTools(k){const c=CATS.find(c=>c.k===k);const known=new Set(CATS.flat
 const catOf=k=>{const c=CATS.find(c=>c.t.includes(k));return c?c.k:'dasar'};
 /* telemetri ringan: membedakan pemain manusia dari bot/otomasi (dikirim saat simpan, dinilai server) */
 const TELE={ptr:0,utr:0,mv:0,acts:0,iv:[],last:0,wd:navigator.webdriver?1:0,hl:/HeadlessChrome|PhantomJS|Puppeteer|Playwright|Selenium|python-requests|curl/i.test(navigator.userAgent)?1:0};
-['pointerdown','click','keydown'].forEach(ev=>document.addEventListener(ev,e=>{if(e.isTrusted)TELE.ptr++;else TELE.utr++},true));
+let teleT=0;/* klik terprogram milik gim sendiri (pintasan papan ketik, unduhan) menyusul input asli < 120 ms — tidak dihitung sintetis */
+['pointerdown','click','keydown'].forEach(ev=>document.addEventListener(ev,e=>{const n=performance.now();if(e.isTrusted){TELE.ptr++;teleT=n}else if(n-teleT>120)TELE.utr++},true));
 document.addEventListener('pointermove',e=>{if(e.isTrusted)TELE.mv++},{capture:true,passive:true});
 function teleAct(){const n=performance.now();if(TELE.last)TELE.iv.push(Math.min(60000,n-TELE.last));TELE.last=n;if(TELE.iv.length>200)TELE.iv.shift();TELE.acts++}
 function teleSum(){const v=TELE.iv,m=v.length?v.reduce((a,b)=>a+b,0)/v.length:0,sd=v.length?Math.sqrt(v.reduce((a,b)=>a+(b-m)*(b-m),0)/v.length):0;
@@ -1520,7 +1521,7 @@ const R3={};
 let tool='info',dirty=false,speed=1,timer=0,curStyle='jawa',dragging=false;
 function canAfford(c){return S.res.coin>=(c.coin||0)&&S.res.wood>=(c.wood||0)&&(S.res.stone||0)>=(c.stone||0)&&(S.res.iron||0)>=(c.iron||0)}
 function pay(c){S.res.coin-=c.coin||0;S.res.wood-=c.wood||0;if(c.stone)S.res.stone-=c.stone;if(c.iron)S.res.iron-=c.iron}
-function act(x,y,silent){const say=m=>{if(!silent){toast(m);Snd.play('err')}};teleAct();
+function act(x,y,silent){const say=m=>{if(!silent){toast(m);Snd.play('err')}};if(!silent)teleAct();
  if(tool==='move'){bMoveTo(x,y);return}
  if(tool==='bull'&&!occ[y][x]&&L(x,y)==='P'){roadRemove(x,y);return}
  if(tool==='info'){showInfo(x,y);return}
