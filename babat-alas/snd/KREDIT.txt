@@ -19,3 +19,9 @@ anak-bermain.wav — "Douzen kids on playground.ogg" oleh stephan — Public dom
 
 CC BY-SA 3.0: https://creativecommons.org/licenses/by-sa/3.0/
 CC BY-SA 4.0: https://creativecommons.org/licenses/by-sa/4.0/
+
+MUSIK LATAR DAERAH (v45)
+mus-jawa.aac  — cuplikan 2 menit dari "Gamelan angka 1 Kraton Ngayogyakarta.ogg", RTB45 via Freesound (gamelan Kraton Ngayogyakarta Hadiningrat), CC BY 4.0. https://commons.wikimedia.org/wiki/File:Gamelan_angka_1_Kraton_Ngayogyakarta.ogg
+mus-bali.aac  — cuplikan 2 menit dari "Gendér Wayang (1928).ogg", musik tradisional Bali, rekaman Odeon 1928, Public domain. https://commons.wikimedia.org/wiki/File:Gend%C3%A9r_Wayang_(1928).ogg
+Diolah: mono, dinormalkan, pudar masuk/keluar 3 detik, AAC 64 kbps.
+Daerah lain: komposisi orisinal prosedural di peramban (tangga nada & warna bunyi khas daerah), bukan salinan lagu daerah tertentu.
