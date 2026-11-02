@@ -996,17 +996,17 @@ const MIN={batu:{n:['Batu andesit / batu kali','Andesite / river stone'],c:'#8d8
  timah:{n:['Timah','Tin'],c:'#b9bdc5',q:240},
  bauksit:{n:['Bauksit','Bauxite'],c:'#b5653a',q:260},
  tembaga:{n:['Tembaga & emas','Copper & gold'],c:'#c27c3a',q:220},
- emas:{n:['Emas','Gold'],c:'#e6c13a',q:140}};
+ emas:{n:['Emas & perak','Gold & silver'],c:'#e6c13a',q:140}};
 /* hasil per bulan per tambang (dikali tenaga kerja) */
 const MYLD={batu:{stone:6},pasir:{stone:4,coin:2},kapur:{stone:3,coin:4},pbesi:{iron:5},batubara:{coin:9},nikel:{iron:2,coin:9},timah:{coin:10},bauksit:{coin:7},tembaga:{coin:12},emas:{coin:14}};
 const MINERAL=['pbesi','batubara','nikel','timah','bauksit','tembaga','emas'];
 function geoMin(l){const la=l&&+l.lat,lo=l&&+l.lon;if(!l||!isFinite(la)||!isFinite(lo))return {m:[],r:'',kap:.35};const B=(a,b,c,d)=>la>=a&&la<=b&&lo>=c&&lo<=d;
  if(B(-3.6,-1.3,105,108.6))return {m:['timah'],r:'Bangka Belitung',kap:.2};
- if(B(-9,-5.8,105,114.7))return {m:['pbesi'],r:'Jawa',kap:.55};
- if(B(-4.3,4.5,108.8,119.2))return {m:['batubara','bauksit'],r:'Kalimantan',kap:.25};
+ if(B(-9,-5.8,105,114.7))return {m:['pbesi'],r:'Jawa',kap:.55,opt:{emas:.35}};
+ if(B(-4.3,4.5,108.8,119.2))return {m:['batubara','bauksit'],r:'Kalimantan',kap:.25,opt:{emas:.3}};
  if(B(-6,6,95,106.2))return {m:['batubara','emas'],r:'Sumatra',kap:.35};
  if(B(-6,2.2,118.8,125.6))return {m:['nikel','emas'],r:'Sulawesi',kap:.4};
- if(B(-1,3,127,129.2))return {m:['nikel'],r:'Halmahera',kap:.3};
+ if(B(-1,3,127,129.2))return {m:['nikel'],r:'Halmahera',kap:.3,opt:{emas:.3}};
  if(B(-9.6,0,130.5,141.1))return {m:['tembaga'],r:'Papua',kap:.3};
  if(B(-11,-8,116.5,125.2))return {m:['tembaga'],r:'Nusa Tenggara',kap:.6};
  return {m:[],r:'',kap:.35}}
@@ -1026,6 +1026,8 @@ function genDep(seed,loc){const w=genWorld(seed),r=rng((seed^0x5bd1e995)>>>0),H=
  if(r()<geo.kap){const p=pick(hi.slice(0,Math.floor(hi.length*.3)),10,40);if(p)blob(p[0],p[1],'kapur',4)}
  // mineral utama wilayah: satu dalam wilayah awal, satu lagi di luar (perlu perluasan)
  geo.m.slice(0,2).forEach((t,i)=>{const p=pick(tiles,i?22:9,i?52:17);if(p)blob(p[0],p[1],t,3)});
+ // mineral tambahan yang jarang (peluang menurut wilayah), selalu di luar wilayah awal
+ Object.entries(geo.opt||{}).forEach(([t,pr])=>{if(r()<pr){const p=pick(tiles,24,55);if(p)blob(p[0],p[1],t,3)}});
  return D}
 function depMsg(k){const ty=depTypes(k)||[],has=Object.values(S.dep||{}).some(d=>d.q>0&&ty.includes(d.t));
  if(!has)return L2('Tidak ada endapan '+ty.map(t=>MIN[t].n[0].toLowerCase()).join(' / ')+' di peta wilayah ini. Mineral mengikuti lokasi geografis kampung.','No '+ty.map(t=>MIN[t].n[1].toLowerCase()).join(' / ')+' deposit in this area. Minerals depend on the village\'s geographic location.');
@@ -1041,8 +1043,8 @@ Object.assign(BT,{galian:{era:1,w:1,h:1,c:{coin:5,wood:2},jobs:2,days:2,dep:['pa
 Object.assign(ICON,{galian:'🏖️',tobong:'🪨',tamin:'⚒️'});
 Object.assign(TX.id.tl,{galian:'Galian pasir',tobong:'Tobong kapur',tamin:'Tambang mineral'});
 Object.assign(TX.en.tl,{galian:'Sand pit',tobong:'Lime kiln',tamin:'Mineral mine'});
-Object.assign(TX.id.tlD,{galian:'Pasir & kerikil untuk bangunan; hanya di endapan pasir tepi sungai',tobong:'Batu & kapur dijual; hanya di endapan batu kapur; berdebu',tamin:'Mineral khas wilayah (pasir besi, batubara, nikel, timah, bauksit, tembaga/emas); hanya di endapannya; polusi tinggi, cadangan bisa habis'});
-Object.assign(TX.en.tlD,{galian:'Sand & gravel for building; only on river-sand deposits',tobong:'Stone & lime for sale; only on limestone deposits; dusty',tamin:'Regional minerals (iron sand, coal, nickel, tin, bauxite, copper/gold); only on their deposits; high pollution, reserves run out'});
+Object.assign(TX.id.tlD,{galian:'Pasir & kerikil untuk bangunan; hanya di endapan pasir tepi sungai',tobong:'Batu & kapur dijual; hanya di endapan batu kapur; berdebu',tamin:'Mineral khas wilayah (pasir besi, batubara, nikel, timah, bauksit, tembaga, emas & perak); hanya di endapannya; polusi tinggi, cadangan bisa habis'});
+Object.assign(TX.en.tlD,{galian:'Sand & gravel for building; only on river-sand deposits',tobong:'Stone & lime for sale; only on limestone deposits; dusty',tamin:'Regional minerals (iron sand, coal, nickel, tin, bauxite, copper, gold & silver); only on their deposits; high pollution, reserves run out'});
 TX.id.tlD.tambang='Batu bangunan ±6/bulan; di lereng atau dekat sungai; ×2 di endapan batu';TX.en.tlD.tambang='Building stone ±6/month; on a slope or near a river; ×2 on a stone deposit';
 /* hasil tambang bulanan + penyusutan cadangan */
 function mineMonth(staff){const o={stone:0,iron:0,coin:0};built().forEach(b=>{const ty=depTypes(b.t);if(!ty)return;const ds=depNear(b,ty);if(!ds.length){return}
@@ -1867,7 +1869,7 @@ async function save(force){if(!S||saving)return;if(!force&&!dirty)return;if(S.sc
  catch(e){if(dot)dot.textContent=t('saveFail');if(force)toast(t('saveFail'))}finally{saving=false}}
 async function loadGame(){try{let st=null;if(GUEST){st=JSON.parse(store.get('baGuestSave')||'null')}else{const j=await api('load');st=j.save&&j.save.state;saveVer=j.save?j.save.ver:0}if(!st||!st.own||!st.land||st.land.length!==N)throw new Error('none');startGame(st,false)}catch(e){$('hubErr').textContent=t('errNet')}}
 let started=false,loopT=0,clockS='';
-function startGame(st,fresh){S=st;_brN=-1;if(S.res.stone==null)S.res.stone=20;if(S.res.iron==null)S.res.iron=0;if(!S.dep||typeof S.dep!=='object')S.dep=genDep(S.seed,S.loc);rebuildOcc();show('game');if(!started){R3.init($('view'));bindInput();started=true}
+function startGame(st,fresh){S=st;_brN=-1;if(S.res.stone==null)S.res.stone=20;if(S.res.iron==null)S.res.iron=0;if(!S.dep||typeof S.dep!=='object'){S.dep=genDep(S.seed,S.loc);S.depV=2}if((S.depV||1)<2){const D2=genDep(S.seed,S.loc);Object.entries(D2).forEach(([k,d])=>{if(!S.dep[k]&&d.t==='emas')S.dep[k]=d});S.depV=2}rebuildOcc();show('game');if(!started){R3.init($('view'));bindInput();started=true}
  /* permainan lama (dibuat sebelum kas awal Rp 100 miliar): tambah dana awal sekali */
  if(!S.capFix&&!S.scen&&(S.meta.created||0)<1793500200000){S.capFix=1;S.res.coin+=607;dirty=true;setTimeout(()=>advise(L2('💰 Dana awal kampung disesuaikan: +'+money(607)+' (setara kas awal ±Rp 100 miliar).','💰 Starting funds adjusted: +'+money(607)+'.'),'eco'),2500)}else if(!S.capFix)S.capFix=1;
  setTimeout(()=>syncDeals().then(()=>{if(S)updHUD()}),3000);
