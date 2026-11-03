@@ -60,6 +60,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	} elseif ($act === 'tgtest') {
 		$c = ba_cfg(); $j = ba_tg((string) $c['tgToken'], 'sendMessage', ['chat_id' => $c['tgChat'], 'text' => '✅ Uji notifikasi Kontrol Gim Babat Alas berhasil. Peringatan pemain yang dicurigai bot/AI akan dikirim ke sini.']);
 		$msg = !empty($j['ok']) ? '📲 Notifikasi uji terkirim ke Telegram.' : '⚠ Gagal mengirim ke Telegram' . (!empty($j['description']) ? ': ' . esc_html((string) $j['description']) : ' (periksa token & chat ID, atau server tidak bisa menghubungi Telegram).');
+	} elseif ($act === 'bkmake') { require_once __DIR__ . '/../api/backup.php'; [$f, $n] = ba_bk_make(BA_DATA); $msg = $f ? '💾 Cadangan dibuat: ' . esc_html(basename($f)) . ' (' . (int) $n . ' berkas data).' : '⚠ Cadangan gagal: ' . esc_html((string) $n);
+	} elseif ($act === 'bkdl') { require_once __DIR__ . '/../api/backup.php'; $l = ba_bk_list(BA_DATA); $want = basename((string) ($_POST['f'] ?? '')); $f = ''; foreach ($l as $x) { if (basename($x) === $want) { $f = $x; } }
+		if ($f && is_file($f)) { nocache_headers(); header('Content-Type: application/octet-stream'); header('Content-Disposition: attachment; filename="' . basename($f) . '"'); header('Content-Length: ' . filesize($f)); readfile($f); exit; } $msg = 'Berkas cadangan tidak ditemukan.';
 	} elseif ($act === 'clearalerts') { ba_put('alerts.php', []); $msg = 'Log peringatan dikosongkan.';
 	} elseif (strlen($uid) === 20 && is_file(BA_DATA . '/u_' . $uid . '.php')) {
 		$u = ba_rd('u_' . $uid . '.php');
@@ -71,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		elseif ($act === 'reset') { ba_delete_user($uid, false); $msg = 'Simpanan & wilayah “' . esc_html($u['user'] ?? $uid) . '” sudah direset (akun tetap ada).'; }
 	} else { $msg = 'Pengguna tidak ditemukan.'; }
 	set_transient('ba_adm_msg_' . get_current_user_id(), $msg, 120);
-	wp_safe_redirect(strtok((string) $_SERVER['REQUEST_URI'], '?') . '#' . (in_array($act, ['cfg', 'testmail', 'tgchat', 'tgtest'], true) ? 'setel' : ($act === 'clearalerts' ? 'log' : 'pemain'))); exit;
+	wp_safe_redirect(strtok((string) $_SERVER['REQUEST_URI'], '?') . '#' . (in_array($act, ['cfg', 'testmail', 'tgchat', 'tgtest', 'bkmake'], true) ? 'setel' : ($act === 'clearalerts' ? 'log' : 'pemain'))); exit;
 }
 if (!$msg && ($tm = get_transient('ba_adm_msg_' . get_current_user_id()))) { $msg = (string) $tm; delete_transient('ba_adm_msg_' . get_current_user_id()); }
 
@@ -189,6 +192,12 @@ input[type=search]{padding:8px 11px;border:1px solid var(--line);border-radius:9
 <button class="save">💾 Simpan pengaturan</button> <span class="mut"><?= !empty($cfgRaw['at']) ? 'Terakhir diubah ' . esc_html(wp_date('d M Y H:i', (int) $cfgRaw['at'])) . ' oleh ' . esc_html((string) ($cfgRaw['by'] ?? '')) : 'Belum pernah diubah (nilai bawaan).' ?></span>
 </form>
 <form method="post" style="margin-top:10px"><input type="hidden" name="_wpnonce" value="<?= $nonce ?>"><input type="hidden" name="act" value="testmail"><button class="rst">✉ Kirim email uji ke pindotutuko@gmail.com</button> <button class="rst" name="act" value="tgchat" formnovalidate>🔎 Ambil chat ID Telegram</button> <button class="rst" name="act" value="tgtest">📲 Kirim notifikasi uji (Telegram)</button> <span class="mut">untuk memastikan peringatan bot/AI sampai ke Telegram atau email Anda.</span></form>
+<?php require_once __DIR__ . '/../api/backup.php'; $bks = ba_bk_list(BA_DATA); $bkAt = (int) @file_get_contents(BA_DATA . '/bk_at.txt'); $bkIn = strpos(ba_bk_dir(BA_DATA), 'public_html') === false; ?>
+<fieldset style="margin-top:14px"><legend>💾 Cadangan data pemain (otomatis harian)</legend>
+<p class="mut">Akun, simpanan, kelas, peringkat, dan pengaturan dicadangkan otomatis sekali sehari (14 cadangan terbaru disimpan) <?= $bkIn ? 'di luar folder situs (tidak bisa diakses publik).' : 'di folder data yang terkunci (server tidak mengizinkan menulis di luar folder situs).' ?> Terakhir: <b><?= $bkAt ? esc_html(wp_date('d M Y H:i', $bkAt)) : 'belum pernah' ?></b>.</p>
+<form method="post" style="margin:6px 0"><input type="hidden" name="_wpnonce" value="<?= $nonce ?>"><button class="rst" name="act" value="bkmake">💾 Cadangkan sekarang</button></form>
+<?php if ($bks): ?><table><tr><th>Berkas</th><th>Ukuran</th><th></th></tr><?php foreach (array_slice($bks, 0, 14) as $f): ?><tr><td><?= esc_html(basename($f)) ?></td><td><?= number_format(filesize($f) / 1024, 0, ',', '.') ?> KB</td><td><form method="post"><input type="hidden" name="_wpnonce" value="<?= $nonce ?>"><input type="hidden" name="f" value="<?= esc_attr(basename($f)) ?>"><button class="rst" name="act" value="bkdl">⬇ Unduh</button></form></td></tr><?php endforeach; ?></table><?php endif; ?>
+</fieldset>
 </section>
 <section id="t-log" class="pane">
 <h2>⚠ Log peringatan bot/AI</h2>
