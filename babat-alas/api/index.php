@@ -184,11 +184,11 @@ function audit(array $st, ?array $prev, int $prevAt): array {
 	if ($wood + $spentW > 2 * (START['wood'] + 4 * $cleared) + $woodBuy + 5) { $bad[] = 'wood'; }
 	if ($cleared > substr_count(implode('', $land), 'G') + $paths) { $bad[] = 'cleared'; }
 	if ($cleared > 1600) { $bad[] = 'cleared'; }
-	// waktu permainan: maks. 0,5 bulan per detik nyata (kecepatan ⏩)
+	/* K1 (v47a): waktu permainan maks. = kecepatan tertinggi gim (⏩⏩ ×60: 1 jam permainan per detik, 1 bulan = 720 detik), toleransi ×1,5 + 2 bulan */
 	if ($prev && ($prev['meta']['created'] ?? 0) === ($st['meta']['created'] ?? 0)) {
 		$pt = (int) ($prev['t'] ?? 0); $water0 = substr_count(implode('', $prev['land'] ?? []), 'W');
 		if ($t < $pt) { $bad[] = 'rewind'; }
-		if ($t - $pt > (time() - $prevAt) * 0.5 * 1.3 + 3) { $bad[] = 'speed'; }
+		if ($t - $pt > (time() - $prevAt) / 720 * 1.5 + 2) { $bad[] = 'speed'; }
 		if (substr_count(implode('', $land), 'W') !== $water0) { $bad[] = 'water'; }
 		if (array_intersect($prev['flagged'] ?? [], ['coin', 'wood', 'speed', 'rewind', 'water', 'land', 'btype', 'bpos', 'era', 'prior', 'own', 'outside'])) { $bad[] = 'prior'; }
 	} elseif ($t > 6) { $bad[] = 'fresh'; }
