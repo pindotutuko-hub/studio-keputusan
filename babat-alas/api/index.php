@@ -55,6 +55,21 @@ function rate(string $act, int $max, int $win, bool $byIp = true): void {
 	if (!$ok) { fail('rate_limited', 429); }
 }
 function uid_of(string $user): string { return substr(hash('sha256', 'ba|' . mb_strtolower($user)), 0, 20); }
+/** v46b: kode kelas hanya huruf besar & angka (sama dengan nama berkas k_KODE.php). */
+function kelas_code(string $s): string { return substr(preg_replace('/[^A-Z0-9]/', '', strtoupper($s)) ?? '', 0, 12); }
+/** v46b: periksa bentuk data simpanan sebelum audit, agar data berjenis salah ditolak 400 (bukan galat 500). */
+function state_ok(array $st): bool {
+	$num = fn($v) => is_int($v) || is_float($v);
+	foreach (['own', 'res', 'loc', 'meta', 'stats', 'b', 'br', 'done', 'links', 'land'] as $k) { if (isset($st[$k]) && !is_array($st[$k])) { return false; } }
+	foreach (['x0', 'y0', 'x1', 'y1'] as $k) { if (isset($st['own'][$k]) && !$num($st['own'][$k])) { return false; } }
+	foreach (['lat', 'lon'] as $k) { if (isset($st['loc'][$k]) && !$num($st['loc'][$k])) { return false; } }
+	foreach ($st['b'] ?? [] as $b) {
+		if (!is_array($b) || !is_string($b['t'] ?? null)) { return false; }
+		foreach (['x', 'y', 'w', 'h'] as $k) { if (!$num($b[$k] ?? null)) { return false; } }
+		if (isset($b['lv']) && !$num($b['lv'])) { return false; }
+	}
+	return true;
+}
 
 
 /* ---------- pengaturan jarak jauh (diubah dari halaman admin) ---------- */
@@ -228,13 +243,15 @@ function chal_ok(string $c, array $i): bool {
 /** wilayah pemain (meter, relatif ke titik lokasi): 1 petak ≈ 10 m; wilayah awal 40×40 petak ≈ 400×400 m */
 function claim_box(array $o): array { $x0 = (int) ($o['x0'] ?? 44); $x1 = (int) ($o['x1'] ?? 84); $y0 = (int) ($o['y0'] ?? 44); $y1 = (int) ($o['y1'] ?? 84);
 	return ['hx' => max(200, ($x1 - $x0) * 5), 'hy' => max(200, ($y1 - $y0) * 5), 'dx' => (($x0 + $x1) / 2 - 64) * 10, 'dy' => (($y0 + $y1) / 2 - 64) * 10]; }
-function claim_list(float $lat, float $lon, float $km, string $me = ''): array { $d = rd('dir.php') ?: []; $out = []; $cut = time() - 180 * 86400;
+/** v46c: direktori dibaca sekali per permintaan (sebelumnya 2–3 kali saat simpan). */
+function dir_rd(): array { static $d = null; return $d ??= (rd('dir.php') ?: []); }
+function claim_list(float $lat, float $lon, float $km, string $me = ''): array { $d = dir_rd(); $out = []; $cut = time() - 180 * 86400;
 	foreach ($d as $id => $m) { if (($m['at'] ?? 0) < $cut || !isset($m['lat'])) { continue; } $dy = ($m['lat'] - $lat) * 111320; $dx = ($m['lon'] - $lon) * 111320 * cos(deg2rad($lat));
 		if (abs($dx) > $km * 1000 || abs($dy) > $km * 1000) { continue; } $out[$id] = $m + ['hx' => 200, 'hy' => 200, 'dx' => 0, 'dy' => 0]; } return $out; }
 function claim_hit(string $me, array $meta): ?string { foreach (claim_list($meta['lat'], $meta['lon'], 5) as $id => $m) { if ($id === $me) { continue; }
 		$cx = ($m['lon'] - $meta['lon']) * 111320 * cos(deg2rad($meta['lat'])) + $m['dx'] - $meta['dx']; $cy = -($m['lat'] - $meta['lat']) * 111320 + $m['dy'] - $meta['dy'];
 		if (abs($cx) < $m['hx'] + $meta['hx'] && abs($cy) < $m['hy'] + $meta['hy']) { return (string) ($m['name'] ?? '?'); } } return null; }
-function nb_count(string $me, array $m, array $u): int { $d = rd('dir.php') ?: []; $k = 0;
+function nb_count(string $me, array $m, array $u): int { $d = dir_rd(); $k = 0;
 	foreach ($d as $id => $x) { if ($id === $me) { continue; } $km = 6371 * 2 * asin(sqrt(sin(deg2rad($x['lat'] - $m['lat']) / 2) ** 2 + cos(deg2rad($m['lat'])) * cos(deg2rad($x['lat'])) * sin(deg2rad($x['lon'] - $m['lon']) / 2) ** 2));
 		if ($km < 25 || (($u['kelas'] ?? '') !== '' && ($x['kelas'] ?? '') === $u['kelas'])) { $k++; } if ($k >= 5) { break; } } return $k; }
 
@@ -248,13 +265,15 @@ switch ($a) {
 	case 'cfg': { out(['ok' => true, 'cfg' => cfg_pub()]); }
 	case 'hb': {
 		$sid = preg_replace('/[^a-z0-9]/', '', strtolower((string) ($b['sid'] ?? ''))); if (strlen($sid) < 8 || strlen($sid) > 24) { fail('bad'); }
-		rate('hb' . $sid, 8, 300, false);
+		rate('hb' . $sid, 8, 300, false); rate('hb_ip', 3000, 300); // v46b: juga dibatasi per IP (longgar untuk NAT kampus)
 		$who = ''; $uid = '';
 		$tok = (string) ($_SERVER['HTTP_X_BA_TOKEN'] ?? ''); if (preg_match('/^([a-f0-9]{20})\.([a-f0-9]{48})$/', $tok, $mm)) { $uu = rd('u_' . $mm[1] . '.php'); foreach (($uu['tokens'] ?? []) as $tt) { if (hash_equals($tt['h'], hash('sha256', $mm[2])) && $tt['exp'] > time()) { $uid = $mm[1]; $who = (string) ($uu['user'] ?? ''); } } }
 		$row = ['at' => time(), 'user' => $who, 'uid' => $uid, 'guest' => $uid === '', 'name' => clean((string) ($b['name'] ?? ''), 60), 'loc' => clean((string) ($b['loc'] ?? ''), 80), 'cc' => clean((string) ($b['cc'] ?? ''), 3),
 			'lat' => round((float) ($b['lat'] ?? 0), 3), 'lon' => round((float) ($b['lon'] ?? 0), 3), 'era' => (int) ($b['era'] ?? 0), 'kk' => (int) ($b['kk'] ?? 0), 'dev' => clean((string) ($b['dev'] ?? ''), 12), 'scr' => clean((string) ($b['scr'] ?? ''), 10)];
 		if (!is_dir(DATA . '/live')) { @mkdir(DATA . '/live', 0750); @file_put_contents(DATA . '/live/index.php', GUARD); }
-		@file_put_contents(DATA . '/live/' . $sid . '.php', GUARD . json_encode($row, JSON_UNESCAPED_UNICODE), LOCK_EX);
+		// v46b: sesi baru hanya dibuat bila folder live/ belum penuh, agar sid acak tidak bisa memenuhi disk
+		$lf = DATA . '/live/' . $sid . '.php'; if (!is_file($lf) && count(glob(DATA . '/live/*.php', GLOB_NOSORT) ?: []) > 5000) { out(['ok' => true, 'cfg' => cfg_pub()]); }
+		@file_put_contents($lf, GUARD . json_encode($row, JSON_UNESCAPED_UNICODE), LOCK_EX);
 		if (mt_rand(1, 200) === 1) { $cut = time() - 7 * 86400; foreach (glob(DATA . '/live/*.php') ?: [] as $f) { if (basename($f) !== 'index.php' && @filemtime($f) < $cut) { @unlink($f); } } }
 		if ($uid) { upd('u_' . $uid . '.php', function ($x) { if (!$x) { return ['__ret' => false]; } $x['seen'] = time(); return ['__write' => $x, '__ret' => true]; }); }
 		out(['ok' => true, 'cfg' => cfg_pub()]);
@@ -267,27 +286,27 @@ switch ($a) {
 		if (strlen($pass) < 6 || strlen($pass) > 200) { fail('bad_pass'); }
 		if (($b['eula'] ?? '') !== EULA_VER) { fail('eula'); }
 		if (rude($user) || rude((string) ($b['name'] ?? ''))) { fail('rude'); }
-		$kc = strtoupper(clean((string) ($b['kelas'] ?? ''), 12)); if ($kc !== '' && !rd('k_' . preg_replace('/[^A-Z0-9]/', '', $kc) . '.php')) { fail('no_class'); }
+		$kc = kelas_code((string) ($b['kelas'] ?? '')); if ($kc !== '' && !rd('k_' . $kc . '.php')) { fail('no_class'); }
 		$uid = uid_of($user);
-		$made = upd('u_' . $uid . '.php', function ($u) use ($user, $pass, $b) { if ($u) { return ['__ret' => false]; }
-			return ['__write' => ['user' => $user, 'hash' => password_hash($pass, PASSWORD_DEFAULT), 'name' => clean((string) ($b['name'] ?? $user), 60), 'kampus' => clean((string) ($b['kampus'] ?? ''), 80), 'kelas' => strtoupper(clean((string) ($b['kelas'] ?? ''), 12)), 'created' => time(), 'eula' => EULA_VER, 'eulaAt' => time(), 'tokens' => []], '__ret' => true]; });
+		$made = upd('u_' . $uid . '.php', function ($u) use ($user, $pass, $b, $kc) { if ($u) { return ['__ret' => false]; }
+			return ['__write' => ['user' => $user, 'hash' => password_hash($pass, PASSWORD_DEFAULT), 'name' => clean((string) ($b['name'] ?? $user), 60), 'kampus' => clean((string) ($b['kampus'] ?? ''), 80), 'kelas' => $kc, 'created' => time(), 'eula' => EULA_VER, 'eulaAt' => time(), 'tokens' => []], '__ret' => true]; });
 		if (!$made) { fail('user_taken', 409); }
 		$u = rd('u_' . $uid . '.php'); out(['ok' => true, 'token' => new_token($uid), 'me' => pub($u)]);
 	}
 	case 'login': {
-		$user = clean((string) ($b['user'] ?? ''), 32); rate('login_u' . mb_strtolower($user), 10, 900, false); rate('login_ip', 600, 900); $pass = (string) ($b['pass'] ?? ''); $uid = uid_of($user); $u = rd('u_' . $uid . '.php');
+		$user = clean((string) ($b['user'] ?? ''), 32); rate('login_u' . mb_strtolower($user), 10, 900); rate('login_ua' . mb_strtolower($user), 30, 900, false); /* v46c: 10 per (akun, IP) + 30 per akun, agar satu penyerang tidak bisa mengunci akun orang lain */ rate('login_ip', 600, 900); $pass = (string) ($b['pass'] ?? ''); $uid = uid_of($user); $u = rd('u_' . $uid . '.php');
 		if (!$u || !password_verify($pass, $u['hash'])) { fail('bad_login', 401); }
 		if (!empty($u['ban'])) { fail('banned', 403); }
 		out(['ok' => true, 'token' => new_token($uid), 'me' => pub($u)]);
 	}
-	case 'me': { $u = auth(); $s = rd('s_' . $u['uid'] . '.php'); $kc = ($u['kelas'] ?? '') !== '' ? (rd('k_' . $u['kelas'] . '.php') ?: []) : []; out(['ok' => true, 'tantangan' => (string) ($kc['tantangan'] ?? ''), 'me' => pub($u), 'hasSave' => (bool) $s, 'saveMeta' => $s ? ($s['meta'] ?? null) : null]); }
+	case 'me': { $u = auth(); $s = rd('s_' . $u['uid'] . '.php'); $kc = ($u['kelas'] ?? '') !== '' ? (rd('k_' . kelas_code((string) $u['kelas']) . '.php') ?: []) : []; out(['ok' => true, 'tantangan' => (string) ($kc['tantangan'] ?? ''), 'me' => pub($u), 'hasSave' => (bool) $s, 'saveMeta' => $s ? ($s['meta'] ?? null) : null]); }
 	case 'logout': { $u = auth(); $tok = (string) $_SERVER['HTTP_X_BA_TOKEN']; $sec = explode('.', $tok, 2)[1];
 		upd('u_' . $u['uid'] . '.php', function ($x) use ($sec) { $x['tokens'] = array_values(array_filter($x['tokens'] ?? [], fn($t) => !hash_equals($t['h'], hash('sha256', $sec)))); return ['__write' => $x, '__ret' => true]; }); out(['ok' => true]); }
 	case 'save': {
 		if (cfg()['maint']) { fail('maint', 503); }
 		$u = auth(); rate('save' . $u['uid'], 40, 600);
 		$raw = (string) file_get_contents('php://input'); if (strlen($raw) > MAX_SAVE) { fail('too_big', 413); }
-		$j = json_decode($raw, true); if (!is_array($j) || !isset($j['state']) || !is_array($j['state'])) { fail('bad_save'); }
+		$j = json_decode($raw, true); if (!is_array($j) || !isset($j['state']) || !is_array($j['state']) || !state_ok($j['state'])) { fail('bad_save'); }
 		$why = bot_reasons($j['tele'] ?? null); if ($why && empty($u['botOk'])) { bot_flag($u['uid'], $u, $why); }
 		$meta = ['name' => clean((string) ($j['state']['meta']['name'] ?? ''), 60), 'era' => (int) ($j['state']['era'] ?? 1), 'month' => (int) ($j['state']['t'] ?? 0), 'kk' => (int) ($j['state']['kk'] ?? 0),
 			'loc' => clean((string) ($j['state']['loc']['name'] ?? ''), 80), 'lat' => (float) ($j['state']['loc']['lat'] ?? 0), 'lon' => (float) ($j['state']['loc']['lon'] ?? 0), 'score' => (int) ($j['state']['score'] ?? 0), 'at' => time()];
@@ -299,6 +318,8 @@ switch ($a) {
 		$nbc = nb_count($u['uid'], $meta, $u);
 		$r = upd('s_' . $u['uid'] . '.php', function ($s) use ($j, &$meta, $base, $nbc) { $ver = (int) ($s['ver'] ?? 0);
 			if ($s && $base && $base !== $ver && empty($j['force'])) { return ['__ret' => ['conflict' => $ver]]; }
+			// v46b: simpanan yang waktunya mundur (tab/perangkat lama) ditolak, tidak ditulis & tidak ditandai curang
+			if ($s && ($s['state']['meta']['created'] ?? 0) === ($j['state']['meta']['created'] ?? 0) && (int) ($j['state']['t'] ?? 0) < (int) ($s['state']['t'] ?? 0)) { return ['__ret' => ['stale' => $ver]]; }
 			$prev = $s['state'] ?? null; if ($prev !== null) { $prev['flagged'] = $s['flagged'] ?? []; }
 			[$score, $bad] = audit($j['state'], $prev, (int) ($s['meta']['at'] ?? 0));
 			$ind = in_array('land', $bad, true) ? ['e' => 0, 'n' => 0, 'c' => 0, 'k' => 0, 'p' => 0, 'score' => 0] : indicators($j['state'], $nbc); $score = $ind['score']; $meta['ind'] = $ind;
@@ -306,13 +327,14 @@ switch ($a) {
 			$meta['score'] = $score; $meta['flag'] = $bad ? 1 : 0;
 			return ['__write' => ['ver' => $ver + 1, 'meta' => $meta, 'state' => $j['state'], 'flagged' => $bad], '__ret' => ['ver' => $ver + 1, 'bad' => $bad]]; });
 		if (isset($r['conflict'])) { out(['ok' => false, 'error' => 'conflict', 'ver' => $r['conflict']], 409); }
+		if (isset($r['stale'])) { out(['ok' => false, 'error' => 'stale', 'ver' => $r['stale']], 409); }
 		// direktori publik ringkas untuk tetangga (tanpa data pribadi selain nama tokoh)
 		// v42: berkas bersama (direktori & peringkat) hanya ditulis bila ada perubahan berarti atau sudah 15 menit → aman untuk ratusan pemain bersamaan
 		$dirSig = md5(json_encode([$meta['name'], $meta['loc'], round((float) $meta['lat'], 3), round((float) $meta['lon'], 3), $meta['era'], intdiv((int) $meta['kk'], 5), $u['kelas'] ?? '', $u['name'] ?? '']));
 		$doDir = $fresh || $dirSig !== ($u['dirSig'] ?? '') || time() - (int) ($u['dirAt'] ?? 0) > 900;
 		if ($doDir) upd('dir.php', function ($d) use ($u, $meta) { $d = $d ?: []; $d[$u['uid']] = $meta + ['who' => $u['name'] ?? $u['user'], 'kelas' => $u['kelas'] ?? '', 'kampus' => $u['kampus'] ?? ''];
 			if (count($d) > 5000) { uasort($d, fn($x, $y) => $y['at'] <=> $x['at']); $d = array_slice($d, 0, 5000, true); } return ['__write' => $d, '__ret' => true]; });
-		$kc = ($u['kelas'] ?? '') !== '' ? (rd('k_' . $u['kelas'] . '.php') ?: []) : []; $chal = (string) ($kc['tantangan'] ?? ''); $chalNow = $chal !== '' && !$r['bad'] && isset($meta['ind']['rth']) && chal_ok($chal, $meta['ind']);
+		$kc = ($u['kelas'] ?? '') !== '' ? (rd('k_' . kelas_code((string) $u['kelas']) . '.php') ?: []) : []; $chal = (string) ($kc['tantangan'] ?? ''); $chalNow = $chal !== '' && !$r['bad'] && isset($meta['ind']['rth']) && chal_ok($chal, $meta['ind']);
 		$lbSig = $meta['score'] . '|' . $meta['era'] . '|' . ($u['kelas'] ?? ''); $doLb = $chalNow || $lbSig !== ($u['lbSig'] ?? '') || time() - (int) ($u['lbAt'] ?? 0) > 900;
 		if (!$r['bad'] && $doLb) { $sem = semester(); $row = ['who' => $u['user'], 'name' => $meta['name'], 'kelas' => $u['kelas'] ?? '', 'kampus' => $u['kampus'] ?? '', 'score' => $meta['score'], 'era' => $meta['era'], 'kk' => $meta['kk'], 'month' => $meta['month'], 'loc' => $meta['loc'], 'ind' => $meta['ind'], 'at' => time()];
 			upd('lb_' . $sem . '.php', function ($d) use ($u, $row, $chal, $chalNow) { $d = $d ?: []; $old = $d[$u['uid']] ?? null; if ($row['score'] >= (int) ($old['best'] ?? 0)) { $row['best'] = $row['score']; $row['bestInd'] = $row['ind']; } else { $row['best'] = (int) $old['best']; $row['bestInd'] = $old['bestInd'] ?? $row['ind']; } $row['saves'] = (int) ($old['saves'] ?? 0) + 1; $row['chal'] = $chal; $row['chalAt'] = ($old['chal'] ?? '') === $chal && !empty($old['chalAt']) ? $old['chalAt'] : ($chalNow ? time() : 0); $row['first'] = $old['first'] ?? time(); $d[$u['uid']] = $row; return ['__write' => $d, '__ret' => true]; });
@@ -351,6 +373,9 @@ switch ($a) {
 		@unlink(DATA . '/s_' . $u['uid'] . '.php'); @unlink(DATA . '/u_' . $u['uid'] . '.php');
 		upd('dir.php', function ($d) use ($u) { $d = $d ?: []; unset($d[$u['uid']]); return ['__write' => $d, '__ret' => true]; });
 		foreach (glob(DATA . '/lb_*.php') ?: [] as $f) { upd(basename($f), function ($d) use ($u) { $d = $d ?: []; unset($d[$u['uid']]); return ['__write' => $d, '__ret' => true]; }); }
+		// v46b: akhiri perjanjian dagang & hapus catatan peringatan bot milik akun ini
+		if (is_file(DATA . '/deals.php')) { upd('deals.php', function ($x) use ($u) { $x = $x ?: []; foreach ($x as $k => $v) { if (($v['from'] ?? '') === $u['uid'] || ($v['to'] ?? '') === $u['uid']) { unset($x[$k]); } } return ['__write' => $x, '__ret' => true]; }); }
+		if (is_file(DATA . '/alerts.php')) { upd('alerts.php', function ($a) use ($u) { $a = array_values(array_filter($a ?: [], fn($r) => ($r['uid'] ?? '') !== $u['uid'])); return ['__write' => $a, '__ret' => true]; }); }
 		out(['ok' => true]); }
 	case 'load': { $u = auth(); $s = rd('s_' . $u['uid'] . '.php'); out(['ok' => true, 'save' => $s]); }
 	case 'neighbors': {
@@ -360,13 +385,14 @@ switch ($a) {
 			if ($rel) { $out[] = ['id' => substr(hash('sha256', $id), 0, 10), 'who' => $m['who'], 'name' => $m['name'], 'era' => $m['era'], 'kk' => $m['kk'], 'loc' => $m['loc'], 'km' => round($km, 1), 'rel' => $rel, 'score' => $m['score']]; } }
 		usort($out, fn($x, $y) => $x['km'] <=> $y['km']); out(['ok' => true, 'list' => array_slice($out, 0, 30)]);
 	}
-	// ---- perjanjian dagang dua arah antarpemain ----
 	case 'claimed': {
 		rate('claimed', 2400, 600); $lat = (float) ($_GET['lat'] ?? 0); $lon = (float) ($_GET['lon'] ?? 0); $me = '';
 		$tok = (string) ($_SERVER['HTTP_X_BA_TOKEN'] ?? ''); if (preg_match('/^([a-f0-9]{20})\.([a-f0-9]{48})$/', $tok, $mm)) { $uu = rd('u_' . $mm[1] . '.php'); foreach (($uu['tokens'] ?? []) as $tt) { if (hash_equals($tt['h'], hash('sha256', $mm[2])) && $tt['exp'] > time()) { $me = $mm[1]; } } }
-		$res = []; foreach (claim_list($lat, $lon, 15) as $id => $m) { $res[] = ['lat' => $m['lat'], 'lon' => $m['lon'], 'hx' => $m['hx'], 'hy' => $m['hy'], 'dx' => $m['dx'], 'dy' => $m['dy'], 'name' => $m['name'] ?? '', 'who' => $m['who'] ?? '', 'mine' => $id === $me]; }
+		// v46b: koordinat dibulatkan (±50 m) dan nama tokoh hanya untuk pemain yang masuk, agar lokasi pemain tidak bisa dipetakan anonim
+		$res = []; foreach (claim_list($lat, $lon, 15) as $id => $m) { $res[] = ['lat' => round((float) $m['lat'], 3), 'lon' => round((float) $m['lon'], 3), 'hx' => $m['hx'], 'hy' => $m['hy'], 'dx' => $m['dx'], 'dy' => $m['dy'], 'name' => $m['name'] ?? '', 'who' => $me !== '' ? ($m['who'] ?? '') : '', 'mine' => $id === $me]; }
 		out(['ok' => true, 'list' => array_slice($res, 0, 300)]);
 	}
+	// ---- perjanjian dagang dua arah antarpemain ----
 	case 'deal_offer': {
 		$u = auth(); rate('deal' . $u['uid'], 20, 3600); $to = preg_replace('/[^a-f0-9]/', '', (string) ($b['to'] ?? '')); $com = preg_replace('/[^a-z_]/', '', (string) ($b['com'] ?? ''));
 		if (strlen($to) !== 10 || $com === '' || strlen($com) > 20) { fail('bad'); }
