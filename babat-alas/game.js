@@ -883,7 +883,7 @@ Object.assign(TX.en.tlD,{kandang:'Chickens & eggs: food +3, livestock to sell',p
 Object.assign(COMN.id,{telur:'Telur',olahan:'Olahan makanan & minuman'});Object.assign(COMN.en,{telur:'Eggs',olahan:'Processed food & drinks'});PRICE.olahan=6;PRICE.telur=2.5;COM_IC.olahan='🍲';COM_IC.telur='🥚';
 
 /* ---------- jembatan: jalan melintasi sungai (disimpan di S.br, petak tetap air) ---------- */
-const BRC={coin:6,wood:10,stone:4};let _brS=null,_brN=-1;
+const BRC={coin:2,wood:5,stone:2};let _brS=null,_brN=-1;
 const brSet=()=>{const a=(S&&S.br)||[];if(!_brS||a.length!==_brN){_brS=new Set(a);_brN=a.length}return _brS};
 const isBr=(x,y)=>brSet().has(x+','+y);
 const isRoad=(x,y)=>inside(x,y)&&(L(x,y)==='P'||isBr(x,y));
@@ -2240,7 +2240,7 @@ function saveConflict(kind){const m=$('modal');modal(`<h2>⚠️ ${L2('Ada versi
  $('cfLoad').onclick=()=>{m.classList.add('hidden');saveHold=null;stopGame();hub();loadGame()};const k=$('cfKeep');if(k)k.onclick=()=>{m.classList.add('hidden');saveHold=null;saveForce=true;save(true)}}
 async function loadGame(){try{let st=null;if(GUEST){st=JSON.parse(store.get('baGuestSave')||'null')}else{const j=await api('load');st=j.save&&j.save.state;saveVer=j.save?j.save.ver:0}if(!st||!st.own||!st.land||st.land.length!==N)throw new Error('none');startGame(st,false)}catch(e){$('hubErr').textContent=t('errNet')}}
 /* v50: ekonomi awal lebih ringan — bangunan era 1–2: biaya kas −40%, biaya operasional −50% */
-Object.values(BT).forEach(T=>{if((T.era||1)<=2){if(T.c&&T.c.coin)T.c.coin=Math.max(.5,Math.round(T.c.coin*.6*10)/10);if(T.up)T.up=+(T.up*.5).toFixed(2)}});
+Object.values(BT).forEach(T=>{const e2=(T.era||1)<=2;/* v50g: semua biaya kas bangunan −50% lagi (era 1–2 total −70%) */if(T.c&&T.c.coin)T.c.coin=Math.max(.3,Math.round(T.c.coin*(e2?.3:.5)*10)/10);if(T.up)T.up=+(T.up*(e2?.5:.75)).toFixed(2)});
 ['pointerdown','pointermove','wheel','keydown','touchstart'].forEach(e=>addEventListener(e,()=>{window.__baAct=performance.now()},{passive:true,capture:true}));
 let started=false,loopT=0,clockS='';
 function startGame(st,fresh){S=st;if(fresh)saveVer=0;saveHold=null;saveForce=false;_brN=-1;if(S.res.stone==null)S.res.stone=20;if(S.res.iron==null)S.res.iron=0;if(!S.dep||typeof S.dep!=='object'){S.dep=genDep(S.seed,S.loc);S.depV=2}if((S.depV||1)<2){const D2=genDep(S.seed,S.loc);Object.entries(D2).forEach(([k,d])=>{if(!S.dep[k]&&d.t==='emas')S.dep[k]=d});S.depV=2}rebuildOcc();show('game');if(!started){R3.init($('view'));bindInput();started=true}else try{R3.resume()}catch(e){}window.__baAct=performance.now();

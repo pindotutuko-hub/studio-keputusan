@@ -159,7 +159,7 @@ function audit(array $st, ?array $prev, int $prevAt): array {
 		if (($ERA = ERA_OF[$ty] ?? 1) > $era) { $bad[] = 'bera'; }
 		for ($dy = 0; $dy < $w; $dy++) { for ($dx = 0; $dx < $w; $dx++) { $k = ($x + $dx) . ',' . ($y + $dy);
 			if (isset($occ[$k])) { $bad[] = 'overlap'; } if ($x + $dx < $o['x0'] || $y + $dy < $o['y0'] || $x + $dx >= $o['x1'] || $y + $dy >= $o['y1']) { $bad[] = 'outside'; } $occ[$k] = 1; if ($land[$y + $dy][$x + $dx] !== 'G') { $bad[] = 'bland'; } } }
-		$spentC += COST[$ty][0] * ((ERA_OF[$ty] ?? 1) <= 2 ? 0.6 : 1); $spentW += COST[$ty][1]; $cnt[$ty] = ($cnt[$ty] ?? 0) + 1;
+		$spentC += COST[$ty][0] * ((ERA_OF[$ty] ?? 1) <= 2 ? 0.3 : 0.5); // v50g $spentW += COST[$ty][1]; $cnt[$ty] = ($cnt[$ty] ?? 0) + 1;
 		$lv = max(0, min(3, (int) ($b['lv'] ?? 0))); if ($ty === 'zr') { $zrCap += [0, 2, 6, 16][$lv]; } if ($ty === 'zc' || $ty === 'zi') { $zLv += $lv; }
 		$ul = max(1, $lv); if ($ty === 'house') { $hCap += [1, 1, 2, 3][$ul]; } if ($ty === 'barn') { $bStore += 120 * [1, 1, 1.75, 2.5][$ul]; }
 		if (isset(UPGC[$ty])) { for ($k = 2; $k <= $ul; $k++) { $spentC += UPGC[$ty][$k - 2][0]; $spentW += UPGC[$ty][$k - 2][1]; } if ($ul >= 3 && $era < 2) { $bad[] = 'lv'; } if ($ul >= 2 && $ty !== 'house' && $ty !== 'barn') { $upP++; } }
@@ -171,7 +171,7 @@ function audit(array $st, ?array $prev, int $prevAt): array {
 	$paths = substr_count(implode('', $land), 'P'); $spentC += $paths;
 	$br = is_array($st['br'] ?? null) ? $st['br'] : []; if (count($br) > 600) { $bad[] = 'br'; $br = []; }
 	foreach ($br as $k) { if (!is_string($k) || !preg_match('/^(\d{1,3}),(\d{1,3})$/', $k, $mm) || (int) $mm[1] >= $n || (int) $mm[2] >= $n || !in_array($land[(int) $mm[2]][(int) $mm[1]], ['W', 'G'], true)) { $bad[] = 'br'; break; } }
-	$spentC += 6 * count($br); $spentW += 10 * count($br);
+	$spentC += 2 * count($br); $spentW += 5 * count($br);
 	$cleared = (int) ($st['stats']['cleared'] ?? 0); // v50: babat gratis
 	for ($i = 0; $i < $ex; $i++) { $spentC += 40 + 30 * $i; $spentW += 15 + 10 * $i; }
 	if ($food > 40 + $bStore + 120 + 1) { $bad[] = 'food'; }
