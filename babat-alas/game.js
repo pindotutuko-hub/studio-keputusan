@@ -890,6 +890,10 @@ const isRoad=(x,y)=>inside(x,y)&&(L(x,y)==='P'||isBr(x,y));
 /** sudut medan (i,j) menyentuh petak air → jangan diubah agar sungai tidak terpotong */
 function cornerWet(i,j){for(const [a,b] of [[i-1,j-1],[i,j-1],[i-1,j],[i,j]])if(inside(a,b)&&L(a,b)==='W')return true;return false}
 /** v50: cari bentang jembatan terbaik dari petak (x,y): arah dengan pangkal (jalan/daratan) di belakang dan pendaratan di depan */
+/** v50f: penyeberangan terpendek dari petak sungai (x,y): cari daratan di kedua sisi per sumbu, pilih yang paling pendek */
+function brAuto(x,y){const dry=(X,Y)=>inside(X,Y)&&inOwn(X,Y)&&!isBr(X,Y)&&L(X,Y)!=='W'&&!occ[Y][X];let best=null;
+ for(const [dx,dz] of [[1,0],[0,1]]){const end=sg=>{for(let k=1;k<=60;k++){const X=x+dx*k*sg,Y=y+dz*k*sg;if(!inside(X,Y)||!inOwn(X,Y))return null;if(occ[Y][X])return null;if(L(X,Y)==='W'||isBr(X,Y))continue;return [X,Y,k]}return null};const A=end(-1),B=end(1);if(!A||!B||!dry(A[0],A[1])&&!isRoad(A[0],A[1])||!dry(B[0],B[1])&&!isRoad(B[0],B[1]))continue;const n=A[2]+B[2];if(!best||n<best.n)best={n,e:[[A[0],A[1]],[B[0],B[1]]]}}
+ return best&&best.e}
 /** v50f: jembatan dua ketukan — ketuk tepi/ujung jalan, lalu tepi seberang; semua petak di antaranya jadi satu jembatan lurus apa pun konturnya */
 let brA=null,brAt=0;
 function brTwoTap(x,y,say){if(brA&&Date.now()-brAt>90000)brA=null;
@@ -921,7 +925,7 @@ TOOLS.splice(TOOLS.indexOf('jembatan')+1,0,'kontur_up','kontur_dn','kontur_rata'
 Object.assign(TX.id.tl,{kontur_up:'Tinggikan tanah',kontur_dn:'Rendahkan tanah',kontur_rata:'Ratakan tanah'});Object.assign(TX.en.tl,{kontur_up:'Raise land',kontur_dn:'Lower land',kontur_rata:'Level land'});
 Object.assign(TX.id.tlD,{kontur_up:'Naikkan kontur petak (urug)',kontur_dn:'Turunkan kontur petak (gali)',kontur_rata:'Ratakan kemiringan petak'});Object.assign(TX.en.tlD,{kontur_up:'Raise the tile (fill)',kontur_dn:'Lower the tile (cut)',kontur_rata:'Flatten the tile slope'});
 Object.assign(TX.id.tl,{jembatan:'Jembatan'});Object.assign(TX.en.tl,{jembatan:'Bridge'});
-Object.assign(TX.id.tlD,{jembatan:'Jalan melintasi sungai; mulai dari ujung jalan di tepi sungai'});Object.assign(TX.en.tlD,{jembatan:'Road across a river; start from a road end at the bank'});
+Object.assign(TX.id.tlD,{jembatan:'Ketuk sungai di mana saja: jembatan otomatis menyeberang. Atau ketuk tanah tepi sungai lalu tepi seberang.'});Object.assign(TX.en.tlD,{jembatan:'Tap the river anywhere: a bridge crosses automatically. Or tap one bank, then the far bank.'});
 
 /* ---------- bahan baku: batu & besi (selain kas & kayu) ---------- */
 Object.assign(BT,{tambang:{era:1,w:1,h:1,c:{coin:4,wood:4},jobs:2,days:2}});
@@ -2035,6 +2039,7 @@ function act(x,y,silent){const say=m=>{if(!silent){toast(m);Snd.play('err')}};if
  if(tool==='babat'){if(L(x,y)!=='F')return;/* v50: babat alas gratis (gotong royong) */S.res.wood+=4;setL(x,y,'G');S.stats.cleared++;Snd.play('chop');R3.tileColor(x,y);R3.trees();after();return}
  if(tool==='bull'&&isBr(x,y)){brRemove(x,y);return}
  if(tool==='jembatan'&&(brA||L(x,y)!=='W')){brTwoTap(x,y,say);return}
+ if((tool==='jembatan'||tool==='path')&&L(x,y)==='W'&&!isBr(x,y)){/* v50f: ketuk sungai di mana saja → penyeberangan terpendek otomatis, tidak perlu jalan di dekatnya */const e=brAuto(x,y);if(!e){say(L2('Tidak ditemukan tepi seberang dalam wilayahmu. Pakai cara 2 ketukan: ketuk tanah tepi sungai, lalu tanah tepi seberang.','No far bank found inside your area. Use 2 taps: tap bank land, then the far bank.'));return}brA=null;brTwoTap(e[0][0],e[0][1],()=>{});brTwoTap(e[1][0],e[1][1],say);return}
  if(tool==='jembatan'||(tool==='path'&&(L(x,y)==='W'||(L(x,y)==='G'&&!occ[y][x]&&tileRise(x,y)>STEEP)))){/* v50e: alat Jalan di atas sungai/tebing otomatis membuat jembatan */const okT=L(x,y)==='W'||(L(x,y)==='G'&&!occ[y][x]&&tileRise(x,y)>STEEP);if(!okT){say(L2('Jembatan dibangun di atas sungai atau tebing curam.','Bridges go over water or steep banks.'));return}if(isBr(x,y))return;
   const sp=brSpan(x,y);if(!sp){say(L2('Tarik jalan sampai tepi sungai, lalu ketuk petak sungai di depannya: jembatan otomatis menyeberang.','Bring a road to the bank, then tap the river tile in front of it: the bridge crosses automatically.'));return}
   const n=sp.tiles.length,np=sp.paths.length,cost={coin:BRC.coin*n+np,wood:BRC.wood*n,stone:BRC.stone*n};if(!canAfford(cost)){say(lackMsg(cost));return}pay(cost);
