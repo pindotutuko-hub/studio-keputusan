@@ -887,10 +887,26 @@ const BRC={coin:6,wood:10,stone:4};let _brS=null,_brN=-1;
 const brSet=()=>{const a=(S&&S.br)||[];if(!_brS||a.length!==_brN){_brS=new Set(a);_brN=a.length}return _brS};
 const isBr=(x,y)=>brSet().has(x+','+y);
 const isRoad=(x,y)=>inside(x,y)&&(L(x,y)==='P'||isBr(x,y));
+/** sudut medan (i,j) menyentuh petak air → jangan diubah agar sungai tidak terpotong */
+function cornerWet(i,j){for(const [a,b] of [[i-1,j-1],[i,j-1],[i-1,j],[i,j]])if(inside(a,b)&&L(a,b)==='W')return true;return false}
 /** v50: cari bentang jembatan terbaik dari petak (x,y): arah dengan pangkal (jalan/daratan) di belakang dan pendaratan di depan */
+/** v50f: jembatan dua ketukan — ketuk tepi/ujung jalan, lalu tepi seberang; semua petak di antaranya jadi satu jembatan lurus apa pun konturnya */
+let brA=null,brAt=0;
+function brTwoTap(x,y,say){if(brA&&Date.now()-brAt>90000)brA=null;
+ const dry=(X,Y)=>inside(X,Y)&&!isBr(X,Y)&&L(X,Y)!=='W'&&!occ[Y][X];
+ if(!brA){if(!(isRoad(x,y)&&!isBr(x,y))&&!dry(x,y)){say(L2('Ketuk ujung jalan atau tanah di tepi sungai sebagai titik awal jembatan.','Tap a road end or bank land as the bridge start.'));return}brA=[x,y];brAt=Date.now();Snd.play('click');toast('🌉 '+L2('Titik awal dipilih. Sekarang ketuk tanah di tepi SEBERANG sungai (lurus sebaris/sekolom).','Start set. Now tap land on the FAR bank (same row/column).'));return}
+ let [ax0,ay0]=brA;brA=null;if(ax0===x&&ay0===y){toast(L2('Dibatalkan.','Cancelled.'));return}
+ const hz=Math.abs(x-ax0)>=Math.abs(y-ay0),bx=hz?x:ax0,by=hz?ay0:y,dx=hz?Math.sign(bx-ax0):0,dz=hz?0:Math.sign(by-ay0),n=Math.abs(hz?bx-ax0:by-ay0)-1;
+ if(n<1){say(L2('Titik seberang terlalu dekat.','Far point too close.'));return}if(n>60){say(L2('Bentang terlalu panjang (maks 60 petak).','Span too long (max 60 tiles).'));return}
+ const tiles=[];for(let k=1;k<=n;k++){const X=ax0+dx*k,Y=ay0+dz*k;if(!inside(X,Y)||!inOwn(X,Y)){say(t('outside'));return}if(occ[Y][X]){say(L2('Ada bangunan di jalur jembatan.','A building is in the way.'));return}tiles.push([X,Y])}
+ if(!inOwn(bx,by)||!(isRoad(bx,by)&&!isBr(bx,by))&&!dry(bx,by)){say(L2('Ujung seberang harus tanah kosong atau jalan.','The far end must be empty land or road.'));return}
+ const nw=tiles.filter(([X,Y])=>!isBr(X,Y)).length,ends=[[ax0,ay0],[bx,by]].filter(([X,Y])=>!isRoad(X,Y)),cost={coin:BRC.coin*nw+ends.length,wood:BRC.wood*nw,stone:BRC.stone*nw};if(!canAfford(cost)){say(lackMsg(cost));return}pay(cost);
+ let tr=false;ends.forEach(([X,Y])=>{if(L(X,Y)==='F')tr=true;setL(X,Y,'P');R3.tileColor(X,Y)});if(tr)R3.trees();
+ S.br=S.br||[];S.brd=S.brd||{};tiles.forEach(([X,Y])=>{const k=X+','+Y;if(!isBr(X,Y)){S.br.push(k);_brN=-1}S.brd[k]=hz?'h':'v';if(L(X,Y)==='F'){setL(X,Y,'G');tr=true}});_brN=-1;if(tr)R3.trees();
+ Snd.play('build');ends.forEach(([X,Y])=>R3.path(X,Y));S.br.forEach(k=>{const [a,b]=k.split(',').map(Number);R3.path(a,b)});R3.pathsDirty();toast('🌉 '+L2('Jembatan '+n+' petak tersambung','Bridge of '+n+' tiles connected'));after()}
 /** v50a: bongkar seluruh bentang jembatan yang tersambung; kembalikan 50% biaya */
 function brRemove(x,y){if(!isBr(x,y))return;const seen=new Set([x+','+y]),q=[[x,y]];while(q.length){const [a,b]=q.pop();for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const k=(a+dx)+','+(b+dy);if(!seen.has(k)&&isBr(a+dx,b+dy)){seen.add(k);q.push([a+dx,b+dy])}}}
- const n=seen.size;S.br=(S.br||[]).filter(k=>!seen.has(k));_brN=-1;S.res.coin+=BRC.coin*n*.5;S.res.wood+=Math.floor(BRC.wood*n*.5);S.res.stone=(S.res.stone||0)+Math.floor(BRC.stone*n*.5);Snd.play('bull');seen.forEach(k=>{const [a,b]=k.split(',').map(Number);R3.path(a,b)});R3.pathsDirty();$('info').classList.add('hidden');toast('🧹 '+L2('Jembatan '+n+' petak dibongkar · 50% bahan kembali','Bridge of '+n+' tiles removed · 50% refunded'));after()}
+ const n=seen.size;S.br=(S.br||[]).filter(k=>!seen.has(k));_brN=-1;if(S.brd)seen.forEach(k=>delete S.brd[k]);S.res.coin+=BRC.coin*n*.5;S.res.wood+=Math.floor(BRC.wood*n*.5);S.res.stone=(S.res.stone||0)+Math.floor(BRC.stone*n*.5);Snd.play('bull');seen.forEach(k=>{const [a,b]=k.split(',').map(Number);R3.path(a,b)});S.br.forEach(k=>{const [a,b]=k.split(',').map(Number);R3.path(a,b)});R3.pathsDirty();$('info').classList.add('hidden');toast('🧹 '+L2('Jembatan '+n+' petak dibongkar · 50% bahan kembali','Bridge of '+n+' tiles removed · 50% refunded'));after()}
 function brSpan(x,y){const ok=(X,Y)=>inside(X,Y)&&inOwn(X,Y),dry=(X,Y)=>'GFD'.includes(L(X,Y))&&!occ[Y][X],road=(X,Y)=>isRoad(X,Y)&&!isBr(X,Y);let best=null;
  /* v50: kontur apa pun — tebing curam sebelum air ikut dijembatani; pendaratan = daratan pertama setelah air (curam pun boleh) */
  for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]){const bx=x-a,by=y-b;if(!ok(bx,by)||!(road(bx,by)||dry(bx,by)||isBr(bx,by)))continue;const tiles=[];let X=x,Y=y,end=null,wet=false;
@@ -1398,14 +1414,14 @@ const R3={};
   Object.entries(S.dep||{}).forEach(([k,d])=>{if(d.q<=0||!types.includes(d.t))return;const [x,y]=k.split(',').map(Number);const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:MIN[d.t].c==='#202020'?'#ffd23f':MIN[d.t].c,transparent:true,opacity:.55,depthWrite:false}));m.position.set(x+.5,R3.hAt(x+.5,y+.5)+.06,y+.5);m.renderOrder=4;DEPH.add(m);
    const ed=new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:'#ffd23f'}));ed.position.copy(m.position);DEPH.add(ed)});root.add(DEPH)};
  /* v50e: ubah kontur 4 sudut petak lalu perbarui geometri medan di tempat (tanpa membangun ulang dunia) */
- R3.terra=(x,y,mode)=>{const H=R3.H;if(!H||!terrain)return;const C=[[x,y],[x+1,y],[x+1,y+1],[x,y+1]],avg=C.reduce((a,[i,j])=>a+H[j][i],0)/4;S.hmod=S.hmod||{};
+ R3.terra=(x,y,mode)=>{const H=R3.H;if(!H||!terrain)return;const C=[[x,y],[x+1,y],[x+1,y+1],[x,y+1]].filter(([i,j])=>!cornerWet(i,j));if(!C.length){toast(L2('Tepi sungai tidak bisa diubah (sungai tetap mengalir).','River banks cannot be reshaped (the river must keep flowing).'));return}const avg=C.reduce((a,[i,j])=>a+H[j][i],0)/C.length;S.hmod=S.hmod||{};
   C.forEach(([i,j])=>{let v=H[j][i];if(mode==='kontur_up')v+=.2;else if(mode==='kontur_dn')v-=.2;else v=avg;v=Math.max(.36,Math.min(6,v));H[j][i]=+v.toFixed(3);S.hmod[i+','+j]=H[j][i]});
   const g=terrain.geometry,P=g.attributes.position,Nm=g.attributes.normal,nrm=terrainNormals(H);
   for(let ty=y-2;ty<=y+2;ty++)for(let tx=x-2;tx<=x+2;tx++){if(!inside(tx,ty))continue;const p=[[tx,ty],[tx+1,ty],[tx+1,ty+1],[tx,ty+1]],base=(ty*N+tx)*6;let k=0;[[0,2,1],[0,3,2]].forEach(tr=>tr.forEach(ii=>{const [a,b]=p[ii];P.setY(base+k,H[b][a]);const n=nrm(a,b);Nm.setXYZ(base+k,n.x,n.y,n.z);k++}))}
   P.needsUpdate=true;Nm.needsUpdate=true;g.computeBoundingSphere();
   for(let ty=y-2;ty<=y+2;ty++)for(let tx=x-2;tx<=x+2;tx++)if(inside(tx,ty)&&isRoad(tx,ty))R3.path(tx,ty);S.br&&S.br.length&&S.br.forEach(k=>{const [a,b]=k.split(',').map(Number);if(Math.abs(a-x)<6&&Math.abs(b-y)<6)R3.path(a,b)});try{R3.pathsDirty()}catch(e){}
   for(const id in bmeshes){const b=S.b.find(q=>q.id==id);if(b&&Math.abs(b.x-x)<=2&&Math.abs(b.y-y)<=2){R3.delB(b.id);R3.addB(b)}}try{R3.trees()}catch(e){}};
- R3.world=()=>{R3.lifeReset();for(const id in bmeshes)try{freeObj(bmeshes[id])}catch(e){}root.clear();bmeshes={};R3.roadsClear();CITYM.length=0;const H=genWorld(S.seed).H;if(S.hmod)for(const k in S.hmod){const [a,b]=k.split(',').map(Number);if(H[b]&&H[b][a]!=null)H[b][a]=S.hmod[k]}R3.H=H;
+ R3.world=()=>{R3.lifeReset();for(const id in bmeshes)try{freeObj(bmeshes[id])}catch(e){}root.clear();bmeshes={};R3.roadsClear();CITYM.length=0;const H=genWorld(S.seed).H;if(S.hmod)for(const k in S.hmod){const [a,b]=k.split(',').map(Number);if(cornerWet(a,b)){delete S.hmod[k];continue}if(H[b]&&H[b][a]!=null)H[b][a]=S.hmod[k]}R3.H=H;
   // medan: warna per petak, normal halus, tekstur detail
   const nrm=terrainNormals(H);const pos=[],col=[],nor=[],uv=[],c=new THREE.Color();for(let y=0;y<N;y++)for(let x=0;x<N;x++){tcol(c,x,y);
    const p=[[x,y],[x+1,y],[x+1,y+1],[x,y+1]];[[0,2,1],[0,3,2]].forEach(tr=>tr.forEach(i=>{const [a,b]=p[i];pos.push(a,H[b][a],b);const n=nrm(a,b);nor.push(n.x,n.y,n.z);uv.push(a/2.5,b/2.5);col.push(c.r,c.g,c.b)}))}
@@ -1798,35 +1814,20 @@ function make(b){const g=new THREE.Group();const s=b.s||'jawa';
   else if(rcl===2&&(horiz||vert)){[-1,1].forEach(sd=>{const e=new THREE.Mesh(box,mat('#f2f2f2'));e.scale.set(horiz?1:.025,.012,horiz?.025:1);e.position.set(x+.5+(horiz?0:sd*.42),R3.hAt(x+.5,y+.5)+.045,y+.5+(horiz?sd*.42:0));m.add(e)})}
   root.add(m);roads[k]=m}
  function bridgeMesh(x,y){const g=new THREE.Group();
-  /* v50c: satu bentang terhubung = satu tinggi dek (rata-rata tepi), ujung melandai ke jalan; petak belok/zig-zag jadi pelat persegi sehingga semua menyambung */
-  const comp=new Set([x+','+y]),q=[[x,y]];while(q.length&&comp.size<200){const [a,b]=q.pop();for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){const k=(a+dx)+','+(b+dz);if(!comp.has(k)&&isBr(a+dx,b+dz)){comp.add(k);q.push([a+dx,b+dz])}}}
+  /* v50f: tiap jembatan = satu lajur lurus (arah tercatat S.brd); satu bentang digambar utuh dari tepi ke tepi, tidak bergantung jembatan lain di dekatnya */
   const landAt=(X,Y)=>inside(X,Y)&&!isBr(X,Y)&&L(X,Y)!=='W';const eH=(X,Y,dx,dz)=>roadY(X+.5+dx*.5,Y+.5+dz*.5,X+dx+.5,Y+dz+.5);
-  let sum=0,n=0;comp.forEach(k=>{const [a,b]=k.split(',').map(Number);for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]])if(landAt(a+dx,b+dz)){sum+=eH(a,b,dx,dz);n++}});
-  const H=Math.max(.5,Math.min(2.4,n?sum/n:.55));
-  /* v50e: bentang lurus (berapa pun panjang & curamnya) digambar sebagai SATU jembatan utuh dari tepi ke tepi */
-  {const T=[...comp].map(k=>k.split(',').map(Number)),hz=T.every(t=>t[1]===y),vt=T.every(t=>t[0]===x);if(T.length>1&&(hz||vt)){const along=hz,mn=T.reduce((m,t)=>Math.min(m,along?t[0]:t[1]),1e9),mx=T.reduce((m,t)=>Math.max(m,along?t[0]:t[1]),-1e9);if((along?x:y)!==mn)return g;
-   const len=mx-mn+1,a0=along?[mn,y]:[x,mn],a1=along?[mx,y]:[x,mx],dx=along?1:0,dz=along?0:1;
-   const e0=landAt(a0[0]-dx,a0[1]-dz)?eH(a0[0],a0[1],-dx,-dz):H,e1=landAt(a1[0]+dx,a1[1]+dz)?eH(a1[0],a1[1],dx,dz):H;
-   const rise=e1-e0,ang=Math.atan2(rise,len),L2l=Math.hypot(len,rise)+.02,cxm=(along?(mn+mx+1)/2:x+.5),czm=(along?y+.5:(mn+mx+1)/2);
-   const modern=S.era>=3,deck=modern?mat('#9a9893',{roughness:.85}):tmat('wood','#8a6a45'),rail=modern?mat('#c9c6bf'):tmat('wood','#6b4a2c');
-   const span=new THREE.Group();span.position.set(cxm,(e0+e1)/2,czm);if(along)span.rotation.z=ang;else{span.rotation.y=-Math.PI/2;span.rotation.z=ang}g.add(span);
-   const P=(m,px,py,pz,sx,sy,sz)=>{const o=new THREE.Mesh(box,m);o.scale.set(sx,sy,sz);o.position.set(px,py,pz);o.castShadow=true;o.receiveShadow=true;span.add(o);return o};
-   P(deck,0,-.04,0,L2l,.08,.84);if(modern)P(tmat('aspalX'),0,.006,0,L2l,.012,.7);else for(let k=0;k<len*5;k++)P(tmat('wood','#7a5b3a'),-L2l/2+.1+k*.2,.002,0,.02,.006,.82);
-   [-1,1].forEach(sd=>{P(rail,0,.17,sd*.4,L2l,.035,.04);const np=Math.max(2,Math.round(len*2.5));for(let k=0;k<=np;k++)P(rail,-L2l/2+k*L2l/np,.08,sd*.4,.035,.18,.035);P(mat(modern?'#7d7a74':'#5a3a22'),0,-.12,sd*.36,L2l,.08,.06)});
-   for(let k=0;k<len;k++){const px=along?mn+k+.5:x+.5,pz=along?y+.5:mn+k+.5,dy=e0+rise*(k+.5)/len,bed=Math.min(R3.hAt(px,pz),.3)-.05,ph=dy-.08-bed;if(ph>.05)[-.32,.32].forEach(o=>{const pr=new THREE.Mesh(new THREE.CylinderGeometry(modern?.06:.045,modern?.08:.055,ph,8),modern?mat('#8f8c86'):tmat('wood','#5a3a22'));pr.position.set(px+(along?0:o),bed+ph/2,pz+(along?o:0));pr.castShadow=true;g.add(pr)})}
-   return g}}
-  const con={};for(const [k,dx,dz] of [['e',1,0],['w',-1,0],['s',0,1],['n',0,-1]])con[k]=isBr(x+dx,y+dz)?'b':landAt(x+dx,y+dz)?'l':'';
-  const cx=!!(con.e||con.w),cz=!!(con.s||con.n),square=cx&&cz,along=square?true:(cx||!cz);
-  const modern=S.era>=3,deck=modern?mat('#9a9893',{roughness:.85}):tmat('wood','#8a6a45'),rail=modern?mat('#c9c6bf'):tmat('wood','#6b4a2c');
-  let ya=H,yb=H;if(!square){const [m,p]=along?[con.w,con.e]:[con.n,con.s];if(m==='l')ya=Math.min(H+.6,Math.max(H-.6,eH(x,y,along?-1:0,along?0:-1)));if(p==='l')yb=Math.min(H+.6,Math.max(H-.6,eH(x,y,along?1:0,along?0:1)))}
-  const hm=(ya+yb)/2,ang=Math.atan2(yb-ya,1),len=Math.hypot(1,yb-ya)+.01;
-  const span=new THREE.Group();span.position.set(x+.5,hm,y+.5);if(along)span.rotation.z=ang;else{span.rotation.y=-Math.PI/2;span.rotation.z=ang}g.add(span);
+  const ax=(X,Y)=>{const k=X+','+Y;if(S.brd&&S.brd[k])return S.brd[k];const h=(isBr(X-1,Y)?1:0)+(isBr(X+1,Y)?1:0)+(landAt(X-1,Y)&&isRoad(X-1,Y)?1.5:0)+(landAt(X+1,Y)&&isRoad(X+1,Y)?1.5:0),v=(isBr(X,Y-1)?1:0)+(isBr(X,Y+1)?1:0)+(landAt(X,Y-1)&&isRoad(X,Y-1)?1.5:0)+(landAt(X,Y+1)&&isRoad(X,Y+1)?1.5:0);return h>=v?'h':'v'};
+  const a=ax(x,y),dx=a==='h'?1:0,dz=a==='h'?0:1,same=(X,Y)=>isBr(X,Y)&&ax(X,Y)===a;
+  if(same(x-dx,y-dz))return g;let len=1;while(len<80&&same(x+dx*len,y+dz*len))len++;
+  const bx=x-dx,bz=y-dz,ex=x+dx*len,ez=y+dz*len;const def=Math.max(.55,R3.hAt(x+.5,y+.5)+.15);
+  let e0=landAt(bx,bz)?eH(x,y,-dx,-dz):null,e1=landAt(ex,ez)?eH(x+dx*(len-1),y+dz*(len-1),dx,dz):null;if(e0==null&&e1==null)e0=e1=def;else if(e0==null)e0=e1;else if(e1==null)e1=e0;e0=Math.max(.5,e0);e1=Math.max(.5,e1);
+  const rise=e1-e0,ang=Math.atan2(rise,len),Ld=Math.hypot(len,rise)+.02,cxm=a==='h'?x+len/2:x+.5,czm=a==='h'?y+.5:y+len/2;
+  const modern=S.era>=3,deck=modern?mat('#a3a19b',{roughness:.85}):tmat('wood','#a07a52'),rail=modern?mat('#d2cfc8'):tmat('wood','#8a6440'),beam=mat(modern?'#7d7a74':'#6e4c2e');
+  const span=new THREE.Group();span.position.set(cxm,(e0+e1)/2,czm);if(a==='h')span.rotation.z=ang;else{span.rotation.y=-Math.PI/2;span.rotation.z=ang}g.add(span);
   const P=(m,px,py,pz,sx,sy,sz)=>{const o=new THREE.Mesh(box,m);o.scale.set(sx,sy,sz);o.position.set(px,py,pz);o.castShadow=true;o.receiveShadow=true;span.add(o);return o};
-  if(square){P(deck,0,-.04,0,1.02,.08,1.02);if(modern)P(tmat('aspalX'),0,.006,0,1.02,.012,1.02);
-   /* pagar hanya di sisi yang tidak tersambung */[['e',.49,0],['w',-.49,0],['s',0,.49],['n',0,-.49]].forEach(([k,px,pz])=>{if(con[k])return;P(rail,px,.17,pz,px?.04:1,.035,px?1:.04);P(rail,px,.08,pz,.035,.18,.035)})}
-  else{P(deck,0,-.04,0,len,.08,.82);if(modern)P(tmat('aspalX'),0,.006,0,len,.012,.7);else for(let k=0;k<5;k++)P(tmat('wood','#7a5b3a'),-.4+k*.2,.002,0,.02,.006,.8);
-   [-1,1].forEach(sd=>{P(rail,0,.17,sd*.39,len,.035,.04);for(let k=0;k<3;k++)P(rail,-.42+k*.42,.08,sd*.39,.035,.18,.035);if(modern)P(mat('#7d7a74'),0,-.11,sd*.33,len,.07,.05)})}
-  const bed=Math.min(R3.hAt(x+.5,y+.5),.3)-.05,ph=hm-.04-bed;if(ph>.05)(square?[[-.3,-.3],[.3,.3]]:[[-.3,0],[.3,0]]).forEach(([o1,o2])=>{const pr=new THREE.Mesh(new THREE.CylinderGeometry(modern?.06:.045,modern?.08:.055,ph,8),modern?mat('#8f8c86'):tmat('wood','#5a3a22'));pr.position.set(x+.5+(along||square?o1:o2),bed+ph/2,y+.5+(along&&!square?o2:o1*(square?-1:1)));pr.castShadow=true;g.add(pr)});
+  P(deck,0,-.04,0,Ld,.08,.84);if(modern)P(tmat('aspalX'),0,.006,0,Ld,.012,.7);else for(let k=0;k<len*5;k++)P(tmat('wood','#8f6a45'),-Ld/2+.1+k*.2,.002,0,.02,.006,.82);
+  [-1,1].forEach(sd=>{P(rail,0,.17,sd*.4,Ld,.035,.04);const np=Math.max(2,Math.round(len*2.5));for(let k=0;k<=np;k++)P(rail,-Ld/2+k*Ld/np,.08,sd*.4,.035,.18,.035);P(beam,0,-.12,sd*.36,Ld,.08,.06)});
+  for(let k=0;k<len;k++){const px=a==='h'?x+k+.5:x+.5,pz=a==='h'?y+.5:y+k+.5,dy=e0+rise*(k+.5)/len,bed=Math.min(R3.hAt(px,pz),.3)-.05,ph=dy-.08-bed;if(ph>.05)[-.32,.32].forEach(o=>{const pr=new THREE.Mesh(new THREE.CylinderGeometry(modern?.06:.045,modern?.08:.055,ph,8),modern?mat('#8f8c86'):tmat('wood','#6a4628'));pr.position.set(px+(a==='h'?0:o),bed+ph/2,pz+(a==='h'?o:0));pr.castShadow=true;g.add(pr)})}
   return g}
  R3.path=(x,y)=>{[[0,0],[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy])=>road(x+dx,y+dy))};
  R3.roadsClear=()=>{for(const k in roads){if(roads[k].geometry)roads[k].geometry.dispose();delete roads[k]}};
@@ -2033,10 +2034,11 @@ function act(x,y,silent){const say=m=>{if(!silent){toast(m);Snd.play('err')}};if
  if(tool!=='info'&&!inOwn(x,y)){say(t('outside'));return}
  if(tool==='babat'){if(L(x,y)!=='F')return;/* v50: babat alas gratis (gotong royong) */S.res.wood+=4;setL(x,y,'G');S.stats.cleared++;Snd.play('chop');R3.tileColor(x,y);R3.trees();after();return}
  if(tool==='bull'&&isBr(x,y)){brRemove(x,y);return}
+ if(tool==='jembatan'&&(brA||L(x,y)!=='W')){brTwoTap(x,y,say);return}
  if(tool==='jembatan'||(tool==='path'&&(L(x,y)==='W'||(L(x,y)==='G'&&!occ[y][x]&&tileRise(x,y)>STEEP)))){/* v50e: alat Jalan di atas sungai/tebing otomatis membuat jembatan */const okT=L(x,y)==='W'||(L(x,y)==='G'&&!occ[y][x]&&tileRise(x,y)>STEEP);if(!okT){say(L2('Jembatan dibangun di atas sungai atau tebing curam.','Bridges go over water or steep banks.'));return}if(isBr(x,y))return;
   const sp=brSpan(x,y);if(!sp){say(L2('Tarik jalan sampai tepi sungai, lalu ketuk petak sungai di depannya: jembatan otomatis menyeberang.','Bring a road to the bank, then tap the river tile in front of it: the bridge crosses automatically.'));return}
   const n=sp.tiles.length,np=sp.paths.length,cost={coin:BRC.coin*n+np,wood:BRC.wood*n,stone:BRC.stone*n};if(!canAfford(cost)){say(lackMsg(cost));return}pay(cost);
-  let tr=false;sp.paths.forEach(([px,py])=>{if(L(px,py)==='F')tr=true;setL(px,py,'P');R3.tileColor(px,py)});if(tr)R3.trees();S.br=(S.br||[]).concat(sp.tiles.map(([tx,ty])=>tx+','+ty));_brN=-1;Snd.play('build');
+  let tr=false;sp.paths.forEach(([px,py])=>{if(L(px,py)==='F')tr=true;setL(px,py,'P');R3.tileColor(px,py)});if(tr)R3.trees();S.br=(S.br||[]).concat(sp.tiles.map(([tx,ty])=>tx+','+ty));_brN=-1;S.brd=S.brd||{};{const t0=sp.tiles[0],t1=sp.tiles[sp.tiles.length-1],pp=sp.paths[0]||t1;const d=(t1[1]===t0[1]&&(sp.tiles.length>1||pp[1]===t0[1]))?'h':'v';sp.tiles.forEach(([tx,ty])=>S.brd[tx+','+ty]=d)}Snd.play('build');
   sp.paths.forEach(([tx,ty])=>R3.path(tx,ty));S.br.forEach(k=>{const [tx,ty]=k.split(',').map(Number);R3.path(tx,ty)});R3.pathsDirty();toast('🌉 '+L2('Jembatan '+n+' petak terbangun','Bridge of '+n+' tiles built'));after();return}
  /* v50e: atur kontur tanah — tinggikan / rendahkan / ratakan petak */
  if(tool==='kontur_up'||tool==='kontur_dn'||tool==='kontur_rata'){if(L(x,y)==='W'||occ[y][x]){say(L2('Pilih lahan kosong (bukan sungai/bangunan).','Pick empty land (not river/building).'));return}if(S.res.coin<.5){say(t('noMoney'));return}S.res.coin-=.5;terraform(x,y,tool);Snd.play('path');after();return}
@@ -2054,7 +2056,7 @@ function act(x,y,silent){const say=m=>{if(!silent){toast(m);Snd.play('err')}};if
  if(!silent&&SET.confirm!==false&&!T.zone&&bConfirm!==tool+'|'+x+'|'+y){askBuild(x,y,T);return}bConfirm=null;
  const stp=slope(x,y)>.6;if(stp&&S.res.wood<(T.c.wood||0)*1.5){say(lang==='en'?'Steep slope: needs 50% more timber.':'Lahan miring: butuh kayu 50% lebih.');return}if(stp)S.res.wood-=Math.ceil((T.c.wood||0)*.5);pay(T.c);Snd.play('build');const b={id:S.nid++,t:tool,x,y,w:T.w,h:T.h,bt:T.days||1};if(T.zone){b.lv=0;b.s=curStyle}if(tool==='house'||tool==='hall')b.s=curStyle;if(tool==='house'&&Math.random()<.5)b.r=Math.floor(Math.random()*4);S.b.push(b);rebuildOcc();R3.addB(b);if(tool==='rel'||tool==='saluran')[[1,0],[-1,0],[0,1],[0,-1]].forEach(([a,c])=>{const X=x+a,Y=y+c;if(inside(X,Y)&&occ[Y][X]){const q=S.b.find(z=>z.id===occ[Y][X]);if(q&&q.t===tool){R3.delB(q.id);R3.addB(q)}}});R3.villagers();after()}
 function after(){dirty=true;updHUD();checkMissions();checkEra();tutCheck()}
-function placeOK(x,y){if(!x&&x!==0)return false;if(tool!=='info'&&!inOwn(x,y))return false;if(tool==='babat')return L(x,y)==='F';if(tool==='path')return (L(x,y)==='G'&&!occ[y][x]&&tileRise(x,y)<=STEEP)||((L(x,y)==='W'||(L(x,y)==='G'&&!occ[y][x]))&&!isBr(x,y)&&!!brSpan(x,y));if(tool==='kontur_up'||tool==='kontur_dn'||tool==='kontur_rata')return L(x,y)!=='W'&&!occ[y][x];if(tool==='jembatan')return (L(x,y)==='W'||(L(x,y)==='G'&&!occ[y][x]&&tileRise(x,y)>STEEP))&&!isBr(x,y)&&!!brSpan(x,y);if(tool==='jalan2')return L(x,y)==='P'&&((S.rc||{})[x+','+y]||1)<3;if(tool==='bull')return !!occ[y][x]||isBr(x,y)||L(x,y)==='P';if(tool==='move'){const b=S.b.find(q=>q.id===moveId);return !!b&&!moveOK(b,x,y)}if(tool==='info')return true;const T=BT[tool];if(!T)return false;if(T.dep&&!depOK(tool,x,y))return false;
+function placeOK(x,y){if(!x&&x!==0)return false;if(tool!=='info'&&!inOwn(x,y))return false;if(tool==='babat')return L(x,y)==='F';if(tool==='path')return (L(x,y)==='G'&&!occ[y][x]&&tileRise(x,y)<=STEEP)||((L(x,y)==='W'||(L(x,y)==='G'&&!occ[y][x]))&&!isBr(x,y)&&!!brSpan(x,y));if(tool==='kontur_up'||tool==='kontur_dn'||tool==='kontur_rata')return L(x,y)!=='W'&&!occ[y][x];if(tool==='jembatan')return !isBr(x,y)&&inside(x,y)&&(isRoad(x,y)||(L(x,y)!=='W'&&!occ[y][x])||!!brSpan(x,y));if(tool==='jalan2')return L(x,y)==='P'&&((S.rc||{})[x+','+y]||1)<3;if(tool==='bull')return !!occ[y][x]||isBr(x,y)||L(x,y)==='P';if(tool==='move'){const b=S.b.find(q=>q.id===moveId);return !!b&&!moveOK(b,x,y)}if(tool==='info')return true;const T=BT[tool];if(!T)return false;if(T.dep&&!depOK(tool,x,y))return false;
  for(let dy=0;dy<T.h;dy++)for(let dx=0;dx<T.w;dx++){const X=x+dx,Y=y+dy;if(!inside(X,Y)||!inOwn(X,Y)||L(X,Y)!=='G'||occ[Y][X])return false}return T.era<=S.era&&canAfford(T.c)}
 function bindInput(){const el=R3.dom();let down=null,last=null,nPtr=0,multi=false,lastDn=0;
  /* zoom cubit (pinch) sendiri: layar sentuh iPad/ponsel dan trackpad (gesture Safari); OrbitControls tetap menggeser dua jari */
