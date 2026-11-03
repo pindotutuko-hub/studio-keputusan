@@ -1786,18 +1786,23 @@ function make(b){const g=new THREE.Group();const s=b.s||'jawa';
   else if(rcl===2&&(horiz||vert)){[-1,1].forEach(sd=>{const e=new THREE.Mesh(box,mat('#f2f2f2'));e.scale.set(horiz?1:.025,.012,horiz?.025:1);e.position.set(x+.5+(horiz?0:sd*.42),R3.hAt(x+.5,y+.5)+.045,y+.5+(horiz?sd*.42:0));m.add(e)})}
   root.add(m);roads[k]=m}
  function bridgeMesh(x,y){const g=new THREE.Group();
-  /* v50: arah & tinggi dihitung dari seluruh bentang → dek melandai halus dari tepi ke tepi, tak pernah menonjol */
-  const run=(dx,dz)=>{const R={n:[0,0],end:[null,null]};[-1,1].forEach((sg,j)=>{let X=x,Y=y;for(let k=0;k<30;k++){X+=sg*dx;Y+=sg*dz;if(!inside(X,Y))break;if(isBr(X,Y)){R.n[j]++;continue}if(L(X,Y)!=='W')R.end[j]=[X,Y];break}});R.sc=(R.end[0]?100:0)+(R.end[1]?100:0)+(isRoad(x-dx,y-dz)&&!isBr(x-dx,y-dz)?20:0)+(isRoad(x+dx,y+dz)&&!isBr(x+dx,y+dz)?20:0)+R.n[0]+R.n[1];return R};
-  const rH=run(1,0),rV=run(0,1),along=rH.sc>=rV.sc,R=along?rH:rV,dx=along?1:0,dz=along?0:1,n=R.n[0]+R.n[1]+1,i=R.n[0];
-  const edgeH=(j)=>{const e=R.end[j];if(!e)return null;const sg=j?1:-1,ex=x+.5+sg*(R.n[j]+.5)*dx,ez=y+.5+sg*(R.n[j]+.5)*dz;return roadY(ex,ez,e[0]+.5,e[1]+.5)};
-  let h0=edgeH(0),h1=edgeH(1);if(h0==null&&h1==null)h0=h1=.475;else if(h0==null)h0=h1;else if(h1==null)h1=h0;{const d=h1-h0,mx=.22*n;if(Math.abs(d)>mx){const m=(h0+h1)/2,sg=Math.sign(d);h0=m-sg*mx/2;h1=m+sg*mx/2}}
-  const ya=Math.max(.47,h0+(h1-h0)*i/n),yb=Math.max(.47,h0+(h1-h0)*(i+1)/n),hm=(ya+yb)/2,ang=Math.atan2(yb-ya,1),len=Math.hypot(1,yb-ya)+.01;
+  /* v50c: satu bentang terhubung = satu tinggi dek (rata-rata tepi), ujung melandai ke jalan; petak belok/zig-zag jadi pelat persegi sehingga semua menyambung */
+  const comp=new Set([x+','+y]),q=[[x,y]];while(q.length&&comp.size<200){const [a,b]=q.pop();for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){const k=(a+dx)+','+(b+dz);if(!comp.has(k)&&isBr(a+dx,b+dz)){comp.add(k);q.push([a+dx,b+dz])}}}
+  const landAt=(X,Y)=>inside(X,Y)&&!isBr(X,Y)&&L(X,Y)!=='W';const eH=(X,Y,dx,dz)=>roadY(X+.5+dx*.5,Y+.5+dz*.5,X+dx+.5,Y+dz+.5);
+  let sum=0,n=0;comp.forEach(k=>{const [a,b]=k.split(',').map(Number);for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]])if(landAt(a+dx,b+dz)){sum+=eH(a,b,dx,dz);n++}});
+  const H=Math.max(.5,Math.min(2.4,n?sum/n:.55));
+  const con={};for(const [k,dx,dz] of [['e',1,0],['w',-1,0],['s',0,1],['n',0,-1]])con[k]=isBr(x+dx,y+dz)?'b':landAt(x+dx,y+dz)?'l':'';
+  const cx=!!(con.e||con.w),cz=!!(con.s||con.n),square=cx&&cz,along=square?true:(cx||!cz);
   const modern=S.era>=3,deck=modern?mat('#9a9893',{roughness:.85}):tmat('wood','#8a6a45'),rail=modern?mat('#c9c6bf'):tmat('wood','#6b4a2c');
+  let ya=H,yb=H;if(!square){const [m,p]=along?[con.w,con.e]:[con.n,con.s];if(m==='l')ya=Math.min(H+.6,Math.max(H-.6,eH(x,y,along?-1:0,along?0:-1)));if(p==='l')yb=Math.min(H+.6,Math.max(H-.6,eH(x,y,along?1:0,along?0:1)))}
+  const hm=(ya+yb)/2,ang=Math.atan2(yb-ya,1),len=Math.hypot(1,yb-ya)+.01;
   const span=new THREE.Group();span.position.set(x+.5,hm,y+.5);if(along)span.rotation.z=ang;else{span.rotation.y=-Math.PI/2;span.rotation.z=ang}g.add(span);
   const P=(m,px,py,pz,sx,sy,sz)=>{const o=new THREE.Mesh(box,m);o.scale.set(sx,sy,sz);o.position.set(px,py,pz);o.castShadow=true;o.receiveShadow=true;span.add(o);return o};
-  P(deck,0,-.04,0,len,.08,.82);if(modern)P(tmat('aspalX'),0,.006,0,len,.012,.7);else for(let k=0;k<5;k++)P(tmat('wood','#7a5b3a'),-.4+k*.2,.002,0,.02,.006,.8);
-  [-1,1].forEach(sd=>{P(rail,0,.17,sd*.39,len,.035,.04);for(let k=0;k<3;k++)P(rail,-.42+k*.42,.08,sd*.39,.035,.18,.035);if(modern)P(mat('#7d7a74'),0,-.11,sd*.33,len,.07,.05)});
-  const bed=Math.min(R3.hAt(x+.5,y+.5),.3)-.05,ph=hm-.04-bed;if(ph>.05)[-.3,.3].forEach(o=>{const pr=new THREE.Mesh(new THREE.CylinderGeometry(modern?.06:.045,modern?.08:.055,ph,8),modern?mat('#8f8c86'):tmat('wood','#5a3a22'));pr.position.set(x+.5+(along?o:0),bed+ph/2,y+.5+(along?0:o));pr.castShadow=true;g.add(pr)});
+  if(square){P(deck,0,-.04,0,1.02,.08,1.02);if(modern)P(tmat('aspalX'),0,.006,0,1.02,.012,1.02);
+   /* pagar hanya di sisi yang tidak tersambung */[['e',.49,0],['w',-.49,0],['s',0,.49],['n',0,-.49]].forEach(([k,px,pz])=>{if(con[k])return;P(rail,px,.17,pz,px?.04:1,.035,px?1:.04);P(rail,px,.08,pz,.035,.18,.035)})}
+  else{P(deck,0,-.04,0,len,.08,.82);if(modern)P(tmat('aspalX'),0,.006,0,len,.012,.7);else for(let k=0;k<5;k++)P(tmat('wood','#7a5b3a'),-.4+k*.2,.002,0,.02,.006,.8);
+   [-1,1].forEach(sd=>{P(rail,0,.17,sd*.39,len,.035,.04);for(let k=0;k<3;k++)P(rail,-.42+k*.42,.08,sd*.39,.035,.18,.035);if(modern)P(mat('#7d7a74'),0,-.11,sd*.33,len,.07,.05)})}
+  const bed=Math.min(R3.hAt(x+.5,y+.5),.3)-.05,ph=hm-.04-bed;if(ph>.05)(square?[[-.3,-.3],[.3,.3]]:[[-.3,0],[.3,0]]).forEach(([o1,o2])=>{const pr=new THREE.Mesh(new THREE.CylinderGeometry(modern?.06:.045,modern?.08:.055,ph,8),modern?mat('#8f8c86'):tmat('wood','#5a3a22'));pr.position.set(x+.5+(along||square?o1:o2),bed+ph/2,y+.5+(along&&!square?o2:o1*(square?-1:1)));pr.castShadow=true;g.add(pr)});
   return g}
  R3.path=(x,y)=>{[[0,0],[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy])=>road(x+dx,y+dy))};
  R3.roadsClear=()=>{for(const k in roads){if(roads[k].geometry)roads[k].geometry.dispose();delete roads[k]}};
@@ -1922,7 +1927,7 @@ function plan(p){const h=hour(),home=S.b.find(b=>b.id===p.home)||bOf('house')[0]
    const fr=new THREE.Mesh(box,mat(kind==='motor'?pick(['#c0392b','#1f4e8c','#222']):pick(['#2f8f6a','#d35400','#555'])));fr.scale.set(.04,kind==='motor'?.1:.04,.3);fr.position.y=kind==='motor'?.13:.15;g.add(fr);
    rider=mkPerson(false,kind==='motor'?null:pick(['caping','peci',null]));rider.m.position.set(0,.02,-.02);rider.m.scale.setScalar(.85);if(kind==='motor'){const hm=new THREE.Mesh(new THREE.SphereGeometry(.06,8,6),mat(pick(['#f2f2f2','#d63a2a','#1b1b1b'])));hm.position.y=.26;rider.up.add(hm)}g.add(rider.m);len=.35}
   else if(kind==='gerobak'){const c=new THREE.Mesh(box,mat('#8a6a45'));c.scale.set(.3,.12,.34);c.position.set(0,.16,0);g.add(c);const load=new THREE.Mesh(box,mat(pick(['#4f8f4a','#c8a14b','#9c4a33'])));load.scale.set(.24,.08,.28);load.position.set(0,.26,0);g.add(load);[-.17,.17].forEach(x=>{const w=wheel(.1);w.position.set(x,.1,0);g.add(w);ws.push(w)});
-   rider=mkPerson(false,'caping');rider.m.scale.setScalar(1.25);rider.m.position.set(0,0,.36);g.add(rider.m);len=.7}
+   rider=mkPerson(false,'caping');rider.m.position.set(0,0,.34);g.add(rider.m);len=.6}
   else if(kind==='mobil'){const c=new THREE.Mesh(box,mat(pick(['#e8e8e8','#b03a2e','#2e5a88','#2b2b2b','#c9a227']),{metalness:.4,roughness:.4}));c.scale.set(.28,.12,.5);c.position.y=.1;c.castShadow=true;g.add(c);const cab=new THREE.Mesh(box,mat('#9cc3dc',{metalness:.3,roughness:.15}));cab.scale.set(.24,.1,.26);cab.position.set(0,.21,-.02);g.add(cab);[[-.14,.16],[.14,.16],[-.14,-.16],[.14,-.16]].forEach(([x,z])=>{const w=wheel(.055);w.position.set(x,.055,z);g.add(w);ws.push(w)});len=.6}
   else if(kind==='angkot'){const c=REG_OF(S.loc.cc)===4?'#c9c9c9':pick(['#2f8f8f','#3b6fb0','#e0a526','#c0392b','#2f8f6a']);const bd=new THREE.Mesh(box,mat(c));bd.scale.set(.26,.19,.6);bd.position.y=.14;bd.castShadow=true;g.add(bd);const wn=new THREE.Mesh(box,mat('#2c3a44',{roughness:.15}));wn.scale.set(.27,.07,.5);wn.position.set(0,.19,-.02);g.add(wn);const rf=new THREE.Mesh(box,mat('#e8e4da'));rf.scale.set(.2,.03,.4);rf.position.set(0,.25,-.02);g.add(rf);[[-.13,.2],[.13,.2],[-.13,-.2],[.13,-.2]].forEach(([x,z])=>{const w=wheel(.05);w.position.set(x,.05,z);g.add(w);ws.push(w)});len=.65}
   else if(kind==='bus'){const c=pick(['#2f6fb0','#e07a26','#2f8f6a']);const bd=new THREE.Mesh(box,mat(c));bd.scale.set(.3,.26,.95);bd.position.y=.19;bd.castShadow=true;g.add(bd);const wn=new THREE.Mesh(box,mat('#2c3a44',{roughness:.15}));wn.scale.set(.31,.09,.85);wn.position.y=.25;g.add(wn);const rf=new THREE.Mesh(box,mat('#f2f2f2'));rf.scale.set(.3,.03,.9);rf.position.y=.33;g.add(rf);[[-.15,.3],[.15,.3],[-.15,-.3],[.15,-.3]].forEach(([x,z])=>{const w=wheel(.06);w.position.set(x,.06,z);g.add(w);ws.push(w)});len=1}
@@ -1936,7 +1941,7 @@ function plan(p){const h=hour(),home=S.b.find(b=>b.id===p.home)||bOf('house')[0]
   if(kind0==='taksi'){g.children[0].material=mat('#2f6fb0',{metalness:.4,roughness:.4});const sg=new THREE.Mesh(box,mat('#fff3c4',{emissive:'#ffd98a',emissiveIntensity:.5}));sg.scale.set(.1,.04,.05);sg.position.set(0,.28,-.02);g.add(sg)}
   if(kind0==='mobol'){const st=new THREE.Mesh(box,mat('#1fae54'));st.scale.set(.285,.025,.3);st.position.set(0,.13,.02);g.add(st)}
   if(kind0==='ojol'){const bx=new THREE.Mesh(box,mat('#1fae54'));bx.scale.set(.16,.14,.14);bx.position.set(0,.3,.2);g.add(bx);if(rider&&rider.up)rider.up.traverse(o=>{if(o.isMesh&&o.geometry&&o.geometry.type==='SphereGeometry')o.material=mat('#1fae54')})}
-  if(kind==='sepeda'||kind==='motor')g.scale.setScalar(.34);else if(kind==='gerobak')g.scale.setScalar(.8);/* v50b: penarik gerobak seukuran warga yang berjalan */
+  if(kind==='sepeda'||kind==='motor')g.scale.setScalar(.34);else if(kind==='gerobak')g.scale.setScalar(.66);/* v50b: penarik gerobak seukuran warga yang berjalan */
   return {m:g,ws,rider,kind:kind0,len}}
  function spawnVeh(kind){const T=pathNet();if(T.length<3)return null;const s=pick(T),v=mkVehicle(kind),n=nb(s[0],s[1]);if(!n.length)return null;v.a=s;v.b=pick(n);v.u=0;v.prev=null;v.speed={sepeda:.9,gerobak:.45,motor:2,mobil:2.2,truk:1,bus:1.4,angkot:1.6,busek:1.3,taksi:2.2,mobol:2.2,ojol:2.1}[kind];v.stop=0;v.life=kind==='truk'?70:1e9;root.add(v.m);return v}
  function stepTrain(dt){const rels=S.b.filter(b=>b.t==='rel'&&!b.bt);const T=LIFE.trains=LIFE.trains||[];if(rels.length<6||!S.b.some(b=>b.t==='stasiun'&&!b.bt)){T.forEach(t=>root.remove(t.m));T.length=0;return}
