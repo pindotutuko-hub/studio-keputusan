@@ -180,7 +180,7 @@ function audit(array $st, ?array $prev, int $prevAt): array {
 	$prodB = ($cnt['kebun'] ?? 0) + ($cnt['bengkel'] ?? 0) + ($cnt['pond'] ?? 0) + ($cnt['kandang'] ?? 0) + ($cnt['peternakan'] ?? 0) + ($cnt['dapur'] ?? 0) + $upP + 1; $links = is_array($st['links'] ?? null) ? min(count($st['links']), 40) : 0;
 	$loanIn = min(max(0, (int) ($st['loanTot'] ?? 0)), 133 * (1 + intdiv($t, 24)));
 	$coinCap = START['coin'] + $loanIn + 25 * intdiv($era * ($era + 1), 2) + max(11, $nDone) * 15 + 40 * $era * $era + $t * (0.6 * max($kk, 1) + 9 + 6 * $markets + 10 * $prodB + 8 * $links + 4 * $zLv + 0.8 * max($kk, 1) + 3 * ($cnt['museum'] ?? 0) + 6 * ($cnt['stadion'] ?? 0) + 6 * ($cnt['dermaga'] ?? 0)) + $t * (60 * ($cnt['bandara'] ?? 0) + 3 * ($cnt['ruko'] ?? 0) + 8 * ($cnt['mal'] ?? 0) + 10 * ($cnt['kom'] ?? 0) + 4 * ($cnt['bank'] ?? 0) + 2 * ($cnt['bioskop'] ?? 0) + 4 * ($cnt['planetarium'] ?? 0) + 40 * ($cnt['tamhib'] ?? 0) + 3 * ($cnt['galian'] ?? 0) + 5 * ($cnt['tobong'] ?? 0) + 16 * ($cnt['tamin'] ?? 0) + 4 * ($cnt['homestay'] ?? 0) + 4 * ($cnt['pasmal'] ?? 0) + 4 * ($cnt['senibudaya'] ?? 0) + 8 * ($cnt['semen'] ?? 0) + 24 * ($cnt['smelter'] ?? 0) + 16 * ($cnt['pelabuhan'] ?? 0) + 8 * ($cnt['tol'] ?? 0) + 18 * ($cnt['kargo'] ?? 0) + 6 * ($cnt['dispar'] ?? 0) + 0.1 * max($kk, 1) * ($cnt['bapenda'] ?? 0) + 2 * $zLv) + 30 * 6 * intdiv($t, 12) + 5;
-	$soldC = max(0, min((float) ($st['soldC'] ?? 0), 40 + 4 * $t * max($kk, 1))); $coinCap += $soldC + (!empty($st['gift50']) ? 610 : 0) + $t * (0.6 * max($kk, 1) + 2 * $era + 2); // v50: hasil jual bahan/pangan
+	$soldC = max(0, min((float) ($st['soldC'] ?? 0), 40 + 4 * $t * max($kk, 1))); $coinCap += min((float) ($st['grantC'] ?? 0), (float) ($GLOBALS['BA_GRANT_TOT'] ?? 0)) + $soldC + (!empty($st['gift50']) ? 610 : 0) + $t * (0.6 * max($kk, 1) + 2 * $era + 2); // v50: hasil jual bahan/pangan
 	if ($coin + $spentC > $coinCap * 1.15 + 20) { $bad[] = 'coin'; }
 	$woodBuy = max(0, min((int) ($st['woodBuy'] ?? 0), 40000)); $spentC += $woodBuy * 0.15;
 	$stone = (float) ($st['res']['stone'] ?? 0); $iron = (float) ($st['res']['iron'] ?? 0); if ($stone < 0 || $iron < 0 || $stone > 100000 || $iron > 100000) { $bad[] = 'mat'; }
@@ -319,7 +319,7 @@ switch ($a) {
 		$base = (int) ($j['base'] ?? 0);
 		$old = rd('s_' . $u['uid'] . '.php'); $fresh = !$old || (($old['state']['meta']['created'] ?? 0) !== ($j['state']['meta']['created'] ?? 0));
 		if ($fresh && ($who = claim_hit($u['uid'], $meta))) { out(['ok' => false, 'error' => 'claimed', 'by' => $who], 409); }
-		$nbc = nb_count($u['uid'], $meta, $u);
+		$nbc = nb_count($u['uid'], $meta, $u); $GLOBALS['BA_GRANT_TOT'] = (float) ($u['grantTot'] ?? 0);
 		$r = upd('s_' . $u['uid'] . '.php', function ($s) use ($j, &$meta, $base, $nbc) { $ver = (int) ($s['ver'] ?? 0);
 			if ($s && $base && $base !== $ver && empty($j['force'])) { return ['__ret' => ['conflict' => $ver]]; }
 			// v46b: simpanan yang waktunya mundur (tab/perangkat lama) ditolak, tidak ditulis & tidak ditandai curang
@@ -343,7 +343,8 @@ switch ($a) {
 		if (!$r['bad'] && $doLb) { $sem = semester(); $row = ['who' => $u['user'], 'name' => $meta['name'], 'kelas' => $u['kelas'] ?? '', 'kampus' => $u['kampus'] ?? '', 'score' => $meta['score'], 'era' => $meta['era'], 'kk' => $meta['kk'], 'month' => $meta['month'], 'loc' => $meta['loc'], 'ind' => $meta['ind'], 'at' => time()];
 			upd('lb_' . $sem . '.php', function ($d) use ($u, $row, $chal, $chalNow) { $d = $d ?: []; $old = $d[$u['uid']] ?? null; if ($row['score'] >= (int) ($old['best'] ?? 0)) { $row['best'] = $row['score']; $row['bestInd'] = $row['ind']; } else { $row['best'] = (int) $old['best']; $row['bestInd'] = $old['bestInd'] ?? $row['ind']; } $row['saves'] = (int) ($old['saves'] ?? 0) + 1; $row['chal'] = $chal; $row['chalAt'] = ($old['chal'] ?? '') === $chal && !empty($old['chalAt']) ? $old['chalAt'] : ($chalNow ? time() : 0); $row['first'] = $old['first'] ?? time(); $d[$u['uid']] = $row; return ['__write' => $d, '__ret' => true]; });
 		if ($doDir || (!$r['bad'] && $doLb)) { upd('u_' . $u['uid'] . '.php', function ($x) use ($doDir, $dirSig, $doLb, $lbSig, $r) { if (!$x) { return ['__ret' => false]; } if ($doDir) { $x['dirSig'] = $dirSig; $x['dirAt'] = time(); } if (!$r['bad'] && $doLb) { $x['lbSig'] = $lbSig; $x['lbAt'] = time(); } return ['__write' => $x, '__ret' => true]; }); } }
-		out(['ok' => true, 'ver' => $r['ver'], 'score' => $meta['score'], 'ind' => $meta['ind'], 'ranked' => !$r['bad'], 'flags' => $r['bad'], 'chal' => $chal, 'chalOk' => $chalNow]);
+		$grant = 0; if ((float) ($u['grantPend'] ?? 0) > 0) { $grant = upd('u_' . $u['uid'] . '.php', function ($x) { if (!$x) { return ['__ret' => 0]; } $g = (float) ($x['grantPend'] ?? 0); $x['grantPend'] = 0; return ['__write' => $x, '__ret' => $g]; }); }
+		out(['ok' => true, 'grant' => $grant, 'ver' => $r['ver'], 'score' => $meta['score'], 'ind' => $meta['ind'], 'ranked' => !$r['bad'], 'flags' => $r['bad'], 'chal' => $chal, 'chalOk' => $chalNow]);
 	}
 	case 'eula': { $u = auth(); if (($b['ver'] ?? '') !== EULA_VER) { fail('eula'); }
 		upd('u_' . $u['uid'] . '.php', function ($x) { $x['eula'] = EULA_VER; $x['eulaAt'] = time(); return ['__write' => $x, '__ret' => true]; }); out(['ok' => true]); }
