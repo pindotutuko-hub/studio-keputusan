@@ -1,0 +1,3 @@
+kampus.json — daftar nama perguruan tinggi per negara, diringkas dari "University Domains and Names Data List" oleh Hipo
+(https://github.com/Hipo/university-domains-list), lisensi MIT, Copyright (c) 2014-2025 Hipo.
+Pengelompokan region dibuat untuk Babat Alas. Daftar tidak lengkap; pemain dapat memilih "Lainnya" dan menulis nama sendiri.
