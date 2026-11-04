@@ -124,7 +124,7 @@ function new_token(string $uid): string {
 }
 /** v48: perbarui kampus/kelas di papan peringkat semester berjalan tanpa menunggu simpan berikutnya */
 function lb_sync(string $uid, array $set): void { upd('lb_' . semester() . '.php', function ($d) use ($uid, $set) { if (!$d || !isset($d[$uid])) { return ['__ret' => false]; } foreach ($set as $k => $v) { $d[$uid][$k] = $v; } return ['__write' => $d, '__ret' => true]; }); }
-function pub(array $u): array { return ['user' => $u['user'], 'name' => $u['name'] ?? $u['user'], 'kampus' => $u['kampus'] ?? '', 'kampusCC' => $u['kampusCC'] ?? '', 'kelas' => $u['kelas'] ?? '', 'created' => $u['created'] ?? 0, 'eula' => ($u['eula'] ?? '') === EULA_VER, 'mustPw' => !empty($u['mustPw'])]; }
+function pub(array $u): array { return ['user' => $u['user'], 'name' => $u['name'] ?? $u['user'], 'kampus' => $u['kampus'] ?? '', 'kampusCC' => $u['kampusCC'] ?? '', 'kelas' => $u['kelas'] ?? '', 'created' => $u['created'] ?? 0, 'eula' => ($u['eula'] ?? '') === EULA_VER, 'mustPw' => !empty($u['mustPw']), 'dosen' => !empty($u['dosen'])]; }
 
 /** Semester akademik: Agustus–Januari = Ganjil, Februari–Juli = Genap. */
 function semester(?int $ts = null): string { $ts = $ts ?? time(); $m = (int) date('n', $ts); $y = (int) date('Y', $ts);
@@ -373,13 +373,13 @@ switch ($a) {
 		usort($rows, fn($a, $b) => $b['best'] <=> $a['best']); $mine = null; foreach ($rows as $i => $r) { if ($r['me']) { $mine = $i + 1; break; } }
 		out(['ok' => true, 'sem' => $sem, 'scope' => $scope, 'total' => count($rows), 'myRank' => $mine, 'list' => array_slice($rows, 0, 50)]);
 	}
-	case 'kelas_new': { $u = auth(); rate('kelasnew' . $u['uid'], 10, 86400); $nama = clean((string) ($b['nama'] ?? ''), 80); if (mb_strlen($nama) < 3 || rude($nama)) { fail('bad_name'); }
+	case 'kelas_new': { $u = auth(); if (empty($u['dosen'])) { fail('not_dosen', 403); } /* v50p: hanya akun yang ditetapkan dosen oleh pengelola */ rate('kelasnew' . $u['uid'], 10, 86400); $nama = clean((string) ($b['nama'] ?? ''), 80); if (mb_strlen($nama) < 3 || rude($nama)) { fail('bad_name'); }
 		for ($i = 0; $i < 8; $i++) { $code = ''; $al = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; for ($k = 0; $k < 6; $k++) { $code .= $al[random_int(0, 31)]; }
 			$ok = upd('k_' . $code . '.php', function ($k) use ($u, $nama) { if ($k) { return ['__ret' => false]; } return ['__write' => ['owner' => $u['uid'], 'ownerUser' => $u['user'], 'nama' => $nama, 'created' => time()], '__ret' => true]; });
 			if ($ok) { upd('u_' . $u['uid'] . '.php', function ($x) use ($code) { $x['owns'] = array_values(array_unique(array_merge($x['owns'] ?? [], [$code]))); return ['__write' => $x, '__ret' => true]; }); out(['ok' => true, 'code' => $code]); } }
 		fail('storage', 500); }
-	case 'kelas_mine': { $u = auth(); $list = []; foreach (($u['owns'] ?? []) as $c) { $k = rd('k_' . $c . '.php'); if ($k) { $list[] = ['code' => $c, 'nama' => $k['nama'], 'created' => $k['created'], 'tantangan' => (string) ($k['tantangan'] ?? '')]; } } out(['ok' => true, 'list' => $list]); }
-	case 'kelas_tantangan': { $u = auth(); rate('kt' . $u['uid'], 30, 3600); $c = preg_replace('/[^A-Z0-9]/', '', strtoupper((string) ($b['code'] ?? ''))); $t = (string) ($b['t'] ?? '');
+	case 'kelas_mine': { $u = auth(); if (empty($u['dosen'])) { fail('not_dosen', 403); } $list = []; foreach (($u['owns'] ?? []) as $c) { $k = rd('k_' . $c . '.php'); if ($k) { $list[] = ['code' => $c, 'nama' => $k['nama'], 'created' => $k['created'], 'tantangan' => (string) ($k['tantangan'] ?? '')]; } } out(['ok' => true, 'list' => $list]); }
+	case 'kelas_tantangan': { $u = auth(); if (empty($u['dosen'])) { fail('not_dosen', 403); } rate('kt' . $u['uid'], 30, 3600); $c = preg_replace('/[^A-Z0-9]/', '', strtoupper((string) ($b['code'] ?? ''))); $t = (string) ($b['t'] ?? '');
 		if ($t !== '' && !isset(CHAL[$t])) { fail('bad'); } $ok = upd('k_' . $c . '.php', function ($k) use ($u, $t) { if (!$k || $k['owner'] !== $u['uid']) { return ['__ret' => false]; } $k['tantangan'] = $t; return ['__write' => $k, '__ret' => true]; });
 		if (!$ok) { fail('forbidden', 403); } out(['ok' => true]); }
 	case 'kelas_join': { $u = auth(); rate('join' . $u['uid'], 10, 3600); $c = preg_replace('/[^A-Z0-9]/', '', strtoupper((string) ($b['code'] ?? '')));
@@ -393,7 +393,7 @@ switch ($a) {
 		$u2 = rd('u_' . $u['uid'] . '.php'); out(['ok' => true, 'me' => pub($u2)]); }
 	case 'rekap': {
 		$u = auth(); $c = preg_replace('/[^A-Z0-9]/', '', strtoupper((string) ($_GET['code'] ?? ''))); $k = $c ? rd('k_' . $c . '.php') : null;
-		if (!$k || $k['owner'] !== $u['uid']) { fail('forbidden', 403); }
+		if (empty($u['dosen']) || !$k || $k['owner'] !== $u['uid']) { fail('forbidden', 403); }
 		$sem = preg_match('/^\d{4}-(Ganjil|Genap)$/', (string) ($_GET['sem'] ?? '')) ? (string) $_GET['sem'] : semester(); $d = rd('lb_' . $sem . '.php') ?: []; $rows = [];
 		foreach ($d as $r) { if ($r['kelas'] === $c) { $rows[] = ['user' => $r['who'], 'permukiman' => $r['name'], 'lokasi' => $r['loc'], 'skor_terbaik' => $r['best'], 'skor_terakhir' => $r['score'], 'ekonomi' => $r['bestInd']['e'] ?? '', 'jejaring' => $r['bestInd']['n'] ?? '', 'kenyamanan' => $r['bestInd']['c'] ?? '', 'kepuasan' => $r['bestInd']['k'] ?? '', 'pertumbuhan' => $r['bestInd']['p'] ?? '', 'era' => $r['era'], 'kk' => $r['kk'], 'bulan_main' => $r['month'], 'jumlah_simpan' => $r['saves'], 'tantangan' => $r['chal'] ?? '', 'tantangan_tercapai' => !empty($r['chalAt']) ? date('Y-m-d', $r['chalAt']) : '', 'rth' => $r['bestInd']['rth'] ?? '', 'layanan_kota' => $r['bestInd']['svc'] ?? '', 'mulai' => date('Y-m-d', $r['first']), 'terakhir' => date('Y-m-d H:i', $r['at'])]; } }
 		usort($rows, fn($a, $b) => $b['skor_terbaik'] <=> $a['skor_terbaik']); out(['ok' => true, 'kelas' => $c, 'nama' => $k['nama'], 'sem' => $sem, 'rows' => $rows]);
