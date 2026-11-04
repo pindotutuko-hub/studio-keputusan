@@ -1187,7 +1187,9 @@ const CATS=[{k:'dasar',ic:'🧭',n:['Dasar & jalan','Basics & roads'],t:['info',
  {k:'hunian',ic:'🏠',n:['Hunian','Housing'],t:['house','perum','apartemen','zr']},
  {k:'pangan',ic:'🌾',n:['Pangan & ternak','Food & livestock'],t:['field','kebun','pond','kandang','peternakan','pemburu','dapur','barn','tree']},
  {k:'usaha',ic:'💼',n:['Usaha & bahan','Business & materials'],t:['market','bengkel','homestay','tambang','galian','tobong','tamin','semen','smelter','ruko','mal','zc','zi','dermaga']},
- {k:'layanan',ic:'🏫',n:['Layanan warga','Public services'],t:['well','worship','makam','puskesling','paud','sekolah','smp','sma','kampus','riset','perpus','klinik','rs','pos','bank','telkom','kom']},
+ {k:'layanan',ic:'🏛️',n:['Layanan warga','Public services'],t:['well','worship','makam','pos','bank','telkom','kom']},
+ {k:'pendidikan',ic:'🎓',n:['Pendidikan & riset','Education & research'],t:['paud','sekolah','smp','sma','kampus','riset','perpus']},
+ {k:'kesehatan',ic:'🏥',n:['Kesehatan','Health'],t:['klinik','puskesling','rs']},
  {k:'aman',ic:'🛡️',n:['Keamanan & pertahanan','Safety & defence'],t:['pospol','damkar','bpbd','lapas','koramil','lanal','lanud']},
  {k:'utilitas',ic:'⚡',n:['Utilitas & transportasi','Utilities & transport'],t:['surya','pltmh','pltb','pembangkit','pltu','menara','tps','daurulang','ipal','tpa','saluran','retensi','halte','brt','terminal','stasiun','tol','pelabuhan','bandara','kargo','rel']},
  {k:'rekreasi',ic:'🎡',n:['Rekreasi & olahraga','Recreation & sport'],t:['lapbola','playground','futsal','taman','kolam','pasmal','senibudaya','bioskop','planetarium','museum','stadion','tamhib']},
@@ -1454,7 +1456,7 @@ const R3={};
   (S.br||[]).forEach(k=>{const [bx,by]=k.split(',').map(Number);road(bx,by)});S.b.forEach(b=>R3.addB(b));R3.border();const oc=ownC();R3.focus(oc[0],oc[1],34);R3.villagers();try{R3.backdrop()}catch(e){console.warn(e)}R3.daylight(tod||.4)};
  /* ---------- bangunan prosedural ---------- */
  const FACADE=new Set(['bpbd','dinkes','disdik','dispar','bapenda','pengadilan','worship','pospol','telkom','pos','tps','ipal','damkar','dapur','bioskop','klinik','market','museum','koramil','lanal','dinas','capil','baldes','paud','bank','perpus','dinpu','rt','tobong','barn','pemburu']);
- const FCOL={layanan:'#2f6fa8',aman:'#1f3f7a',pemerintah:'#8a2a2a',usaha:'#b36b00',rekreasi:'#7a3fa0',utilitas:'#2f7a4f',pangan:'#5a7a2a',kota:'#555',hunian:'#555',dasar:'#555'};
+ const FCOL={layanan:'#2f6fa8',pendidikan:'#2f6fa8',kesehatan:'#c0392b',aman:'#1f3f7a',pemerintah:'#8a2a2a',usaha:'#b36b00',rekreasi:'#7a3fa0',utilitas:'#2f7a4f',pangan:'#5a7a2a',kota:'#555',hunian:'#555',dasar:'#555'};
  function facade(g,b){/* badan utama = kotak terbesar (bukan atap) */let main=null,vol=0;g.children.forEach(o=>{if(o.isMesh&&o.geometry===box&&!o.rotation.x&&!o.rotation.y&&!o.rotation.z){const v=o.scale.x*o.scale.y*o.scale.z;if(o.scale.y>.18&&v>vol){vol=v;main=o}}});if(!main)return;
   const W=main.scale.x,H=main.scale.y,D=main.scale.z,cx=main.position.x,cz=main.position.z,y0=main.position.y-H/2,fz=cz+D/2+.006,glass=mat('#2c3a44',{roughness:.18,metalness:.3}),frame=mat('#e8e4da'),door=tmat('wood','#5b3d26');
   const dw=Math.min(.16,W*.24),dh=Math.min(.24,H*.62);B(g,door,cx,y0,fz,dw,dh,.012);B(g,frame,cx,y0+dh,fz+.002,dw+.03,.025,.014);B(g,mat('#9b958a'),cx,y0-.005,fz+.04,dw+.12,.025,.08);
