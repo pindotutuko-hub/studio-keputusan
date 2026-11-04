@@ -320,7 +320,7 @@ switch ($a) {
 		$u = auth(); rate('save' . $u['uid'], 40, 600);
 		$raw = (string) file_get_contents('php://input'); if (strlen($raw) > MAX_SAVE) { fail('too_big', 413); }
 		$j = json_decode($raw, true); if (!is_array($j) || !isset($j['state']) || !is_array($j['state']) || !state_ok($j['state'])) { fail('bad_save'); }
-		$why = bot_reasons($j['tele'] ?? null); if ($why && empty($u['botOk'])) { bot_flag($u['uid'], $u, $why); }
+		$why = bot_reasons($j['tele'] ?? null); if ($why && empty($u['botOk']) && empty($u['sah'])) { bot_flag($u['uid'], $u, $why); }
 		$meta = ['name' => clean((string) ($j['state']['meta']['name'] ?? ''), 60), 'era' => (int) ($j['state']['era'] ?? 1), 'month' => (int) ($j['state']['t'] ?? 0), 'kk' => (int) ($j['state']['kk'] ?? 0),
 			'loc' => clean((string) ($j['state']['loc']['name'] ?? ''), 80), 'lat' => (float) ($j['state']['loc']['lat'] ?? 0), 'lon' => (float) ($j['state']['loc']['lon'] ?? 0), 'score' => (int) ($j['state']['score'] ?? 0), 'at' => time()];
 		$ow = $j['state']['own'] ?? []; $meta += claim_box($ow);
@@ -329,7 +329,8 @@ switch ($a) {
 		$old = rd('s_' . $u['uid'] . '.php'); $fresh = !$old || (($old['state']['meta']['created'] ?? 0) !== ($j['state']['meta']['created'] ?? 0));
 		if ($fresh && ($who = claim_hit($u['uid'], $meta))) { out(['ok' => false, 'error' => 'claimed', 'by' => $who], 409); }
 		$nbc = nb_count($u['uid'], $meta, $u); $GLOBALS['BA_GRANT_TOT'] = (float) ($u['grantTot'] ?? 0);
-		$r = upd('s_' . $u['uid'] . '.php', function ($s) use ($j, &$meta, $base, $nbc) { $ver = (int) ($s['ver'] ?? 0);
+		$sah = !empty($u['sah']); /* v50m: pemain sah (diverifikasi pengelola) — catatan pemeriksaan otomatis tidak menahan peringkat */
+		$r = upd('s_' . $u['uid'] . '.php', function ($s) use ($j, &$meta, $base, $nbc, $sah) { $ver = (int) ($s['ver'] ?? 0);
 			if ($s && $base && $base !== $ver && empty($j['force'])) { return ['__ret' => ['conflict' => $ver]]; }
 			// v46b: simpanan yang waktunya mundur (tab/perangkat lama) ditolak, tidak ditulis & tidak ditandai curang
 			if ($s && ($s['state']['meta']['created'] ?? 0) === ($j['state']['meta']['created'] ?? 0) && (int) ($j['state']['t'] ?? 0) < (int) ($s['state']['t'] ?? 0)) { return ['__ret' => ['stale' => $ver]]; }
@@ -337,8 +338,9 @@ switch ($a) {
 			[$score, $bad] = audit($j['state'], $prev, (int) ($s['meta']['at'] ?? 0));
 			$ind = in_array('land', $bad, true) ? ['e' => 0, 'n' => 0, 'c' => 0, 'k' => 0, 'p' => 0, 'score' => 0] : indicators($j['state'], $nbc); $score = $ind['score']; $meta['ind'] = $ind;
 			if (($prev['meta']['created'] ?? 0) !== ($j['state']['meta']['created'] ?? 0)) { $bad = array_values(array_diff($bad, ['prior'])); }
+			$note = []; if ($sah) { $note = array_values(array_diff($bad, ['prior'])); $bad = []; }
 			$meta['score'] = $score; $meta['flag'] = $bad ? 1 : 0;
-			return ['__write' => ['ver' => $ver + 1, 'meta' => $meta, 'state' => $j['state'], 'flagged' => $bad], '__ret' => ['ver' => $ver + 1, 'bad' => $bad]]; });
+			return ['__write' => ['ver' => $ver + 1, 'meta' => $meta, 'state' => $j['state'], 'flagged' => $bad, 'note' => $note], '__ret' => ['ver' => $ver + 1, 'bad' => $bad]]; });
 		if (isset($r['conflict'])) { out(['ok' => false, 'error' => 'conflict', 'ver' => $r['conflict']], 409); }
 		if (isset($r['stale'])) { out(['ok' => false, 'error' => 'stale', 'ver' => $r['stale']], 409); }
 		// direktori publik ringkas untuk tetangga (tanpa data pribadi selain nama tokoh)
