@@ -170,7 +170,7 @@ function audit(array $st, ?array $prev, int $prevAt): array {
 	$eraKK = [3 => 30, 4 => 60, 5 => 120, 6 => 240, 7 => 450]; if (isset($eraKK[$era]) && $kk < $eraKK[$era] * 0.5) { $bad[] = 'eraKK'; }
 	$paths = substr_count(implode('', $land), 'P'); $spentC += $paths;
 	$br = is_array($st['br'] ?? null) ? $st['br'] : []; if (count($br) > 600) { $bad[] = 'br'; $br = []; }
-	foreach ($br as $k) { if (!is_string($k) || !preg_match('/^(\d{1,3}),(\d{1,3})$/', $k, $mm) || (int) $mm[1] >= $n || (int) $mm[2] >= $n || !in_array($land[(int) $mm[2]][(int) $mm[1]], ['W', 'G'], true)) { $bad[] = 'br'; break; } }
+	foreach ($br as $k) { if (!is_string($k) || !preg_match('/^(\d{1,3}),(\d{1,3})$/', $k, $mm) || (int) $mm[1] >= $n || (int) $mm[2] >= $n || !in_array($land[(int) $mm[2]][(int) $mm[1]], ['W', 'G', 'P', 'F', 'D'], true)) { $bad[] = 'br'; break; } }
 	$spentC += 2 * count($br); $spentW += 5 * count($br);
 	$cleared = (int) ($st['stats']['cleared'] ?? 0); // v50: babat gratis
 	for ($i = 0; $i < $ex; $i++) { $spentC += 40 + 30 * $i; $spentW += 15 + 10 * $i; }
@@ -192,7 +192,7 @@ function audit(array $st, ?array $prev, int $prevAt): array {
 		$pt = (int) ($prev['t'] ?? 0); $water0 = substr_count(implode('', $prev['land'] ?? []), 'W');
 		if ($t < $pt) { $bad[] = 'rewind'; }
 		if ($t - $pt > (time() - $prevAt) / 720 * 1.5 + 2) { $bad[] = 'speed'; }
-		if (substr_count(implode('', $land), 'W') !== $water0) { $bad[] = 'water'; }
+		if (substr_count(implode('', $land), 'W') < $water0) { $bad[] = 'water'; } // v50l: memulihkan sungai (W bertambah) bukan kecurangan
 		if (array_intersect($prev['flagged'] ?? [], ['coin', 'wood', 'speed', 'rewind', 'water', 'land', 'btype', 'bpos', 'era', 'prior', 'own', 'outside'])) { $bad[] = 'prior'; }
 	} elseif ($t > 6) { $bad[] = 'fresh'; }
 	return [0, array_values(array_unique($bad))];
