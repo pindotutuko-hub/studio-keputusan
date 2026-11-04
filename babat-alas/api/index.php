@@ -340,7 +340,7 @@ switch ($a) {
 			if (($prev['meta']['created'] ?? 0) !== ($j['state']['meta']['created'] ?? 0)) { $bad = array_values(array_diff($bad, ['prior'])); }
 			$note = []; if ($sah) { $note = array_values(array_diff($bad, ['prior'])); $bad = []; }
 			$meta['score'] = $score; $meta['flag'] = $bad ? 1 : 0;
-			return ['__write' => ['ver' => $ver + 1, 'meta' => $meta, 'state' => $j['state'], 'flagged' => $bad, 'note' => $note], '__ret' => ['ver' => $ver + 1, 'bad' => $bad]]; });
+			return ['__write' => ['ver' => $ver + 1, 'meta' => $meta, 'state' => array_merge($j['state'], ['_ind' => $meta['ind']]), 'flagged' => $bad, 'note' => $note], '__ret' => ['ver' => $ver + 1, 'bad' => $bad]]; });
 		if (isset($r['conflict'])) { out(['ok' => false, 'error' => 'conflict', 'ver' => $r['conflict']], 409); }
 		if (isset($r['stale'])) { out(['ok' => false, 'error' => 'stale', 'ver' => $r['stale']], 409); }
 		// direktori publik ringkas untuk tetangga (tanpa data pribadi selain nama tokoh)
