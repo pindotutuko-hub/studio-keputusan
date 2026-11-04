@@ -124,7 +124,7 @@ function new_token(string $uid): string {
 }
 /** v48: perbarui kampus/kelas di papan peringkat semester berjalan tanpa menunggu simpan berikutnya */
 function lb_sync(string $uid, array $set): void { upd('lb_' . semester() . '.php', function ($d) use ($uid, $set) { if (!$d || !isset($d[$uid])) { return ['__ret' => false]; } foreach ($set as $k => $v) { $d[$uid][$k] = $v; } return ['__write' => $d, '__ret' => true]; }); }
-function pub(array $u): array { return ['user' => $u['user'], 'name' => $u['name'] ?? $u['user'], 'kampus' => $u['kampus'] ?? '', 'kampusCC' => $u['kampusCC'] ?? '', 'kelas' => $u['kelas'] ?? '', 'created' => $u['created'] ?? 0, 'eula' => ($u['eula'] ?? '') === EULA_VER]; }
+function pub(array $u): array { return ['user' => $u['user'], 'name' => $u['name'] ?? $u['user'], 'kampus' => $u['kampus'] ?? '', 'kampusCC' => $u['kampusCC'] ?? '', 'kelas' => $u['kelas'] ?? '', 'created' => $u['created'] ?? 0, 'eula' => ($u['eula'] ?? '') === EULA_VER, 'mustPw' => !empty($u['mustPw'])]; }
 
 /** Semester akademik: Agustus–Januari = Ganjil, Februari–Juli = Genap. */
 function semester(?int $ts = null): string { $ts = $ts ?? time(); $m = (int) date('n', $ts); $y = (int) date('Y', $ts);
@@ -302,6 +302,15 @@ switch ($a) {
 		if (!$u || !password_verify($pass, $u['hash'])) { fail('bad_login', 401); }
 		if (!empty($u['ban'])) { fail('banned', 403); }
 		out(['ok' => true, 'token' => new_token($uid), 'me' => pub($u)]);
+	}
+	case 'chpw': { /* v50k: ganti kata sandi (wajib setelah reset oleh pengelola) */
+		$u = auth(); rate('chpw' . $u['uid'], 10, 3600, false); $old = (string) ($b['old'] ?? ''); $new = (string) ($b['new'] ?? '');
+		if (strlen($new) < 6 || strlen($new) > 200) { fail('bad_pass'); }
+		$tok = (string) ($_SERVER['HTTP_X_BA_TOKEN'] ?? ''); $sec = explode('.', $tok, 2)[1] ?? '';
+		$ok = upd('u_' . $u['uid'] . '.php', function ($x) use ($old, $new, $sec) { if (!$x || !password_verify($old, $x['hash'])) { return ['__ret' => false]; }
+			$x['hash'] = password_hash($new, PASSWORD_DEFAULT); unset($x['mustPw']); $h = hash('sha256', $sec); $x['tokens'] = array_values(array_filter($x['tokens'] ?? [], fn($t) => hash_equals($t['h'], $h))); $x['pwAt'] = time();
+			return ['__write' => $x, '__ret' => true]; });
+		if (!$ok) { fail('bad_login', 401); } out(['ok' => true]);
 	}
 	case 'me': { $u = auth(); $s = rd('s_' . $u['uid'] . '.php'); $kc = ($u['kelas'] ?? '') !== '' ? (rd('k_' . kelas_code((string) $u['kelas']) . '.php') ?: []) : []; out(['ok' => true, 'tantangan' => (string) ($kc['tantangan'] ?? ''), 'me' => pub($u), 'hasSave' => (bool) $s, 'saveMeta' => $s ? ($s['meta'] ?? null) : null]); }
 	case 'logout': { $u = auth(); $tok = (string) $_SERVER['HTTP_X_BA_TOKEN']; $sec = explode('.', $tok, 2)[1];
