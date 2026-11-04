@@ -159,7 +159,7 @@ function audit(array $st, ?array $prev, int $prevAt): array {
 		if (($ERA = ERA_OF[$ty] ?? 1) > $era) { $bad[] = 'bera'; }
 		for ($dy = 0; $dy < $w; $dy++) { for ($dx = 0; $dx < $w; $dx++) { $k = ($x + $dx) . ',' . ($y + $dy);
 			if (isset($occ[$k])) { $bad[] = 'overlap'; } if ($x + $dx < $o['x0'] || $y + $dy < $o['y0'] || $x + $dx >= $o['x1'] || $y + $dy >= $o['y1']) { $bad[] = 'outside'; } $occ[$k] = 1; if ($land[$y + $dy][$x + $dx] !== 'G') { $bad[] = 'bland'; } } }
-		$spentC += COST[$ty][0] * ((ERA_OF[$ty] ?? 1) <= 2 ? 0.3 : 0.5); // v50g $spentW += COST[$ty][1]; $cnt[$ty] = ($cnt[$ty] ?? 0) + 1;
+		/* v50g */ $spentC += COST[$ty][0] * ((ERA_OF[$ty] ?? 1) <= 2 ? 0.3 : 0.5); $spentW += COST[$ty][1]; $cnt[$ty] = ($cnt[$ty] ?? 0) + 1;
 		$lv = max(0, min(3, (int) ($b['lv'] ?? 0))); if ($ty === 'zr') { $zrCap += [0, 2, 6, 16][$lv]; } if ($ty === 'zc' || $ty === 'zi') { $zLv += $lv; }
 		$ul = max(1, $lv); if ($ty === 'house') { $hCap += [1, 1, 2, 3][$ul]; } if ($ty === 'barn') { $bStore += 120 * [1, 1, 1.75, 2.5][$ul]; }
 		if (isset(UPGC[$ty])) { for ($k = 2; $k <= $ul; $k++) { $spentC += UPGC[$ty][$k - 2][0]; $spentW += UPGC[$ty][$k - 2][1]; } if ($ul >= 3 && $era < 2) { $bad[] = 'lv'; } if ($ul >= 2 && $ty !== 'house' && $ty !== 'barn') { $upP++; } }
@@ -333,7 +333,7 @@ switch ($a) {
 			if ($s && $base && $base !== $ver && empty($j['force'])) { return ['__ret' => ['conflict' => $ver]]; }
 			// v46b: simpanan yang waktunya mundur (tab/perangkat lama) ditolak, tidak ditulis & tidak ditandai curang
 			if ($s && ($s['state']['meta']['created'] ?? 0) === ($j['state']['meta']['created'] ?? 0) && (int) ($j['state']['t'] ?? 0) < (int) ($s['state']['t'] ?? 0)) { return ['__ret' => ['stale' => $ver]]; }
-			$prev = $s['state'] ?? null; if ($prev !== null) { $prev['flagged'] = $s['flagged'] ?? []; }
+			$prev = $s['state'] ?? null; if ($prev !== null) { $prev['flagged'] = ((int) ($s['meta']['at'] ?? 0) < 1793771100) ? [] : ($s['flagged'] ?? []); } /* v50l: amnesti tanda yang muncul karena bug hitung bangunan (v50g, 4 Nov 00.25–12.45 WIB) */
 			[$score, $bad] = audit($j['state'], $prev, (int) ($s['meta']['at'] ?? 0));
 			$ind = in_array('land', $bad, true) ? ['e' => 0, 'n' => 0, 'c' => 0, 'k' => 0, 'p' => 0, 'score' => 0] : indicators($j['state'], $nbc); $score = $ind['score']; $meta['ind'] = $ind;
 			if (($prev['meta']['created'] ?? 0) !== ($j['state']['meta']['created'] ?? 0)) { $bad = array_values(array_diff($bad, ['prior'])); }
