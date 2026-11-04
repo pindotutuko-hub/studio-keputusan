@@ -2246,6 +2246,8 @@ function saveConflict(kind){const m=$('modal');modal(`<h2>⚠️ ${L2('Ada versi
  $('cfLoad').onclick=()=>{m.classList.add('hidden');saveHold=null;stopGame();hub();loadGame()};const k=$('cfKeep');if(k)k.onclick=()=>{m.classList.add('hidden');saveHold=null;saveForce=true;save(true)}}
 async function loadGame(){try{let st=null;if(GUEST){st=JSON.parse(store.get('baGuestSave')||'null')}else{const j=await api('load');st=j.save&&j.save.state;saveVer=j.save?j.save.ver:0}if(!st||!st.own||!st.land||st.land.length!==N)throw new Error('none');startGame(st,false)}catch(e){$('hubErr').textContent=t('errNet')}}
 /* v50: ekonomi awal lebih ringan — bangunan era 1–2: biaya kas −40%, biaya operasional −50% */
+/* v50i: sekolah SD, SMP, SMA tersedia sejak awal (semua era 1) */
+BT.sekolah.era=1;BT.smp.era=1;BT.sma.era=1;BT.paud.era=1;Object.assign(TX.id.tl,{sekolah:'SD (Sekolah Dasar)'});Object.assign(TX.en.tl,{sekolah:'Primary school'});Object.assign(TX.id.tlD,{sekolah:'Pendidikan dasar 6 tahun; syarat Desa',smp:'Pendidikan menengah pertama (SMP)',sma:'Pendidikan menengah atas (SMA)'});
 Object.values(BT).forEach(T=>{const e2=(T.era||1)<=2;/* v50g: semua biaya kas bangunan −50% lagi (era 1–2 total −70%) */if(T.c&&T.c.coin)T.c.coin=Math.max(.3,Math.round(T.c.coin*(e2?.3:.5)*10)/10);if(T.up)T.up=+(T.up*(e2?.5:.75)).toFixed(2)});
 ['pointerdown','pointermove','wheel','keydown','touchstart'].forEach(e=>addEventListener(e,()=>{window.__baAct=performance.now()},{passive:true,capture:true}));
 let started=false,loopT=0,clockS='';
