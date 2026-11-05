@@ -15,6 +15,15 @@ setTimeout(() => {
   sel.value = 'klasik'; sel.dispatchEvent(new w.Event('change', { bubbles: true })); assert(d.body.classList.contains('uv-klasik'));
   sel.value = 'langkah'; sel.dispatchEvent(new w.Event('change', { bubbles: true })); assert(d.body.classList.contains('uv-langkah')); d.querySelector('.rail button[data-step="ahp-crit"]').click(); assert(d.querySelector('.skstep li.on') && d.querySelector('.sknext [data-goto="ahp-cmp"]'), 'opsi A: penanda tahap + tombol lanjut'); d.querySelector('.sknext [data-goto="ahp-cmp"]').click(); assert(d.querySelectorAll('.skstep li.done').length === 1, 'tahap 1 selesai'); d.querySelector('[data-modgo="home"]').click();
   sel.value = 'tujuan'; sel.dispatchEvent(new w.Event('change', { bubbles: true }));
+  // tata letak Opsi B: tema Senja bawaan, saran contoh langsung tampil, kartu tujuan berikon di atas menu data, nama metode terbaca
+  assert.strictEqual(d.documentElement.dataset.pal, 'senja', 'tema bawaan Senja');
+  const B = d.querySelector('#skB'); assert(B && B.querySelector('.bsug .bs'), 'saran contoh tampil tanpa mengetik');
+  assert(/AHP/.test(B.querySelector('.bsug .bs b').textContent), 'contoh lokasi → AHP');
+  const gs = B.querySelectorAll('.bgoal .gico svg'); assert(gs.length >= 9, 'ikon tiap kartu tujuan');
+  assert(B.innerHTML.indexOf('bgoals') < B.innerHTML.indexOf('skstart'), 'kartu tujuan sebelum menu data');
+  assert(/\d+ metode · \d+ rumpun ilmu/.test(B.querySelector('.bhrow').textContent), 'jumlah metode');
+  const gtxt = [...B.querySelectorAll('.bgoal span')].map(x => x.textContent).join(' | ');
+  assert(!/\bbwm\b|sy-res|\bsynth\b/.test(gtxt), 'tak ada kode metode mentah: ' + gtxt);
   // tema warna
   const pal = d.querySelector('#uiPal'); pal.value = 'senja'; pal.dispatchEvent(new w.Event('change', { bubbles: true })); assert.strictEqual(d.documentElement.dataset.pal, 'senja');
   // saran metode dari kalimat

@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.2.1 — 2026-11-05
+- Tampilan *Tujuan & panduan* disamakan dengan desain Opsi B: tema **Senja** menjadi bawaan untuk pengguna baru (pilihan tema yang sudah tersimpan tidak diubah); judul besar, tombol oranye "Sarankan metode", contoh saran langsung tampil (Paling cocok / Alternatif) beserta keterangan singkat.
+- Kartu "Atau pilih jenis tujuan" dipindah tepat di bawah kotak tujuan, diberi ikon berwarna dan jumlah metode · rumpun ilmu; menu data dan riwayat pemakaian di bawahnya.
+- Perbaikan: nama metode tampil terbaca (BWM, Sintesis lintas metode) — sebelumnya muncul kode mentah seperti "bwm" dan "sy-res".
+- Perbaikan: nomor versi di aplikasi kini sama dengan paket (3.2.1).
+
 ## 3.2.0 — 2026-11-05
 - **Empat pilihan tampilan** (menu Tampilan di kepala aplikasi; tersimpan per perangkat):
   - *Klasik* — tampilan sebelumnya.
