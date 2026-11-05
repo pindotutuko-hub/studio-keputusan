@@ -515,7 +515,13 @@ section.owfull>#owEmbed:empty::before{content:"Klik ikon metode di kanvas untuk 
 #skB .bsug{flex:1 1 280px;background:var(--top-control);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px}#skB .bsug .note{color:var(--top-muted)}
 #skB .bs{display:flex;align-items:center;gap:8px;background:var(--sheet);color:var(--ink);border-radius:12px;padding:10px 12px}
 .lvl{font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;background:var(--petrol-soft);color:var(--petrol)}.lvl.l1{background:#dcfce7;color:#166534}.lvl.l3{background:var(--ochre-soft);color:var(--ochre)}
-#skB .bh{margin:18px 0 10px;font-size:19px}.bgoals{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+#skB .bh{margin:0;font-size:22px}#skB .bhrow{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:22px 0 12px}
+#skB .bhero{flex-direction:column;padding:30px 32px;border-radius:24px}#skB .bhero .bq,#skB .bhero .bsug{flex:0 0 auto}#skB .bs .spacer{flex:1}#skB .bs .lvl.l1,#skB .bs>.note{margin-left:auto}#skB .bs>.note+.spacer,#skB .bs .lvl+.spacer{flex:0 0 8px}#skB .bs:not(:first-of-type) .btn:not(.primary){background:transparent;color:var(--top-ink);border-color:var(--top-muted)}#skB .bs:not(:first-of-type)>.note{color:var(--top-muted)}#skB .bq h2{font-size:clamp(26px,3.4vw,40px);font-weight:800;letter-spacing:-.01em}#skB .bsug{flex:1 1 auto;padding:18px}
+#skB #bAsk{background:#ef9a4f;border-color:#ef9a4f;color:#1e1b2e;font-weight:700;padding:12px 22px;border-radius:12px}#skB #bAsk:hover{background:#f3ab6a}
+#skB .bs{padding:14px 16px}#skB .bst{display:flex;flex-direction:column;gap:2px;min-width:0}#skB .bst small{opacity:.75;font-size:13px}#skB .bs b{font-size:17px}#skB .bs:not(:first-of-type){background:var(--top-line);color:var(--top-ink)}#skB .bs .lvl.l1{background:#dcf5e3;color:#1f6b3a}
+.bgoal .gico{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;margin-bottom:6px}.bgoal .gico svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bgoal.g0 .gico{background:#e8e7fd;color:#4f46e5}.bgoal.g1 .gico{background:#fde9dc;color:#b5501f}.bgoal.g2 .gico{background:#dcf5e3;color:#24733d}.bgoal.g3 .gico{background:#dcecfb;color:#1f5f9e}.bgoal.g4 .gico{background:#fbe1ea;color:#a3335a}.bgoal.g5 .gico{background:#f5efd6;color:#806414}
+.bgoal.on .gico{background:var(--petrol);color:#fff}.bgoal b{font-size:17px;line-height:1.25}#skB .skstart{margin-top:18px}.bgoals{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
 .bgoal{display:flex;flex-direction:column;gap:6px;text-align:left;border:1px solid var(--line);background:var(--sheet);color:var(--ink);border-radius:16px;padding:16px;font:inherit;cursor:pointer}.bgoal span{font-size:13px;color:var(--muted)}.bgoal.on{border:2px solid var(--petrol);background:var(--petrol-soft)}
 .bcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}.bcard{background:var(--sheet);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px}.bcard p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
 .b3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.b3 span{background:var(--paper);border-radius:10px;padding:10px;font-size:13px;font-weight:600}.b3 i{display:block;font-style:normal;font-weight:400;font-size:12px;color:var(--muted);margin-bottom:3px}
@@ -1115,7 +1121,7 @@ const PROJ=(()=>{const REG="sk-projects-v1", GLOBAL=new Set([REG,"sk-uimode-v1",
     backup};
   try{window.addEventListener("pagehide",backup); document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")backup();});}catch(e){}
   return api;})();
-const APP_VERSION="3.1.1"; window.__APP_VERSION=APP_VERSION;
+const APP_VERSION="3.2.1"; window.__APP_VERSION=APP_VERSION;
 const LS_KEY="ism-studio-v1";
 const desktop = typeof window.ismDesktop==="object" && window.ismDesktop;
 if(desktop) document.documentElement.classList.add("is-desktop");
@@ -6281,7 +6287,7 @@ applyUiMode();
    v3.2 · Pilihan tampilan (Klasik · Tujuan & panduan · Alur & grafik), tema warna,
    menu data di awal, riwayat pemakaian, galeri grafik
    =================================================================== */
-let UIV=loadK("sk-uiview-v1")||"tujuan", PALT=loadK("sk-pal-v1")||"asli", CPALT=loadK("sk-cpal-v1")||"asli";
+let UIV=loadK("sk-uiview-v1")||"tujuan", PALT=loadK("sk-pal-v1")||"senja", CPALT=loadK("sk-cpal-v1")||"asli";
 const UIVIEWS={klasik:"Klasik",langkah:"Langkah demi langkah",tujuan:"Tujuan & panduan",alur:"Alur & grafik"};
 const PALS={asli:"Asli",senja:"Senja",laut:"Laut",hutan:"Hutan",terakota:"Terakota"};
 const CPALS={asli:"Sesuai tema",okabe:"Ramah buta warna (Okabe–Ito)",senja:"Senja",laut:"Laut",mono:"Monokrom cetak"};
@@ -6290,7 +6296,8 @@ function applyLook(){const d=document.documentElement; d.dataset.pal=PALT; d.dat
 /* ---------- riwayat pemakaian (perangkat ini) ---------- */
 let USE=loadK("sk-usage-v1")||{}; const useMods=()=>Object.entries(USE).filter(([k])=>MODS[k]&&!["home","about","refs","addons"].includes(k)).sort((a,b)=>b[1].n-a[1].n||b[1].t-a[1].t);
 function noteUse(mod){ if(!mod||mod==="home")return; const u=USE[mod]||{n:0,t:0}; u.n++; u.t=Date.now(); USE[mod]=u; saveK("sk-usage-v1",USE); }
-const methName=k=>{const m=METHODS.find(x=>x.k===k); return m?m.n:(MODS[k]&&MODS[k][1])||({synth:"Sintesis",report:"Laporan",io:"Ekspor–impor",gloss:"Glosarium"}[k]||k);};
+const MNAME={synth:"Sintesis lintas metode",report:"Laporan",io:"Ekspor–impor",gloss:"Glosarium",bwm:"BWM",topsis:"TOPSIS",canvas:"Kanvas",guide:"Panduan"};
+const methName=k=>{const m=METHODS.find(x=>x.k===k); if(m)return m.n; if(MNAME[k])return MNAME[k]; const b=MODS[k]&&$(`.rail button[data-step="${MODS[k][0]}"] .t`); return b?b.textContent.trim():String(k).toUpperCase();};
 function usageHTML(){const L=useMods(); if(!L.length)return `<p class="note">Belum ada riwayat. Metode yang Anda buka akan tercatat di sini (hanya di perangkat ini).</p>`;
   const top=L.slice(0,6), rec=L.slice().sort((a,b)=>b[1].t-a[1].t).slice(0,5), mx=top[0][1].n;
   return `<div class="usegrid"><div><h3>Paling sering dipakai</h3>${top.map(([k,u])=>`<button class="usebar" data-modgo="${k}"><span>${esc(methName(k))}</span><i style="width:${Math.max(6,u.n/mx*100)}%"></i><b>${u.n}×</b></button>`).join("")}</div>
@@ -6316,16 +6323,19 @@ function skStartHTML(){ return `<div class="card skstart"><h2>Mulai dari data</h
    <button data-skin="open"><b>Buka berkas proyek</b><span>Berkas .json / .ism Studio Keputusan</span></button>
    <button data-skin="import"><b>Impor hasil aplikasi lain</b><span>CSV/Excel (mis. ekspor SPSS, JASP), teks .txt/.docx, DXF/GeoJSON, IFC, JSON proyek</span></button>
    <button data-skin="chart"><b>Buat grafik dari data</b><span>Tempel tabel → pilih dari 16 jenis grafik</span></button></div></div>`; }
-function skB(){ const sug=bSug? `<div class="bsug"><span class="note">Saran untuk: “${esc(bQ)}”</span>${bSug.length?bSug.map((k,i)=>`<div class="bs"><b>${esc(methName(k))}</b>${i===0?`<span class="lvl l1">Paling cocok</span>`:""}<span class="spacer"></span><button class="btn small primary" data-modgo="${k}">Mulai</button><button class="btn small" data-sample="${k}">Contoh</button></div>`).join(""):`<p class="note">Belum ada yang cocok — coba kata lain atau pilih jenis tujuan di bawah.</p>`}</div>`:"";
-  const G=WIZ.map((w,i)=>`<button class="bgoal ${bGoal===i?"on":""}" data-bgoal="${i}"><b>${esc(w.q)}</b><span>${esc((w.m||(w.sub||[]).flatMap(x=>x.m||[])).filter((k,i,a)=>a.indexOf(k)===i).slice(0,4).map(methName).join(", "))}</span></button>`).join("");
+const BEX="Saya ingin memilih lokasi terbaik dari 4 calon lahan";
+const GICO=['<circle cx="11" cy="11" r="6"/><path d="M16 16l4 4"/>','<circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c1-3 3-4 5-4s4 1 5 4M11 19c1-3 3-4 5-4s4 1 5 4"/>','<circle cx="12" cy="5" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><path d="M12 7v4M12 11l-5 5M12 11l5 5"/>','<path d="M5 20V12M10 20V6M15 20V10M20 20V14"/>','<path d="M4 16c3 0 3-8 6-8s3 6 6 6 2-4 4-4"/><path d="M3 20h18"/>','<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>','<path d="M4 20V4M4 20h16"/><circle cx="9" cy="14" r="1.5"/><circle cx="13" cy="10" r="1.5"/><circle cx="17" cy="7" r="1.5"/>','<circle cx="7" cy="8" r="2"/><circle cx="17" cy="8" r="2"/><circle cx="12" cy="17" r="2"/><path d="M8.5 9.5l2.5 6M15.5 9.5l-2.5 6"/>','<path d="M4 20V9l8-5 8 5v11z"/><path d="M10 20v-6h4v6"/>'];
+function skB(){ const ex=!bSug, sL=ex? suggestMethods(BEX) : bSug;
+  const sug=`<div class="bsug"><span class="note">${ex?`Contoh saran untuk: “${esc(BEX)}”`:`Saran untuk tujuan Anda: “${esc(bQ)}”`}</span>${sL.length?sL.map((k,i)=>`<div class="bs"><span class="bst"><b>${esc(methName(k))}</b><small>${esc(((METHODS.find(m=>m.k===k)||{}).t)||(MINFO[k]||{}).q||"")}</small></span>${i===0?`<span class="lvl l1">Paling cocok</span>`:`<span class="note">Alternatif</span>`}<span class="spacer"></span><button class="btn small primary" data-modgo="${k}">Mulai</button><button class="btn small" data-sample="${k}">Contoh</button></div>`).join(""):`<p class="note">Belum ada yang cocok — coba kata lain atau pilih jenis tujuan di bawah.</p>`}</div>`;
+  const G=WIZ.map((w,i)=>`<button class="bgoal g${i%6} ${bGoal===i?"on":""}" data-bgoal="${i}"><i class="gico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">${GICO[i]||GICO[0]}</svg></i><b>${esc(w.q)}</b><span>${esc((w.m||(w.sub||[]).flatMap(x=>x.m||[])).filter((k,i,a)=>a.indexOf(k)===i).slice(0,4).map(methName).join(", "))}</span></button>`).join("");
   const sel=bGoal!=null? WIZ[bGoal] : null, ks=sel? (sel.sub? sel.sub.flatMap(s=>s.m||[]):(sel.m||[])).filter((k,i,a)=>a.indexOf(k)===i&&(METHODS.find(m=>m.k===k)||MINFO[k])) : [];
   return `<div id="skB"><div class="bhero"><div class="bq"><span class="kick">MULAI DARI TUJUAN, BUKAN DARI RUMUS</span><h2>Apa yang ingin Anda putuskan atau ketahui?</h2>
       <label for="bQ" class="note">Tulis dengan kalimat biasa — aplikasi menyarankan metode yang cocok</label>
       <div class="row" style="gap:8px;flex-wrap:wrap"><input id="bQ" value="${esc(bQ)}" placeholder="mis. memilih lokasi terbaik dari 4 calon lahan"><button class="btn primary" id="bAsk">Sarankan metode</button></div></div>${sug}</div>
+    <div class="bhrow"><h2 class="bh">Atau pilih jenis tujuan</h2><span class="note">${METHODS.filter(m=>m.ready!==false).length} metode · ${(typeof CATS!=="undefined"&&CATS.length)||11} rumpun ilmu</span></div><div class="bgoals">${G}</div>
+    ${sel?`<p class="note" style="margin:8px 0 10px">${esc(sel.why||"")}</p><div class="bcards">${ks.map(bCard).join("")}</div>`:""}
     ${skStartHTML()}
-    <div class="card"><h2>Riwayat pemakaian</h2>${usageHTML()}</div>
-    <h2 class="bh">Atau pilih jenis tujuan</h2><div class="bgoals">${G}</div>
-    ${sel?`<p class="note" style="margin:8px 0 10px">${esc(sel.why||"")}</p><div class="bcards">${ks.map(bCard).join("")}</div>`:""}</div>`; }
+    <div class="card"><h2>Riwayat pemakaian</h2>${usageHTML()}</div></div>`; }
 function renderPipe(){ let p=$("#skPipe"); if(UIV!=="alur"){ if(p)p.hidden=true; return; } if(!p){ p=document.createElement("div"); p.id="skPipe"; p.className="skpipe"; const h=$("header.top"); h.after(p); }
   p.hidden=false; let ks=[]; try{ ks=Object.keys(RES).filter(k=>k!=="synth"&&MODS[k]&&hasData(k)); }catch(e){}
   const cur=typeof modOf==="function"? modOf(S.step) : "";
@@ -6917,6 +6927,7 @@ window.I18N_EN={"\"Kiri/kanan\" dilihat dari luar, menghadap fasad.":"\"Left/rig
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",boot); else boot();
 })();
 </script>
+
 
 <script src="/wp-content/themes/pindotutuko/assets/pt-back.js?v=8" defer></script></body>
 </html>
