@@ -212,6 +212,33 @@ button,.tool,#hud,#bar,.hud,.screen{touch-action:manipulation}html{-webkit-text-
 #maintOv{position:fixed;inset:0;z-index:9999;background:rgba(15,30,22,.88);display:flex;align-items:center;justify-content:center;padding:20px}#maintOv .box{background:#fff;color:#1d1a16;border-radius:16px;padding:22px 24px;max-width:440px;text-align:center}#maintOv h2{margin:0 0 8px}#maintOv small{color:#6b655b}
 #annBar{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 8px);z-index:9000;max-width:min(680px,94vw);background:#fff8e6;color:#1d1a16;border:1px solid #e0c06a;border-radius:12px;padding:8px 10px 8px 14px;display:flex;gap:8px;align-items:center;box-shadow:0 6px 20px rgba(0,0,0,.18);font-size:14px}#annBar b{font-weight:600;flex:1}#annBar button{border:0;background:transparent;font-size:16px;cursor:pointer;padding:2px 6px}
 .av3d{position:relative}
+/* v50q: ponsel (Android/iPhone) — panel ringkas agar bidang main tidak tertutup tulisan */
+#missions.mini>*:not(h3){display:none!important}#missions.mini{max-height:none!important;overflow:hidden}#missions.mini h3{margin:0}
+@media (max-width:760px),(max-height:520px) and (pointer:coarse){
+ #hud{padding:max(4px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) 4px max(6px,env(safe-area-inset-left));gap:4px;row-gap:4px}
+ .who{padding:2px 9px 2px 2px;gap:6px}.who .av{width:28px;height:28px}.who b{font-size:12px;max-width:96px}
+ .ctl{padding:2px;border-radius:10px}.ctl button{width:30px;min-width:30px;height:28px;font-size:13px;border-radius:7px}
+ #hud .stats{gap:4px;flex-wrap:nowrap!important;overflow-x:auto!important}
+ #hud .st{min-width:0;padding:2px 7px;border-radius:9px}#hud .st small{font-size:9px}#hud .st b{font-size:12.5px;white-space:nowrap}
+ #tut{top:calc(env(safe-area-inset-top) + 84px);width:calc(100% - 16px);font-size:12px;line-height:1.35;padding:7px 10px;border-width:2px;border-radius:12px;max-height:30vh;overflow:auto}
+ #tut .th{font-size:11px;margin-bottom:2px}#tut .th button{font-size:11px}#tut b{font-size:13px}#tut p{margin:2px 0 5px}#tut .bigbtn{padding:5px 10px;font-size:12px}
+ #missions{left:6px;bottom:calc(env(safe-area-inset-bottom) + 70px);width:min(230px,60vw);max-height:28vh;font-size:11.5px;padding:7px 9px}
+ #missions h3,#info h3{font-size:12.5px}
+ #info{right:6px;bottom:calc(env(safe-area-inset-bottom) + 70px);width:min(250px,62vw);max-height:34vh;font-size:12.5px}
+ #advisor{top:calc(env(safe-area-inset-top) + 84px);padding:7px 9px;gap:7px;border-radius:12px}#advisor .face{font-size:20px}#advisor b{font-size:11px}#advisor p{font-size:12px}
+ #bar{padding:3px;gap:2px;border-radius:12px;bottom:max(6px,env(safe-area-inset-bottom))}
+ .tool{min-width:46px;padding:3px 3px 2px;border-radius:9px}.tool i{font-size:18px}.tool span{font-size:9.5px;max-width:70px}.tool em{font-size:8.5px}
+ #bar .handbtn{min-width:46px!important}#bar .catbtn{min-width:70px;padding:3px 6px;font-size:10.5px;border-radius:9px}#bar .catbtn i{font-size:16px}
+ #dlg{bottom:calc(env(safe-area-inset-bottom) + 70px)}#dlg p{font-size:13px}#dlg .pt,#dlg .pt svg{width:44px;height:44px;font-size:26px}
+ #styleBar{bottom:calc(max(6px,env(safe-area-inset-bottom)) + 62px)}#ovChip{bottom:calc(env(safe-area-inset-bottom) + 70px)}
+ #toast{bottom:calc(env(safe-area-inset-bottom) + 76px);font-size:12px}
+}
+@media (max-height:520px) and (pointer:coarse) and (orientation:landscape){
+ #hud{flex-wrap:nowrap!important}#hud .stats{order:0!important;flex:1 1 auto!important;flex-basis:auto!important}
+ #tut,#advisor{top:calc(env(safe-area-inset-top) + 46px);left:max(8px,env(safe-area-inset-left));transform:none;width:min(360px,46vw);max-height:calc(100vh - 130px)}
+ #missions{max-height:calc(100vh - 120px)}#info{max-height:calc(100vh - 120px);top:auto}
+ #dlg{width:min(520px,70vw)}
+}
 </style>
 </head>
 <body>
@@ -303,6 +330,6 @@ button,.tool,#hud,#bar,.hud,.screen{touch-action:manipulation}html{-webkit-text-
 <div id="toast"></div>
 <div id="modal" class="modal hidden"></div>
 
-<script type="module" src="game.js?v=69"></script>
+<script type="module" src="game.js?v=70"></script>
 </body>
 </html>
