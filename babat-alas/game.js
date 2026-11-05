@@ -467,7 +467,9 @@ let AUTOQ=null;
 function gpuTier(){if(gpuTier.d)return gpuTier.v;gpuTier.d=1;let r='';try{const c=document.createElement('canvas'),gl=c.getContext('webgl2')||c.getContext('webgl');if(!gl)r='none';else{const e=gl.getExtension('WEBGL_debug_renderer_info');r=String(e?gl.getParameter(e.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER)||'');const lc=gl.getExtension('WEBGL_lose_context');if(lc)lc.loseContext()}}catch(e){}
  const s=r.toLowerCase();let v=null;if(r==='none'||/swiftshader|llvmpipe|softpipe|software|basic render|microsoft basic/.test(s))v='eco';else if(/intel.*\b(u?hd)\b|intel\(r\) (u?hd)|mali|adreno[^0-9]{0,8}[1-5]\d\d\b|powervr|videocore|\bgma\b/.test(s))v='low';else if(/intel|iris|adreno|apple gpu|radeon\(tm\) graphics|radeon vega/.test(s))v='med';gpuTier.v=v;gpuTier.r=r;return v}
 const QRANK={eco:0,low:1,med:2,high:3};
-function qEff(){if(SET.q&&SET.q!=='auto')return SET.q;if(AUTOQ)return AUTOQ;const h=Math.min(innerWidth,innerHeight)<700||devicePixelRatio>2.5||(navigator.hardwareConcurrency||4)<=8?'med':'high',gt=gpuTier();return gt&&QRANK[gt]<QRANK[h]?gt:h}
+function qEff(){if(SET.q&&SET.q!=='auto')return SET.q;if(AUTOQ)return AUTOQ;let h=Math.min(innerWidth,innerHeight)<700||devicePixelRatio>2.5||(navigator.hardwareConcurrency||4)<=8?'med':'high';const gt=gpuTier();if(gt&&QRANK[gt]<QRANK[h])h=gt;
+ /* v50s: ponsel/tablet Android & Samsung Internet mulai dari kualitas Rendah (tanpa bayangan & pasca-proses) — mencegah peramban macet; dapat dinaikkan di Pengaturan */
+ const ua=navigator.userAgent||'';if((/SamsungBrowser/.test(ua)||(/Android/.test(ua)&&matchMedia('(pointer:coarse)').matches))&&QRANK[h]>QRANK.low)h='low';return h}
 function qLow(){const q=qEff();return q==='low'||q==='eco'}
 let fpsN=0,fpsT0=0,fpsWarm=0;
 function fpsTick(t){if(document.hidden){fpsT0=0;return}if(!fpsT0){fpsT0=t;fpsN=0;return}fpsN++;const el=t-fpsT0;if(el<5000)return;const fps=fpsN*1000/el;fpsT0=t;fpsN=0;
@@ -1345,7 +1347,7 @@ const R3={};
  let sky=null,pmrem=null,envRT=null,envT=0,composer=null,gtao=null,bloom=null,wmesh=null;
  R3.setupSky=()=>{if(sky)return;try{sky=new Sky();sky.scale.setScalar(4000);const u=sky.material.uniforms;u.turbidity.value=3;u.rayleigh.value=2.4;u.mieCoefficient.value=.006;u.mieDirectionalG.value=.85;scene.add(sky);pmrem=new THREE.PMREMGenerator(renderer)}catch(e){sky=null}};
  R3.skyUpdate=sp=>{if(!sky)return;sky.material.uniforms.sunPosition.value.copy(sp);if(wmesh)wmesh.material.uniforms.sunDirection.value.copy(sp).normalize();
-  const nw=performance.now();if(pmrem&&nw-envT>8000){envT=nw;const sc=new THREE.Scene(),sk=sky.clone();sk.visible=true;sc.add(sk);if(envRT)envRT.dispose();envRT=pmrem.fromScene(sc,0,.1,4000);scene.environment=envRT.texture}};
+  const nw=performance.now();if(pmrem&&nw-envT>(qLow()?60000:8000)){envT=nw;const sc=new THREE.Scene(),sk=sky.clone();sk.visible=true;sc.add(sk);if(envRT)envRT.dispose();envRT=pmrem.fromScene(sc,0,.1,4000);scene.environment=envRT.texture}};
  /* pasca-proses: GTAO + bloom (kualitas tinggi saja) */
  R3.post=on=>{if(!on){composer=null;return}if(composer)return;try{composer=new EffectComposer(renderer);composer.addPass(new RenderPass(scene,camera));gtao=new GTAOPass(scene,camera,renderer.domElement.width,renderer.domElement.height);gtao.blendIntensity=.75;composer.addPass(gtao);
   bloom=new UnrealBloomPass(new THREE.Vector2(renderer.domElement.width,renderer.domElement.height),.35,.5,.86);composer.addPass(bloom);composer.addPass(new OutputPass());const s=new THREE.Vector2();renderer.getSize(s);composer.setSize(s.x,s.y)}catch(e){composer=null}};
