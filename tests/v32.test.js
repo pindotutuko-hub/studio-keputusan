@@ -6,8 +6,18 @@ const errs = []; const vc = new VirtualConsole(); vc.on('jsdomError', e => { if 
 const dom = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://localhost/', virtualConsole: vc });
 const w = dom.window; w.scrollTo = () => {}; const d = w.document;
 const near = (a, b, t = 1e-9) => assert(Math.abs(a - b) < t, `${a} != ${b}`);
-setTimeout(() => {
+setTimeout(async () => {
   const U = w.__ui; assert(U, '__ui');
+  // pilihan tampilan saat pertama dibuka: Tujuan & panduan + Senja terpilih sebagai bawaan
+  const FS = d.querySelector('#firstSetup [data-setup="full"]'); if (FS) { assert(!d.querySelector('#lookPick'), 'menunggu paket instalasi dipilih'); FS.click(); }
+  await new Promise(r => setTimeout(r, 20));
+  const LP = d.querySelector('#lookPick'); assert(LP, 'pemilih tampilan muncul saat pertama dibuka');
+  assert.strictEqual(LP.querySelectorAll('[data-lpview]').length, 4); assert.strictEqual(LP.querySelector('.lpcard.on').dataset.lpview, 'tujuan');
+  assert.strictEqual(LP.querySelector('.lpsw.on').dataset.lppal, 'senja'); assert(LP.querySelectorAll('.lpcard svg').length === 4, 'pratinjau tiap tampilan');
+  LP.querySelector('[data-lpview="alur"]').click(); assert(d.body.classList.contains('uv-alur'), 'pratinjau langsung');
+  d.querySelector('#lpSkip').click(); assert(!d.querySelector('#lookPick') && d.body.classList.contains('uv-tujuan') && d.documentElement.dataset.pal === 'senja', 'pakai bawaan');
+  assert.strictEqual(w.localStorage.getItem('sk-look-chosen-v1'), '1'); U.showLookPick(); assert(!d.querySelector('#lookPick'), 'tidak muncul lagi');
+  d.querySelector('#lookPickBtn').click(); assert(d.querySelector('#lookPick'), 'dapat dibuka lagi dari kepala'); d.querySelector('#lpGo').click(); assert(!d.querySelector('#lookPick'));
   // tampilan bawaan = Tujuan & panduan (opsi 2), dapat diganti ke Klasik / Alur
   assert(d.querySelector('#uiView') && d.querySelector('#uiView').value === 'tujuan', 'tampilan bawaan tujuan');
   assert(d.body.classList.contains('uv-tujuan'));

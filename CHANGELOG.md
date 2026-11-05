@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.2.2 — 2026-11-05
+- **Pilih tampilan saat pertama dibuka**: setelah paket instalasi dipilih, muncul jendela pilihan tampilan (Tujuan & panduan · Langkah demi langkah · Alur & grafik · Klasik) dengan gambar pratinjau dan tema warna. *Tujuan & panduan* bertema *Senja* sudah terpilih sebagai bawaan; pilihan langsung terlihat di belakang jendela. Hanya muncul sekali, dapat dibuka lagi lewat tombol "Pilih tampilan…" di kepala aplikasi.
+
 ## 3.2.1 — 2026-11-05
 - Tampilan *Tujuan & panduan* disamakan dengan desain Opsi B: tema **Senja** menjadi bawaan untuk pengguna baru (pilihan tema yang sudah tersimpan tidak diubah); judul besar, tombol oranye "Sarankan metode", contoh saran langsung tampil (Paling cocok / Alternatif) beserta keterangan singkat.
 - Kartu "Atau pilih jenis tujuan" dipindah tepat di bawah kotak tujuan, diberi ikon berwarna dan jumlah metode · rumpun ilmu; menu data dan riwayat pemakaian di bawahnya.
