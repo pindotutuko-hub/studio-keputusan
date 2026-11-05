@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.2.0 — 2026-11-05
+- **Empat pilihan tampilan** (menu Tampilan di kepala aplikasi; tersimpan per perangkat):
+  - *Klasik* — tampilan sebelumnya.
+  - *Langkah demi langkah* — penanda tahap tiap metode, bilah kemajuan, kartu bantuan (apa yang ditanyakan, data yang perlu disiapkan, yang dihitung otomatis), tombol "Simpan & lanjut".
+  - *Tujuan & panduan* (**bawaan**) — tulis tujuan dengan kalimat biasa → saran metode; kartu jenis tujuan; kartu metode ramah pemula dengan "Mulai dengan panduan" dan "Buka contoh terisi".
+  - *Alur & grafik* — bilah alur metode yang sudah berisi data.
+- **Tema warna**: Asli, Senja, Laut, Hutan, Terakota (mode terang).
+- **Menu data di awal**: ketik/tempel data, buka berkas proyek, impor hasil aplikasi lain (CSV/Excel, .txt/.docx, DXF/GeoJSON, IFC, JSON), buat grafik dari data.
+- **Riwayat pemakaian** (perangkat ini): metode paling sering dipakai dan terakhir dibuka.
+- **Galeri grafik**: 14 jenis grafik dari tabel mana pun di halaman atau data tempel/CSV (batang, batang horizontal, lollipop, bertumpuk, tornado, garis, area, pai, donat, radar, scatter, histogram, box plot, peta panas) + pintasan ke hierarki/MICMAC, graf jaringan, Gantt; saran ★ otomatis, palet ramah buta warna, teks penjelasan, unduh SVG/PNG.
+- Judul tampilan menjadi **Studio Keputusan** (nama produk installer tetap agar data pengguna desktop tidak hilang).
+
 ## 3.1.1
 - Versi Inggris dilengkapi: kartu tautan Javanese House & Ruang Syntax, tombol "Denah di Javanese House", dialog Bantu saya memilih, dialog Video tutorial, dan ±190 teks lain yang hanya tampil di situs web atau setelah interaksi. Diaudit di Chromium dengan alamat situs asli (`tools/i18n-audit-browser.js`): semua langkah, data contoh, menu atas, dan dialog — tidak ada teks Indonesia tersisa selain sitasi/judul resmi.
 

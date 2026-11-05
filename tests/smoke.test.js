@@ -40,7 +40,7 @@ setTimeout(() => {
   step('vz-in'); assert(d.querySelector('#vzDrop')); assert(d.querySelector('#vzFile').accept.includes('.obj'));
   const obj = w.__vzObj('v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3'); assert.strictEqual(obj.v.length, 3); assert.strictEqual(obj.f.length, 1);
   const stl = w.__vzStl('solid t\nfacet normal 0 0 1\nouter loop\nvertex 0 0 0\nvertex 1 0 0\nvertex 0 1 0\nendloop\nendfacet\nendsolid t'); assert.strictEqual(stl.v.length, 3); assert.strictEqual(stl.f.length, 1);
-  assert(w.__vzMeshSvg(obj).includes('<line')); assert(d.body.textContent.includes('Studio Keputusan 2'));
+  assert(w.__vzMeshSvg(obj).includes('<line')); assert(d.body.textContent.includes('Studio Keputusan'));
   // v2.0 multidisciplinary packs: every formerly planned card is operational
   for (const [mod, input, result] of [['legal','legal-in','legal-res'],['psych','psych-in','psych-res'],['microclimate','micro-in','micro-res'],['mechanical','mech-in','mech-res'],['industrial','ind-in','ind-res'],['civil','civil-in','civil-res'],['electrical','elec-in','elec-res']]) {
     step(input); const sec=d.querySelector(`section[data-sec="${input}"]`); const sample=sec.querySelector('#dmSample'); assert(sample,'sample '+mod); sample.click(); step(result); assert(d.querySelector(`section[data-sec="${result}"] table`),'result '+mod); assert(w.__domainCalc(mod).rows.length>0,'calculation '+mod);
