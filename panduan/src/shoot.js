@@ -2,7 +2,7 @@
 const { chromium } = require('playwright'); const fs=require('fs'), path=require('path');
 (async()=>{ const plan=JSON.parse(fs.readFileSync(process.argv[2],'utf8')); const dir=path.dirname(path.resolve(process.argv[2]));
  const b=await chromium.launch({args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
- const p=await b.newPage({viewport:plan.viewport||{width:1366,height:860},deviceScaleFactor:1.5}); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+ const p=await b.newPage({viewport:plan.viewport||{width:1366,height:860},deviceScaleFactor:1.5}); p.setDefaultTimeout(240000); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
  if(plan.init) await p.addInitScript(plan.init);
  await p.goto(plan.url,{waitUntil:'load'}); await p.waitForTimeout(plan.wait||1500);
  for(const s of plan.shots){ if(s.js) await p.evaluate(s.js); await p.waitForTimeout(s.wait||900);

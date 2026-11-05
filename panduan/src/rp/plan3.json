@@ -1,0 +1,278 @@
+{
+ "url": "file:///home/claude/rancang-perumahan/src/index.html",
+ "viewport": {
+  "width": 1366,
+  "height": 900
+ },
+ "wait": 1500,
+ "init": "try{localStorage.clear()}catch(e){}",
+ "shots": [
+  {
+   "file": "01-lahan.jpg",
+   "js": "RPrender('lahan')",
+   "hl": [
+    "h:Lahan",
+    "h:Aturan bangunan",
+    "#lahanOut"
+   ]
+  },
+  {
+   "file": "20-kota.jpg",
+   "js": "[...document.querySelectorAll('h2')].find(h=>h.textContent.startsWith('Kelas lokasi')).scrollIntoView({block:'start'}); window.scrollBy(0,-70)",
+   "hl": [
+    "h:Kelas lokasi"
+   ]
+  },
+  {
+   "file": "02-tapak.jpg",
+   "js": "RPrender('tapak')",
+   "wait": 1200,
+   "hl": [
+    "h:Rencana tapak",
+    "h:Neraca lahan"
+   ]
+  },
+  {
+   "file": "03-tapak-cek.jpg",
+   "js": "document.querySelector('#tapakChk').scrollIntoView({block:'start'})",
+   "wait": 600,
+   "hl": [
+    "#tapakChk"
+   ]
+  },
+  {
+   "file": "21-tapak-fas.jpg",
+   "js": "[...document.querySelectorAll('h2')].find(h=>h.textContent.startsWith('Fasilitas, lanskap')).scrollIntoView({block:'start'}); window.scrollBy(0,-70)",
+   "hl": [
+    "h:Fasilitas, lanskap"
+   ]
+  },
+  {
+   "file": "04-rumah.jpg",
+   "js": "RPrender('rumah')",
+   "wait": 1500,
+   "hl": [
+    "#ttabs",
+    "h:Data tipe",
+    "#hStat"
+   ]
+  },
+  {
+   "file": "22-model.jpg",
+   "js": "document.querySelector('#ttabs button[data-t=\"2\"]').click()",
+   "wait": 1500,
+   "hl": [
+    "h:Model rumah",
+    "#hStat"
+   ]
+  },
+  {
+   "file": "05-gaya.jpg",
+   "js": "document.querySelector('#tipeP').scrollIntoView({block:'start'}); window.scrollBy(0,-80)",
+   "wait": 20000,
+   "hl": [
+    "#tipeP",
+    "#stl"
+   ]
+  },
+  {
+   "file": "06-3d.jpg",
+   "js": "document.querySelector('#v3d').scrollIntoView({block:'center'}); RP3D&&RP3D.view('34')",
+   "wait": 15000,
+   "hl": [
+    ".v3bar",
+    "#v3q"
+   ]
+  },
+  {
+   "file": "07-denah.jpg",
+   "js": "document.querySelector('#fp').scrollIntoView({block:'center'})",
+   "wait": 800,
+   "hl": [
+    "#fp"
+   ]
+  },
+  {
+   "file": "08-rab.jpg",
+   "js": "RPrender('rab')",
+   "wait": 1200,
+   "hl": [
+    "h:Harga satuan",
+    "h:Jadwal"
+   ]
+  },
+  {
+   "file": "09-rab-hasil.jpg",
+   "js": "[...document.querySelectorAll('h2')].find(h=>h.textContent.startsWith('Hasil kelayakan')).scrollIntoView({block:'start'}); window.scrollBy(0,-20)",
+   "wait": 700,
+   "hl": [
+    "h:Hasil kelayakan"
+   ]
+  },
+  {
+   "file": "10-rab-kas.jpg",
+   "js": "[...document.querySelectorAll('h2')].find(h=>h.textContent.startsWith('Rincian biaya')).scrollIntoView({block:'start'}); window.scrollBy(0,-20)",
+   "wait": 700,
+   "hl": [
+    "h:Rincian biaya",
+    "h:Arus kas bulanan"
+   ]
+  },
+  {
+   "file": "11-biaya.jpg",
+   "js": "RPrender('biaya')",
+   "wait": 1200,
+   "hl": [
+    "h:Kredit konstruksi",
+    "#presetSub",
+    "h:KPR pembeli"
+   ]
+  },
+  {
+   "file": "14-rusun.jpg",
+   "js": "RPrender('rusun')",
+   "wait": 1500,
+   "hl": [
+    "#vk",
+    "h:Lahan & aturan",
+    "h:Massa bangunan"
+   ]
+  },
+  {
+   "file": "15-rusun-mix.jpg",
+   "js": "document.querySelector('#vMix').scrollIntoView({block:'start'}); window.scrollBy(0,-70)",
+   "wait": 800,
+   "hl": [
+    "#vMix",
+    "h:Biaya",
+    "h:Jadwal"
+   ]
+  },
+  {
+   "file": "16-rusun-hasil.jpg",
+   "js": "document.querySelector('#vOut').scrollIntoView({block:'start'}); window.scrollBy(0,-20)",
+   "wait": 800,
+   "hl": [
+    "#vOut .kpis"
+   ]
+  },
+  {
+   "file": "17-rusun-3d.jpg",
+   "js": "document.querySelector('#t3d').scrollIntoView({block:'center'})",
+   "wait": 15000,
+   "hl": [
+    "#t3d"
+   ]
+  },
+  {
+   "file": "18-rusun-potongan.jpg",
+   "js": "document.querySelector('#vSec').scrollIntoView({block:'start'}); window.scrollBy(0,-60)",
+   "wait": 800,
+   "hl": [
+    "#vSec",
+    "#vChk"
+   ]
+  },
+  {
+   "file": "19-rusun-npp.jpg",
+   "js": "document.querySelector('#vPlan').scrollIntoView({block:'start'}); window.scrollBy(0,-60)",
+   "wait": 800,
+   "hl": [
+    "#vPlan",
+    "#vTab"
+   ]
+  },
+  {
+   "file": "23-rusun-massa.jpg",
+   "js": "RPrender('rusun'); [...document.querySelectorAll('h2')].find(h=>h.textContent.startsWith('Tipe bangunan')).scrollIntoView({block:'start'}); window.scrollBy(0,-70)",
+   "wait": 1500,
+   "hl": [
+    "h:Tipe bangunan",
+    "h:Fasilitas, lanskap"
+   ]
+  },
+  {
+   "file": "24-rusun-tapak.jpg",
+   "js": "document.querySelector('#vSite').scrollIntoView({block:'start'}); window.scrollBy(0,-60)",
+   "hl": [
+    "#vSite"
+   ]
+  },
+  {
+   "file": "25-skenario.jpg",
+   "js": "RPrender('skenario')",
+   "wait": 2500,
+   "hl": [
+    ".tabs",
+    "table.skn"
+   ]
+  },
+  {
+   "file": "26-laksana.jpg",
+   "js": "RPrender('laksana')",
+   "wait": 1500,
+   "hl": [
+    "h:Metode",
+    "h:Upah"
+   ]
+  },
+  {
+   "file": "27-gantt.jpg",
+   "js": "[...document.querySelectorAll('h2')].find(h=>h.textContent.startsWith('Jadwal pelaksanaan')).scrollIntoView({block:'start'}); window.scrollBy(0,-60)",
+   "hl": [
+    "h:Jadwal pelaksanaan",
+    "h:Kurva S"
+   ]
+  },
+  {
+   "file": "28-rab-lak.jpg",
+   "js": "[...document.querySelectorAll('h2')].find(h=>h.textContent.startsWith('RAB pelaksanaan')).scrollIntoView({block:'start'}); window.scrollBy(0,-60)",
+   "hl": [
+    "h:RAB pelaksanaan"
+   ]
+  },
+  {
+   "file": "29-lingk.jpg",
+   "js": "[...document.querySelectorAll('h2')].find(h=>h.textContent.startsWith('Analisis lokasi')).scrollIntoView({block:'start'}); window.scrollBy(0,-60)",
+   "hl": [
+    "h:Analisis lokasi",
+    "h:Limbah"
+   ]
+  },
+  {
+   "file": "30-gk.jpg",
+   "js": "RPrender('gk')",
+   "wait": 1500,
+   "hl": [
+    "h:Kop",
+    "h:Lembar"
+   ]
+  },
+  {
+   "file": "31-dokumen.jpg",
+   "js": "RPrender('dokumen')",
+   "wait": 1200,
+   "hl": [
+    ".tabs",
+    "#dosGo"
+   ]
+  },
+  {
+   "file": "12-ringkas.jpg",
+   "js": "RPrender('ringkas')",
+   "wait": 1200,
+   "hl": [
+    "h:Indikator utama",
+    "#bPrint"
+   ]
+  },
+  {
+   "file": "13-sumber.jpg",
+   "js": "RPrender('sumber')",
+   "wait": 900,
+   "hl": [
+    "h:Regulasi"
+   ]
+  }
+ ]
+}

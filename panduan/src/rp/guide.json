@@ -1,7 +1,7 @@
 {
  "title": "Rancang Perumahan",
- "subtitle": "Aplikasi studi tapak & kavling, desain tipe rumah, RAB, kelayakan bisnis, dan pembiayaan KPR",
- "version": "v0.6.1",
+ "subtitle": "Aplikasi studi tapak & kavling, desain tipe rumah dan hunian vertikal, skenario keputusan, RAB pelaksanaan, kelayakan bisnis, pembiayaan, serta dokumen FS & DED",
+ "version": "v0.8.0",
  "date": "November 2026",
  "url": "pindotutuko.id/tools",
  "cover": "04-rumah.jpg",
@@ -35,64 +35,20 @@
    "text": "Untuk kembali ke situs dari versi web, tekan tombol <b>← pindotutuko.id</b> di pojok kanan bawah; tombol <b>Panduan</b> di sampingnya membuka buku ini."
   }
  ],
- "usage_intro": "Kerjakan langkah 0–6 pada rel kiri secara berurutan; menu R (Rumah susun &amp; apartemen) dipakai bila proyeknya hunian vertikal. Bagian yang dijelaskan pada setiap gambar ditandai dengan kotak merah.",
+ "usage_intro": "Kerjakan langkah 0–6 pada rel kiri secara berurutan; menu R (hunian vertikal), S (skenario), P (pelaksanaan & lingkungan), G (gambar kerja A2), dan D (dokumen lengkap) dipakai sesuai kebutuhan. Bagian yang dijelaskan pada setiap gambar ditandai dengan kotak merah.",
  "usage": [
   {
    "h": "Langkah 0 · Lokasi & peta",
    "steps": [
     {
      "img": "00-lokasi.jpg",
-     "hl": [
-      [
-       0.205,
-       0.33,
-       0.645,
-       0.42
-      ],
-      [
-       0.37,
-       0.62,
-       0.48,
-       0.88
-      ],
-      [
-       0.67,
-       0.42,
-       0.97,
-       0.67
-      ],
-      [
-       0.67,
-       0.68,
-       0.97,
-       1.0
-      ]
-     ],
+     "hl": [],
      "text": "Klik <b>0 Lokasi &amp; peta</b>. Cari alamat atau gunakan <b>Lokasi saya</b>, lalu pilih <b>✎ Gambar batas lahan</b> dan klik sudut-sudut lahan berurutan — mulai dari dua titik pada sisi muka (sisi jalan masuk). Tekan <b>Ambil alamat dari peta</b> dan <b>Terapkan ke lahan proyek</b>.",
      "narr": "Sisi muka ditandai garis merah tebal. Aplikasi menghitung luas, keliling, panjang sisi muka, dan persegi panjang pembatas, lalu menyederhanakan lahan menjadi persegi panjang setara dengan luas yang sama untuk langkah berikutnya. Alamat menghasilkan kabupaten/kota dan provinsi, sekaligus saran wilayah batas harga rumah umum menurut Kepmen PKP 1722/KPTS/M/2026 (tombol Pakai Wilayah). Peta dasar OpenStreetMap hanya untuk orientasi, bukan batas bidang tanah resmi."
     },
     {
      "img": "00-rdtr.jpg",
-     "hl": [
-      [
-       0.2,
-       0.02,
-       0.58,
-       0.69
-      ],
-      [
-       0.6,
-       0.14,
-       0.97,
-       0.6
-      ],
-      [
-       0.6,
-       0.61,
-       0.97,
-       1.0
-      ]
-     ],
+     "hl": [],
      "text": "Gulir ke bawah. Buka sumber resmi pada <b>Cek persil &amp; tata ruang</b> (BHUMI ATR/BPN untuk bidang tanah, GISTARU RTR Online untuk RDTR/RTRW, penelusuran Perda RDTR dan Perda PSU), lalu isi <b>Aturan dari RDTR / peraturan zonasi setempat</b> dan tekan <b>Terapkan ke aturan proyek</b>.",
      "narr": "Aplikasi tidak mengambil data persil atau RDTR secara otomatis; nilai diisi dari dokumen resmi kabupaten/kota. Setelah diterapkan, KDB, KLB, KDH, GSB, dan PSU menjadi aturan proyek yang dipakai pada pemeriksaan tapak dan tipe rumah. Daftar centang hijau menunjukkan zona termasuk zona perumahan, jumlah lantai tiap tipe sesuai batas ketinggian, dan nilai RDTR sudah sama dengan aturan proyek. Contoh pada gambar adalah nilai ilustrasi."
     }
@@ -106,6 +62,12 @@
      "hl": "auto",
      "text": "Klik <b>1 Proyek &amp; lahan</b> pada rel kiri. Isi kartu <b>Lahan</b> (lebar dan panjang lahan, harga tanah, biaya peralihan, PSU minimal, zona batas harga rumah umum) dan kartu <b>Aturan bangunan</b> (KDB, KLB, KDH, GSB, jarak bebas belakang).",
      "narr": "Angka di sini menjadi dasar seluruh hitungan berikutnya. Ringkas lahan di bawah langsung menunjukkan luas lahan, harga tanah total, luas PSU minimal, dan lahan efektif yang tersisa untuk kavling. KDB/KLB/KDH/GSB tidak berlaku nasional, jadi ambil dari RDTR/peraturan zonasi lokasi proyek."
+    },
+    {
+     "img": "20-kota.jpg",
+     "text": "Bila RDTR/Perda setempat belum diperoleh, pilih <b>Kelas lokasi</b>: kota metropolitan, besar, sedang, atau kecil/ibu kota kabupaten.",
+     "narr": "Pilihan ini mengisi nilai awal KDB, KLB, KDH, GSB, harga tanah, dan indeks biaya bangun (juga batas lantai, rasio parkir, dan harga unit hunian vertikal). Semua nilai tersebut asumsi praktik umum — ganti dengan angka RDTR/Perda begitu diperoleh. Isian <b>Jarak bebas samping</b> pada aturan bangunan dipakai rumah kopel dan rumah tunggal.",
+     "hl": "auto"
     }
    ]
   },
@@ -123,6 +85,12 @@
      "hl": "auto",
      "text": "Gulir ke bawah untuk membaca <b>Pemeriksaan aturan</b>: PSU, KDB, KLB, KDH setiap tipe, dan syarat rumah umum bila tipe ditandai subsidi.",
      "narr": "Tanda hijau berarti memenuhi, merah berarti belum. Contohnya, bila PSU kurang dari batas Perda, aplikasi menyarankan menaikkan porsi RTH/fasum atau melebarkan jalan."
+    },
+    {
+     "img": "21-tapak-fas.jpg",
+     "text": "Pada kartu <b>Fasilitas, lanskap &amp; utilitas perumahan</b>, pilih gaya lanskap, jenis vegetasi, fasilitas lingkungan (pos jaga, masjid, taman bermain, lapangan, jogging, kolam, clubhouse, klinik, PAUD, minimarket, MEE, IPAL, sumur, TPS 3R, mini golf, dan lain-lain), serta utilitas (panel surya, sistem smart, kabel tanam, panel kontrol, proteksi kebakaran, panen air hujan).",
+     "narr": "Fasilitas bangunan ditempatkan otomatis di petak fasum dan fasilitas rekreasi di RTH; semuanya tampil di rencana tapak, kawasan 3D, dan gambar kerja. Bila tidak muat, aplikasi menyebutkannya — perbesar porsi fasum/RTH. Biaya tiap fasilitas (asumsi) masuk ke RAB & kelayakan.",
+     "hl": "auto"
     }
    ]
   },
@@ -134,6 +102,12 @@
      "hl": "auto",
      "text": "Klik <b>3 Tipe &amp; desain rumah</b>. Pilih tipe pada tab di atas (atau <b>+ Tipe</b>), lalu isi <b>Data tipe</b>: ukuran kavling, luas bangunan, lantai, kamar, harga jual, porsi unit.",
      "narr": "Kotak Indikator tipe menghitung KDB dan KLB rumah tersebut; kotak berwarna hijau berarti masih di bawah batas aturan setempat, merah berarti melebihi. Selisih harga − konstruksi memberi gambaran awal margin per unit sebelum biaya tanah dan PSU."
+    },
+    {
+     "img": "22-model.jpg",
+     "text": "Pilih <b>Model rumah</b> untuk tiap tipe: rumah deret, kopel (semi-detached), tunggal (detached), townhouse 2–3 lantai, atau rumah taman/villa. Tombol tipe populer kini juga memuat contoh kopel, tunggal, townhouse, dan villa.",
+     "narr": "Rumah kopel berbagi satu dinding dengan pasangannya, rumah tunggal berjarak bebas di kedua sisi. Lebar bangunan menyesuaikan jarak samping; kartu <b>Indikator tipe</b> menampilkan model, ukuran bangunan, dan jarak samping kiri/kanan. Denah terukur, rencana tapak, dan tampak 3D mengikuti model yang dipilih.",
+     "hl": "auto"
     },
     {
      "img": "05-gaya.jpg",
@@ -227,6 +201,80 @@
      "hl": "auto",
      "text": "Lihat <b>Denah lantai tipikal</b> dan tabel <b>Unit, NPP &amp; pendapatan</b>; tekan <b>Unduh tabel (CSV)</b> untuk diolah di lembar kerja.",
      "narr": "Denah skematik memakai koridor ganda dengan inti lif dan tangga di tengah. NPP (nilai perbandingan proporsional) tiap sarusun dihitung dari nilai atau luasnya terhadap jumlah keseluruhan (UU 20/2011 Pasal 1 angka 13) dan menjadi dasar hak atas bagian bersama, benda bersama, dan tanah bersama; NPP resmi ditetapkan dalam pertelaan yang disahkan pemerintah daerah."
+    },
+    {
+     "hl": "auto",
+     "img": "23-rusun-massa.jpg",
+     "text": "Atur <b>Tipe bangunan &amp; tata massa</b>: koridor ganda, koridor tunggal (selasar), atau menara titik; jumlah massa 1–6; dan pola linear, grid, cluster, radial, memusar, atau courtyard. Pada kartu <b>Fasilitas, lanskap &amp; utilitas</b>, pilih fasilitas dan utilitas yang diinginkan.",
+     "narr": "Bawaan fasilitas berbeda menurut jenis: rusun bersifat dasar (laundry, balai warga, area jemur), apartemen menambah kolam, jogging, dan layanan, kondominium lengkap dan premium (clubhouse, tenis, restoran). Modul unit juga berbeda: rusun ringkas tanpa AC, apartemen lebih luas dengan AC dan kamar mandi di kamar utama, kondominium dengan kamar mandi di tiap kamar, walk-in closet, bathtub, dan kamar ART."
+    },
+    {
+     "hl": "auto",
+     "img": "24-rusun-tapak.jpg",
+     "text": "Periksa <b>Rencana tapak</b>: massa bangunan sesuai pola, podium, drop-off, fasilitas terpilih, hidran, jalur kabel tanam, dan sumur resapan.",
+     "narr": "Fasilitas yang tidak muat di halaman dipindah ke atap podium atau atap menara (kolam, taman, jogging), sisanya dicatat sebagai fasilitas di podium/lantai dasar. Bila tata massa melampaui ruang terbangun, muncul peringatan — kurangi jumlah massa, ganti pola, atau perbesar lahan."
+    }
+   ]
+  },
+  {
+   "h": "Menu S · Skenario desain keputusan",
+   "steps": [
+    {
+     "hl": "auto",
+     "img": "25-skenario.jpg",
+     "text": "Klik <b>S Skenario keputusan</b>, pilih tab <b>Perumahan tapak</b>, <b>Rumah susun</b>, atau <b>Apartemen &amp; kondominium</b>. Lima skenario dibandingkan dengan rancangan saat ini: model & tata massa, jumlah unit, lantai, kepadatan, KDB/KLB terpakai, pendapatan, biaya, laba, IRR, NPV, dana puncak, pembiayaan, dokumen lingkungan, dan perizinan.",
+     "narr": "Kapasitas skenario dibatasi aturan lokasi yang sedang dipakai (KDB, KLB, KDH, batas lantai). Tanda ★ menandai IRR tertinggi. Klik <b>Terapkan</b> (dua kali untuk konfirmasi) untuk menjadikan skenario sebagai rancangan kerja; semua angka tetap dapat diubah pada langkah masing-masing."
+    }
+   ]
+  },
+  {
+   "h": "Menu P · Pelaksanaan, manajemen proyek & lingkungan",
+   "steps": [
+    {
+     "hl": "auto",
+     "img": "26-laksana.jpg",
+     "text": "Klik <b>P Pelaksanaan &amp; lingkungan</b>. Pilih proyek (perumahan tapak atau hunian vertikal), <b>Metode pelaksanaan</b> (tradisional, fast track, design &amp; build, CM at risk), dan <b>Kualitas bahan</b> (ekonomis, standar, premium). Isi upah harian dan hari kerja.",
+     "narr": "Tabel metode membandingkan durasi total dan tambahan cadangan risiko. Kartu tenaga kerja menampilkan kebutuhan orang-hari, rata-rata dan puncak tenaga kerja, serta komposisi mandor, tukang, pekerja, dan teknisi MEP."
+    },
+    {
+     "hl": "auto",
+     "img": "27-gantt.jpg",
+     "text": "Baca <b>Jadwal pelaksanaan &amp; jalur kritis</b> (Gantt) dan <b>Kurva S</b> rencana progres biaya.",
+     "narr": "Batang merah adalah jalur kritis (CPM); garis tipis menunjukkan float. Pada fast track, konstruksi awal dimulai saat desain masih berjalan sehingga waktu lebih singkat, dengan risiko perubahan dan biaya yang lebih tinggi."
+    },
+    {
+     "hl": "auto",
+     "img": "28-rab-lak.jpg",
+     "text": "Periksa <b>RAB pelaksanaan</b>: tiap pekerjaan dengan spesifikasi bahan sesuai kualitas, biaya bahan, upah, dan alat, lalu overhead, keuntungan kontraktor, PPN, dan biaya perizinan.",
+     "narr": "Porsi pekerjaan dan komposisi bahan/upah/alat adalah asumsi praktik umum; untuk RAB definitif gunakan analisa harga satuan pekerjaan (AHSP) dan harga setempat."
+    },
+    {
+     "hl": "auto",
+     "img": "29-lingk.jpg",
+     "text": "Isi skor <b>Analisis lokasi</b> (1–5) dan periksa <b>Limbah &amp; dokumen lingkungan</b>: penghuni, timbulan sampah, kebutuhan air, air limbah ke IPAL, limbah konstruksi, luas TPS 3R, serta jenis dokumen lingkungan.",
+     "narr": "Daftar perizinan (NIB/OSS, KKPR, persetujuan lingkungan, Andalalin, PBG, pengesahan tapak/PSU atau pertelaan, SLF) memuat dasar hukum yang dapat diklik. Ambang Amdal/UKL-UPL adalah isian awal — cocokkan dengan Lampiran I Permen LHK 4/2021 dan arahan dinas lingkungan hidup setempat."
+    }
+   ]
+  },
+  {
+   "h": "Menu G · Gambar kerja A2",
+   "steps": [
+    {
+     "hl": "auto",
+     "img": "30-gk.jpg",
+     "text": "Klik <b>G Gambar kerja A2</b>. Isi data kop (nama proyek, lokasi, pemilik, perencana, digambar/diperiksa/disetujui, nomor proyek, revisi), pilih jenis (kawasan perumahan atau hunian vertikal), gaya kertas, dan resolusi. Tekan <b>Susun lembar</b>, lalu <b>Unduh PDF</b>.",
+     "narr": "Lembar A2 (594 × 420 mm) memuat sampul & data proyek, rencana tapak & lanskap, denah terukur berperabot, tampak, potongan, dan perspektif kawasan 3D dengan lingkungan sekitar, masing-masing dengan skala standar, arah utara, legenda, dan kop gambar."
+    }
+   ]
+  },
+  {
+   "h": "Menu D · Dokumen lengkap FS, DED & desain teknis",
+   "steps": [
+    {
+     "hl": "auto",
+     "img": "31-dokumen.jpg",
+     "text": "Klik <b>D Dokumen FS &amp; DED</b>, pilih proyek (perumahan tapak atau hunian vertikal), lalu tekan <b>Susun dokumen lengkap (PDF)</b>.",
+     "narr": "PDF berisi (A) studi kelayakan pada halaman A4 — lokasi, aturan & kapasitas, konsep desain, biaya, kelayakan, sensitivitas, perizinan, lingkungan, perbandingan lima skenario, kesimpulan; (B) desain teknis pelaksanaan — metode, jadwal & kurva S, spesifikasi bahan, RAB pelaksanaan, tenaga kerja, K3 & limbah; (C) DED berupa lembar A2 berkop termasuk rencana utilitas & proteksi kebakaran. Dokumen adalah pra-rencana yang wajib diperiksa dan disahkan tenaga ahli bersertifikat sebelum dipakai untuk PBG, tender, atau pelaksanaan."
     }
    ]
   },
@@ -249,7 +297,7 @@
   }
  ],
  "credits": [
-  "Rujukan regulasi lengkap tercantum di menu Sumber &amp; Referensi aplikasi, antara lain Kepmen PKP 1722/KPTS/M/2026, UU 20/2011 tentang Rumah Susun, dan PP 13/2021 tentang Penyelenggaraan Rumah Susun. Perangkat lunak pihak ketiga: three.js r171 beserta addon resminya (MIT License). Peta dasar © kontributor OpenStreetMap (ODbL); pencarian alamat Nominatim.",
+  "Rujukan regulasi lengkap tercantum di menu Sumber &amp; Referensi aplikasi, antara lain Kepmen PKP 1722/KPTS/M/2026, UU 20/2011 tentang Rumah Susun, PP 13/2021, PP 16/2021 (PBG & SLF), PP 21/2021 (penataan ruang/KKPR), PP 22/2021 dan Permen LHK 4/2021 (persetujuan lingkungan), PP 28/2025 (perizinan berusaha berbasis risiko), serta UU 22/2009 Pasal 99 (Andalalin). Perangkat lunak pihak ketiga: three.js r171 beserta addon resminya (MIT License). Peta dasar © kontributor OpenStreetMap (ODbL); pencarian alamat Nominatim.",
   "Kode sumber dan versi desktop: github.com/pindotutuko-hub/rancang-perumahan."
  ]
 }
