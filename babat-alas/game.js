@@ -463,7 +463,11 @@ $('lGo').onclick=()=>{if(!lmap)return;claimCheck();if(clHit){toast(L2('Wilayah s
 let LEFT=false;function leaveTo(url){LEFT=true;try{Snd.close()}catch(e){}try{R3.release&&R3.release()}catch(e){}try{document.querySelectorAll('canvas').forEach(c=>{c.width=c.height=1})}catch(e){}setTimeout(()=>location.href=url,80)}
 /* v46: tingkat kualitas efektif + penurunan otomatis bila perangkat berat */
 let AUTOQ=null;
-function qEff(){if(SET.q&&SET.q!=='auto')return SET.q;if(AUTOQ)return AUTOQ;return Math.min(innerWidth,innerHeight)<700||devicePixelRatio>2.5||(navigator.hardwareConcurrency||4)<=8?'med':'high'}
+/* v50r: kualitas awal juga mengikuti jenis kartu grafis (bukan hanya jumlah inti prosesor) */
+function gpuTier(){if(gpuTier.d)return gpuTier.v;gpuTier.d=1;let r='';try{const c=document.createElement('canvas'),gl=c.getContext('webgl2')||c.getContext('webgl');if(!gl)r='none';else{const e=gl.getExtension('WEBGL_debug_renderer_info');r=String(e?gl.getParameter(e.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER)||'');const lc=gl.getExtension('WEBGL_lose_context');if(lc)lc.loseContext()}}catch(e){}
+ const s=r.toLowerCase();let v=null;if(r==='none'||/swiftshader|llvmpipe|softpipe|software|basic render|microsoft basic/.test(s))v='eco';else if(/intel.*\b(u?hd)\b|intel\(r\) (u?hd)|mali|adreno[^0-9]{0,8}[1-5]\d\d\b|powervr|videocore|\bgma\b/.test(s))v='low';else if(/intel|iris|adreno|apple gpu|radeon\(tm\) graphics|radeon vega/.test(s))v='med';gpuTier.v=v;gpuTier.r=r;return v}
+const QRANK={eco:0,low:1,med:2,high:3};
+function qEff(){if(SET.q&&SET.q!=='auto')return SET.q;if(AUTOQ)return AUTOQ;const h=Math.min(innerWidth,innerHeight)<700||devicePixelRatio>2.5||(navigator.hardwareConcurrency||4)<=8?'med':'high',gt=gpuTier();return gt&&QRANK[gt]<QRANK[h]?gt:h}
 function qLow(){const q=qEff();return q==='low'||q==='eco'}
 let fpsN=0,fpsT0=0,fpsWarm=0;
 function fpsTick(t){if(document.hidden){fpsT0=0;return}if(!fpsT0){fpsT0=t;fpsN=0;return}fpsN++;const el=t-fpsT0;if(el<5000)return;const fps=fpsN*1000/el;fpsT0=t;fpsN=0;
@@ -2793,3 +2797,28 @@ function tutCheck(){const st=tutStep();if(!st||st.end)return;if(st.ok()){S.tut++
 applyStatic();
 (async()=>{const go=async()=>{let hg=null;try{hg=sessionStorage.getItem('baHubG');sessionStorage.removeItem('baHubG')}catch(e){}if(!TOKEN&&hg&&CFG.guestOk!==false){GUEST=true;ME={user:'tamu',name:lang==='en'?'Guest':'Tamu'};hub();return}if(TOKEN){try{const j=await api('me');ME=j.me;ME.tantangan=j.tantangan||'';if(!ME.eula){try{await api('eula',{ver:EULA_VER})}catch(e){}}hub();return}catch(e){TOKEN=null;store.del('baTok')}}show('scAuth')};if(!eulaOK())showEula(go);else go()})();
 if(/^(127\.0\.0\.1|localhost)$/.test(location.hostname)){window.__R3=R3;window.__BA={h:(x,z)=>R3.hAt(x,z),setAva:a=>{draft.char.ava=a;renderAvEditor()},rebuild:()=>{R3.world()},weather:w=>{S.wx=w;R3.weather(w,seasonOf(calM()));R3.daylight(S.clk.h/24)},ui:()=>{updHUD();renderMissions()},style:v=>{curStyle=v},cam:(x,y,z,tx,ty,tz)=>{const o=R3.cam();o.controls.target.set(tx,ty,tz);o.camera.position.set(x,y,z)},look:(x,z,d)=>R3.look(x,z,d),lp:()=>{const v=R3.leaderPos();return v?[v.x,v.y,v.z]:null},real:()=>REAL.ok,dbg:()=>R3.dbg(),state:()=>S,tick,day:()=>{S.clk.d++;dayTick()},build:h=>buildStep(h),actUI:(k,x,y)=>{tool=k;act(x,y)},tele:()=>teleSum(),konek:()=>konek(),brSpan:(x,y)=>brSpan(x,y),sellMat:()=>sellMat(),net:()=>netLv(),umkm:()=>umkmBoost(),musKey:l=>Snd.musKey(l),musName:()=>Snd.musName(),vern:l=>vernac(l),styles:()=>allowedStyles(),mine:f=>mineMonth(f||1),geo:l=>geoMin(l),gdep:(sd,l)=>genDep(sd,l),placeOK:(k,x,y)=>{const o=tool;tool=k;const r=placeOK(x,y);tool=o;return r},act:(k,x,y)=>{tool=k;act(x,y,true)},BT};}
+
+/* ================= v50r: hemat sumber daya =================
+   1) satu tab aktif: tab lama berhenti & melepas memori bila Babat Alas dibuka di tab lain;
+   2) tab yang tersembunyi > 2 menit menyimpan, melepas dunia 3D, lalu dimuat ulang saat dibuka lagi;
+   3) peringatan bila peramban menggambar tanpa akselerasi grafis. */
+(()=>{const ID=Math.random().toString(36).slice(2);let halted=false,hidT=0,warned=false;
+ const bc=typeof BroadcastChannel!=='undefined'?new BroadcastChannel('babat-alas-tab'):null;
+ const ov=(html)=>{let o=document.getElementById('baHalt');if(!o){o=document.createElement('div');o.id='baHalt';document.body.appendChild(o)}o.innerHTML=`<div class="box">${html}</div>`;return o};
+ async function halt(kind){if(halted)return;halted=true;const wasGame=!!S;
+  if(kind==='tab'){const o=ov(`<h2>🪓 ${L2('Babat Alas dibuka di tab lain','Babat Alas is open in another tab')}</h2><p>${L2('Tab ini dihentikan dan memorinya dilepas agar perangkat tidak berat.','This tab was stopped and its memory released so your device stays light.')} <span id="baSv">${wasGame?L2('Menyimpan permainan…','Saving your game…'):''}</span></p><button class="bigbtn" id="baHere" ${wasGame?'disabled':''}>▶ ${L2('Lanjutkan di tab ini','Continue in this tab')}</button>`);o.querySelector('#baHere').onclick=()=>resume(wasGame)}
+  else ov(`<h2>⏸ ${L2('Permainan dijeda','Game paused')}</h2><p>${L2('Tab ini lama tersembunyi, jadi dunia 3D dilepas untuk menghemat memori. Permainan disimpan dan dimuat kembali saat tab dibuka.','This tab was hidden for a while, so the 3D world was released to save memory. Your game is saved and reloads when you return.')}</p>`);
+  try{clearInterval(loopT)}catch(e){}
+  if(wasGame){for(let i=0;i<50&&saving;i++)await new Promise(r=>setTimeout(r,100));try{dirty=true;await save(true)}catch(e){}}
+  try{Snd.close()}catch(e){}try{R3.release&&R3.release()}catch(e){}try{document.querySelectorAll('canvas').forEach(c=>{c.width=c.height=1})}catch(e){}
+  const sv=document.getElementById('baSv');if(sv)sv.textContent=L2('Permainan sudah disimpan.','Your game has been saved.');const bh=document.getElementById('baHere');if(bh)bh.disabled=false;
+  if(kind!=='tab'&&!document.hidden)resume(wasGame)}
+ function resume(cont){try{if(cont)sessionStorage.setItem('baAutoCont','1')}catch(e){}location.reload()}
+ if(bc){bc.onmessage=e=>{const d=e.data||{};if(d.t==='hello'&&d.id!==ID&&!LEFT)halt('tab')};bc.postMessage({t:'hello',id:ID})}
+ document.addEventListener('visibilitychange',()=>{clearTimeout(hidT);if(document.hidden){if(S&&!halted)hidT=setTimeout(()=>{if(document.hidden&&S)halt('hidden')},120000)}else if(halted&&document.getElementById('baHalt')&&!document.getElementById('baHere'))resume(true)});
+ /* lanjut otomatis ke permainan setelah dimuat ulang oleh tombol di atas */
+ try{if(sessionStorage.getItem('baAutoCont')){sessionStorage.removeItem('baAutoCont');let n=0;const iv=setInterval(()=>{const b=document.getElementById('hubCont');if(b&&b.offsetParent&&!b.classList.contains('hidden')){clearInterval(iv);b.click()}else if(++n>60)clearInterval(iv)},250)}}catch(e){}
+ /* akselerasi grafis mati → mode Hemat + pesan sekali */
+ const w=setInterval(()=>{if(!S||warned)return;warned=true;clearInterval(w);if(SET.q==='auto'&&gpuTier()==='eco'){setTimeout(()=>toast(L2('⚠️ Akselerasi grafis peramban tampaknya mati — gim memakai mode Hemat. Nyalakan “Gunakan akselerasi grafis/hardware acceleration” di pengaturan Chrome/Edge agar lancar.','⚠️ Browser graphics acceleration seems off — using Eco mode. Turn on “Use hardware acceleration” in Chrome/Edge settings for smooth play.')),4000)}},2000);
+ window.__BAtab={halt,gpu:()=>({tier:gpuTier(),r:gpuTier.r,q:qEff()})};
+})();
