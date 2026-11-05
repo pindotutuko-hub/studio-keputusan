@@ -8,6 +8,7 @@
 <title>Babat Alas — simulasi permukiman 3D</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<script>(function(){var u=navigator.userAgent||"";if(/SamsungBrowser|Android/.test(u))document.documentElement.classList.add("lite")})();</script>
 <script src="/gim/inspirasi.js" defer></script>
 <script type="importmap">{"imports":{"three":"/lensa3d/three/three.module.min.js","three/addons/":"/lensa3d/three/addons/"}}</script>
 <style>
@@ -240,6 +241,8 @@ button,.tool,#hud,#bar,.hud,.screen{touch-action:manipulation}html{-webkit-text-
  #dlg{width:min(520px,70vw)}
 }
 #baHalt{position:fixed;inset:0;z-index:200;background:rgba(10,16,12,.92);display:flex;align-items:center;justify-content:center;padding:16px}#baHalt .box{max-width:460px;background:var(--panel2,#fffdf8);color:var(--ink2,#1f1c18);border-radius:18px;padding:20px 22px;box-shadow:0 18px 50px rgba(0,0,0,.5)}#baHalt h2{margin:0 0 8px;font-size:20px}#baHalt p{margin:0 0 14px;font-size:14px;line-height:1.5}
+/* v50t: Samsung Internet/Android — matikan efek kabur latar (backdrop-filter) yang berat saat keyboard membuka */
+html.lite *,html.lite *::before,html.lite *::after{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 </style>
 </head>
 <body>
@@ -331,6 +334,6 @@ button,.tool,#hud,#bar,.hud,.screen{touch-action:manipulation}html{-webkit-text-
 <div id="toast"></div>
 <div id="modal" class="modal hidden"></div>
 
-<script type="module" src="game.js?v=72"></script>
+<script type="module" src="game.js?v=74"></script>
 </body>
 </html>
