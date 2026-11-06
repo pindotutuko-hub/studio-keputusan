@@ -250,6 +250,18 @@ html.lite *,html.lite *::before,html.lite *::after{-webkit-backdrop-filter:none!
 /* v51a: skor di bawah profil (kiri atas), dapat diklik */
 .who .hscore{display:inline-flex;align-items:center;gap:4px;margin-top:2px;border:0;border-radius:999px;background:rgba(224,165,38,.2);color:var(--ink);font:700 11px/1.3 Inter,system-ui,sans-serif;padding:1px 8px;cursor:pointer;white-space:nowrap}.who .hscore:hover{background:rgba(224,165,38,.38)}.who .hscore em{font-style:normal;opacity:.75;font-weight:600}
 @media (max-width:760px),(max-height:520px) and (pointer:coarse){.who .hscore{font-size:10px;padding:0 6px;margin-top:1px}}
+/* v51b: tombol alat ringkas — lebar tetap, nama 1 baris, biaya terlipat 2 baris; alat terkunci di ujung kanan */
+#bar .tool{width:84px;min-width:0!important;flex:none}#bar .tool span{max-width:78px}
+#bar .tool em{white-space:normal;line-height:1.15;max-width:80px;text-align:center;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+@media (max-width:760px),(max-height:520px) and (pointer:coarse){#bar .tool{width:64px}#bar .tool span{max-width:60px}#bar .tool em{max-width:62px;font-size:8.5px}}
+#bar .gridbtn{min-width:58px!important;background:rgba(47,143,106,.22)!important}
+#toolSheet{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(max(10px,env(safe-area-inset-bottom)) + 86px);z-index:16;width:min(720px,calc(100vw - 16px));max-height:min(58vh,520px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:8px 10px 10px;backdrop-filter:blur(10px);box-shadow:0 14px 40px rgba(0,0,0,.45)}
+#toolSheet .tsh{display:flex;align-items:center;gap:8px;position:sticky;top:-8px;background:var(--panel);padding:4px 0 8px;z-index:1}#toolSheet .tsh span{font-size:12px;color:var(--muted)}#toolSheet .tsx{margin-left:auto;border:0;background:rgba(255,255,255,.1);color:var(--ink);border-radius:999px;width:30px;height:30px}
+#toolSheet .tsg{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px}
+#toolSheet .tsi{display:flex;flex-direction:column;align-items:center;gap:2px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);border-radius:12px;padding:7px 4px;text-align:center;min-height:86px}
+#toolSheet .tsi i{font-style:normal;font-size:24px}#toolSheet .tsi b{font-size:11.5px;line-height:1.2}#toolSheet .tsi em{font-style:normal;font-size:10px;color:var(--muted);line-height:1.2}
+#toolSheet .tsi.on{box-shadow:inset 0 0 0 2px var(--acc);background:rgba(224,165,38,.18)}#toolSheet .tsi.lock{opacity:.45}
+@media (max-width:760px),(max-height:520px) and (pointer:coarse){#toolSheet{bottom:calc(max(6px,env(safe-area-inset-bottom)) + 64px);max-height:52vh;padding:6px 8px 8px}#toolSheet .tsg{grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:5px}#toolSheet .tsi{min-height:76px;padding:5px 3px}#toolSheet .tsi i{font-size:20px}#toolSheet .tsi b{font-size:10.5px}#toolSheet .tsi em{font-size:9px}}
 </style>
 </head>
 <body>
@@ -341,6 +353,6 @@ html.lite *,html.lite *::before,html.lite *::after{-webkit-backdrop-filter:none!
 <div id="toast"></div>
 <div id="modal" class="modal hidden"></div>
 
-<script type="module" src="game.js?v=77"></script>
+<script type="module" src="game.js?v=79"></script>
 </body>
 </html>
