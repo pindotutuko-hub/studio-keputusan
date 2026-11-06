@@ -1,5 +1,22 @@
 # Changelog
 
+## 3.6.0 — 2026-11-06
+- **Pemandu tujuan mengenali bidang ilmu** (17 bidang: Arsitektur & Desain, Perencanaan Wilayah & Kota, Teknik Sipil, Teknik Mesin & Industri, Teknik Elektro & Energi, Lingkungan, Ekonomi & Akuntansi, Manajemen & Bisnis, Kesehatan & Farmasi, Pendidikan, Psikologi, Hukum, Sosial-Politik-Komunikasi, Pertanian & Perikanan, Pariwisata, Sains/MIPA, Informatika & SI). Bidang terdeteksi dari kata dalam tujuan atau dipilih manual; saran diarahkan ke metode yang lazim di bidang itu. Bidang yang ambigu tidak dipaksakan.
+- **Perbaikan salah arah**: "layak huni" tidak lagi dibaca sebagai kelayakan finansial; NPV/IRR hanya muncul untuk kelayakan finansial/ekonomi/investasi.
+- Maksud baru: **menilai kelayakan huni rumah/permukiman** (POE + persepsi penghuni) dan **merumuskan usulan/arahan desain atau pengembangan** (SWOT → AHP).
+- **Tujuan majemuk**: kalimat yang memuat beberapa tujuan (mis. "… dan usulan …") diurai menjadi tahap-tahap dengan metode masing-masing, disertai catatan kritis (indikator, keterkaitan antartahap, responden, keluaran sesuai bidang) dan tombol **Kerangka gabungan** yang menyusun alur bertahap dalam satu diagram.
+- **📚 Pustaka — kajian pustaka & peta riset** (tombol di kepala dan di setiap kartu saran):
+  - Pencarian artikel di **OpenAlex** (terbuka; kunci API gratis opsional) dan **Scopus Search API** (kunci API Elsevier milik pengguna), atau **impor CSV** dari Scopus, Web of Science, dan Publish or Perish. Kata kunci bahasa Inggris disusun otomatis dari tujuan berbahasa Indonesia dan dapat disunting; kueri Scopus (TITLE-ABS-KEY) dapat disalin.
+  - **Metrik sitasi ala Publish or Perish**: jumlah artikel & sitasi, sitasi/tahun, sitasi/artikel, penulis/artikel, indeks-h, indeks-g, hI,norm, indeks-m.
+  - **Peta jejaring ala VOSviewer**: ko-okurensi kata kunci (atau + frasa judul) dan ko-kepengarangan; klaster modularitas (fase lokal Louvain), tata letak gaya-berarah, tampilan klaster atau **overlay tahun terbit**; tabel simpul; ekspor berkas map & network VOSviewer, SVG/PNG.
+  - **Peta keilmuan**: sebaran domain → bidang → subbidang dari topik OpenAlex.
+  - **Ringkasan metodologi**: metode yang lazim (dengan tautan ke modul), ukuran sampel yang dilaporkan (median, rentang).
+  - **Variabel kandidat** dari pola kalimat abstrak (Inggris & Indonesia): independen, dependen, mediasi, moderasi, kontrol; peran dapat diubah dan variabel ditambah manual; **model konseptual** (SVG) dan **hipotesis** otomatis; kirim ke Kerangka.
+  - **Draf pendahuluan** per tipe riset (survei/SEM, eksperimen/klinis, observasional kesehatan, kualitatif sosial-humaniora, MIPA, rekayasa, perencanaan/MCDM, SLR/bibliometrik): latar belakang, celah penelitian, rumusan masalah, tujuan, hipotesis/proposisi, metodologi, dan daftar pustaka APA — hanya dari artikel yang benar-benar ditemukan.
+  - **Matriks literatur**: penulis, judul, sumber, metode, variabel, sitasi; ekspor TSV/CSV, BibTeX, RIS (Mendeley/Zotero), salin APA.
+- **Tabulasi silang (Statistik) dilengkapi**: persentase baris/kolom/total, residu terstandar disesuaikan (sel penyebab χ² bermakna), koreksi Yates dan uji eksak Fisher untuk tabel 2×2, φ, peringatan sel harapan < 5, dan grafik batang berkelompok.
+- Rujukan baru: Priem dkk. (2022) OpenAlex, Scopus Search API, Harzing (2007) Publish or Perish, Hirsch (2005), Egghe (2006), van Eck & Waltman (2010) VOSviewer, Blondel dkk. (2008), Fruchterman & Reingold (1991), Fisher (1922).
+
 ## 3.5.0 — 2026-11-06
 - **Alat hitung baru (Sains & Matematika):**
   - Regresi data panel: common effect (pooled OLS), fixed effect (within), random effect (Swamy–Arora), uji Chow dan uji Hausman untuk memilih model.

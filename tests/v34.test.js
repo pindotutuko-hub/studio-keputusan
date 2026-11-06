@@ -61,7 +61,7 @@ setTimeout(() => {
   assert.strictEqual(U.skAdvise('blockchain kuantum').top.length, 0, 'tidak dikenal → tanpa saran');
   // kartu metode yang belum tersedia → rekomendasi alat luar
   const hb = U.advHTML('Pemetaan tren penelitian smart city dengan bibliometrik');
-  assert(/advna/.test(hb) && /VOSviewer/.test(hb), 'rekomendasi bibliometrik');
+  assert(/VOSviewer/.test(hb) && /data-litopen/.test(hb), 'bibliometrik → Pustaka');
 
   // kerangka & alur: dari maksud → langkah berurutan, diagram SVG, teks
   const F = U.fwFromIntent('logit');
