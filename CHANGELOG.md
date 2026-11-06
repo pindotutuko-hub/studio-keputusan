@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.6.1 — 2026-11-06
+- **Literatur langsung di kotak "Apa yang ingin Anda putuskan atau ketahui?"**: tombol **📚 + Literatur** (di samping Sarankan metode) atau **🔎 Cari literatur** pada kartu saran mencari artikel OpenAlex untuk tujuan itu, lalu menampilkan di tempat: jumlah artikel, sitasi, indeks-h; peta kata kunci (overlay tahun); tema utama dan tema baru; metode yang dipakai literatur (✓ bila sejalan dengan saran); ukuran sampel; variabel X/M/Y kandidat; celah konteks; dan draf latar belakang ringkas beserta rujukan. Tombol menuju draf pendahuluan lengkap, peta riset, variabel & hipotesis, serta matriks & daftar pustaka.
+- Metode yang sering dipakai pada literatur yang ditemukan ikut menaikkan peringkat saran metode yang sesuai.
+
 ## 3.6.0 — 2026-11-06
 - **Pemandu tujuan mengenali bidang ilmu** (17 bidang: Arsitektur & Desain, Perencanaan Wilayah & Kota, Teknik Sipil, Teknik Mesin & Industri, Teknik Elektro & Energi, Lingkungan, Ekonomi & Akuntansi, Manajemen & Bisnis, Kesehatan & Farmasi, Pendidikan, Psikologi, Hukum, Sosial-Politik-Komunikasi, Pertanian & Perikanan, Pariwisata, Sains/MIPA, Informatika & SI). Bidang terdeteksi dari kata dalam tujuan atau dipilih manual; saran diarahkan ke metode yang lazim di bidang itu. Bidang yang ambigu tidak dipaksakan.
 - **Perbaikan salah arah**: "layak huni" tidak lagi dibaca sebagai kelayakan finansial; NPV/IRR hanya muncul untuk kelayakan finansial/ekonomi/investasi.

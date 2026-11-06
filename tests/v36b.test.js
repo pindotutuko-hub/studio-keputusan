@@ -72,6 +72,14 @@ setTimeout(async () => {
   d.querySelector('[data-littab="draf"]').click(); assert(/## Latar belakang/.test(d.querySelector('#litDraft').value));
   d.querySelector('[data-littab="var"]').click(); assert(d.querySelector('#litModel svg'));
   d.querySelector('#litFw').click(); assert(d.querySelector('#skFw') && /Kajian pustaka sistematis/.test(d.querySelector('#skFw').innerHTML));
+  // literatur langsung di kotak tujuan: tombol → pencarian → ringkasan + draf latar belakang + metode di literatur menaikkan saran
+  const q0 = 'persepsi penghuni tentang rumah layak huni';
+  const box = d.createElement('div'); box.id = 'bRes'; d.body.appendChild(box);
+  const h0 = U.advHTML('topik lain sama sekali'); assert(/data-litq/.test(h0) && /Tajamkan latar belakang/.test(h0));
+  U.litState().q = q0; U.litState().terms = []; await U.litSearch();
+  const h1 = U.advHTML(q0); assert(/Latar belakang dari literatur/.test(h1) && /Tema utama/.test(h1) && /Metode di literatur/.test(h1) && /Draf latar belakang ringkas/.test(h1) && /data-littabgo="draf"/.test(h1), 'ringkasan literatur');
+  assert(/median 150/.test(h1) && /\(Putri &amp; Santoso, 2019\)|Putri &amp; Santoso, 2019/.test(h1), 'rujukan & sampel nyata');
+  const lb = w.__litBoost(q0); assert(lb && lb.B.poe >= 1 && lb.n === 3);
   // tabulasi silang: Fisher & Yates (scipy), residu disesuaikan, persentase
   const a = [], b = []; [['A', 'Y', 8], ['A', 'N', 2], ['B', 'Y', 1], ['B', 'N', 5]].forEach(([r, c, n]) => { for (let i = 0; i < n; i++) { a.push(r); b.push(c); } });
   const X = S.stCrosstab(a, b); near(X.fisher, 0.034965034965034975, 1e-9); near(X.yates, 3.8095238095238093, 1e-9); near(X.pY, 0.050961936967763424, 1e-6);
