@@ -202,7 +202,7 @@ function audit(array $st, ?array $prev, int $prevAt): array {
  * Indikator rapor permukiman (0–100), dasar peringkat:
  * e ekonomi warga, n jejaring (jalan & tetangga), c kenyamanan, k kepuasan, p pertumbuhan.
  */
-function indicators(array $st, int $nb): array {
+function indicators(array $st, int $nb, array $rb = []): array {
 	$n = count($st['land']); $land = $st['land']; $bs = is_array($st['b'] ?? null) ? $st['b'] : []; $kk = max(1, (int) ($st['kk'] ?? 1));
 	$cnt = []; foreach ($bs as $b) { $cnt[$b['t']] = ($cnt[$b['t']] ?? 0) + 1; }
 	$c = fn($t) => $cnt[$t] ?? 0; $cl = fn($v) => max(0.0, min(1.0, (float) $v));
@@ -233,16 +233,73 @@ function indicators(array $st, int $nb): array {
 	$K = 0.6 * (int) ($st['happy'] ?? 0) + 0.4 * (int) ($st['coh'] ?? 0);
 	$P = 70 * $cl(((int) ($st['kk'] ?? 0)) / 50) + 30 * $cl(((int) ($st['era'] ?? 1) - 1) / 5);
 	$r = ['e' => (int) round($E), 'n' => (int) round($N), 'c' => (int) round($C), 'k' => (int) round($K), 'p' => (int) round($P), 'rth' => (int) round($RTH), 'svc' => (int) round($SVC)];
+	foreach (['e', 'n', 'c'] as $q) { if (!empty($rb[$q])) { $r[$q] = (int) max(0, min(100, round($r[$q] + $rb[$q]))); } } /* v51: bonus/penalti wilayah bersama */
 	// kampung yang baru sedikit warganya tidak boleh langsung berskor tinggi: bobot naik sampai 50 KK
 	$r['score'] = (int) round(10 * (0.25 * $r['e'] + 0.2 * $r['n'] + 0.2 * $r['c'] + 0.25 * $r['k'] + 0.1 * $r['p']) * (0.35 + 0.65 * min(1, ((int) ($st['kk'] ?? 0)) / 50)));
 	$r['kk'] = (int) ($st['kk'] ?? 0); $r['era'] = (int) ($st['era'] ?? 1);
 	return $r;
 }
 /** tantangan kelas dari dosen: dinilai server dari indikator (bukan data klien) */
-const CHAL = ['hijau' => 'RTH ≥ 30% & ≥ 100 KK', 'nyaman' => 'Kenyamanan ≥ 75 & ≥ 100 KK', 'ekonomi' => 'Ekonomi warga ≥ 65 & ≥ 100 KK', 'jejaring' => 'Jejaring ≥ 75', 'layanan' => 'Layanan kota ≥ 90 (era Desa+)', 'puas' => 'Kepuasan ≥ 75 & ≥ 150 KK'];
-function chal_ok(string $c, array $i): bool {
+const CHAL = ['hijau' => 'RTH ≥ 30% & ≥ 100 KK', 'nyaman' => 'Kenyamanan ≥ 75 & ≥ 100 KK', 'ekonomi' => 'Ekonomi warga ≥ 65 & ≥ 100 KK', 'jejaring' => 'Jejaring ≥ 75', 'layanan' => 'Layanan kota ≥ 90 (era Desa+)', 'puas' => 'Kepuasan ≥ 75 & ≥ 150 KK', 'b_hijau' => 'Lencana Kampung Hijau', 'b_airbersih' => 'Lencana Air Bersih', 'b_pejalan' => 'Lencana Pejalan Kaki', 'b_anak' => 'Lencana Ramah Anak', 'b_tanpakumuh' => 'Lencana Tanpa Kumuh', 'b_lokal' => 'Lencana Arsitektur Lokal', 'b_pangan' => 'Lencana Pangan Mandiri', 'b_tangguh' => 'Lencana Tangguh Bencana', 'b_rukun' => 'Lencana Kampung Rukun', 'b_tersambung' => 'Lencana Jejaring Tersambung', 'b_melayani' => 'Lencana Kota Melayani', 'b_sungai' => 'Lencana Penjaga Sungai'];
+function chal_ok(string $c, array $i, array $bd = []): bool {
+	if (strncmp($c, 'b_', 2) === 0) { return isset($bd[substr($c, 2)]); }
 	switch ($c) { case 'hijau': return $i['rth'] >= 30 && $i['kk'] >= 100; case 'nyaman': return $i['c'] >= 75 && $i['kk'] >= 100; case 'ekonomi': return $i['e'] >= 65 && $i['kk'] >= 100;
 		case 'jejaring': return $i['n'] >= 75; case 'layanan': return $i['svc'] >= 90 && $i['era'] >= 4; case 'puas': return $i['k'] >= 75 && $i['kk'] >= 150; } return false; }
+/* ===== v51: LENCANA (dinilai server dari bangunan & indikator) dan WILAYAH BERSAMA ===== */
+const BADGE = ['hijau' => '🌳 Kampung Hijau', 'airbersih' => '💧 Air Bersih untuk Semua', 'pejalan' => '🚶 Kampung Pejalan Kaki', 'anak' => '🧒 Kampung Ramah Anak',
+	'tanpakumuh' => '🏘️ Kampung Tanpa Kumuh', 'lokal' => '🛖 Arsitektur Lokal', 'pangan' => '🌾 Pangan Mandiri', 'tangguh' => '🛡️ Tangguh Bencana',
+	'rukun' => '🤝 Kampung Rukun', 'tersambung' => '🛣️ Jejaring Tersambung', 'melayani' => '🏛️ Kota Melayani', 'sungai' => '🐟 Penjaga Sungai'];
+/** gaya rumah tradisional menurut lokasi (sama dengan vernac() di game.js) */
+function vernac_s(array $l): array { $la = (float) ($l['lat'] ?? 0); $lo = (float) ($l['lon'] ?? 0); $cc = (string) ($l['cc'] ?? ''); $B = fn($a, $b, $c, $d) => $la >= $a && $la <= $b && $lo >= $c && $lo <= $d;
+	if ($cc === 'ID' || $cc === '') { if ($B(-3.6, -2.4, 119.4, 120.4)) { return ['tongkonan', 'panggung']; } if ($B(-3.6, 1.2, 98.5, 102)) { return ['gadang', 'panggung']; } if ($B(-9, -8, 114.4, 115.75)) { return ['bali']; }
+		if ($B(-9, -5.8, 105, 108.8)) { return ['panggung', 'jawa']; } if ($B(-9, -5.8, 108.8, 114.7)) { return ['jawa', 'joglo']; } if ($B(-6, 6, 95, 106.2) || $B(-3.6, -1.3, 105, 108.6)) { return ['panggung']; }
+		if ($B(-4.3, 4.5, 108.8, 119.2) || $B(-6, 2.2, 118.8, 125.6)) { return ['panggung']; } if ($B(-9.6, 0, 130.5, 141.1)) { return ['honai', 'panggung']; } if ($B(-11, -8, 115.75, 125.2) || $B(-8.5, 3, 125.6, 131)) { return ['panggung']; } }
+	if ($cc === 'ID') { return ['jawa', 'panggung']; } if (in_array($cc, ['MY', 'BN', 'SG'], true)) { return ['panggung']; } if ($cc === 'JP') { return ['machiya']; }
+	if (in_array($cc, ['GB', 'NL', 'DE', 'FR', 'BE', 'CH', 'NO', 'SE', 'DK', 'PL', 'CZ', 'IT', 'ES', 'PT', 'AT', 'IE', 'FI', 'GR', 'LU'], true)) { return ['eropa']; } return ['modern']; }
+/** pencemaran sungai dari satu kampung (0–100): industri & tambang dikurangi pengolahan limbah */
+function pollution(array $st): int { $bs = is_array($st['b'] ?? null) ? $st['b'] : []; $P = ['zi' => 6, 'pltu' => 25, 'semen' => 20, 'smelter' => 30, 'tambang' => 8, 'galian' => 5, 'tobong' => 4, 'peternakan' => 3, 'kandang' => 1, 'bengkel' => 2];
+	$T = ['ipal' => 30, 'daurulang' => 15, 'tpa' => 20, 'tps' => 4, 'retensi' => 6]; $p = 0; $t = 0;
+	foreach ($bs as $b) { $ty = (string) ($b['t'] ?? ''); $lv = max(1, (int) ($b['lv'] ?? 1)); if (isset($P[$ty])) { $p += $P[$ty] * ($ty === 'zi' ? $lv : 1); } if (isset($T[$ty])) { $t += $T[$ty]; } }
+	return (int) max(0, min(100, round($p - $t))); }
+/** kode wilayah: kelas bila tergabung kelas, selain itu sel ±25 km di sekitar lokasi */
+function region_id(array $u, array $meta): string { $k = (string) ($u['kelas'] ?? ''); if ($k !== '') { return 'k:' . $k; } return 'g:' . (round((float) $meta['lat'] * 4) / 4) . ',' . (round((float) $meta['lon'] * 4) / 4); }
+function region_file(string $rid): string { return 'rg_' . substr(hash('sha256', $rid), 0, 16) . '.php'; }
+const RPROJ = ['jembatan' => ['n' => 'Jembatan & jalan antarkampung', 'need' => ['coin' => 800, 'wood' => 1500, 'stone' => 1000], 'fx' => ['n' => 8]],
+	'terminal' => ['n' => 'Terminal & pasar regional', 'need' => ['coin' => 1600, 'wood' => 0, 'stone' => 1500], 'fx' => ['e' => 6]],
+	'rs' => ['n' => 'Rumah sakit regional', 'need' => ['coin' => 2600, 'wood' => 0, 'stone' => 2000], 'fx' => ['c' => 6]],
+	'limbah' => ['n' => 'Pengolahan limbah & sampah terpadu', 'need' => ['coin' => 1200, 'wood' => 0, 'stone' => 800], 'fx' => ['c' => 3, 'river' => 25]]];
+/** keadaan wilayah: anggota (dari direktori), kesehatan sungai, proyek bersama, bonus indikator untuk pemain $me */
+function region_ctx(string $rid, string $me): array { $d = dir_rd(); $cut = time() - 180 * 86400; $mem = [];
+	foreach ($d as $id => $m) { if (($m['rid'] ?? '') === $rid && ($m['at'] ?? 0) >= $cut) { $mem[$id] = $m; } }
+	$rg = rd(region_file($rid)) ?: []; $pj = $rg['p'] ?? []; $pol = []; foreach ($mem as $m) { $pol[] = (int) ($m['pol'] ?? 0); }
+	$river = $pol ? 100 - 1.2 * array_sum($pol) / count($pol) : 100; if (!empty($pj['limbah']['done'])) { $river += RPROJ['limbah']['fx']['river']; } $river = (int) max(0, min(100, round($river)));
+	$fx = ['e' => 0, 'n' => 0, 'c' => $river < 50 ? -6 : ($river >= 80 ? 3 : 0)];
+	foreach (RPROJ as $k => $P) { if (empty($pj[$k]['done'])) { continue; } $mine = $pj[$k]['by'][$me] ?? null; $tot = 0; foreach (['coin', 'wood', 'stone'] as $r) { $tot += (float) ($mine[$r] ?? 0) / max(1, $P['need'][$r] ?: 1); }
+		$f = $mine && $tot > 0.02 ? 1 : 0.5; foreach (['e', 'n', 'c'] as $q) { $fx[$q] += ($P['fx'][$q] ?? 0) * $f; } }
+	return ['mem' => $mem, 'river' => $river, 'p' => $pj, 'fx' => $fx]; }
+/** lencana yang terpenuhi SAAT INI (dihitung dari state & indikator) */
+function badges_now(array $st, array $ind, array $rc): array { $bs = is_array($st['b'] ?? null) ? $st['b'] : []; $land = $st['land']; $n = count($land); $kk = (int) ($st['kk'] ?? 0); $era = (int) ($st['era'] ?? 1);
+	$cnt = []; foreach ($bs as $b) { $cnt[$b['t']] = ($cnt[$b['t']] ?? 0) + 1; } $c = fn(...$t) => array_sum(array_map(fn($x) => $cnt[$x] ?? 0, $t));
+	$dw = array_values(array_filter($bs, fn($b) => in_array($b['t'], ['house', 'perum', 'apartemen'], true))); $nd = count($dw);
+	$near = function ($h, array $ts, int $r) use ($bs) { $hx = $h['x'] + ($h['w'] - 1) / 2; $hy = $h['y'] + ($h['h'] - 1) / 2; foreach ($bs as $b) { if (in_array($b['t'], $ts, true) && abs($b['x'] + ($b['w'] - 1) / 2 - $hx) <= $r + ($b['w'] - 1) / 2 && abs($b['y'] + ($b['h'] - 1) / 2 - $hy) <= $r + ($b['h'] - 1) / 2) { return true; } } return false; };
+	$ring = function ($h, string $l) use ($land, $n) { for ($y = $h['y'] - 1; $y <= $h['y'] + $h['h']; $y++) { for ($x = $h['x'] - 1; $x <= $h['x'] + $h['w']; $x++) { if ($x >= 0 && $y >= 0 && $x < $n && $y < $n && $land[$y][$x] === $l) { return true; } } } return false; };
+	$share = function (callable $f) use ($dw, $nd) { if (!$nd) { return 0; } $k = 0; foreach ($dw as $h) { if ($f($h)) { $k++; } } return $k / $nd; };
+	$prod = $c('field') * 6 + $c('pond') * 2 + $c('kandang') * 3 + $c('peternakan') * 5 + $c('pemburu') * 3; $houses = array_values(array_filter($bs, fn($b) => $b['t'] === 'house'));
+	$vs = vernac_s($st['loc'] ?? []); $loc = count($houses) ? count(array_filter($houses, fn($h) => in_array((string) ($h['s'] ?? ''), $vs, true))) / count($houses) : 0;
+	$o = [];
+	if (($ind['rth'] ?? 0) >= 30 && $kk >= 50) { $o[] = 'hijau'; }
+	if ($kk >= 20 && $nd >= 8 && $share(fn($h) => $near($h, ['well'], 5)) >= 0.95) { $o[] = 'airbersih'; }
+	if ($kk >= 30 && $share(fn($h) => $ring($h, 'P')) >= 0.9 && $share(fn($h) => $near($h, ['market', 'pasmal', 'ruko'], 10)) >= 0.8 && $share(fn($h) => $near($h, ['paud', 'sekolah', 'smp', 'sma'], 10)) >= 0.8) { $o[] = 'pejalan'; }
+	if ($kk >= 40 && $c('paud', 'sekolah') >= 1 && $c('klinik', 'puskesling', 'rs') >= 1 && $share(fn($h) => $near($h, ['taman', 'playground', 'tamkot', 'lapbola', 'alun'], 8)) >= 0.8) { $o[] = 'anak'; }
+	if ($kk >= 40 && $nd && $c('tps', 'tpa', 'daurulang') >= 1 && $share(fn($h) => $ring($h, 'P') && !$ring($h, 'W') && ($h['t'] !== 'house' || $near($h, ['well'], 5))) >= 1) { $o[] = 'tanpakumuh'; }
+	if (count($houses) >= 15 && $loc >= 0.8) { $o[] = 'lokal'; }
+	if ($kk >= 30 && $prod >= $kk * 2) { $o[] = 'pangan'; }
+	if ($kk >= 70 && $c('saluran') >= 1 && $c('retensi') >= 1 && $c('damkar') >= 1 && $share(fn($h) => !$ring($h, 'W')) >= 1) { $o[] = 'tangguh'; }
+	if ($kk >= 50 && ($ind['k'] ?? 0) >= 75 && $c('hall', 'baldes') >= 1 && $c('worship') >= 1) { $o[] = 'rukun'; }
+	if ($kk >= 30 && ($ind['n'] ?? 0) >= 90) { $o[] = 'tersambung'; }
+	if ($era >= 4 && ($ind['svc'] ?? 0) >= 85) { $o[] = 'melayani'; }
+	if ($kk >= 50 && pollution($st) <= 10 && ($rc['river'] ?? 0) >= 80 && count($rc['mem'] ?? []) >= 2) { $o[] = 'sungai'; }
+	return $o; }
 /** wilayah pemain (meter, relatif ke titik lokasi): 1 petak ≈ 10 m; wilayah awal 40×40 petak ≈ 400×400 m */
 function claim_box(array $o): array { $x0 = (int) ($o['x0'] ?? 44); $x1 = (int) ($o['x1'] ?? 84); $y0 = (int) ($o['y0'] ?? 44); $y1 = (int) ($o['y1'] ?? 84);
 	return ['hx' => max(200, ($x1 - $x0) * 5), 'hy' => max(200, ($y1 - $y0) * 5), 'dx' => (($x0 + $x1) / 2 - 64) * 10, 'dy' => (($y0 + $y1) / 2 - 64) * 10]; }
@@ -328,34 +385,36 @@ switch ($a) {
 		$base = (int) ($j['base'] ?? 0);
 		$old = rd('s_' . $u['uid'] . '.php'); $fresh = !$old || (($old['state']['meta']['created'] ?? 0) !== ($j['state']['meta']['created'] ?? 0));
 		if ($fresh && ($who = claim_hit($u['uid'], $meta))) { out(['ok' => false, 'error' => 'claimed', 'by' => $who], 409); }
-		$nbc = nb_count($u['uid'], $meta, $u); $GLOBALS['BA_GRANT_TOT'] = (float) ($u['grantTot'] ?? 0);
+		$nbc = nb_count($u['uid'], $meta, $u); $meta['pol'] = pollution($j['state']); $meta['rid'] = region_id($u, $meta); $rc = region_ctx($meta['rid'], $u['uid']); $newB = []; $GLOBALS['BA_GRANT_TOT'] = (float) ($u['grantTot'] ?? 0);
 		$sah = !empty($u['sah']); /* v50m: pemain sah (diverifikasi pengelola) — catatan pemeriksaan otomatis tidak menahan peringkat */
-		$r = upd('s_' . $u['uid'] . '.php', function ($s) use ($j, &$meta, $base, $nbc, $sah) { $ver = (int) ($s['ver'] ?? 0);
+		$r = upd('s_' . $u['uid'] . '.php', function ($s) use ($j, &$meta, $base, $nbc, $sah, $rc, &$newB) { $ver = (int) ($s['ver'] ?? 0);
 			if ($s && $base && $base !== $ver && empty($j['force'])) { return ['__ret' => ['conflict' => $ver]]; }
 			// v46b: simpanan yang waktunya mundur (tab/perangkat lama) ditolak, tidak ditulis & tidak ditandai curang
 			if ($s && ($s['state']['meta']['created'] ?? 0) === ($j['state']['meta']['created'] ?? 0) && (int) ($j['state']['t'] ?? 0) < (int) ($s['state']['t'] ?? 0)) { return ['__ret' => ['stale' => $ver]]; }
 			$prev = $s['state'] ?? null; if ($prev !== null) { $prev['flagged'] = ((int) ($s['meta']['at'] ?? 0) < 1793771100) ? [] : ($s['flagged'] ?? []); } /* v50l: amnesti tanda yang muncul karena bug hitung bangunan (v50g, 4 Nov 00.25–12.45 WIB) */
 			[$score, $bad] = audit($j['state'], $prev, (int) ($s['meta']['at'] ?? 0));
-			$ind = in_array('land', $bad, true) ? ['e' => 0, 'n' => 0, 'c' => 0, 'k' => 0, 'p' => 0, 'score' => 0] : indicators($j['state'], $nbc); $score = $ind['score']; $meta['ind'] = $ind;
+			$ind = in_array('land', $bad, true) ? ['e' => 0, 'n' => 0, 'c' => 0, 'k' => 0, 'p' => 0, 'score' => 0] : indicators($j['state'], $nbc, $rc['fx']); $score = $ind['score']; $meta['ind'] = $ind;
 			if (($prev['meta']['created'] ?? 0) !== ($j['state']['meta']['created'] ?? 0)) { $bad = array_values(array_diff($bad, ['prior'])); }
 			$note = []; if ($sah) { $note = array_values(array_diff($bad, ['prior'])); $bad = []; }
 			$meta['score'] = $score; $meta['flag'] = $bad ? 1 : 0;
-			return ['__write' => ['ver' => $ver + 1, 'meta' => $meta, 'state' => array_merge($j['state'], ['_ind' => $meta['ind']]), 'flagged' => $bad, 'note' => $note], '__ret' => ['ver' => $ver + 1, 'bad' => $bad]]; });
+			$bd = (($s['state']['meta']['created'] ?? 0) === ($j['state']['meta']['created'] ?? 0)) ? (array) ($s['meta']['badges'] ?? []) : []; /* v51: lencana sekali didapat tetap tercatat untuk kampung ini */
+			if (!$bad && isset($ind['rth'])) { foreach (badges_now($j['state'], $ind, $rc) as $bk) { if (!isset($bd[$bk])) { $bd[$bk] = time(); $newB[] = $bk; } } } $meta['badges'] = $bd;
+			return ['__write' => ['ver' => $ver + 1, 'meta' => $meta, 'state' => array_merge($j['state'], ['_ind' => $meta['ind'], '_badges' => $meta['badges'], '_river' => $rc['river']]), 'flagged' => $bad, 'note' => $note], '__ret' => ['ver' => $ver + 1, 'bad' => $bad]]; });
 		if (isset($r['conflict'])) { out(['ok' => false, 'error' => 'conflict', 'ver' => $r['conflict']], 409); }
 		if (isset($r['stale'])) { out(['ok' => false, 'error' => 'stale', 'ver' => $r['stale']], 409); }
 		// direktori publik ringkas untuk tetangga (tanpa data pribadi selain nama tokoh)
 		// v42: berkas bersama (direktori & peringkat) hanya ditulis bila ada perubahan berarti atau sudah 15 menit → aman untuk ratusan pemain bersamaan
-		$dirSig = md5(json_encode([$meta['name'], $meta['loc'], round((float) $meta['lat'], 3), round((float) $meta['lon'], 3), $meta['era'], intdiv((int) $meta['kk'], 5), $u['kelas'] ?? '', $u['name'] ?? '']));
+		$dirSig = md5(json_encode([$meta['name'], $meta['loc'], round((float) $meta['lat'], 3), round((float) $meta['lon'], 3), $meta['era'], intdiv((int) $meta['kk'], 5), $u['kelas'] ?? '', $u['name'] ?? '', intdiv((int) $meta['pol'], 5), $meta['rid']]));
 		$doDir = $fresh || $dirSig !== ($u['dirSig'] ?? '') || time() - (int) ($u['dirAt'] ?? 0) > 900;
-		if ($doDir) upd('dir.php', function ($d) use ($u, $meta) { $d = $d ?: []; $d[$u['uid']] = $meta + ['who' => $u['name'] ?? $u['user'], 'kelas' => $u['kelas'] ?? '', 'kampus' => $u['kampus'] ?? ''];
+		if ($doDir) upd('dir.php', function ($d) use ($u, $meta) { $d = $d ?: []; $d[$u['uid']] = array_diff_key($meta, ['badges' => 1]) + ['nb' => count($meta['badges'] ?? []), 'who' => $u['name'] ?? $u['user'], 'kelas' => $u['kelas'] ?? '', 'kampus' => $u['kampus'] ?? ''];
 			if (count($d) > 5000) { uasort($d, fn($x, $y) => $y['at'] <=> $x['at']); $d = array_slice($d, 0, 5000, true); } return ['__write' => $d, '__ret' => true]; });
-		$kc = ($u['kelas'] ?? '') !== '' ? (rd('k_' . kelas_code((string) $u['kelas']) . '.php') ?: []) : []; $chal = (string) ($kc['tantangan'] ?? ''); $chalNow = $chal !== '' && !$r['bad'] && isset($meta['ind']['rth']) && chal_ok($chal, $meta['ind']);
-		$lbSig = $meta['score'] . '|' . $meta['era'] . '|' . ($u['kelas'] ?? ''); $doLb = $chalNow || $lbSig !== ($u['lbSig'] ?? '') || time() - (int) ($u['lbAt'] ?? 0) > 900;
-		if (!$r['bad'] && $doLb) { $sem = semester(); $row = ['who' => $u['user'], 'name' => $meta['name'], 'kelas' => $u['kelas'] ?? '', 'kampus' => $u['kampus'] ?? '', 'score' => $meta['score'], 'era' => $meta['era'], 'kk' => $meta['kk'], 'month' => $meta['month'], 'loc' => $meta['loc'], 'ind' => $meta['ind'], 'at' => time()];
+		$kc = ($u['kelas'] ?? '') !== '' ? (rd('k_' . kelas_code((string) $u['kelas']) . '.php') ?: []) : []; $chal = (string) ($kc['tantangan'] ?? ''); $chalNow = $chal !== '' && !$r['bad'] && isset($meta['ind']['rth']) && chal_ok($chal, $meta['ind'], $meta['badges'] ?? []);
+		$lbSig = $meta['score'] . '|' . $meta['era'] . '|' . ($u['kelas'] ?? '') . '|' . count($meta['badges'] ?? []); $doLb = $chalNow || $lbSig !== ($u['lbSig'] ?? '') || time() - (int) ($u['lbAt'] ?? 0) > 900;
+		if (!$r['bad'] && $doLb) { $sem = semester(); $row = ['who' => $u['user'], 'name' => $meta['name'], 'kelas' => $u['kelas'] ?? '', 'kampus' => $u['kampus'] ?? '', 'score' => $meta['score'], 'era' => $meta['era'], 'kk' => $meta['kk'], 'month' => $meta['month'], 'loc' => $meta['loc'], 'ind' => $meta['ind'], 'badges' => $meta['badges'] ?? [], 'at' => time()];
 			upd('lb_' . $sem . '.php', function ($d) use ($u, $row, $chal, $chalNow) { $d = $d ?: []; $old = $d[$u['uid']] ?? null; if ($row['score'] >= (int) ($old['best'] ?? 0)) { $row['best'] = $row['score']; $row['bestInd'] = $row['ind']; $row['bestEra'] = $row['era']; $row['bestKK'] = $row['kk']; $row['bestName'] = $row['name']; } else { $row['best'] = (int) $old['best']; $row['bestInd'] = $old['bestInd'] ?? $row['ind']; $row['bestEra'] = $old['bestEra'] ?? null; $row['bestKK'] = $old['bestKK'] ?? null; $row['bestName'] = $old['bestName'] ?? null; } $row['saves'] = (int) ($old['saves'] ?? 0) + 1; $row['chal'] = $chal; $row['chalAt'] = ($old['chal'] ?? '') === $chal && !empty($old['chalAt']) ? $old['chalAt'] : ($chalNow ? time() : 0); $row['first'] = $old['first'] ?? time(); $d[$u['uid']] = $row; return ['__write' => $d, '__ret' => true]; });
 		if ($doDir || (!$r['bad'] && $doLb)) { upd('u_' . $u['uid'] . '.php', function ($x) use ($doDir, $dirSig, $doLb, $lbSig, $r) { if (!$x) { return ['__ret' => false]; } if ($doDir) { $x['dirSig'] = $dirSig; $x['dirAt'] = time(); } if (!$r['bad'] && $doLb) { $x['lbSig'] = $lbSig; $x['lbAt'] = time(); } return ['__write' => $x, '__ret' => true]; }); } }
 		$grant = 0; if ((float) ($u['grantPend'] ?? 0) > 0) { $grant = upd('u_' . $u['uid'] . '.php', function ($x) { if (!$x) { return ['__ret' => 0]; } $g = (float) ($x['grantPend'] ?? 0); $x['grantPend'] = 0; return ['__write' => $x, '__ret' => $g]; }); }
-		out(['ok' => true, 'grant' => $grant, 'ver' => $r['ver'], 'score' => $meta['score'], 'ind' => $meta['ind'], 'ranked' => !$r['bad'], 'flags' => $r['bad'], 'chal' => $chal, 'chalOk' => $chalNow]);
+		out(['ok' => true, 'grant' => $grant, 'ver' => $r['ver'], 'score' => $meta['score'], 'ind' => $meta['ind'], 'ranked' => !$r['bad'], 'flags' => $r['bad'], 'chal' => $chal, 'chalOk' => $chalNow, 'badges' => $meta['badges'] ?? [], 'newBadges' => $newB, 'river' => $rc['river']]);
 	}
 	case 'eula': { $u = auth(); if (($b['ver'] ?? '') !== EULA_VER) { fail('eula'); }
 		upd('u_' . $u['uid'] . '.php', function ($x) { $x['eula'] = EULA_VER; $x['eulaAt'] = time(); return ['__write' => $x, '__ret' => true]; }); out(['ok' => true]); }
@@ -395,7 +454,7 @@ switch ($a) {
 		$u = auth(); $c = preg_replace('/[^A-Z0-9]/', '', strtoupper((string) ($_GET['code'] ?? ''))); $k = $c ? rd('k_' . $c . '.php') : null;
 		if (empty($u['dosen']) || !$k || $k['owner'] !== $u['uid']) { fail('forbidden', 403); }
 		$sem = preg_match('/^\d{4}-(Ganjil|Genap)$/', (string) ($_GET['sem'] ?? '')) ? (string) $_GET['sem'] : semester(); $d = rd('lb_' . $sem . '.php') ?: []; $rows = [];
-		foreach ($d as $r) { if ($r['kelas'] === $c) { $rows[] = ['user' => $r['who'], 'permukiman' => $r['name'], 'lokasi' => $r['loc'], 'skor_terbaik' => $r['best'], 'skor_terakhir' => $r['score'], 'ekonomi' => $r['bestInd']['e'] ?? '', 'jejaring' => $r['bestInd']['n'] ?? '', 'kenyamanan' => $r['bestInd']['c'] ?? '', 'kepuasan' => $r['bestInd']['k'] ?? '', 'pertumbuhan' => $r['bestInd']['p'] ?? '', 'era' => $r['era'], 'kk' => $r['kk'], 'bulan_main' => $r['month'], 'jumlah_simpan' => $r['saves'], 'tantangan' => $r['chal'] ?? '', 'tantangan_tercapai' => !empty($r['chalAt']) ? date('Y-m-d', $r['chalAt']) : '', 'rth' => $r['bestInd']['rth'] ?? '', 'layanan_kota' => $r['bestInd']['svc'] ?? '', 'mulai' => date('Y-m-d', $r['first']), 'terakhir' => date('Y-m-d H:i', $r['at'])]; } }
+		foreach ($d as $r) { if ($r['kelas'] === $c) { $rows[] = ['user' => $r['who'], 'permukiman' => $r['name'], 'lokasi' => $r['loc'], 'skor_terbaik' => $r['best'], 'skor_terakhir' => $r['score'], 'ekonomi' => $r['bestInd']['e'] ?? '', 'jejaring' => $r['bestInd']['n'] ?? '', 'kenyamanan' => $r['bestInd']['c'] ?? '', 'kepuasan' => $r['bestInd']['k'] ?? '', 'pertumbuhan' => $r['bestInd']['p'] ?? '', 'era' => $r['era'], 'kk' => $r['kk'], 'bulan_main' => $r['month'], 'jumlah_simpan' => $r['saves'], 'lencana' => count($r['badges'] ?? []), 'daftar_lencana' => implode('; ', array_map(fn($k) => preg_replace('/^\S+\s/u', '', BADGE[$k] ?? $k), array_keys($r['badges'] ?? []))), 'tantangan' => $r['chal'] ?? '', 'tantangan_tercapai' => !empty($r['chalAt']) ? date('Y-m-d', $r['chalAt']) : '', 'rth' => $r['bestInd']['rth'] ?? '', 'layanan_kota' => $r['bestInd']['svc'] ?? '', 'mulai' => date('Y-m-d', $r['first']), 'terakhir' => date('Y-m-d H:i', $r['at'])]; } }
 		usort($rows, fn($a, $b) => $b['skor_terbaik'] <=> $a['skor_terbaik']); out(['ok' => true, 'kelas' => $c, 'nama' => $k['nama'], 'sem' => $sem, 'rows' => $rows]);
 	}
 	case 'delete': { $u = auth(); rate('del' . $u['uid'], 5, 3600, false); $full = rd('u_' . $u['uid'] . '.php'); if (!$full || !password_verify((string) ($b['pass'] ?? ''), $full['hash'])) { fail('bad_login', 401); }
@@ -407,6 +466,40 @@ switch ($a) {
 		if (is_file(DATA . '/alerts.php')) { upd('alerts.php', function ($a) use ($u) { $a = array_values(array_filter($a ?: [], fn($r) => ($r['uid'] ?? '') !== $u['uid'])); return ['__write' => $a, '__ret' => true]; }); }
 		out(['ok' => true]); }
 	case 'load': { $u = auth(); $s = rd('s_' . $u['uid'] . '.php'); out(['ok' => true, 'save' => $s]); }
+	// ---- v51: wilayah bersama (kelas atau sekitar ±25 km): sungai bersama, proyek patungan, peringkat wilayah ----
+	case 'region': {
+		$u = auth(); rate('rg' . $u['uid'], 240, 600); $s = rd('s_' . $u['uid'] . '.php'); if (!$s) { fail('no_save', 404); } $me = $u['uid'];
+		$rid = (string) ($s['meta']['rid'] ?? ''); if ($rid === '') { $rid = region_id($u, $s['meta']); } $rc = region_ctx($rid, $me);
+		$label = strncmp($rid, 'k:', 2) === 0 ? 'Kelas ' . ((rd('k_' . kelas_code(substr($rid, 2)) . '.php') ?: [])['nama'] ?? substr($rid, 2)) : 'Sekitar ' . clean((string) ($s['meta']['loc'] ?? ''), 60);
+		$mem = []; foreach ($rc['mem'] as $id => $m) { $mem[] = ['me' => $id === $me, 'who' => (string) ($m['who'] ?? ''), 'name' => (string) ($m['name'] ?? ''), 'loc' => (string) ($m['loc'] ?? ''), 'era' => (int) ($m['era'] ?? 1), 'kk' => (int) ($m['kk'] ?? 0), 'score' => (int) ($m['score'] ?? 0), 'pol' => (int) ($m['pol'] ?? 0), 'nb' => (int) ($m['nb'] ?? 0)]; }
+		usort($mem, fn($a, $b) => $b['score'] <=> $a['score']);
+		$pj = []; foreach (RPROJ as $k => $P) { $x = $rc['p'][$k] ?? []; $pj[] = ['k' => $k, 'n' => $P['n'], 'need' => $P['need'], 'fx' => $P['fx'], 'got' => $x['got'] ?? ['coin' => 0, 'wood' => 0, 'stone' => 0], 'my' => $x['by'][$me] ?? ['coin' => 0, 'wood' => 0, 'stone' => 0], 'givers' => count($x['by'] ?? []), 'done' => (int) ($x['done'] ?? 0)]; }
+		$g = []; $cut = time() - 180 * 86400; foreach (dir_rd() as $m) { if (($m['rid'] ?? '') !== '' && ($m['at'] ?? 0) >= $cut) { $g[$m['rid']][] = (int) ($m['score'] ?? 0); } }
+		$avg = []; foreach ($g as $k => $sc) { rsort($sc); $top = array_slice($sc, 0, 10); $avg[$k] = array_sum($top) / count($top); } arsort($avg); $rank = array_search($rid, array_keys($avg), true);
+		out(['ok' => true, 'rid' => substr($rid, 0, 2), 'label' => $label, 'members' => $mem, 'river' => $rc['river'], 'fx' => $rc['fx'], 'pol' => (int) ($s['meta']['pol'] ?? 0), 'projects' => $pj, 'rank' => $rank === false ? null : $rank + 1, 'regions' => count($avg), 'ver' => (int) ($s['ver'] ?? 0)]);
+	}
+	case 'region_give': {
+		if (cfg()['maint']) { fail('maint', 503); } $u = auth(); rate('rgg' . $u['uid'], 30, 3600); $p = (string) ($b['p'] ?? ''); if (!isset(RPROJ[$p])) { fail('bad'); }
+		$amt = []; foreach (['coin', 'wood', 'stone'] as $q) { $v = (float) ($b[$q] ?? 0); if (!is_finite($v) || $v < 0 || $v > 100000) { fail('bad'); } $amt[$q] = round($v, 2); } if (array_sum($amt) <= 0) { fail('bad'); }
+		$base = (int) ($b['base'] ?? 0);
+		$res = upd('s_' . $u['uid'] . '.php', function ($s) use ($u, $p, $amt, $base) {
+			if (!$s) { return ['__ret' => ['e' => 'no_save']]; } if (!empty($s['flagged']) && empty($u['sah'])) { return ['__ret' => ['e' => 'flagged']]; }
+			$ver = (int) ($s['ver'] ?? 0); if ($base !== $ver) { return ['__ret' => ['e' => 'conflict', 'ver' => $ver]]; }
+			$rid = (string) ($s['meta']['rid'] ?? ''); if ($rid === '') { return ['__ret' => ['e' => 'no_region']]; }
+			foreach ($amt as $q => $v) { if ((float) ($s['state']['res'][$q] ?? 0) + 1e-6 < $v) { return ['__ret' => ['e' => 'lack', 'r' => $q]]; } }
+			$acc = upd(region_file($rid), function ($g) use ($rid, $p, $amt, $u) { $g = $g ?: ['rid' => $rid, 'p' => []]; $P = RPROJ[$p];
+				$x = $g['p'][$p] ?? ['got' => ['coin' => 0, 'wood' => 0, 'stone' => 0], 'by' => []]; if (!empty($x['done'])) { return ['__ret' => ['e' => 'done']]; }
+				$ok = []; foreach ($amt as $q => $v) { $left = max(0, $P['need'][$q] - (float) $x['got'][$q]); $ok[$q] = round(min($v, $left), 2); }
+				if (array_sum($ok) <= 0) { return ['__ret' => ['e' => 'nothing']]; }
+				foreach ($ok as $q => $v) { $x['got'][$q] = round((float) $x['got'][$q] + $v, 2); $x['by'][$u['uid']][$q] = round((float) ($x['by'][$u['uid']][$q] ?? 0) + $v, 2); }
+				$full = true; foreach ($P['need'] as $q => $nv) { if ((float) $x['got'][$q] + 1e-6 < $nv) { $full = false; } } if ($full) { $x['done'] = time(); }
+				$g['p'][$p] = $x; return ['__write' => $g, '__ret' => ['ok' => $ok, 'done' => $full]]; });
+			if (isset($acc['e'])) { return ['__ret' => $acc]; }
+			foreach ($acc['ok'] as $q => $v) { $s['state']['res'][$q] = round((float) $s['state']['res'][$q] - $v, 4); } $s['ver'] = $ver + 1;
+			return ['__write' => $s, '__ret' => ['ok' => $acc['ok'], 'done' => $acc['done'], 'ver' => $ver + 1]]; });
+		if (isset($res['e'])) { if ($res['e'] === 'conflict') { out(['ok' => false, 'error' => 'conflict', 'ver' => $res['ver']], 409); } fail($res['e']); }
+		out(['ok' => true, 'given' => $res['ok'], 'done' => $res['done'], 'ver' => $res['ver']]);
+	}
 	case 'neighbors': {
 		$u = auth(); $lat = (float) ($_GET['lat'] ?? 0); $lon = (float) ($_GET['lon'] ?? 0); $d = rd('dir.php') ?: []; $me = $u['uid']; $out = [];
 		foreach ($d as $id => $m) { if ($id === $me) { continue; } $km = 6371 * 2 * asin(sqrt(sin(deg2rad($m['lat'] - $lat) / 2) ** 2 + cos(deg2rad($lat)) * cos(deg2rad($m['lat'])) * sin(deg2rad($m['lon'] - $lon) / 2) ** 2));

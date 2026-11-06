@@ -243,6 +243,10 @@ button,.tool,#hud,#bar,.hud,.screen{touch-action:manipulation}html{-webkit-text-
 #baHalt{position:fixed;inset:0;z-index:200;background:rgba(10,16,12,.92);display:flex;align-items:center;justify-content:center;padding:16px}#baHalt .box{max-width:460px;background:var(--panel2,#fffdf8);color:var(--ink2,#1f1c18);border-radius:18px;padding:20px 22px;box-shadow:0 18px 50px rgba(0,0,0,.5)}#baHalt h2{margin:0 0 8px;font-size:20px}#baHalt p{margin:0 0 14px;font-size:14px;line-height:1.5}
 /* v50t: Samsung Internet/Android — matikan efek kabur latar (backdrop-filter) yang berat saat keyboard membuka */
 html.lite *,html.lite *::before,html.lite *::after{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+/* v51: menu ☰ berkelompok */
+#menu details.mg{border-top:1px solid var(--line)}#menu details.mg summary{list-style:none;cursor:pointer;padding:9px 8px;border-radius:10px;font-weight:800;display:flex;align-items:center;gap:6px}#menu details.mg summary::-webkit-details-marker{display:none}
+#menu details.mg summary::after{content:'▸';margin-left:auto;opacity:.6;transition:transform .15s}#menu details.mg[open] summary::after{transform:rotate(90deg)}#menu details.mg summary small{font-weight:600;opacity:.55;font-size:11px;margin-left:4px}
+#menu details.mg summary:hover{background:rgba(255,255,255,.08)}#menu .mgb{padding:0 0 6px 10px}#menu .mgb button{padding:7px 8px;font-weight:600;font-size:13px}#menu .mgt{border-top:1px solid var(--line);margin-top:4px;padding-top:4px}
 </style>
 </head>
 <body>
@@ -334,6 +338,6 @@ html.lite *,html.lite *::before,html.lite *::after{-webkit-backdrop-filter:none!
 <div id="toast"></div>
 <div id="modal" class="modal hidden"></div>
 
-<script type="module" src="game.js?v=74"></script>
+<script type="module" src="game.js?v=76"></script>
 </body>
 </html>
