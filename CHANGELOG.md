@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.7.0 — 2026-11-06
+- **Biologi laut & perikanan (Sains & Matematika)**: struktur komunitas (kepadatan & kepadatan relatif, frekuensi, pola sebaran Morisita dengan uji χ², ketidakmiripan Bray–Curtis + dendrogram UPGMA); hubungan panjang–berat (W = aLᵇ, uji b = 3, faktor kondisi Fulton K dan Kn); CPUE & model surplus produksi Schaefer (E-MSY, MSY, 80% MSY); bioakumulasi logam berat (BCF, BSAF, perbandingan dengan batas yang diisi pengguna, THQ konsumsi).
+- **Farmakologi & toksikologi (Kesehatan)**: dosis–respons 4 parameter (EC50 relatif, IC50 absolut, IK 95%) dan IC50 regresi linear untuk uji antioksidan DPPH; LD50/LC50 probit Finney (kemungkinan maksimum, koreksi Abbott, IK 95%, uji χ²); farmakokinetik non-kompartemen (Cmax, Tmax, AUC linear atau linear-naik/log-turun, λz, t½, AUC₀–∞, MRT, CL/F, Vz/F).
+- **Pemandu tujuan**: bidang baru *Kelautan, Perikanan & Biologi Perairan* dan *Farmasi & Farmakologi*; kosakata terumbu karang, plankton, bentos, lamun, mangrove, ikan, kerang, logam berat, ekstrak, antioksidan, DPPH, IC50, LD50, toksisitas, farmakokinetik; delapan rumusan maksud baru langsung menuju alat yang tepat. Pustaka mengenali metode-metode ini dan menerjemahkan istilahnya.
+- Semua hasil diuji terhadap scipy/numpy. Rujukan baru: Morisita (1959), Bray & Curtis (1957), Sokal & Michener (1958), Le Cren (1951), Froese (2006), Schaefer (1954), Arnot & Gobas (2006), U.S. EPA (1989), Motulsky & Christopoulos (2004), Brand-Williams dkk. (1995), Finney (1971), Abbott (1925), Yamaoka dkk. (1978).
+
 ## 3.6.4 — 2026-11-06
 - Tautan **‹ pindotutuko.id** di kiri atas untuk kembali ke beranda situs (hanya pada versi web; tidak tampil di aplikasi desktop).
 
