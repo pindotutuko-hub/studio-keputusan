@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.4.0 — 2026-11-06
+- **Kerangka & alur analisis** (tombol "Kerangka" di kepala dan "🧭 Kerangka" pada setiap kartu saran):
+  - Kerangka dibangun otomatis dari rumusan tujuan yang dipilih: tujuan → data → uji instrumen/metode → interpretasi → kesimpulan & rekomendasi.
+  - Dapat diedit: jenis langkah, nama, uraian, keluaran, metode terkait; tambah, gandakan, hapus, naik/turun; langkah "sejajar" untuk analisis paralel; ganti templat dari maksud lain.
+  - Diagram alur SVG diperbarui langsung; kotak metode dapat diklik untuk membuka modulnya; unduh SVG/PNG dan salin sebagai teks; tersimpan otomatis dan ikut ekspor–impor proyek.
+- **Alat hitung baru**: peramalan deret waktu (naif, rata-rata bergerak, eksponensial, Holt, tren linear; RMSE/MAE/MAPE), Location Quotient & Shift-Share, model gravitasi (Sains & Matematika); regresi logistik biner (odds ratio, IK 95%, Wald, R² McFadden), Kaplan–Meier & uji log-rank (Kesehatan & Pendidikan).
+- **Pemandu tujuan diperluas** setelah uji 100 pertanyaan acak lintas bidang: maksud baru (uji beda, regresi, logistik, survival, peramalan, sektor unggulan, gravitasi, percobaan pertanian, uji diagnostik, FMEA, matriks risiko, fuzzy AHP, analisis wacana/framing, fenomenologi & grounded theory, harga hedonik, AMDAL, ergonomi, CEA, ANP, MDS/Rapfish), saran langsung membuka alat hitung yang tepat.
+- Metode yang belum ada di aplikasi (GIS, konjoin, DEA, meta-analisis, bibliometrik, sentimen, optimasi/RSM, sistem dinamik, data panel, klasifikasi citra) ditandai "Sebagian/Belum tersedia" dengan rekomendasi perangkat lunak dan tautan rujukan.
+- Rujukan baru di Sumber & Referensi: Dunn (1960), Isard (1960), Haynes & Fotheringham (1984), Hyndman & Athanasopoulos (2021), Hosmer dkk. (2013), Kaplan & Meier (1958), Mantel (1966).
+
 ## 3.3.0 — 2026-11-06
 - **Pemandu tujuan** pada kotak "Apa yang ingin Anda putuskan atau ketahui?":
   - Korpus 49 rumusan maksud penelitian (persepsi, kepuasan, pengaruh, perbedaan kelompok, IPA, SEM, lokasi, strategi, konsensus pakar, faktor kunci, aktor, wawancara, perilaku ruang, space syntax, kelayakan, jadwal, dll.), masing-masing dengan rangkaian metode dan alasannya.
