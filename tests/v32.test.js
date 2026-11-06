@@ -28,7 +28,7 @@ setTimeout(async () => {
   // tata letak Opsi B: tema Senja bawaan, saran contoh langsung tampil, kartu tujuan berikon di atas menu data, nama metode terbaca
   assert.strictEqual(d.documentElement.dataset.pal, 'senja', 'tema bawaan Senja');
   const B = d.querySelector('#skB'); assert(B && B.querySelector('.bsug .bs'), 'saran contoh tampil tanpa mengetik');
-  assert(/AHP/.test(B.querySelector('.bsug .bs b').textContent), 'contoh lokasi → AHP');
+  assert(/AHP/.test(B.querySelector('.bsug .bs .advch').textContent), 'contoh lokasi → AHP');
   const gs = B.querySelectorAll('.bgoal .gico svg'); assert(gs.length >= 9, 'ikon tiap kartu tujuan');
   assert(B.innerHTML.indexOf('bgoals') < B.innerHTML.indexOf('skstart'), 'kartu tujuan sebelum menu data');
   assert(/\d+ metode · \d+ rumpun ilmu/.test(B.querySelector('.bhrow').textContent), 'jumlah metode');
@@ -40,6 +40,19 @@ setTimeout(async () => {
   assert.strictEqual(U.suggestMethods('Saya ingin memilih lokasi terbaik dari 4 calon lahan')[0], 'ahp');
   assert(U.suggestMethods('menyusun hubungan pengaruh antar faktor kunci').includes('ism'));
   assert(U.suggestMethods('konsensus para pakar').includes('delphi'));
+  // v3.3 pemandu tujuan: korpus maksud + sinonim/imbuhan/salah ketik + penajam + rujukan luar
+  { const A = U.skAdvise('Penelitian tentang persepsi'); assert(A.vague && A.top.length >= 3 && A.top.every(x => /persepsi|kepuasan/.test(x.it[2])), 'persepsi umum → opsi terfokus');
+    assert(U.advTerms('persepsii warga').hit.some(h => h.c === 'persepsi' && h.fz), 'salah ketik dikenali');
+    assert(U.advTerms('mempengaruhi').hit[0].c === 'pengaruh', 'imbuhan dilepas');
+    assert.strictEqual(U.skAdvise('apakah ada perbedaan persepsi antara laki-laki dan perempuan').top[0].it[0], 'persepsi_beda');
+    assert.strictEqual(U.skAdvise('pola pemanfaatan ruang publik oleh pedagang').top[0].it[0], 'perilaku_ruang');
+    assert.strictEqual(U.skAdvise('pengaruh kualitas layanan terhadap kepuasan pengunjung').top.some(x => x.it[0] === 'ipa'), true);
+    const N = U.skAdvise('blockchain kuantum'); assert(!N.top.length && N.vague, 'tidak ditemukan');
+    const h = U.advHTML('blockchain kuantum'); assert(/scholar\.google\.com/.test(h) && /semanticscholar\.org/.test(h) && /data-advd/.test(h) && /data-advg/.test(h), 'rujukan luar + pertanyaan penajam');
+    const qi = d.querySelector('#bQ'); qi.value = 'Penelitian tentang persepsi'; d.querySelector('#bAsk').click();
+    assert(d.querySelectorAll('#bRes .bs.adv').length >= 3 && d.querySelector('#bRes [data-advq]'), 'kartu rumusan tampil');
+    d.querySelector('#bRes [data-advd="qual"]').click(); assert.strictEqual(U.skAdvise('Penelitian tentang persepsi').top[0].it[0], 'persepsi_kual', 'penajam data → wawancara');
+    d.querySelector('#bRes [data-advd="qual"]').click(); }
   // angka format Indonesia & tabel tempel
   near(U.numOf('1.234,5'), 1234.5); near(U.numOf('12.500'), 12500); near(U.numOf('0,38'), 0.38); near(U.numOf('45%'), 45); assert(Number.isNaN(U.numOf('Aksesibilitas')));
   const D = U.parseText('Kriteria\tBobot\nAksesibilitas\t0,38\nHarga lahan\t0,27\nRisiko banjir\t0,21\nFasilitas\t0,14');

@@ -523,6 +523,13 @@ section.owfull>#owEmbed:empty::before{content:"Klik ikon metode di kanvas untuk 
 .lpcard .lpk{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ochre)}.lpcard.on{border:2px solid var(--petrol);background:var(--petrol-soft)}
 .lppal{display:flex;flex-wrap:wrap;gap:8px}.lpsw{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--sheet);color:var(--ink);border-radius:999px;padding:6px 12px 6px 6px;font:inherit;font-size:13px;cursor:pointer}
 .lpsw i{display:flex;border-radius:999px;overflow:hidden}.lpsw s{display:block;width:14px;height:22px;text-decoration:none}.lpsw.on{border:2px solid var(--petrol);font-weight:700}
+#skB .advu{margin:2px 0 6px;font-size:13px;color:var(--top-muted)}#skB .advk{display:inline-block;margin:2px 4px 2px 0;padding:1px 8px;border-radius:999px;background:rgba(239,154,79,.22);color:var(--top-ink);font-size:12px}#skB .advm{opacity:.75}
+#skB .advv{margin:4px 0 6px;color:var(--top-ink);font-size:14px}#skB .advch{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:6px}#skB .advch i{font-style:normal;opacity:.6}
+#skB .advm2{border:1px solid currentColor;background:transparent;color:inherit;border-radius:999px;padding:1px 9px;font:inherit;font-size:12px;cursor:pointer;opacity:.85}#skB .advm2:hover{opacity:1;background:rgba(127,127,127,.15)}
+#skB .bs.adv{align-items:flex-start;flex-wrap:wrap}#skB .bs.adv .bst{flex:1 1 320px}
+#skB .advr{margin-top:12px;padding-top:10px;border-top:1px solid var(--top-line);color:var(--top-ink);display:flex;flex-direction:column;gap:8px}#skB .advrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}#skB .advrow>span{flex:0 0 100%;font-size:12px;color:var(--top-muted)}
+#skB .advc{border:1px solid var(--top-line);background:transparent;color:var(--top-ink);border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer}#skB .advc:hover{border-color:#ef9a4f}#skB .advc.on{background:#ef9a4f;border-color:#ef9a4f;color:#1e1b2e;font-weight:700}#skB .advc.reset{align-self:flex-start;font-size:12px;opacity:.85}
+#skB .advx{margin-top:10px;font-size:13px;color:var(--top-ink)}#skB .advx a{color:#fbbf8a}#skB .advx .note{color:var(--top-muted)}
 #skB .bh{margin:0;font-size:22px}#skB .bhrow{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:22px 0 12px}
 #skB .bhero{flex-direction:column;padding:30px 32px;border-radius:24px}#skB .bhero .bq,#skB .bhero .bsug{flex:0 0 auto}#skB .bs .spacer{flex:1}#skB .bs .lvl.l1,#skB .bs>.note{margin-left:auto}#skB .bs>.note+.spacer,#skB .bs .lvl+.spacer{flex:0 0 8px}#skB .bs:not(:first-of-type) .btn:not(.primary){background:transparent;color:var(--top-ink);border-color:var(--top-muted)}#skB .bs:not(:first-of-type)>.note{color:var(--top-muted)}#skB .bq h2{font-size:clamp(26px,3.4vw,40px);font-weight:800;letter-spacing:-.01em}#skB .bsug{flex:1 1 auto;padding:18px}
 #skB #bAsk{background:#ef9a4f;border-color:#ef9a4f;color:#1e1b2e;font-weight:700;padding:12px 22px;border-radius:12px}#skB #bAsk:hover{background:#f3ab6a}
@@ -1129,7 +1136,7 @@ const PROJ=(()=>{const REG="sk-projects-v1", GLOBAL=new Set([REG,"sk-uimode-v1",
     backup};
   try{window.addEventListener("pagehide",backup); document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")backup();});}catch(e){}
   return api;})();
-const APP_VERSION="3.2.2"; window.__APP_VERSION=APP_VERSION;
+const APP_VERSION="3.3.0"; window.__APP_VERSION=APP_VERSION;
 const LS_KEY="ism-studio-v1";
 const desktop = typeof window.ismDesktop==="object" && window.ismDesktop;
 if(desktop) document.documentElement.classList.add("is-desktop");
@@ -6315,9 +6322,109 @@ const SK_KEY=[[/peringkat|memilih|pilih|terbaik|alternatif|lokasi|prioritas|rank
   [/strategi|kekuatan|kelemahan|peluang|ancaman|posisi/,["swot","pestel"]],[/pakar|ahli|konsensus|sepakat|delphi/,["delphi"]],[/survei|kuesioner|responden|korelasi|regresi|uji|beda|reliab|valid/,["stat"]],
   [/ruang|denah|integrasi|konektivitas|space syntax|tapak|site/,["syntax","site"]],[/jadwal|proyek|jalur kritis|durasi|pert|cpm/,["cpm"]],[/biaya|manfaat|kelayakan|npv|irr/,["cba"]],[/aktor|jejaring|jaringan sosial|stakeholder/,["sna"]],
   [/wawancara|fgd|kualitatif|kode|tema/,["qual"]],[/energi|ottv|selubung|fasad/,["ottv"]],[/perilaku|pengamatan|aktivitas/,["behav"]],[/persaingan|pasar|industri/,["porter"]],[/kinerja|indikator|kpi|scorecard/,["bsc"]]];
-function suggestMethods(q){ q=String(q||"").toLowerCase(); const sc={}; SK_KEY.forEach(([re,ks],i)=>{ if(re.test(q)) ks.forEach((k,j)=>sc[k]=(sc[k]||0)+3-j-i*.01); });
-  METHODS.forEach(m=>{ const t=(m.n+" "+(m.t||"")+" "+(m.d||"")+" "+((MINFO[m.k]||{}).q||"")).toLowerCase(); q.split(/\s+/).filter(w=>w.length>3).forEach(w=>{ if(t.includes(w)) sc[m.k]=(sc[m.k]||0)+.5; }); });
-  const best=Math.max(0,...Object.values(sc)); return Object.entries(sc).filter(([k,v])=>METHODS.find(m=>m.k===k&&m.ready!==false)&&(best<2||v>=1)).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]); }
+/* ---------- v3.3: PEMANDU TUJUAN — korpus maksud penelitian + pencocokan sinonim/imbuhan/salah ketik + pertanyaan penajam ---------- */
+const ADV_C={persepsi:"persepsi pandangan tanggapan penilaian opini anggapan citra kesan perception perceive opinion",kepuasan:"puas kepuasan satisfaction satisfied",preferensi:"preferensi selera minat kecenderungan keinginan preference interest",
+ sikap:"sikap attitude penerimaan acceptance",motivasi:"motivasi dorongan motivation",perilaku:"perilaku kebiasaan aktivitas tingkah kegiatan pemanfaatan penggunaan pemakaian memakai behavior behaviour activity usage",
+ layanan:"layanan pelayanan servqual service mutu kualitas quality",kinerja:"kinerja performa performance capaian prestasi",kepentingan:"kepentingan harapan importance expectation ekspektasi",
+ faktor:"faktor variabel determinan penentu indikator factor determinant variable",pengaruh:"pengaruh dampak efek memengaruhi mempengaruhi berpengaruh influence effect impact",
+ hubungan:"hubungan korelasi relasi kaitan keterkaitan relationship correlation association",perbedaan:"perbedaan beda membandingkan banding komparasi komparatif difference compare comparison",
+ kelompok:"kelompok grup gender usia generasi segmen golongan group",kuesioner:"kuesioner angket survei survey responden likert skala questionnaire sampel",
+ validitas:"validitas reliabilitas valid reliabel instrumen cronbach reliability validity",model:"model konstruk laten jalur sem structural path mediasi moderasi",
+ prediksi:"prediksi ramalan klasifikasi forecast predict classification",pola:"pola klaster cluster segmentasi pengelompokan tipologi pattern",
+ lokasi:"lokasi lahan tapak site tempat location kawasan",memilih:"memilih pilih pemilihan seleksi terbaik alternatif opsi choose select best option",
+ prioritas:"prioritas peringkat ranking urutan priority rank bobot kriteria weight criteria",strategi:"strategi strategis pengembangan arahan rencana wisata pariwisata strategy plan tourism",
+ makro:"politik ekonomi sosial teknologi makro pestel eksternal macro external",persaingan:"persaingan pesaing kompetitor pasar industri sektor competition market",
+ pakar:"pakar ahli expert narasumber praktisi",konsensus:"konsensus sepakat kesepakatan delphi consensus agreement",
+ struktur:"struktur hierarki akar penyebab sebab akibat kausal causal root hierarchy",hambatan:"hambatan kendala masalah permasalahan tantangan barrier obstacle problem",
+ aktor:"aktor stakeholder pemangku jejaring jaringan kolaborasi kemitraan actor network",wawancara:"wawancara fgd kualitatif tema narasi transkrip dokumen interview qualitative coding",
+ ruang:"ruang denah spasial konfigurasi integrasi aksesibilitas syntax layout publik rth taman koridor plaza space spatial public",rumah:"rumah hunian perumahan permukiman kampung tradisional jawa housing settlement dwelling",
+ bangunan:"bangunan gedung building",pascahuni:"pascahuni poe penghuni pengguna occupancy postoccupancy occupant",energi:"energi ottv rttv selubung fasad hemat energy envelope",
+ iklim:"iklim panas suhu termal mikroiklim uhi thermal microclimate heat",biaya:"biaya manfaat kelayakan investasi npv irr bcr finansial ekonomis cost benefit feasibility investment",
+ jadwal:"jadwal waktu durasi pert cpm schedule",proyek:"proyek project pembangunan",risiko:"risiko ketidakpastian skenario risk uncertainty scenario",
+ regulasi:"regulasi aturan peraturan kebijakan hukum perizinan kepatuhan regulation policy compliance",organisasi:"organisasi institusi lembaga kampus prodi perusahaan bsc scorecard organization",
+ wilayah:"wilayah daerah kabupaten provinsi regional klassen region",eksperimen:"eksperimen perlakuan intervensi pretest posttest kontrol experiment treatment",
+ kesehatan:"kesehatan pasien penyakit obat epidemiologi diagnostik gizi health",pendidikan:"soal butir tes ujian siswa pembelajaran test item education",
+ infrastruktur:"jalan jembatan drainase infrastruktur aset pemeliharaan infrastructure",mesin:"mesin komponen kegagalan machine",produksi:"produksi antrian efisiensi pabrik production queue",
+ listrik:"listrik daya beban power electrical",sains:"percobaan laboratorium kimia fisika matematika biologi laboratory experiment",data:"data dataset tabel angka statistik numerik statistic",
+ visual:"gambar foto bim gis peta map",metode:"metode method"};
+const ADV_I=[
+ ["persepsi_ukur","Mengukur persepsi/penilaian responden dengan kuesioner skala Likert","persepsi kuesioner sikap","survey","describe",["scale","stat"],"Uji butir & reliabilitas skala dulu, lalu ringkas skor, persentase, dan grafiknya."],
+ ["persepsi_faktor","Menguji faktor apa saja yang memengaruhi persepsi atau kepuasan","persepsi kepuasan faktor pengaruh","survey","relation",["scale","stat","plssem"],"Regresi untuk beberapa variabel; PLS-SEM bila variabelnya konstruk laten berlapis."],
+ ["persepsi_beda","Membandingkan persepsi antar kelompok responden (mis. penghuni lama vs baru, usia, gender)","persepsi perbedaan kelompok","survey","compare",["stat"],"Uji t / Mann–Whitney untuk dua kelompok, ANOVA / Kruskal–Wallis untuk lebih dari dua."],
+ ["persepsi_dimensi","Menemukan dimensi yang menyusun persepsi (analisis faktor)","persepsi faktor pola struktur","survey","describe",["scale","stat","cbsem"],"Analisis faktor eksploratori di Statistik; CB-SEM (CFA) untuk mengonfirmasi dimensinya."],
+ ["ipa","Membandingkan harapan (kepentingan) dengan kenyataan (kinerja) — Importance–Performance Analysis","kepentingan kinerja kepuasan layanan persepsi","survey","evaluate",["stat","quadrant"],"Hitung rerata kepentingan & kinerja tiap atribut, lalu petakan ke empat kuadran prioritas perbaikan."],
+ ["persepsi_kual","Menggali persepsi secara mendalam dari wawancara atau FGD","persepsi wawancara sikap","qual","describe",["qual"],"Kode transkrip, kelompokkan menjadi tema, dan uji kesepakatan antarpengode."],
+ ["persepsi_ruang","Menilai persepsi/pengalaman penghuni terhadap bangunan atau ruang (evaluasi pascahuni)","persepsi pascahuni bangunan ruang kepuasan rumah","survey","evaluate",["poe","stat"],"POE menilai kinerja teknis, fungsional, dan perilaku dari sudut pandang pengguna."],
+ ["kepuasan_ukur","Mengukur tingkat kepuasan pengguna, penghuni, atau pelanggan","kepuasan layanan","survey","describe",["scale","stat","quadrant"],"Skala kepuasan diuji reliabilitasnya, diringkas, lalu dipetakan prioritas perbaikannya."],
+ ["preferensi","Mengetahui preferensi/pilihan responden atas beberapa opsi","preferensi memilih","survey","rank",["stat","ahp"],"Frekuensi & uji beda di Statistik; perbandingan berpasangan AHP bila responden menilai antaropsi."],
+ ["model_teori","Menguji model teori dengan banyak variabel laten (SEM)","model pengaruh hubungan kuesioner","survey","relation",["scale","plssem","cbsem"],"PLS-SEM untuk prediksi/eksplorasi, CB-SEM untuk konfirmasi teori dan kecocokan model."],
+ ["hubungan_var","Melihat hubungan atau korelasi antarvariabel","hubungan data","numeric","relation",["stat"],"Korelasi Pearson/Spearman dan regresi, lengkap dengan grafik sebar."],
+ ["deskriptif","Mendeskripsikan data survei (rerata, persentase, grafik)","kuesioner data","survey","describe",["stat"],"Statistik deskriptif, tabel frekuensi, histogram, dan box plot."],
+ ["instrumen","Menguji validitas & reliabilitas kuesioner/skala","validitas kuesioner","survey","measure",["scale","psych"],"Korelasi butir-total, α Cronbach, ω McDonald, dan butir yang perlu dibuang."],
+ ["eksperimen","Menguji efek perlakuan/intervensi (sebelum–sesudah atau kelompok kontrol)","eksperimen pengaruh perbedaan","numeric","compare",["psych","stat"],"Uji beda berpasangan atau antar kelompok dan ukuran efeknya."],
+ ["pola","Mengelompokkan responden/wilayah berdasarkan kemiripan (klaster)","pola kelompok data","numeric","predict",["orange"],"k-Means/hierarki dan PCA di alur kerja data gaya Orange."],
+ ["prediksi","Memprediksi atau mengklasifikasi dari data","prediksi data","numeric","predict",["orange"],"kNN, pohon keputusan, Naive Bayes dengan evaluasi validasi silang."],
+ ["lokasi","Memilih lokasi/lahan terbaik dari beberapa calon","lokasi memilih prioritas","expert","rank",["ahp","mcdm"],"AHP memberi bobot kriteria; MCDM Lab memeringkat calon lokasi dengan beberapa metode."],
+ ["alternatif","Memeringkat alternatif desain atau kebijakan berdasarkan beberapa kriteria","memilih prioritas","expert","rank",["ahp","topsis","mcdm"],"Bobot dari pakar (AHP), peringkat dengan TOPSIS, dan uji kesepakatan antarmetode."],
+ ["bobot_obj","Memberi bobot kriteria secara objektif dari data (Entropy/CRITIC)","prioritas data","numeric","rank",["mcdm"],"Bobot dihitung dari sebaran data, bukan dari pendapat."],
+ ["prioritas_program","Menentukan prioritas program/kebijakan menurut pakar","prioritas pakar strategi","expert","rank",["delphi","ahp"],"Delphi menyaring usulan hingga sepakat, AHP memberi bobot prioritasnya."],
+ ["strategi","Merumuskan strategi pengembangan (kekuatan, kelemahan, peluang, ancaman)","strategi","expert","strategy",["pestel","swot"],"PESTEL memindai faktor eksternal, SWOT/TOWS merumuskan strategi silang."],
+ ["makro","Memindai faktor eksternal makro (politik, ekonomi, sosial, teknologi, lingkungan, hukum)","makro strategi","secondary","describe",["pestel"],"Nilai dampak × peluang tiap faktor dan urutkan yang paling berpengaruh."],
+ ["pasar","Menilai persaingan atau daya tarik pasar suatu sektor","persaingan","secondary","strategy",["porter","swot"],"Lima kekuatan Porter, lalu hasilnya menjadi bahan SWOT."],
+ ["konsensus","Mencapai kesepakatan pendapat para pakar","pakar konsensus","expert","consensus",["delphi"],"Putaran penilaian dengan median, IQR, dan stabilitas jawaban."],
+ ["faktor_kunci","Menemukan faktor kunci dan hubungan sebab–akibat antarfaktor","faktor struktur hubungan pengaruh","expert","structure",["ism","dematel"],"ISM menyusun hierarki & MICMAC, DEMATEL memisahkan faktor penyebab dan akibat."],
+ ["hambatan","Memetakan hambatan/kendala dan mana yang paling mendasar","hambatan struktur faktor","expert","structure",["delphi","ism"],"Saring hambatan dengan pakar (Delphi), lalu cari akar masalahnya (ISM)."],
+ ["aktor","Memetakan aktor/pemangku kepentingan dan siapa yang paling berpengaruh","aktor","expert","actor",["sna"],"Sentralitas derajat, kedekatan, dan perantara pada graf jaringan aktor."],
+ ["tema_kual","Menemukan tema dari wawancara, FGD, atau dokumen","wawancara","qual","describe",["qual"],"Pengodean, frekuensi kata, KWIC, dan matriks tema × kelompok."],
+ ["perilaku_ruang","Mengamati cara orang memakai ruang (behavior mapping)","perilaku ruang","observe","describe",["behav"],"Catat zona, aktivitas, dan waktu pengamatan, lalu petakan polanya."],
+ ["konfigurasi","Menganalisis konfigurasi ruang/kawasan (space syntax)","ruang","spatial","structure",["syntax"],"Integrasi, konektivitas, dan kedalaman ruang atau garis aksial."],
+ ["rumah_dalam","Mengukur kedalaman ruang rumah (rumah tradisional/Jawa)","rumah ruang","spatial","describe",["jhouse","syntax"],"Bandingkan kedalaman ruang privat dengan rumah dasar."],
+ ["tapak","Menilai potensi dan kendala tapak","lokasi","spatial","evaluate",["site"],"Skor tertimbang aspek iklim, topografi, akses, utilitas, dan view."],
+ ["energi","Menghitung kinerja energi selubung bangunan (OTTV/RTTV)","energi bangunan","numeric","evaluate",["ottv"],"Perhitungan OTTV/RTTV dan kepatuhannya."],
+ ["mikro","Menilai panas kawasan dan skenario pendinginan (mikroiklim)","iklim","spatial","evaluate",["microclimate"],"Bandingkan skenario vegetasi, material, dan peneduh."],
+ ["kelayakan","Menilai kelayakan finansial proyek (NPV, IRR, BCR)","biaya proyek","cost","feasibility",["cba"],"Arus kas, NPV, IRR, BCR, dan periode pengembalian."],
+ ["jadwal","Menyusun jadwal proyek dan jalur kritis","jadwal proyek","cost","schedule",["cpm"],"CPM/PERT dengan Gantt dan aktivitas kritis."],
+ ["tidakpasti","Memilih keputusan ketika kondisi masa depan tidak pasti","risiko memilih","numeric","rank",["uncert"],"Matriks payoff: maximax, maximin, Hurwicz, regret, dan EMV."],
+ ["regulasi","Memetakan regulasi dan risiko kepatuhan","regulasi","secondary","evaluate",["legal"],"Daftar regulasi, tingkat risiko, dan prioritas tindak lanjut."],
+ ["kinerja_org","Mengukur kinerja organisasi/program (Balanced Scorecard)","kinerja organisasi","secondary","evaluate",["bsc"],"Indikator kinerja dari empat perspektif."],
+ ["klassen","Memetakan wilayah menurut pertumbuhan dan pendapatan (Tipologi Klassen)","wilayah pola","secondary","describe",["quadrant"],"Analisis kuadran dua indikator dengan garis rerata wilayah acuan."],
+ ["kesehatan","Analisis kesehatan/epidemiologi atau uji diagnostik","kesehatan","numeric","evaluate",["kes"],"Rasio risiko, sensitivitas–spesifisitas, dan kalkulator terkait."],
+ ["soal","Analisis butir soal/tes (tingkat kesukaran, daya pembeda)","pendidikan validitas","numeric","measure",["psych"],"Tingkat kesukaran, daya pembeda, dan reliabilitas KR-20."],
+ ["infra","Menentukan prioritas penanganan aset infrastruktur","infrastruktur prioritas","numeric","rank",["civil"],"Skor kondisi dan prioritas pemeliharaan aset."],
+ ["mesin","Menilai keamanan dan keandalan komponen/mesin","mesin","numeric","evaluate",["mechanical"],"Faktor keamanan dan keandalan komponen."],
+ ["produksi","Menilai efisiensi produksi atau antrian layanan","produksi layanan","numeric","evaluate",["industrial"],"Ukuran efisiensi dan antrian."],
+ ["listrik","Menilai keandalan dan efisiensi jaringan listrik","listrik","numeric","evaluate",["electrical"],"Beban, rugi daya, dan keandalan jaringan."],
+ ["sains","Menghitung besaran ilmiah dari data percobaan","sains data","numeric","describe",["sains"],"Kalkulator MIPA: regresi, ketidakpastian pengukuran, kimia, biologi."],
+ ["sintesis","Membandingkan kesimpulan dari beberapa metode","perbedaan metode","numeric","compare",["synth"],"Sintesis lintas metode dan laporan gabungan."],
+ ["visual","Mengelola gambar, model 3D, BIM, dan GIS proyek","visual","spatial","describe",["visual"],"Pusat aset penelitian untuk gambar, model, dan peta."]];
+const ADV_D={survey:"Kuesioner / skala Likert",expert:"Pendapat pakar",qual:"Wawancara / FGD / dokumen",observe:"Pengamatan lapangan",spatial:"Denah / peta / model ruang",numeric:"Data angka / pengukuran",secondary:"Data sekunder / statistik wilayah",cost:"Biaya / jadwal proyek"};
+const ADV_G={describe:"Menggambarkan / mengukur",relation:"Menguji hubungan / pengaruh",compare:"Membandingkan kelompok",rank:"Memilih / memeringkat",strategy:"Merumuskan strategi",structure:"Mencari faktor kunci / struktur",actor:"Memetakan aktor",consensus:"Menyepakati pendapat pakar",evaluate:"Menilai kinerja / kondisi",feasibility:"Menilai kelayakan",schedule:"Menyusun jadwal",predict:"Menemukan pola / prediksi",measure:"Menguji instrumen / soal"};
+const advStem=w=>{let s=w;if(s.length>5)s=s.replace(/(nya|lah|kah)$/,"");if(s.length>5)s=s.replace(/(kan|an|i)$/,"");if(s.length>5)s=s.replace(/^(meng|meny|mem|men|me|peng|peny|pem|pen|pe|ber|be|ter|di|ke|se|per)/,"");return s};
+const advLev=(a,b)=>{if(Math.abs(a.length-b.length)>2)return 9;const d=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){let p=d[0];d[0]=i;for(let j=1;j<=b.length;j++){const t=d[j];d[j]=Math.min(d[j]+1,d[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return d[b.length]};
+const ADV_W=(()=>{const m=new Map();Object.entries(ADV_C).forEach(([c,ws])=>ws.split(/\s+/).forEach(w=>{if(!w)return;m.set(w,c);const s=advStem(w);if(!m.has(s))m.set(s,c)}));return m})();
+const ADV_IDF=(()=>{const df={};ADV_I.forEach(it=>new Set(it[2].split(" ")).forEach(c=>df[c]=(df[c]||0)+1));const N=ADV_I.length,o={};Object.keys(ADV_C).forEach(c=>o[c]=Math.log(1+N/(df[c]||N)));return o})();
+const ADV_STOP=new Set("saya ingin akan untuk yang dan dari pada di ke dengan dalam tentang terhadap atau ini itu adalah sebuah suatu bagaimana apa apakah mana berapa seberapa agar supaya bisa dapat mau sedang kami kita penelitian riset studi analisis menganalisis meneliti skripsi tesis disertasi tugas akhir judul topik the of to and for a an in on about how what which is are my i want research study analysis analyze".split(" "));
+function advTerms(q){const toks=String(q||"").toLowerCase().normalize("NFKD").replace(/[^a-z0-9\s-]/g," ").split(/[\s-]+/).filter(w=>w.length>1&&!/^\d+$/.test(w));
+ const hit=[],miss=[];toks.forEach(w=>{if(ADV_STOP.has(w))return;let c=ADV_W.get(w)||ADV_W.get(advStem(w)),how="";if(!c&&w.length>=5){let best=9,bw="";for(const k of ADV_W.keys()){if(k.length<4)continue;const d=advLev(w,k);if(d<best){best=d;bw=k}}if(best<=(w.length>=8?2:1)){c=ADV_W.get(bw);how=bw}}
+  if(c)hit.push({w,c,fz:how});else miss.push(w)});return {hit,miss}}
+let advD=null,advG=null;
+function skAdvise(q){const {hit,miss}=advTerms(q),cs=[...new Set(hit.map(h=>h.c))];
+ const sc=ADV_I.map(it=>{const ic=it[2].split(" ");let s=0;cs.forEach(c=>{if(ic.includes(c))s+=ADV_IDF[c]*(ic[0]===c?1.25:1)});const tw=(it[1]+" "+it[6]).toLowerCase();miss.forEach(w=>{if(w.length>3&&tw.includes(w))s+=.4});
+  if(advD)s+=it[3]===advD?1.6:-1.2;if(advG)s+=it[4]===advG?2:-1;return {it,s}}).filter(x=>x.s>0).sort((a,b)=>b.s-a.s);
+ const best=sc.length?sc[0].s:0,top=sc.filter(x=>x.s>=best*.45).slice(0,5).filter(x=>x.it[5].every(k=>MODS[k]||METHODS.find(m=>m.k===k)));
+ const vague=!top.length||best<1.3||(top.length>=3&&top[2].s>best*.85&&!advD&&!advG);return {hit,miss,cs,top,best,vague}}
+function suggestMethods(q){const r=skAdvise(q),out=[];r.top.forEach(x=>x.it[5].forEach(k=>{if(!out.includes(k))out.push(k)}));if(!out.length){const s=String(q||"").toLowerCase();SK_KEY.forEach(([re,ks])=>{if(re.test(s))ks.forEach(k=>{if(!out.includes(k))out.push(k)})})}return out.filter(k=>METHODS.find(m=>m.k===k&&m.ready!==false)).slice(0,3)}
+const BEX="Saya ingin memilih lokasi terbaik dari 4 calon lahan";
+function advHTML(q){const ex=!String(q||"").trim(),Q=ex?BEX:q,r=skAdvise(Q),CN=c=>ADV_C[c].split(" ")[0];
+ const und=r.hit.length?`<p class="advu">Dikenali: ${[...new Map(r.hit.map(h=>[h.c,h])).values()].map(h=>`<span class="advk" title="${esc(ADV_C[h.c])}">${esc(h.w)}${h.fz?` → ${esc(h.fz)}`:h.w!==CN(h.c)?` → ${esc(CN(h.c))}`:""}</span>`).join("")}${r.miss.length?` · <span class="advm">belum dikenali: ${esc(r.miss.slice(0,5).join(", "))}</span>`:""}</p>`:"";
+ const card=(x,i)=>{const it=x.it,k0=it[5][0];return `<div class="bs adv"><span class="bst"><b>${esc(it[1])}</b><small>${esc(it[6])}</small><span class="advch">${it[5].map((k,j)=>`${j?'<i>→</i>':''}<button class="advm2" data-modgo="${k}" title="Buka ${esc(methName(k))}">${esc(methName(k))}</button>`).join("")}</span></span>${i===0&&!r.vague?`<span class="lvl l1">Paling cocok</span>`:""}<span class="spacer"></span><button class="btn small primary" data-modgo="${k0}">Mulai</button><button class="btn small" data-sample="${k0}">Contoh</button><button class="btn small" data-advq="${esc(it[1])}" title="Pakai rumusan ini sebagai tujuan">Pakai rumusan</button></div>`};
+ const chips=(o,cur,attr)=>Object.entries(o).map(([k,n])=>`<button class="advc${cur===k?" on":""}" ${attr}="${k}">${esc(n)}</button>`).join("");
+ const refine=`<div class="advr"><b>${r.vague?"Agar sarannya tepat, pilih yang paling sesuai:":"Tajamkan tujuan Anda:"}</b><div class="advrow"><span>Data yang dimiliki/akan dikumpulkan</span>${chips(ADV_D,advD,"data-advd")}</div><div class="advrow"><span>Hasil yang ingin diperoleh</span>${chips(ADV_G,advG,"data-advg")}</div>${advD||advG?`<button class="advc reset" data-advreset>↺ Hapus pilihan</button>`:""}</div>`;
+ const qq=encodeURIComponent((ex?BEX:q).trim()+" metode analisis");
+ const ext=`<div class="advx"><b>${r.top.length?"Ingin rujukan tambahan?":"Belum ditemukan di Studio Keputusan — cari rujukan metode di sumber luar:"}</b> <a href="https://scholar.google.com/scholar?q=${qq}" target="_blank" rel="noopener">Google Scholar</a> · <a href="https://www.semanticscholar.org/search?q=${qq}" target="_blank" rel="noopener">Semantic Scholar</a> · <a href="https://www.google.com/search?q=${qq}+site%3Aac.id" target="_blank" rel="noopener">Repositori kampus (.ac.id)</a><span class="note"> — lihat metode yang dipakai penelitian serupa, lalu kembali dan pilih tujuan yang paling dekat di bawah.</span></div>`;
+ return `<div class="bsug"><span class="note">${ex?`Contoh saran untuk: “${esc(BEX)}”`:`Saran untuk tujuan Anda: “${esc(q)}”`}</span>${ex?"":und}
+  ${r.top.length?`${r.vague&&!ex?`<p class="advv">Tujuan Anda masih umum. Maksud Anda mungkin salah satu dari rumusan berikut:</p>`:""}${r.top.map(card).join("")}`:`<p class="advv">Belum ada rumusan yang cocok. Jawab dua pertanyaan di bawah, atau coba kata lain seperti “persepsi”, “pengaruh”, “memilih lokasi”, “strategi”, “wawancara”.</p>`}
+  ${ex?"":refine+ext}</div>`}
 const LVLN={1:"Ramah pemula",2:"Menengah",3:"Lanjut"};
 const CHARTS_OF={ism:"Hierarki, kuadran MICMAC",ahp:"Batang bobot, radar",mcdm:"Batang peringkat",swot:"Kuadran SWOT",pestel:"Batang prioritas",delphi:"Box plot, batang konsensus",stat:"Histogram, box plot, scatter, peta panas korelasi",sna:"Graf jaringan",cpm:"Gantt, jaringan",dematel:"Diagram sebab–akibat",syntax:"Peta integrasi",cba:"Batang, tornado"};
 function bCard(k){ const m=METHODS.find(x=>x.k===k)||{k,n:methName(k)}, I=MINFO[k]||{}, lv=I.lvl||2;
@@ -6326,15 +6433,16 @@ function bCard(k){ const m=METHODS.find(x=>x.k===k)||{k,n:methName(k)}, I=MINFO[
     <div class="b3"><span><i>Anda perlu</i>${esc((I.inp||["—"])[0])}</span><span><i>Anda dapat</i>${esc((I.out||["—"]).join(", "))}</span><span><i>Grafik</i>${esc(CHARTS_OF[k]||"Tabel & diagram")}</span></div>
     <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn primary" data-modgo="${k}">Mulai dengan panduan</button><button class="btn" data-sample="${k}">Buka contoh terisi</button></div></article>`; }
 let bGoal=null, bSug=null, bQ="";
+function advRefresh(){ const r=$("#bRes"); if(r) r.innerHTML=advHTML(bQ); else renderHomeV27(); }
+let advT=0; document.addEventListener("input",e=>{ if(e.target&&e.target.id==="bQ"){ clearTimeout(advT); advT=setTimeout(()=>{ bQ=e.target.value; if(bQ.trim().length>=3||!bQ.trim()) advRefresh(); },350); } });
 function skStartHTML(){ return `<div class="card skstart"><h2>Mulai dari data</h2><div class="sk3">
    <button data-skin="type"><b>Ketik / tempel data</b><span>Tabel dari Excel, Word, atau CSV ke lembar data</span></button>
    <button data-skin="open"><b>Buka berkas proyek</b><span>Berkas .json / .ism Studio Keputusan</span></button>
    <button data-skin="import"><b>Impor hasil aplikasi lain</b><span>CSV/Excel (mis. ekspor SPSS, JASP), teks .txt/.docx, DXF/GeoJSON, IFC, JSON proyek</span></button>
    <button data-skin="chart"><b>Buat grafik dari data</b><span>Tempel tabel → pilih dari 16 jenis grafik</span></button></div></div>`; }
-const BEX="Saya ingin memilih lokasi terbaik dari 4 calon lahan";
+
 const GICO=['<circle cx="11" cy="11" r="6"/><path d="M16 16l4 4"/>','<circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c1-3 3-4 5-4s4 1 5 4M11 19c1-3 3-4 5-4s4 1 5 4"/>','<circle cx="12" cy="5" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><path d="M12 7v4M12 11l-5 5M12 11l5 5"/>','<path d="M5 20V12M10 20V6M15 20V10M20 20V14"/>','<path d="M4 16c3 0 3-8 6-8s3 6 6 6 2-4 4-4"/><path d="M3 20h18"/>','<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>','<path d="M4 20V4M4 20h16"/><circle cx="9" cy="14" r="1.5"/><circle cx="13" cy="10" r="1.5"/><circle cx="17" cy="7" r="1.5"/>','<circle cx="7" cy="8" r="2"/><circle cx="17" cy="8" r="2"/><circle cx="12" cy="17" r="2"/><path d="M8.5 9.5l2.5 6M15.5 9.5l-2.5 6"/>','<path d="M4 20V9l8-5 8 5v11z"/><path d="M10 20v-6h4v6"/>'];
-function skB(){ const ex=!bSug, sL=ex? suggestMethods(BEX) : bSug;
-  const sug=`<div class="bsug"><span class="note">${ex?`Contoh saran untuk: “${esc(BEX)}”`:`Saran untuk tujuan Anda: “${esc(bQ)}”`}</span>${sL.length?sL.map((k,i)=>`<div class="bs"><span class="bst"><b>${esc(methName(k))}</b><small>${esc(((METHODS.find(m=>m.k===k)||{}).t)||(MINFO[k]||{}).q||"")}</small></span>${i===0?`<span class="lvl l1">Paling cocok</span>`:`<span class="note">Alternatif</span>`}<span class="spacer"></span><button class="btn small primary" data-modgo="${k}">Mulai</button><button class="btn small" data-sample="${k}">Contoh</button></div>`).join(""):`<p class="note">Belum ada yang cocok — coba kata lain atau pilih jenis tujuan di bawah.</p>`}</div>`;
+function skB(){ const sug=`<div id="bRes">${advHTML(bQ)}</div>`;
   const G=WIZ.map((w,i)=>`<button class="bgoal g${i%6} ${bGoal===i?"on":""}" data-bgoal="${i}"><i class="gico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">${GICO[i]||GICO[0]}</svg></i><b>${esc(w.q)}</b><span>${esc((w.m||(w.sub||[]).flatMap(x=>x.m||[])).filter((k,i,a)=>a.indexOf(k)===i).slice(0,4).map(methName).join(", "))}</span></button>`).join("");
   const sel=bGoal!=null? WIZ[bGoal] : null, ks=sel? (sel.sub? sel.sub.flatMap(s=>s.m||[]):(sel.m||[])).filter((k,i,a)=>a.indexOf(k)===i&&(METHODS.find(m=>m.k===k)||MINFO[k])) : [];
   return `<div id="skB"><div class="bhero"><div class="bq"><span class="kick">MULAI DARI TUJUAN, BUKAN DARI RUMUS</span><h2>Apa yang ingin Anda putuskan atau ketahui?</h2>
@@ -6459,11 +6567,15 @@ document.addEventListener("click",e=>{ const t=e.target; if(!t.closest) return;
   const dl=t.closest("[data-chdl]"); if(dl){ const sv=$("#chOut svg"); if(!sv){ toast("Belum ada grafik."); return; } const base="grafik-"+(CHS.k||"data"); if(dl.dataset.chdl==="copy"){ try{ navigator.clipboard.writeText(svgStandalone(sv)); toast("SVG grafik disalin."); }catch(_){ toast("Salin tidak tersedia di peramban ini."); } } else dlSvgPng(sv,base,dl.dataset.chdl==="png"); return; }
   const sm=t.closest("[data-sample]"); if(sm){ openSample(sm.dataset.sample); return; }
   const bg=t.closest("[data-bgoal]"); if(bg){ bGoal=+bg.dataset.bgoal===bGoal?null:+bg.dataset.bgoal; renderHomeV27(); return; }
-  if(t.closest("#bAsk")){ bQ=($("#bQ")||{}).value||""; bSug=suggestMethods(bQ); renderHomeV27(); return; }
+  if(t.closest("#bAsk")){ bQ=($("#bQ")||{}).value||""; advRefresh(); return; }
+  const ad=t.closest("[data-advd]"); if(ad){ advD=advD===ad.dataset.advd?null:ad.dataset.advd; advRefresh(); return; }
+  const ag=t.closest("[data-advg]"); if(ag){ advG=advG===ag.dataset.advg?null:ag.dataset.advg; advRefresh(); return; }
+  if(t.closest("[data-advreset]")){ advD=advG=null; advRefresh(); return; }
+  const aq=t.closest("[data-advq]"); if(aq){ bQ=aq.dataset.advq; const i=$("#bQ"); if(i)i.value=bQ; advRefresh(); return; }
   if(t.closest("[data-usereset]")){ USE={}; saveK("sk-usage-v1",USE); renderHomeV27(); toast("Riwayat pemakaian dihapus."); return; }
   const si=t.closest("[data-skin]"); if(si){ const k=si.dataset.skin; if(k==="type") go(MODS.stat?MODS.stat[0]:"ss-data"); else if(k==="open") $("#fileIn").click(); else if(k==="import") go("io"); else { CHS.src="paste"; renderChartDrawer(); } return; }
 });
-document.addEventListener("keydown",e=>{ if(e.target&&e.target.id==="bQ"&&e.key==="Enter"){ bQ=e.target.value; bSug=suggestMethods(bQ); renderHomeV27(); } });
+document.addEventListener("keydown",e=>{ if(e.target&&e.target.id==="bQ"&&e.key==="Enter"){ bQ=e.target.value; advRefresh(); } });
 document.addEventListener("input",e=>{ if(e.target.id==="chTxt"){ CHS.txt=e.target.value; clearTimeout(CHS._t); CHS._t=setTimeout(()=>{ const a=document.activeElement===e.target, pos=e.target.selectionStart; renderChartDrawer(); if(a){ const x=$("#chTxt"); x.focus(); x.selectionStart=x.selectionEnd=pos; } },500); } });
 document.addEventListener("change",e=>{ const id=e.target.id;
   if(id==="chSrc"){ CHS.src=e.target.value; CHS.k=null; renderChartDrawer(); } else if(id==="chSort"){ CHS.sort=e.target.checked; renderChartDrawer(); } else if(id==="chVals"){ CHS.vals=e.target.checked; renderChartDrawer(); } else if(id==="chExpl"){ CHS.expl=e.target.checked; renderChartDrawer(); }
@@ -6508,7 +6620,7 @@ function showLookPick(force){ if(!force&&loadK("sk-look-chosen-v1"))return; if($
     if(e.target.closest("#lpSkip")){ UIV="tujuan"; PALT="senja"; done(); } }; }
 function queueLookPick(){ if(loadK("sk-look-chosen-v1"))return; if($("#firstSetup")){ const o=new MutationObserver(()=>{ if(!$("#firstSetup")){ o.disconnect(); showLookPick(); } }); o.observe(document.body,{childList:true}); } else showLookPick(); }
 setTimeout(queueLookPick,0);
-window.__ui={showLookPick,lookPickHTML,suggestMethods,parseText,parseGrid,suggestChart,drawChart,numOf,chartExplain,CTYPES,usageHTML,noteUse};
+window.__ui={skAdvise,advTerms,advHTML,showLookPick,lookPickHTML,suggestMethods,parseText,parseGrid,suggestChart,drawChart,numOf,chartExplain,CTYPES,usageHTML,noteUse};
 
 /* ---------- kanvas layar penuh ---------- */
 let OWFULL=false;

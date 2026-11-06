@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.3.0 — 2026-11-06
+- **Pemandu tujuan** pada kotak "Apa yang ingin Anda putuskan atau ketahui?":
+  - Korpus 49 rumusan maksud penelitian (persepsi, kepuasan, pengaruh, perbedaan kelompok, IPA, SEM, lokasi, strategi, konsensus pakar, faktor kunci, aktor, wawancara, perilaku ruang, space syntax, kelayakan, jadwal, dll.), masing-masing dengan rangkaian metode dan alasannya.
+  - Pencocokan kata: sinonim Indonesia–Inggris, pelepasan imbuhan (mis. *mempengaruhi* → pengaruh), toleransi salah ketik, pembobotan istilah (IDF); kata yang dikenali dan yang belum dikenali ditampilkan.
+  - Bila tujuan masih umum (mis. "penelitian tentang persepsi"): beberapa rumusan yang lebih fokus untuk dipilih, tombol "Pakai rumusan", serta pertanyaan penajam — data yang dimiliki dan hasil yang ingin diperoleh — yang langsung menyaring saran.
+  - Bila tidak ditemukan: tautan pencarian rujukan metode di Google Scholar, Semantic Scholar, dan repositori kampus (.ac.id).
+  - Saran diperbarui saat mengetik (tanpa menekan tombol) dan dengan tombol Enter.
+- Perbaikan: nomor versi aplikasi.
+
 ## 3.2.2 — 2026-11-05
 - **Pilih tampilan saat pertama dibuka**: setelah paket instalasi dipilih, muncul jendela pilihan tampilan (Tujuan & panduan · Langkah demi langkah · Alur & grafik · Klasik) dengan gambar pratinjau dan tema warna. *Tujuan & panduan* bertema *Senja* sudah terpilih sebagai bawaan; pilihan langsung terlihat di belakang jendela. Hanya muncul sekali, dapat dibuka lagi lewat tombol "Pilih tampilan…" di kepala aplikasi.
 
