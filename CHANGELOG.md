@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.6.4 — 2026-11-06
+- Tautan **‹ pindotutuko.id** di kiri atas untuk kembali ke beranda situs (hanya pada versi web; tidak tampil di aplikasi desktop).
+
 ## 3.6.3 — 2026-11-06
 - **Saran kata kunci** di Pustaka (minimal 5): dari topik (diterjemahkan ke istilah bahasa Inggris), istilah terkait/sinonim, metode yang disarankan, bidang ilmu, konteks lokasi (mis. Indonesia, Malang), dan kata kunci dari artikel yang sudah ditemukan.
 - Kata kunci **wajib** (DAN) dan **alternatif** (ATAU) dipisah dan tetap dapat diketik manual; pratinjau kueri ditampilkan. Bawaan kini 3 istilah inti agar hasil tidak terlalu sempit; istilah yang tumpang tindih (mis. housing vs housing adequacy) dirapikan.
