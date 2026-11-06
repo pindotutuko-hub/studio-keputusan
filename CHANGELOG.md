@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.6.2 — 2026-11-06
+- Perbaikan: tombol **📚 Literatur** di kotak tujuan kini terlihat jelas (sebelumnya teks putih di atas putih); bila tujuan belum ditulis, tombol membuka laci Pustaka dan memberi petunjuk, tidak lagi diam.
+
 ## 3.6.1 — 2026-11-06
 - **Literatur langsung di kotak "Apa yang ingin Anda putuskan atau ketahui?"**: tombol **📚 + Literatur** (di samping Sarankan metode) atau **🔎 Cari literatur** pada kartu saran mencari artikel OpenAlex untuk tujuan itu, lalu menampilkan di tempat: jumlah artikel, sitasi, indeks-h; peta kata kunci (overlay tahun); tema utama dan tema baru; metode yang dipakai literatur (✓ bila sejalan dengan saran); ukuran sampel; variabel X/M/Y kandidat; celah konteks; dan draf latar belakang ringkas beserta rujukan. Tombol menuju draf pendahuluan lengkap, peta riset, variabel & hipotesis, serta matriks & daftar pustaka.
 - Metode yang sering dipakai pada literatur yang ditemukan ikut menaikkan peringkat saran metode yang sesuai.
