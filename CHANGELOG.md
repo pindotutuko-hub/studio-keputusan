@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.5.0 — 2026-11-06
+- **Alat hitung baru (Sains & Matematika):**
+  - Regresi data panel: common effect (pooled OLS), fixed effect (within), random effect (Swamy–Arora), uji Chow dan uji Hausman untuk memilih model.
+  - Beneish M-Score: delapan indeks dari laporan keuangan dua tahun dan nilai M dengan ambang yang dapat diubah.
+  - Rekayasa nilai (value engineering): rasio biaya/nilai fungsi, indeks nilai, dan penghematan alternatif per komponen.
+  - Diagram alir PRISMA 2020 untuk kajian pustaka sistematis, dengan pemeriksaan konsistensi jumlah tiap tahap.
+- **Pemandu tujuan**: maksud baru SLR/PRISMA, penelitian hukum yuridis normatif/empiris, rekayasa nilai, deteksi manipulasi laba; data panel kini dikenali dari pola "N provinsi/perusahaan … tahun" dan BEI; uji sebelum–sesudah (pretest–posttest), meta-analisis, dan klasifikasi data mining lebih tepat dikenali. Perbaikan salah tangkap kata (keputusan → putusan, sesudah → sudah, pengadilan → adil).
+- Rujukan baru: Baltagi (2021), Swamy & Arora (1972), Hausman (1978), Beneish (1999), Miles (1972), Page dkk. (2021).
+
 ## 3.4.0 — 2026-11-06
 - **Kerangka & alur analisis** (tombol "Kerangka" di kepala dan "🧭 Kerangka" pada setiap kartu saran):
   - Kerangka dibangun otomatis dari rumusan tujuan yang dipilih: tujuan → data → uji instrumen/metode → interpretasi → kesimpulan & rekomendasi.
