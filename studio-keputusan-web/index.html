@@ -539,7 +539,7 @@ section.owfull>#owEmbed:empty::before{content:"Klik ikon metode di kanvas untuk 
 #skB .bs.advna{border:1px dashed #ef9a4f}#skB .advna-t{display:block;font-size:12.5px;margin:3px 0;color:#c2410c}#skB .bs:not(:first-of-type) .advna-t{color:#fbbf8a}#skB .advna-t a{color:inherit;font-weight:700}#skB .lvl.l3{white-space:nowrap}
 #skB .bh{margin:0;font-size:22px}#skB .bhrow{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:22px 0 12px}
 #skB .bhero{flex-direction:column;padding:30px 32px;border-radius:24px}#skB .bhero .bq,#skB .bhero .bsug{flex:0 0 auto}#skB .bs .spacer{flex:1}#skB .bs .lvl.l1,#skB .bs>.note{margin-left:auto}#skB .bs>.note+.spacer,#skB .bs .lvl+.spacer{flex:0 0 8px}#skB .bs:not(:first-of-type) .btn:not(.primary){background:transparent;color:var(--top-ink);border-color:var(--top-muted)}#skB .bs:not(:first-of-type)>.note{color:var(--top-muted)}#skB .bq h2{font-size:clamp(26px,3.4vw,40px);font-weight:800;letter-spacing:-.01em}#skB .bsug{flex:1 1 auto;padding:18px}
-#skB #bAsk{background:#ef9a4f;border-color:#ef9a4f;color:#1e1b2e;font-weight:700;padding:12px 22px;border-radius:12px}#skB #bAsk:hover{background:#f3ab6a}
+#skB #bAsk{background:#ef9a4f;border-color:#ef9a4f;color:#1e1b2e;font-weight:700;padding:12px 22px;border-radius:12px}#skB #bAsk:hover{background:#f3ab6a}#bAskLit{background:var(--top-control);border:1.5px solid #ef9a4f;color:var(--top-ink);font-weight:700;padding:12px 18px;border-radius:12px}#bAskLit:hover{background:var(--top-line)}
 #skB .bs{padding:14px 16px}#skB .bst{display:flex;flex-direction:column;gap:2px;min-width:0}#skB .bst small{opacity:.75;font-size:13px}#skB .bs b{font-size:17px}#skB .bs:not(:first-of-type){background:var(--top-line);color:var(--top-ink)}#skB .bs .lvl.l1{background:#dcf5e3;color:#1f6b3a}
 .bgoal .gico{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;margin-bottom:6px}.bgoal .gico svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .bgoal.g0 .gico{background:#e8e7fd;color:#4f46e5}.bgoal.g1 .gico{background:#fde9dc;color:#b5501f}.bgoal.g2 .gico{background:#dcf5e3;color:#24733d}.bgoal.g3 .gico{background:#dcecfb;color:#1f5f9e}.bgoal.g4 .gico{background:#fbe1ea;color:#a3335a}.bgoal.g5 .gico{background:#f5efd6;color:#806414}
@@ -1143,7 +1143,7 @@ const PROJ=(()=>{const REG="sk-projects-v1", GLOBAL=new Set([REG,"sk-uimode-v1",
     backup};
   try{window.addEventListener("pagehide",backup); document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")backup();});}catch(e){}
   return api;})();
-const APP_VERSION="3.6.1"; window.__APP_VERSION=APP_VERSION;
+const APP_VERSION="3.6.2"; window.__APP_VERSION=APP_VERSION;
 const LS_KEY="ism-studio-v1";
 const desktop = typeof window.ismDesktop==="object" && window.ismDesktop;
 if(desktop) document.documentElement.classList.add("is-desktop");
@@ -6674,7 +6674,7 @@ function skB(){ const sug=`<div id="bRes">${advHTML(bQ)}</div>`;
   const sel=bGoal!=null? WIZ[bGoal] : null, ks=sel? (sel.sub? sel.sub.flatMap(s=>s.m||[]):(sel.m||[])).filter((k,i,a)=>a.indexOf(k)===i&&(METHODS.find(m=>m.k===k)||MINFO[k])) : [];
   return `<div id="skB"><div class="bhero"><div class="bq"><span class="kick">MULAI DARI TUJUAN, BUKAN DARI RUMUS</span><h2>Apa yang ingin Anda putuskan atau ketahui?</h2>
       <label for="bQ" class="note">Tulis dengan kalimat biasa — aplikasi menyarankan metode yang cocok</label>
-      <div class="row" style="gap:8px;flex-wrap:wrap"><input id="bQ" value="${esc(bQ)}" placeholder="mis. memilih lokasi terbaik dari 4 calon lahan"><button class="btn primary" id="bAsk">Sarankan metode</button><button class="btn" id="bAskLit" title="Sarankan metode sekaligus cari literatur untuk menajamkan latar belakang">📚 + Literatur</button></div></div>${sug}</div>
+      <div class="row" style="gap:8px;flex-wrap:wrap"><input id="bQ" value="${esc(bQ)}" placeholder="mis. memilih lokasi terbaik dari 4 calon lahan"><button class="btn primary" id="bAsk">Sarankan metode</button><button class="btn" id="bAskLit" title="Sarankan metode sekaligus cari literatur untuk menajamkan latar belakang">📚 Literatur</button></div></div>${sug}</div>
     <div class="bhrow"><h2 class="bh">Atau pilih jenis tujuan</h2><span class="note">${METHODS.filter(m=>m.ready!==false).length} metode · ${(typeof CATS!=="undefined"&&CATS.length)||11} rumpun ilmu</span></div><div class="bgoals">${G}</div>
     ${sel?`<p class="note" style="margin:8px 0 10px">${esc(sel.why||"")}</p><div class="bcards">${ks.map(bCard).join("")}</div>`:""}
     ${skStartHTML()}
@@ -6795,7 +6795,7 @@ document.addEventListener("click",e=>{ const t=e.target; if(!t.closest) return;
   const sm=t.closest("[data-sample]"); if(sm){ openSample(sm.dataset.sample); return; }
   const bg=t.closest("[data-bgoal]"); if(bg){ bGoal=+bg.dataset.bgoal===bGoal?null:+bg.dataset.bgoal; renderHomeV27(); return; }
   if(t.closest("#bAsk")){ bQ=($("#bQ")||{}).value||""; advRefresh(); return; }
-  if(t.closest("#bAskLit")){ bQ=($("#bQ")||{}).value||""; advRefresh(); if(bQ.trim()&&window.__ui&&window.__ui.litSearch){ const L=window.__ui.litState(); if(L.q!==bQ){ L.q=bQ; L.terms=[]; } window.__ui.litSearch(); } return; }
+  if(t.closest("#bAskLit")){ bQ=($("#bQ")||{}).value||""; if(!bQ.trim()){ toast("Tulis tujuan penelitian dulu — atau isi topik di Pustaka."); openLit(null); return; } advRefresh(); if(bQ.trim()&&window.__ui&&window.__ui.litSearch){ const L=window.__ui.litState(); if(L.q!==bQ){ L.q=bQ; L.terms=[]; } window.__ui.litSearch(); } return; }
   const ad=t.closest("[data-advd]"); if(ad){ advD=advD===ad.dataset.advd?null:ad.dataset.advd; advRefresh(); return; }
   const ag=t.closest("[data-advg]"); if(ag){ advG=advG===ag.dataset.advg?null:ag.dataset.advg; advRefresh(); return; }
   if(t.closest("[data-advreset]")){ advD=advG=advF=null; advRefresh(); return; }
