@@ -80,6 +80,18 @@ setTimeout(async () => {
   const h1 = U.advHTML(q0); assert(/Latar belakang dari literatur/.test(h1) && /Tema utama/.test(h1) && /Metode di literatur/.test(h1) && /Draf latar belakang ringkas/.test(h1) && /data-littabgo="draf"/.test(h1), 'ringkasan literatur');
   assert(/median 150/.test(h1) && /\(Putri &amp; Santoso, 2019\)|Putri &amp; Santoso, 2019/.test(h1), 'rujukan & sampel nyata');
   const lb = w.__litBoost(q0); assert(lb && lb.B.poe >= 1 && lb.n === 3);
+  // saran kata kunci (≥ 5) + wajib/alternatif + manual
+  const LS = U.litState(); LS.q = ''; LS.terms = []; LS.alt = []; LS.papers = [];
+  assert(U.litSuggest().length >= 5, 'minimal 5 saran walau topik kosong');
+  LS.q = 'persepsi penghuni tentang rumah layak huni'; const sg = U.litSuggest().map(o => o.t);
+  assert(sg.length >= 5 && sg.includes('housing quality') && sg.includes('Indonesia') && sg.includes('post-occupancy evaluation') && !sg.includes('perception'), sg.join('|'));
+  assert.strictEqual(U.litQB(['housing adequacy', 'perception'], ['Indonesia', 'Malaysia']), '"housing adequacy" AND perception AND (Indonesia OR Malaysia)');
+  assert.strictEqual(U.litQB([], ['livability']), 'livability');
+  U.openLit(LS.q); d.querySelector('#skLit [data-littab="cari"]') && d.querySelector('#skLit [data-littab="cari"]').click();
+  d.querySelector('#skLit [data-litsg="housing quality"][data-to="o"]').click(); assert(LS.alt.includes('housing quality'));
+  d.querySelector('#skLit [data-litsg="Indonesia"][data-to="w"]').click(); assert(LS.terms.includes('Indonesia') && LS.terms.length >= 2, LS.terms.join('|'));
+  const ta = d.querySelector('#litT'); ta.value = 'kampung; perception'; ta.dispatchEvent(new w.Event('change', { bubbles: true }));
+  assert.strictEqual(U.litState().terms.join('|'), 'kampung|perception'); assert(/kampung AND perception AND "housing quality"/.test(d.querySelector('.litqprev').textContent));
   // tabulasi silang: Fisher & Yates (scipy), residu disesuaikan, persentase
   const a = [], b = []; [['A', 'Y', 8], ['A', 'N', 2], ['B', 'Y', 1], ['B', 'N', 5]].forEach(([r, c, n]) => { for (let i = 0; i < n; i++) { a.push(r); b.push(c); } });
   const X = S.stCrosstab(a, b); near(X.fisher, 0.034965034965034975, 1e-9); near(X.yates, 3.8095238095238093, 1e-9); near(X.pY, 0.050961936967763424, 1e-6);
