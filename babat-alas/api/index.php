@@ -437,6 +437,13 @@ switch ($a) {
 			$ok = upd('k_' . $code . '.php', function ($k) use ($u, $nama) { if ($k) { return ['__ret' => false]; } return ['__write' => ['owner' => $u['uid'], 'ownerUser' => $u['user'], 'nama' => $nama, 'created' => time()], '__ret' => true]; });
 			if ($ok) { upd('u_' . $u['uid'] . '.php', function ($x) use ($code) { $x['owns'] = array_values(array_unique(array_merge($x['owns'] ?? [], [$code]))); return ['__write' => $x, '__ret' => true]; }); out(['ok' => true, 'code' => $code]); } }
 		fail('storage', 500); }
+	case 'kelas_list': { $u = auth(); /* v51c: daftar kelas yang dapat dipilih mahasiswa (kelas dari kampus yang sama tampil lebih dulu) */
+		$myK = mb_strtolower(trim((string) ($u['kampus'] ?? ''))); $own = []; $list = [];
+		foreach (glob(DATA . '/k_*.php') ?: [] as $f) { $c = substr(basename($f, '.php'), 2); if ($c === '' || !preg_match('/^[A-Z0-9]{1,12}$/', $c)) { continue; } $k = rd('k_' . $c . '.php'); if (!$k || !empty($k['hidden'])) { continue; }
+			$oid = (string) ($k['owner'] ?? ''); if (!isset($own[$oid])) { $o = $oid !== '' ? (rd('u_' . $oid . '.php') ?: []) : []; $own[$oid] = ['name' => (string) ($o['name'] ?? $k['ownerUser'] ?? ''), 'kampus' => (string) ($o['kampus'] ?? '')]; }
+			$kp = $own[$oid]['kampus']; $list[] = ['code' => $c, 'nama' => (string) ($k['nama'] ?? $c), 'dosen' => $own[$oid]['name'], 'kampus' => $kp, 'same' => $myK !== '' && mb_strtolower($kp) === $myK, 'created' => (int) ($k['created'] ?? 0), 'me' => ($u['kelas'] ?? '') === $c]; }
+		usort($list, fn($a, $b) => [$b['same'], $b['created']] <=> [$a['same'], $a['created']]);
+		out(['ok' => true, 'list' => array_slice($list, 0, 200)]); }
 	case 'kelas_mine': { $u = auth(); if (empty($u['dosen'])) { fail('not_dosen', 403); } $list = []; foreach (($u['owns'] ?? []) as $c) { $k = rd('k_' . $c . '.php'); if ($k) { $list[] = ['code' => $c, 'nama' => $k['nama'], 'created' => $k['created'], 'tantangan' => (string) ($k['tantangan'] ?? '')]; } } out(['ok' => true, 'list' => $list]); }
 	case 'kelas_tantangan': { $u = auth(); if (empty($u['dosen'])) { fail('not_dosen', 403); } rate('kt' . $u['uid'], 30, 3600); $c = preg_replace('/[^A-Z0-9]/', '', strtoupper((string) ($b['code'] ?? ''))); $t = (string) ($b['t'] ?? '');
 		if ($t !== '' && !isset(CHAL[$t])) { fail('bad'); } $ok = upd('k_' . $c . '.php', function ($k) use ($u, $t) { if (!$k || $k['owner'] !== $u['uid']) { return ['__ret' => false]; } $k['tantangan'] = $t; return ['__write' => $k, '__ret' => true]; });
