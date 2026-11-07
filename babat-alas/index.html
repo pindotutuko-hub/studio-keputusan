@@ -250,6 +250,7 @@ html.lite *,html.lite *::before,html.lite *::after{-webkit-backdrop-filter:none!
 /* v51a: skor di bawah profil (kiri atas), dapat diklik */
 .who .hscore{display:inline-flex;align-items:center;gap:4px;margin-top:2px;border:0;border-radius:999px;background:rgba(224,165,38,.2);color:var(--ink);font:700 11px/1.3 Inter,system-ui,sans-serif;padding:1px 8px;cursor:pointer;white-space:nowrap}.who .hscore:hover{background:rgba(224,165,38,.38)}.who .hscore em{font-style:normal;opacity:.75;font-weight:600}
 @media (max-width:760px),(max-height:520px) and (pointer:coarse){.who .hscore{font-size:10px;padding:0 6px;margin-top:1px}}
+/* v51f */body.busy,body.busy *{cursor:progress!important}body.busy::after{content:"";position:fixed;left:0;top:0;height:3px;width:40%;z-index:9999;background:#d8a23a;animation:bzy 1s linear infinite}@keyframes bzy{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
 /* v51d: kompetisi antarkampus */.chead{margin:4px 0 8px}.cst{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:700;background:#eee}.cst.aktif{background:#e3f3e8;color:#1f6b3e}.cst.akan{background:#fff4dc;color:#8a5a00}.cst.selesai{background:#eee;color:#555}.ctab{max-height:46vh;overflow:auto;border:1px solid var(--line,#d8cfc2);border-radius:10px}.ctab table{width:100%;border-collapse:collapse;font-size:13px}.ctab th,.ctab td{padding:6px 8px;border-bottom:1px solid var(--line,#e5ddd1);text-align:left;vertical-align:top}.ctab th{position:sticky;top:0;background:#f4efe6;font-size:11.5px}.ctab tr.me td{background:#eaf5ee}.ctab tr.cmin td{opacity:.6}.cwarn{margin:6px 0;padding:8px 10px;border-radius:10px;background:#fff4dc;font-size:13px}.cadm{margin-top:10px;padding:8px 10px;border:1px dashed #c98b2b;border-radius:10px}.cadm label{display:flex;flex-direction:column;font-size:12px;gap:2px}.cadm input{padding:7px 9px;border-radius:8px;border:1px solid var(--line,#d8cfc2);font:inherit}
 /* v51c: daftar kelas */.kl{margin:8px 0 2px;display:flex;flex-direction:column;gap:6px}.klh{font-size:12.5px;color:var(--muted,#7a7064)}.klg{font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted,#7a7064);margin-top:4px;cursor:pointer}.klb{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--line,#d8cfc2);background:#fff;color:inherit;font:inherit;cursor:pointer;margin:3px 0}.klb small{font-size:12px;opacity:.75}.klb:hover{border-color:#c98b2b}.klb.arm{border-color:#2f7a4f;background:#eaf5ee}.klb.on{border-color:#2f7a4f;opacity:.8;cursor:default}
 /* v51b: tombol alat ringkas — lebar tetap, nama 1 baris, biaya terlipat 2 baris; alat terkunci di ujung kanan */
@@ -355,6 +356,6 @@ html.lite *,html.lite *::before,html.lite *::after{-webkit-backdrop-filter:none!
 <div id="toast"></div>
 <div id="modal" class="modal hidden"></div>
 
-<script type="module" src="game.js?v=82"></script>
+<script type="module" src="game.js?v=83"></script>
 </body>
 </html>
