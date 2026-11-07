@@ -13,6 +13,8 @@ const GUARD = "<?php http_response_code(404); exit; ?>\n";
 const MAX_SAVE = 600000;      // bita JSON simpanan
 const TOKEN_DAYS = 45;
 const EULA_VER = '2026-11-01';
+/** v51d: pengelola kompetisi antarkampus (nama pengguna, huruf kecil); dapat ditambah lewat bendera 'pengelola' di halaman admin */
+const COMP_ADMINS = ['arema'];
 const ERA_MAX = 7;            // era tertinggi di versi ini
 const START = ['coin' => 667, 'wood' => 60];
 /** biaya naik level bangunan [ke lv2, ke lv3] = [koin, kayu]; sama dengan UPG di game.js */
@@ -124,7 +126,17 @@ function new_token(string $uid): string {
 }
 /** v48: perbarui kampus/kelas di papan peringkat semester berjalan tanpa menunggu simpan berikutnya */
 function lb_sync(string $uid, array $set): void { upd('lb_' . semester() . '.php', function ($d) use ($uid, $set) { if (!$d || !isset($d[$uid])) { return ['__ret' => false]; } foreach ($set as $k => $v) { $d[$uid][$k] = $v; } return ['__write' => $d, '__ret' => true]; }); }
-function pub(array $u): array { return ['user' => $u['user'], 'name' => $u['name'] ?? $u['user'], 'kampus' => $u['kampus'] ?? '', 'kampusCC' => $u['kampusCC'] ?? '', 'kelas' => $u['kelas'] ?? '', 'created' => $u['created'] ?? 0, 'eula' => ($u['eula'] ?? '') === EULA_VER, 'mustPw' => !empty($u['mustPw']), 'dosen' => !empty($u['dosen'])]; }
+function comp_admin(array $u): bool { return !empty($u['pengelola']) || in_array(mb_strtolower((string) ($u['user'] ?? '')), COMP_ADMINS, true); }
+/** v51d: status kompetisi antarkampus berjalan */
+function comp_cur(): ?array { $c = rd('comp.php') ?: []; $x = $c['cur'] ?? null; if (!$x) { return null; } $t = time(); $x['state'] = !empty($x['closed']) || $t > (int) $x['selesai'] ? 'selesai' : ($t < (int) $x['mulai'] ? 'akan' : 'aktif'); return $x; }
+/** v51d: peringkat kampus = rata-rata 10 skor terbaik pemain kampus itu selama kompetisi; kampus dengan peserta < minimum tetap tampil di bawah */
+function comp_rank(array $cur, string $myK = ''): array { $d = rd('comp_' . preg_replace('/[^a-z0-9]/', '', (string) $cur['id']) . '.php') ?: []; $g = [];
+	foreach ($d as $id => $r) { $k = mb_strtolower(trim((string) $r['kampus'])); if ($k === '') { continue; } $g[$k]['nama'] = $r['kampus']; $g[$k]['sc'][] = (int) $r['best']; $g[$k]['top'][] = $r; }
+	$min = max(1, (int) ($cur['min'] ?? 3)); $rank = [];
+	foreach ($g as $k => $x) { rsort($x['sc']); $t10 = array_slice($x['sc'], 0, 10); usort($x['top'], fn($a, $b) => $b['best'] <=> $a['best']);
+		$rank[] = ['kampus' => $x['nama'], 'n' => count($x['sc']), 'avg' => (int) round(array_sum($t10) / count($t10)), 'max' => $x['sc'][0], 'ok' => count($x['sc']) >= $min, 'me' => $myK !== '' && $k === $myK, 'best3' => array_map(fn($r) => ['who' => $r['who'], 'kampung' => $r['kampung'], 'best' => (int) $r['best']], array_slice($x['top'], 0, 3))]; }
+	usort($rank, fn($a, $b) => [$b['ok'], $b['avg'], $b['n']] <=> [$a['ok'], $a['avg'], $a['n']]); return [$rank, $d]; }
+function pub(array $u): array { return ['user' => $u['user'], 'name' => $u['name'] ?? $u['user'], 'kampus' => $u['kampus'] ?? '', 'kampusCC' => $u['kampusCC'] ?? '', 'pengelola' => comp_admin($u), 'kelas' => $u['kelas'] ?? '', 'created' => $u['created'] ?? 0, 'eula' => ($u['eula'] ?? '') === EULA_VER, 'mustPw' => !empty($u['mustPw']), 'dosen' => !empty($u['dosen'])]; }
 
 /** Semester akademik: Agustus–Januari = Ganjil, Februari–Juli = Genap. */
 function semester(?int $ts = null): string { $ts = $ts ?? time(); $m = (int) date('n', $ts); $y = (int) date('Y', $ts);
@@ -413,6 +425,10 @@ switch ($a) {
 		if (!$r['bad'] && $doLb) { $sem = semester(); $row = ['who' => $u['user'], 'name' => $meta['name'], 'kelas' => $u['kelas'] ?? '', 'kampus' => $u['kampus'] ?? '', 'score' => $meta['score'], 'era' => $meta['era'], 'kk' => $meta['kk'], 'month' => $meta['month'], 'loc' => $meta['loc'], 'ind' => $meta['ind'], 'badges' => $meta['badges'] ?? [], 'at' => time()];
 			upd('lb_' . $sem . '.php', function ($d) use ($u, $row, $chal, $chalNow) { $d = $d ?: []; $old = $d[$u['uid']] ?? null; if ($row['score'] >= (int) ($old['best'] ?? 0)) { $row['best'] = $row['score']; $row['bestInd'] = $row['ind']; $row['bestEra'] = $row['era']; $row['bestKK'] = $row['kk']; $row['bestName'] = $row['name']; } else { $row['best'] = (int) $old['best']; $row['bestInd'] = $old['bestInd'] ?? $row['ind']; $row['bestEra'] = $old['bestEra'] ?? null; $row['bestKK'] = $old['bestKK'] ?? null; $row['bestName'] = $old['bestName'] ?? null; } $row['saves'] = (int) ($old['saves'] ?? 0) + 1; $row['chal'] = $chal; $row['chalAt'] = ($old['chal'] ?? '') === $chal && !empty($old['chalAt']) ? $old['chalAt'] : ($chalNow ? time() : 0); $row['first'] = $old['first'] ?? time(); $d[$u['uid']] = $row; return ['__write' => $d, '__ret' => true]; });
 		if ($doDir || (!$r['bad'] && $doLb)) { upd('u_' . $u['uid'] . '.php', function ($x) use ($doDir, $dirSig, $doLb, $lbSig, $r) { if (!$x) { return ['__ret' => false]; } if ($doDir) { $x['dirSig'] = $dirSig; $x['dirAt'] = time(); } if (!$r['bad'] && $doLb) { $x['lbSig'] = $lbSig; $x['lbAt'] = time(); } return ['__write' => $x, '__ret' => true]; }); } }
+		$cp = comp_cur(); if ($cp && $cp['state'] === 'aktif' && !$r['bad'] && trim((string) ($u['kampus'] ?? '')) !== '') { /* v51d: catat skor terbaik selama kompetisi antarkampus */
+			$cid = preg_replace('/[^a-z0-9]/', '', (string) $cp['id']); $sc = (int) $meta['score']; $kp = clean((string) $u['kampus'], 80);
+			upd('comp_' . $cid . '.php', function ($d) use ($u, $sc, $kp, $meta) { $d = $d ?: []; $o = $d[$u['uid']] ?? null; if ($o && (int) $o['best'] >= $sc && $o['kampus'] === $kp) { return ['__ret' => false]; }
+				$d[$u['uid']] = ['who' => $u['user'], 'name' => $u['name'] ?? $u['user'], 'kampus' => $kp, 'kelas' => $u['kelas'] ?? '', 'best' => max($sc, $o && $o['kampus'] === $kp ? (int) $o['best'] : 0), 'kampung' => $meta['name'], 'at' => time()]; return ['__write' => $d, '__ret' => true]; }); }
 		$grant = 0; if ((float) ($u['grantPend'] ?? 0) > 0) { $grant = upd('u_' . $u['uid'] . '.php', function ($x) { if (!$x) { return ['__ret' => 0]; } $g = (float) ($x['grantPend'] ?? 0); $x['grantPend'] = 0; return ['__write' => $x, '__ret' => $g]; }); }
 		out(['ok' => true, 'grant' => $grant, 'ver' => $r['ver'], 'score' => $meta['score'], 'ind' => $meta['ind'], 'ranked' => !$r['bad'], 'flags' => $r['bad'], 'chal' => $chal, 'chalOk' => $chalNow, 'badges' => $meta['badges'] ?? [], 'newBadges' => $newB, 'river' => $rc['river']]);
 	}
@@ -437,6 +453,20 @@ switch ($a) {
 			$ok = upd('k_' . $code . '.php', function ($k) use ($u, $nama) { if ($k) { return ['__ret' => false]; } return ['__write' => ['owner' => $u['uid'], 'ownerUser' => $u['user'], 'nama' => $nama, 'created' => time()], '__ret' => true]; });
 			if ($ok) { upd('u_' . $u['uid'] . '.php', function ($x) use ($code) { $x['owns'] = array_values(array_unique(array_merge($x['owns'] ?? [], [$code]))); return ['__write' => $x, '__ret' => true]; }); out(['ok' => true, 'code' => $code]); } }
 		fail('storage', 500); }
+	case 'comp_get': { $u = auth(); rate('compget', 600, 300); $c = rd('comp.php') ?: []; $cur = comp_cur(); $past = array_slice($c['past'] ?? [], 0, 10);
+		$rank = []; $mine = null; $myK = mb_strtolower(trim((string) ($u['kampus'] ?? '')));
+		if ($cur) { [$rank, $d] = comp_rank($cur, $myK); foreach ($rank as $i => $x) { if ($x['me']) { $mine = $i + 1; } } $cur['peserta'] = count($d); $myRow = $d[$u['uid']] ?? null; $cur['saya'] = $myRow ? (int) $myRow['best'] : null; }
+		out(['ok' => true, 'cur' => $cur, 'rank' => array_slice($rank, 0, 100), 'myRank' => $mine, 'past' => $past, 'admin' => comp_admin($u)]); }
+	case 'comp_open': { $u = auth(); if (!comp_admin($u)) { fail('forbidden', 403); } rate('compopen' . $u['uid'], 20, 86400);
+		$nama = clean((string) ($b['nama'] ?? ''), 80); if (mb_strlen($nama) < 3 || rude($nama)) { fail('bad_name'); }
+		$mulai = strtotime((string) ($b['mulai'] ?? '') . ' 00:00:00 Asia/Jakarta') ?: time(); $selesai = strtotime((string) ($b['selesai'] ?? '') . ' 23:59:59 Asia/Jakarta') ?: 0;
+		if ($selesai <= $mulai || $selesai - $mulai > 400 * 86400) { fail('bad_date'); } $min = max(1, min(50, (int) ($b['min'] ?? 3)));
+		$id = gmdate('Ymd', $mulai + 7 * 3600) . substr(bin2hex(random_bytes(3)), 0, 4);
+		upd('comp.php', function ($c) use ($u, $nama, $mulai, $selesai, $min, $id) { $c = $c ?: []; if (!empty($c['cur'])) { $o = $c['cur']; if (empty($o['closed']) && time() < (int) $o['selesai']) { $o['closed'] = time(); } [$rk] = comp_rank($o); $o['juara'] = array_map(fn($x) => ['kampus' => $x['kampus'], 'avg' => $x['avg'], 'n' => $x['n']], array_slice(array_values(array_filter($rk, fn($x) => $x['ok'])), 0, 3)); $c['past'] = array_slice(array_merge([$o], $c['past'] ?? []), 0, 20); }
+			$c['cur'] = ['id' => $id, 'nama' => $nama, 'mulai' => $mulai, 'selesai' => $selesai, 'min' => $min, 'by' => $u['user'], 'created' => time()]; return ['__write' => $c, '__ret' => true]; });
+		out(['ok' => true, 'id' => $id]); }
+	case 'comp_close': { $u = auth(); if (!comp_admin($u)) { fail('forbidden', 403); }
+		$ok = upd('comp.php', function ($c) { if (empty($c['cur'])) { return ['__ret' => false]; } $c['cur']['closed'] = time(); return ['__write' => $c, '__ret' => true]; }); out(['ok' => (bool) $ok]); }
 	case 'kelas_list': { $u = auth(); /* v51c: daftar kelas yang dapat dipilih mahasiswa (kelas dari kampus yang sama tampil lebih dulu) */
 		$myK = mb_strtolower(trim((string) ($u['kampus'] ?? ''))); $own = []; $list = [];
 		foreach (glob(DATA . '/k_*.php') ?: [] as $f) { $c = substr(basename($f, '.php'), 2); if ($c === '' || !preg_match('/^[A-Z0-9]{1,12}$/', $c)) { continue; } $k = rd('k_' . $c . '.php'); if (!$k || !empty($k['hidden'])) { continue; }
