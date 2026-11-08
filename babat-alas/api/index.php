@@ -445,7 +445,7 @@ switch ($a) {
 			usort($cls, fn($a, $b) => $b['best'] <=> $a['best']); $mine = null; foreach ($cls as $i => $r) { if ($r['me']) { $mine = $i + 1; break; } }
 			out(['ok' => true, 'sem' => $sem, 'scope' => $scope, 'total' => count($cls), 'myRank' => $mine, 'list' => array_slice($cls, 0, 50)]); }
 		foreach ($d as $id => $r) { if ($scope === 'kelas' && (($u['kelas'] ?? '') === '' || $r['kelas'] !== $u['kelas'])) { continue; } if ($scope === 'kampus' && (($u['kampus'] ?? '') === '' || mb_strtolower($r['kampus']) !== mb_strtolower($u['kampus']))) { continue; }
-			$rows[] = ['me' => $id === $u['uid'], 'who' => $r['who'], 'name' => $r['name'], 'kampus' => $scope === 'publik' ? $r['kampus'] : '', 'best' => $r['best'], 'ind' => $r['bestInd'] ?? null, 'era' => $r['era'], 'kk' => $r['kk'], 'bEra' => $r['bestEra'] ?? null, 'bKK' => $r['bestKK'] ?? null, 'now' => (int) ($r['score'] ?? $r['best'])]; } /* v50m: era/KK saat skor terbaik + skor sekarang */
+			$rows[] = ['me' => $id === $u['uid'], 'pid' => substr(hash('sha256', (string) $id), 0, 10), 'who' => $r['who'], 'name' => $r['name'], 'kampus' => $scope === 'publik' ? $r['kampus'] : '', 'best' => $r['best'], 'ind' => $r['bestInd'] ?? null, 'era' => $r['era'], 'kk' => $r['kk'], 'bEra' => $r['bestEra'] ?? null, 'bKK' => $r['bestKK'] ?? null, 'now' => (int) ($r['score'] ?? $r['best'])]; } /* v50m: era/KK saat skor terbaik + skor sekarang */
 		usort($rows, fn($a, $b) => $b['best'] <=> $a['best']); $mine = null; foreach ($rows as $i => $r) { if ($r['me']) { $mine = $i + 1; break; } }
 		out(['ok' => true, 'sem' => $sem, 'scope' => $scope, 'total' => count($rows), 'myRank' => $mine, 'list' => array_slice($rows, 0, 50)]);
 	}
@@ -556,6 +556,13 @@ switch ($a) {
 		$res = []; foreach (claim_list($lat, $lon, 15) as $id => $m) { $res[] = ['lat' => round((float) $m['lat'], 3), 'lon' => round((float) $m['lon'], 3), 'hx' => $m['hx'], 'hy' => $m['hy'], 'dx' => $m['dx'], 'dy' => $m['dy'], 'name' => $m['name'] ?? '', 'who' => $me !== '' ? ($m['who'] ?? '') : '', 'mine' => $id === $me]; }
 		out(['ok' => true, 'list' => array_slice($res, 0, 300)]);
 	}
+	case 'peek': { /* v51j: lihat kampung pemain lain (hanya baca; tidak bisa diubah) */
+		$u = auth(); rate('peek' . $u['uid'], 60, 600); $pid = preg_replace('/[^a-f0-9]/', '', (string) ($_GET['pid'] ?? '')); if (strlen($pid) !== 10) { fail('bad'); }
+		$tid = null; foreach (array_keys(dir_rd()) as $id) { if (substr(hash('sha256', (string) $id), 0, 10) === $pid) { $tid = (string) $id; break; } }
+		if (!$tid) { foreach (glob(DATA . '/s_*.php', GLOB_NOSORT) ?: [] as $f) { $id = substr(basename($f, '.php'), 2); if (substr(hash('sha256', $id), 0, 10) === $pid) { $tid = $id; break; } } }
+		if (!$tid) { fail('no_user', 404); } $sv = rd('s_' . $tid . '.php'); $st = $sv['state'] ?? null; if (!is_array($st)) { fail('no_user', 404); }
+		$o = rd('u_' . $tid . '.php') ?: []; if (!empty($o['ban'])) { fail('no_user', 404); }
+		unset($st['tele'], $st['_deals'], $st['tut']); out(['ok' => true, 'who' => (string) ($o['user'] ?? ''), 'kampus' => (string) ($o['kampus'] ?? ''), 'me' => $tid === $u['uid'], 'state' => $st]); }
 	// ---- perjanjian dagang dua arah antarpemain ----
 	case 'deal_offer': {
 		$u = auth(); rate('deal' . $u['uid'], 20, 3600); $to = preg_replace('/[^a-f0-9]/', '', (string) ($b['to'] ?? '')); $com = preg_replace('/[^a-z_]/', '', (string) ($b['com'] ?? ''));
