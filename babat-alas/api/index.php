@@ -348,8 +348,9 @@ switch ($a) {
 		$lf = DATA . '/live/' . $sid . '.php'; if (!is_file($lf) && count(glob(DATA . '/live/*.php', GLOB_NOSORT) ?: []) > 5000) { out(['ok' => true, 'cfg' => cfg_pub()]); }
 		@file_put_contents($lf, GUARD . json_encode($row, JSON_UNESCAPED_UNICODE), LOCK_EX);
 		if (mt_rand(1, 200) === 1) { $cut = time() - 7 * 86400; foreach (glob(DATA . '/live/*.php') ?: [] as $f) { if (basename($f) !== 'index.php' && @filemtime($f) < $cut) { @unlink($f); } } }
-		if ($uid) { upd('u_' . $uid . '.php', function ($x) { if (!$x) { return ['__ret' => false]; } $x['seen'] = time(); return ['__write' => $x, '__ret' => true]; }); }
-		out(['ok' => true, 'cfg' => cfg_pub()]);
+		$din = 0; if ($uid) { upd('u_' . $uid . '.php', function ($x) { if (!$x) { return ['__ret' => false]; } $x['seen'] = time(); return ['__write' => $x, '__ret' => true]; });
+			foreach ((rd('deals.php') ?: []) as $v) { if (($v['to'] ?? '') === $uid && ($v['st'] ?? '') === 'pending') { $din++; } } } /* v51i: jumlah tawaran perjanjian dagang masuk yang menunggu jawaban */
+		out(['ok' => true, 'cfg' => cfg_pub(), 'dealIn' => $din]);
 	}
 	case 'register': {
 		if (!cfg()['regOpen']) { fail('reg_closed', 403); } if (cfg()['maint']) { fail('maint', 503); }
