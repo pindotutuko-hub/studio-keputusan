@@ -2296,10 +2296,11 @@ function gtStats(){const p=window.__b24p,K=p.kolab,W=works(p);
 let gtLayer=null,gtTiles=null,gtMk={};
 function gtBase(){const map=window.__kmap;if(!map||!window.L)return;if(gtTiles)map.removeLayer(gtTiles);
   const B={osm:['https://tile.openstreetmap.org/{z}/{x}/{y}.png','© OpenStreetMap'],light:['https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png','© OpenStreetMap © CARTO'],sat:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}','Citra © Esri']}[G.base]||[];
-  gtTiles=L.tileLayer(B[0],{attribution:B[1],maxZoom:18}).addTo(map);}
+  gtTiles=L.tileLayer(B[0],{attribution:B[1],maxZoom:18,minZoom:2,noWrap:true,bounds:[[-85,-180],[85,180]]}).addTo(map);}
 function gtInit(){const mdiv=document.getElementById('gtMap');if(!window.L){mdiv.innerHTML='<div style="padding:16px" class="helper">Peta interaktif memerlukan koneksi internet (Leaflet/OpenStreetMap). Daftar institusi di samping tetap dapat dipakai.</div>';return;}
   if(window.__kmap){try{window.__kmap.remove();}catch(e){}}
-  const map=window.__kmap=L.map(mdiv,{scrollWheelZoom:true,worldCopyJump:true});gtBase();gtLayer=L.layerGroup().addTo(map);
+  const map=window.__kmap=L.map(mdiv,{scrollWheelZoom:true,minZoom:2,maxBounds:[[-85,-180],[85,180]],maxBoundsViscosity:1});gtBase();gtLayer=L.layerGroup().addTo(map);
+  map.on('zoomend',gtLabels);
   map.attributionControl.setPrefix(false);}
 function arc(a,b){const out=[],dx=b[1]-a[1],dy=b[0]-a[0],m=[(a[0]+b[0])/2-dx*0.18,(a[1]+b[1])/2+dy*0.18];for(let t=0;t<=1.0001;t+=0.05){out.push([(1-t)*(1-t)*a[0]+2*(1-t)*t*m[0]+t*t*b[0],(1-t)*(1-t)*a[1]+2*(1-t)*t*m[1]+t*t*b[1]]);}return out;}
 function gtPopup(i){const home=(window.__kolab.home||{}).id===i.id;
@@ -2331,9 +2332,10 @@ function gtDraw(fit){const p=window.__b24p,K=p.kolab,S=gtStats().sort((a,b)=>b.n
     m.on('click',()=>{G.sel=i.id;gtHlList();});
     if(ix<8||isH)m.bindTooltip((isH?'🏠 ':'')+(i.name.length>26?i.name.slice(0,25)+'…':i.name),{permanent:true,direction:'top',offset:[0,-r],className:'gtlbl'});
     m.addTo(gtLayer);gtMk[i.id]=m;pts.push([i.lat,i.lon]);});
-  if(pts.length&&(fit||G.cc)){window.__kmap.fitBounds(L.latLngBounds(pts).pad(0.3),{maxZoom:G.cc?8:6});}
-  else if(!pts.length)window.__kmap.setView([0,110],3);
-  setTimeout(()=>window.__kmap&&window.__kmap.invalidateSize(),80);}
+  const doFit=()=>{const m=window.__kmap;if(!m)return;m.invalidateSize();const fp=G.cc?geo.filter(i=>i.cc===G.cc).map(i=>[i.lat,i.lon]):pts;if(fp.length&&(fit||G.cc)){const b=L.latLngBounds(fp);m.fitBounds(b.pad(fp.length>1?0.25:0),{maxZoom:fp.length>1?(G.cc?8:6):7,padding:[30,30]});}else if(!pts.length)m.setView([-2,118],4);gtLabels();};
+  doFit();setTimeout(doFit,200);}
+/* label nama hanya tampil saat cukup dekat agar tidak bertumpuk */
+function gtLabels(){const m=window.__kmap;if(!m)return;const z=m.getZoom();Object.values(gtMk).forEach(mk=>{const t=mk.getTooltip&&mk.getTooltip();if(!t)return;const el=t.getElement&&t.getElement();if(el)el.style.display=z>=5?'':'none';});}
 function gtStatsAll(){const s={cc:G.cc};G.cc='';const r=gtStats();G.cc=s.cc;return r;}
 function gtHlList(){document.querySelectorAll('.gtrow').forEach(r=>r.classList.toggle('on',r.dataset.gi===G.sel));const r=document.querySelector('.gtrow.on');if(r)r.scrollIntoView({block:'nearest',behavior:'smooth'});}
 window.__mapFocusInst=function(id){const m=gtMk[id];G.sel=id;gtHlList();if(m&&window.__kmap){window.__kmap.flyTo(m.getLatLng(),Math.max(window.__kmap.getZoom(),6),{duration:.8});setTimeout(()=>m.openPopup(),850);}};
