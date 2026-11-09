@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.10.1 — 2026-11-09
+- **Peta riset:** tombol “Peta riset” dan klik peta di kartu latar belakang kini membuka peta yang sama (ko-okurensi kata kunci, overlay tahun) — sebelumnya membuka jenis peta terakhir yang dipilih (mis. ko-kepengarangan). Jejaring kecil digambar rapat di tengah, tinggi peta dibatasi agar tidak terpotong, dan ada petunjuk bila simpul terlalu sedikit.
+
 ## 3.10.0 — 2026-11-09
 - **Grafik teknik lintas bidang:** diagram Cremona utuh (diagram resiprokal Maxwell–Cremona, notasi Bow, garis beban, cek ketertutupan) pada alat rangka batang; denah skematik dari program ruang (zona publik–privat–servis, sirkulasi); diagram psikrometrik (Magnus–Alduchov & Eskridge, titik embun, rasio kelembapan, entalpi); hidrograf banjir (SCS-CN, hidrograf satuan segitiga NRCS); kurva S proyek (rencana vs realisasi); diagram interaksi kolom beton P–M (Whitney, φ ACI 318-14/SNI 2847:2019).
 - **Kanvas gaya Orange — widget tersisa:** Color (palet, termasuk Okabe–Ito), Apply Domain, Select by Data Index, Create Instance, FreeViz, Pythagorean Forest, Calibrated Learner (sigmoid/Platt, isotonik), Curve Fit (Levenberg–Marquardt; model siap pakai atau rumus sendiri), Save Model / Load Model (.skmodel.json).

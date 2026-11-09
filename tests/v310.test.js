@@ -59,6 +59,10 @@ setTimeout(() => {
   // panel semua widget baru dirender tanpa galat
   { const d = w.document, go = m => { const b = d.createElement('button'); b.dataset.modgo = m; d.body.appendChild(b); b.click(); b.remove(); }; go('orange');
     for (const nd of OW.nodes) { OW.sel = nd.id; const b = d.createElement('button'); b.dataset.owpv = '_t'; b.dataset.v = '1'; (d.querySelector('#v27_ow_canvas') || d.body).appendChild(b); b.click(); b.remove(); } }
+  // peta riset: jejaring kecil (3 penulis) digambar rapat di tengah, tidak melebar ke tepi
+  { const N = [{ c: 1 }, { c: 1 }, { c: 1 }]; w.__OV310.litLayout(N, [{ i: 0, j: 1, w: 1 }, { i: 1, j: 2, w: 1 }, { i: 0, j: 2, w: 1 }]); const xs = N.map(n => n.x), ys = N.map(n => n.y);
+    assert(Math.max(...xs) - Math.min(...xs) <= (1000 - 220) * 0.48 + 1e-6 && Math.min(...xs) > 250 && Math.max(...ys) < 640 - 150, JSON.stringify(N));
+    const N2 = [...Array(40)].map(() => ({ c: 1 })); w.__OV310.litLayout(N2, []); near(Math.max(...N2.map(n => n.x)) - Math.min(...N2.map(n => n.x)), 780, 1e-6); }
   // Lampiran II: 20 program profesi + 61 spesialis; tetap 574 prodi Lampiran I
   { const K = w.__kp; assert.strictEqual(K.KP_P.filter(p => p[5] === 'II.I').length, 20); assert.strictEqual(K.KP_P.filter(p => p[5] === 'II.II').length, 61); assert.strictEqual(K.KP_P.filter(p => !p[5]).length, 574); assert.strictEqual(K.KP_S.length, 56);
     assert(K.kpSearch('profesi arsitek', '').some(p => p[1] === 'Pendidikan Profesi Arsitek')); assert(new Set(K.KP_P.map(p => p[0])).size === K.KP_P.length); }
