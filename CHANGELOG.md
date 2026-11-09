@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.12.1 — 2026-11-09
+- Kebijakan keamanan konten (CSP) mengizinkan `api.crossref.org` dan perantara `pindotutuko.id/sk-api` (juga untuk versi desktop), sehingga cadangan Crossref benar-benar berjalan.
+
 ## 3.12.0 — 2026-11-09
 - **Literatur untuk banyak pengguna:** pencarian kini lewat perantara di server pindotutuko.id (`server/openalex.php` → `/sk-api/openalex.php`) yang memakai satu kunci API OpenAlex milik pengelola (disimpan di luar public_html), menyimpan hasil yang sama 7 hari (cache), dan membatasi 60 pencarian baru per jaringan per hari. Urutan: kunci pribadi pengguna (bila diisi) → perantara server → OpenAlex tanpa kunci → **cadangan otomatis Crossref** (judul, penulis, tahun, jurnal, sitasi, sebagian abstrak; peta kata kunci dibentuk dari judul/abstrak).
 - Pemandu tujuan: “mencari tapak yang potensial untuk bangunan …” kini mengarah ke Analisis Tapak (sebelumnya optimasi yang belum tersedia).

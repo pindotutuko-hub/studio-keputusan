@@ -48,7 +48,8 @@ setTimeout(async () => {
     assert.strictEqual(X.LIT.papers.length, 2); assert(/Crossref: 2/.test(X.LIT.msg) && /Kuota OpenAlex habis/.test(X.LIT.msg), X.LIT.msg); assert(!X.LIT.quota);
     calls.length = 0; w.fetch = async u => { calls.push(String(u)); return /sk-api/.test(u) ? resp(200, { meta: { count: 9 }, results: [{ id: 'W1', title: 'T one', publication_year: 2020, authorships: [], cited_by_count: 1 }] }, { 'X-SK-Cache': 'hit' }) : resp(500, {}); };
     await X.search(); assert.strictEqual(calls.length, 1); assert(/via server, cache/.test(X.LIT.msg), X.LIT.msg); w.fetch = f0;
-    assert.strictEqual(top('mencari tapak yang potensial utk bangunan kantor'), 'tapak'); }
+    assert.strictEqual(top('mencari tapak yang potensial utk bangunan kantor'), 'tapak');
+    const bp = fs.readFileSync(path.join(__dirname, '..', 'build-page.js'), 'utf8'); assert(/connect-src[^;]*https:\/\/api\.crossref\.org/.test(bp) && /connect-src[^;]*https:\/\/pindotutuko\.id/.test(bp)); }
   // jendela rumpun ilmu terpandu: rumpun → kelompok → prodi → pakai
   { const click = el => el.dispatchEvent(new w.MouseEvent('click', { bubbles: true })), b = d.createElement('button'); b.dataset.kpopen = ''; d.body.appendChild(b); click(b); b.remove();
     const M = d.querySelector('#skKp'); assert(M && !M.hidden && M.classList.contains('kpmodal') && !d.querySelector('#skKpBd').hidden); assert.strictEqual(M.querySelectorAll('.kprc').length, 6); assert.strictEqual(M.querySelectorAll('.kpsteps li').length, 4);
