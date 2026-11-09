@@ -1,12 +1,12 @@
 <?php
-/* Studio Keputusan — perantara OpenAlex dengan cache (v3.12)
+/* Studio Keputusan & Analisis Dosen — perantara OpenAlex dengan cache (v3.13: works/authors/institutions)
    Letak: /home/pindotut/public_html/pindotutuko.id/sk-api/openalex.php
    Kunci API: /home/pindotut/sk-config/openalex.php berisi  <?php return 'KUNCI_ANDA';
    (di luar public_html, tidak dapat dibuka dari web). Cache: /home/pindotut/sk-cache/openalex/ */
 $KEYFILE = '/home/pindotut/sk-config/openalex.php';
 $CACHE   = '/home/pindotut/sk-cache/openalex';
 $TTL     = 7 * 86400;      // hasil yang sama disimpan 7 hari
-$PER_IP  = 60;             // batas pencarian baru per alamat IP per hari (hasil cache tidak dihitung)
+$PER_IP  = 150;            // batas permintaan baru per alamat IP per hari (hasil cache tidak dihitung)
 $ALLOW_ORIGINS = ['https://pindotutuko.id', 'https://www.pindotutuko.id', 'null'];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -20,8 +20,12 @@ if ($origin !== '' && !in_array($origin, $ALLOW_ORIGINS, true)) out(403, ['error
 $key = is_file($KEYFILE) ? trim((string) (include $KEYFILE)) : '';
 if ($key === '' || $key === 'KUNCI_ANDA') out(503, ['error' => 'nokey', 'message' => 'Kunci API OpenAlex belum dipasang di server.']);
 
-/* hanya parameter pencarian karya yang diizinkan */
+/* titik akhir yang diizinkan: works (bawaan), authors, institutions */
+$ep = $_GET['ep'] ?? 'works';
+if (!in_array($ep, ['works', 'authors', 'institutions'], true)) out(400, ['error' => 'ep']);
+/* hanya parameter pencarian yang diizinkan */
 $p = [];
+if (isset($_GET['per-page']) && !isset($_GET['per_page'])) $_GET['per_page'] = $_GET['per-page'];
 foreach (['search', 'filter', 'per_page', 'sort', 'select', 'page'] as $k) {
   if (isset($_GET[$k]) && $_GET[$k] !== '') $p[$k] = substr((string) $_GET[$k], 0, 1500);
 }
@@ -30,7 +34,7 @@ $p['per_page'] = (string) max(1, min(100, (int) ($p['per_page'] ?? 50)));
 if (isset($p['page'])) $p['page'] = (string) max(1, min(5, (int) $p['page']));
 ksort($p);
 $qs = http_build_query($p);
-$h = sha1($qs);
+$h = sha1($ep . '?' . $qs);
 
 if (!is_dir($CACHE)) @mkdir($CACHE, 0750, true);
 $cf = $CACHE . '/' . substr($h, 0, 2) . '/' . $h . '.json';
@@ -44,7 +48,7 @@ $n = is_file($cntf) ? (int) file_get_contents($cntf) : 0;
 if ($n >= $PER_IP) out(429, ['error' => 'perip', 'message' => 'Batas pencarian harian dari jaringan ini tercapai.']);
 
 $ctx = stream_context_create(['http' => ['timeout' => 25, 'ignore_errors' => true, 'header' => "User-Agent: StudioKeputusan/1.0 (pindotutuko.id)\r\n"]]);
-$body = @file_get_contents('https://api.openalex.org/works?' . $qs . '&api_key=' . rawurlencode($key), false, $ctx);
+$body = @file_get_contents('https://api.openalex.org/' . $ep . '?' . $qs . '&api_key=' . rawurlencode($key), false, $ctx);
 $status = 0;
 foreach (($http_response_header ?? []) as $hl) if (preg_match('#^HTTP/\S+\s+(\d{3})#', $hl, $m)) $status = (int) $m[1];
 if ($body === false || $status === 0) out(502, ['error' => 'upstream']);
