@@ -47,7 +47,7 @@ $n = is_file($cntf) ? (int) file_get_contents($cntf) : 0;
 if ($n >= $PER_IP) out(429, 'batas harian tercapai');
 
 $ctx = stream_context_create(['http' => ['timeout' => 20, 'ignore_errors' => true, 'follow_location' => 1, 'max_redirects' => 3,
-  'header' => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36\r\nAccept-Language: id-ID,id;q=0.9,en;q=0.8\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\nUpgrade-Insecure-Requests: 1\r\n"]]);
+  'header' => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36 AnalisisDosen/1.0\r\nAccept-Language: id,en;q=0.8\r\nAccept: text/html,application/json;q=0.9,*/*;q=0.5\r\n"]]);
 $body = @file_get_contents($u, false, $ctx, 0, $MAXB);
 $status = 0; $ct = 'text/html; charset=utf-8';
 foreach (($http_response_header ?? []) as $hl) {
