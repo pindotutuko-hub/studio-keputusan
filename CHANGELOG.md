@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.12.0 — 2026-11-09
+- **Literatur untuk banyak pengguna:** pencarian kini lewat perantara di server pindotutuko.id (`server/openalex.php` → `/sk-api/openalex.php`) yang memakai satu kunci API OpenAlex milik pengelola (disimpan di luar public_html), menyimpan hasil yang sama 7 hari (cache), dan membatasi 60 pencarian baru per jaringan per hari. Urutan: kunci pribadi pengguna (bila diisi) → perantara server → OpenAlex tanpa kunci → **cadangan otomatis Crossref** (judul, penulis, tahun, jurnal, sitasi, sebagian abstrak; peta kata kunci dibentuk dari judul/abstrak).
+- Pemandu tujuan: “mencari tapak yang potensial untuk bangunan …” kini mengarah ke Analisis Tapak (sebelumnya optimasi yang belum tersedia).
+
 ## 3.11.1 — 2026-11-09
 - **Saran metode mengikuti bidang ilmu:** bila bidang dikenali, rumusan yang lazim di bidang itu didahulukan; bila tujuan masih umum, ditampilkan “rumusan penelitian yang lazim di bidang …”. Bidang yang sama-sama cocok dengan satu kata (mis. “farmasi”) kini diputuskan ke bidang yang paling spesifik.
 - **Teknik Elektro — elektronika & instrumentasi:** alat baru *analisis sinyal* (spektrum FFT radix-2 dengan jendela persegi/Hann dan koreksi ENBW, DC, RMS, puncak-ke-puncak, faktor puncak, frekuensi dominan, THD, SNR, SINAD, tapis RC lolos-rendah) dan *karakteristik statis instrumen* (sensitivitas, ofset, nonlinearitas % FSO, histeresis, galat akurasi, keterulangan); 5 rumusan riset elektronika/instrumentasi. Teknik Sipil: rumusan analisis struktur (rangka batang, balok, kolom).

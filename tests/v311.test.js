@@ -5,7 +5,7 @@ const html = '<!doctype html><html><head></head><body>' + fs.readFileSync(path.j
 const errs = []; const vc = new VirtualConsole(); vc.on('jsdomError', e => { if (!/scrollTo/.test(e.message)) errs.push(e.message); });
 const dom = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://localhost/', virtualConsole: vc });
 const w = dom.window; w.scrollTo = () => {};
-setTimeout(() => {
+setTimeout(async () => {
   const U = w.__ui, K = w.__kp, q = 'Studi tentang public relation dengan warga kampung di bidang ilmu komunikasi';
   const r = U.skAdvise(q); assert.strictEqual(r.fd.k, 'kom'); const cs = r.hit.map(h => h.c);
   assert(cs.includes('humas') && cs.includes('warga') && cs.includes('komunikasi') && !cs.includes('komunitas') && !cs.includes('rumah'), cs.join(' '));
@@ -37,6 +37,18 @@ setTimeout(() => {
     const v2 = {}; inst.f.forEach(f => v2[f[0]] = f[3]); assert(!/NaN/.test(inst.run(v2).html));
     assert(html.includes('Cooley, J. W., &amp; Tukey, J. W. (1965)') && html.includes('Harris, F. J. (1978)') && html.includes('Bentley, J. P. (2005)'));
     const L = w.__litInline('studi public relation warga kampung'); assert(/scholar\.google\.com\/scholar\?q=/.test(L) && /garuda\.kemdiktisaintek\.go\.id\/documents\?q=/.test(L) && /sinta\.kemdiktisaintek\.go\.id\/journals\?q=/.test(L), L.slice(0, 300)); }
+  // v3.12: perantara server → OpenAlex tanpa kunci → cadangan Crossref
+  { const X = w.__lit312, calls = [], f0 = w.fetch;
+    const cr = { message: { 'total-results': 2, items: [{ DOI: '10.1/a', title: ['Site selection for <i>office</i> buildings'], author: [{ given: 'A', family: 'Budi' }, { given: 'C', family: 'Dewi' }], issued: { 'date-parts': [[2021, 3]] }, 'is-referenced-by-count': 7, 'container-title': ['J. Plan'], abstract: '<jats:p>Abstract We rank sites.</jats:p>' }, { DOI: '10.1/b', title: ['Office site suitability'], author: [{ given: 'A', family: 'Budi' }], issued: { 'date-parts': [[2023]] }, 'is-referenced-by-count': 2 }] } };
+    const p0 = X.litFromCR(cr.message.items[0]); assert.strictEqual(p0.title, 'Site selection for office buildings'); assert.strictEqual(p0.year, 2021); assert.deepStrictEqual(Array.from(p0.authors), ['A Budi', 'C Dewi']); assert.strictEqual(p0.abs, 'We rank sites.'); assert.strictEqual(p0.cited, 7);
+    const resp = (st, body, h) => ({ ok: st === 200, status: st, json: async () => body, headers: { get: k => (h || {})[k] || null } });
+    w.fetch = async u => { calls.push(String(u)); if (/sk-api\/openalex\.php/.test(u)) return resp(503, { error: 'nokey' }); if (/api\.openalex\.org/.test(u)) return resp(429, {}); if (/api\.crossref\.org/.test(u)) return resp(200, cr); return resp(404, {}); };
+    X.LIT.q = 'mencari tapak kantor'; X.LIT.terms = ['site', 'office']; X.LIT.srcs = { oa: true, sc: false }; await X.search();
+    assert(/sk-api\/openalex\.php\?search=/.test(calls[0]) && /api\.openalex\.org/.test(calls[1]) && !/api_key/.test(calls[1]) && /api\.crossref\.org\/works\?query\.bibliographic=site%20office/.test(calls[2]), calls.join(' | '));
+    assert.strictEqual(X.LIT.papers.length, 2); assert(/Crossref: 2/.test(X.LIT.msg) && /Kuota OpenAlex habis/.test(X.LIT.msg), X.LIT.msg); assert(!X.LIT.quota);
+    calls.length = 0; w.fetch = async u => { calls.push(String(u)); return /sk-api/.test(u) ? resp(200, { meta: { count: 9 }, results: [{ id: 'W1', title: 'T one', publication_year: 2020, authorships: [], cited_by_count: 1 }] }, { 'X-SK-Cache': 'hit' }) : resp(500, {}); };
+    await X.search(); assert.strictEqual(calls.length, 1); assert(/via server, cache/.test(X.LIT.msg), X.LIT.msg); w.fetch = f0;
+    assert.strictEqual(top('mencari tapak yang potensial utk bangunan kantor'), 'tapak'); }
   // jendela rumpun ilmu terpandu: rumpun → kelompok → prodi → pakai
   { const click = el => el.dispatchEvent(new w.MouseEvent('click', { bubbles: true })), b = d.createElement('button'); b.dataset.kpopen = ''; d.body.appendChild(b); click(b); b.remove();
     const M = d.querySelector('#skKp'); assert(M && !M.hidden && M.classList.contains('kpmodal') && !d.querySelector('#skKpBd').hidden); assert.strictEqual(M.querySelectorAll('.kprc').length, 6); assert.strictEqual(M.querySelectorAll('.kpsteps li').length, 4);
