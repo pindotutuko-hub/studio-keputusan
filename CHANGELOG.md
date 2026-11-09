@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.11.0 — 2026-11-09
+- **Ilmu Komunikasi:** bidang analisis baru (terpisah dari Sosial & Politik) dengan konsep humas/public relations, komunikasi, warga/partisipasi, dan reputasi; 7 tujuan riset komunikasi (evaluasi efektivitas humas, pengaruh komunikasi → kepercayaan/partisipasi dengan SEM, studi kasus kualitatif relasi humas–warga, jejaring komunikasi warga, partisipasi warga, analisis isi/framing, strategi komunikasi). Perbaikan salah kenal: “komunikasi” tidak lagi dibaca “komunitas” (ekologi), “warga kampung” tidak lagi dibaca “rumah”. Prodi komunikasi pada Lampiran I dipetakan ke bidang ini.
+- **Langkah 1 · Bidang ilmu di beranda:** bilah di atas kotak tujuan untuk memilih rumpun ilmu & program studi (Kepdirjen Diktiristek 163/E/KPT/2022) sebelum mulai; menampilkan jalur rumpun › kelompok › prodi yang dipakai, dan menyarankan prodi bila kalimat tujuan menyebut nama program studi (mis. “di bidang ilmu komunikasi”). - **Jendela Rumpun ilmu & program studi diperbesar dan dipandu:** tampil di tengah layar (hampir layar penuh, latar diredupkan), dengan langkah 1 Rumpun ilmu → 2 Kelompok ilmu → 3 Program studi → 4 Pakai; kartu rumpun memuat jumlah kelompok/prodi, ada kartu Profesi & spesialis, pencarian langsung lintas rumpun, dan bidang yang sedang dipakai tampil di judul. Uji `tests/v311.test.js`.
+
 ## 3.10.1 — 2026-11-09
 - **Peta riset:** tombol “Peta riset” dan klik peta di kartu latar belakang kini membuka peta yang sama (ko-okurensi kata kunci, overlay tahun) — sebelumnya membuka jenis peta terakhir yang dipilih (mis. ko-kepengarangan). Jejaring kecil digambar rapat di tengah, tinggi peta dibatasi agar tidak terpotong, dan ada petunjuk bila simpul terlalu sedikit.
 
