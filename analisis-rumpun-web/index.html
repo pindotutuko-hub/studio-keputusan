@@ -229,7 +229,7 @@ footer .credit b{font-size:10px;font-weight:600}
 <div class="srow"><div class="k">Cabang Ilmu</div><div class="v" id="cCabang">—</div></div>
 <div id="altWrap"></div>
 
-<h2 style="margin-top:26px">📊 Infografis Rekam Jejak</h2>
+<h2 style="margin-top:26px" id="h2info">📊 Infografis Rekam Jejak</h2>
 <div class="charts">
   <div class="chartbox"><h4>Kekuatan Riset per Bidang (dasar rekomendasi)</h4><div class="pie" id="pieBidang"></div><div class="legend" id="legBidang"></div></div>
   <div class="chartbox"><h4>Distribusi Sumber Publikasi</h4><div class="pie" id="pieSumber"></div><div class="legend" id="legSumber"></div></div>
@@ -248,7 +248,7 @@ footer .credit b{font-size:10px;font-weight:600}
 </div>
 
 
-<h2 style="margin-top:26px">🌍 Footprint SDGs</h2>
+<h2 style="margin-top:26px" id="h2sdg">🌍 Footprint SDGs</h2>
 <div class="chartbox">
 <h4>Ikon resmi 17 Tujuan SDGs (PBB) — tujuan yang tersentuh riset tampil penuh, sisanya pudar · klik ikon untuk melihat karya terkait</h4>
 <div class="sdggrid" id="sdgGrid"></div>
@@ -1551,7 +1551,7 @@ function bukaNomenklatur(cabang){
   document.querySelectorAll('.tabc').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tabbtn').forEach(t=>t.classList.remove('active'));
   document.getElementById('tProdi').classList.add('active');
-  const b=[...document.querySelectorAll('.tabbtn')].find(x=>/Nomenklatur/.test(x.textContent));if(b)b.classList.add('active');
+  const b=[...document.querySelectorAll('.tabbtn')].find(x=>/Nomenklatur|Nomenclature/.test(x.textContent));if(b)b.classList.add('active');
   const tok=(cabang||'').split(/\s+/).find(x=>x.length>=6)||cabang||'';
   const inp=document.getElementById('pQ');if(inp)inp.value=tok;
   cariProdi();
@@ -2121,7 +2121,7 @@ document.getElementById('kwBox').addEventListener('click',function(ev){
   const chip=ev.target.closest('.kwchip');
   if(chip){chip.classList.toggle('sel');return;}
   const btn=ev.target.closest('button');
-  if(btn&&/Mulai Analisis|Analisis Ulang/.test(btn.textContent)){
+  if(btn&&/Mulai Analisis|Analisis Ulang|Start Field|Re-analyse/.test(btn.textContent)){
     const lama=btn.textContent;btn.textContent='⏳ Menghitung…';btn.disabled=true;
     setTimeout(()=>{
       try{mulaiAnalisisKw();}
@@ -2129,7 +2129,7 @@ document.getElementById('kwBox').addEventListener('click',function(ev){
       btn.disabled=false;btn.textContent='🔁 Analisis Ulang dengan Pilihan Ini';
     },30);
   }
-  if(btn&&/Lewati/.test(btn.textContent)){try{mulaiAnalisisKw(true);}catch(e){}}
+  if(btn&&/Lewati|^\s*Skip\s*$/.test(btn.textContent)){try{mulaiAnalisisKw(true);}catch(e){}}
 });
 document.addEventListener('click',ev=>{
   const a=ev.target.closest('.altgo');
@@ -2289,6 +2289,7 @@ input[type=text],textarea,select{border:1.5px solid #d9e0ec;border-radius:10px}
 #citeBox .cnwait{padding:28px;text-align:center;color:#5d6b82;font-size:13px}
 #citeBox .cnspin{display:inline-block;width:14px;height:14px;border:2px solid #c9d6ee;border-top-color:var(--pri);border-radius:50%;animation:cnr 1s linear infinite;vertical-align:-2px;margin-right:6px}
 @keyframes cnr{to{transform:rotate(360deg)}}
+html[lang=en] .b24sum .c[data-b24go]::after{content:'View details ›'}
 </style>
 <script>
 /* ===== B24 — peta geotag, peta riset terpadu, navigasi & ringkasan ===== */
@@ -2296,7 +2297,7 @@ input[type=text],textarea,select{border:1.5px solid #d9e0ec;border-radius:10px}
 const E=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const flag=cc=>(/^[A-Z]{2}$/.test(cc||'')?String.fromCodePoint(...[...cc].map(c=>127397+c.charCodeAt(0))):'🏳');
 const CCN={ID:'Indonesia',MY:'Malaysia',JP:'Jepang',SG:'Singapura',TH:'Thailand',AU:'Australia',NL:'Belanda',GB:'Inggris',US:'Amerika Serikat',CN:'Tiongkok',KR:'Korea Selatan',DE:'Jerman',FR:'Prancis',IN:'India',PH:'Filipina',VN:'Vietnam',TW:'Taiwan',SA:'Arab Saudi',TR:'Turki',IT:'Italia',ES:'Spanyol',CA:'Kanada',NZ:'Selandia Baru',BR:'Brasil',PK:'Pakistan',BD:'Bangladesh',EG:'Mesir',IR:'Iran',IQ:'Irak',AE:'Uni Emirat Arab',HK:'Hong Kong',BE:'Belgia',SE:'Swedia',NO:'Norwegia',DK:'Denmark',FI:'Finlandia',PT:'Portugal',PL:'Polandia',RU:'Rusia',ZA:'Afrika Selatan',NG:'Nigeria',TL:'Timor Leste',BN:'Brunei'};
-const ccName=cc=>CCN[cc]||cc||'?';
+const ccName=cc=>{if(window.adLang&&adLang()==='en'){try{return new Intl.DisplayNames(['en'],{type:'region'}).of(cc)||cc;}catch(e){}}return CCN[cc]||cc||'?';};
 
 /* ---------- langkah pemakaian di kepala halaman ---------- */
 function steps(){const h=document.querySelector('header');if(!h||document.getElementById('b24steps'))return;
@@ -2313,6 +2314,7 @@ function works(p){let W=(p.oaWorks||[]).slice();
 
 /* =================== PETA GEOTAG KOLABORASI =================== */
 const G={yr0:null,yr1:null,cc:'',lines:true,base:'osm',sel:null};
+window.__gtRedraw=function(){if(window.__b24p)renderKolab(window.__b24p);};
 renderKolab=function(p){
   const K=p.kolab,box=document.getElementById('kolabBox');if(!box)return;
   if(!K||!K.inst||!K.inst.length){box.classList.add('hidden');return;}
@@ -2637,9 +2639,9 @@ function navAndSummary(p){const H=document.getElementById('hasil');if(!H)return;
   const P=[
    ['ring','Ringkasan','.profile','📌','Ringkasan hasil','Profil dosen dan inti seluruh analisis dalam satu layar. Klik kartu di bawah untuk membuka rinciannya.'],
    ['rumpun','Rumpun Ilmu','.sister-head','🏛️','Rumpun ilmu (format SISTER)','Rekomendasi penempatan rumpun › pohon › kelompok › cabang ilmu, dihitung dari kata kunci judul dan topik publikasi. Pilihan alternatif tampil di bawahnya.'],
-   ['info','Infografis',find('Infografis'),'📊','Infografis rekam jejak','Sebaran kekuatan riset per bidang (dasar rekomendasi) dan asal data publikasi (ORCID, OpenAlex, Crossref). Klik nama bidang untuk melihat karyanya.'],
+   ['info','Infografis',document.getElementById('h2info')||find('Infografis'),'📊','Infografis rekam jejak','Sebaran kekuatan riset per bidang (dasar rekomendasi) dan asal data publikasi (ORCID, OpenAlex, Crossref). Klik nama bidang untuk melihat karyanya.'],
    ['peta','Peta sebaran','#kolabBox','🌐','Peta sebaran kolaborasi','Lokasi institusi mitra penulis bersama, dari data afiliasi OpenAlex. Saring per tahun atau negara, lalu klik penanda untuk melihat artikel bersama.'],
-   ['sdg','SDGs',find('Footprint SDGs'),'🌍','Footprint SDGs','Kontribusi riset pada 17 Tujuan Pembangunan Berkelanjutan: gabungan klasifikasi SDG OpenAlex per artikel dan deteksi kata kunci judul/abstrak. Klik ikon untuk melihat karya terkait.'],
+   ['sdg','SDGs',document.getElementById('h2sdg')||find('Footprint SDGs'),'🌍','Footprint SDGs','Kontribusi riset pada 17 Tujuan Pembangunan Berkelanjutan: gabungan klasifikasi SDG OpenAlex per artikel dan deteksi kata kunci judul/abstrak. Klik ikon untuk melihat karya terkait.'],
    ['riset','Peta riset','#risetBox','🕸️','Peta riset terpadu','Jaringan yang menghubungkan artikel, topik, rekan penulis, institusi, dan SDG. Klik simpul untuk menyorot semua yang terhubung dengannya.'],
    ['sitasi','Jejaring sitasi','#citeBox','🐇','Jejaring sitasi & kata kunci','Seperti Research Rabbit: jejaring dari kata kunci keilmuan di karya dosen dan karya yang mengutipnya, beserta penulisnya. Pilih tampilan <b>Kata kunci</b> (yang sering muncul bersama), <b>Linimasa sitasi</b> (karya sebelumnya → karya dosen → karya sesudahnya), atau <b>Penulis</b>.'],
    ['jalan','Peta jalan','#roadmapBox','🧭','Peta jalan riset','Arah perkembangan riset yang direkonstruksi dari lini masa publikasi.'],
@@ -2735,6 +2737,164 @@ function boot(){steps();try{simplify();}catch(e){}}
 if(document.readyState!=='loading')boot();else document.addEventListener('DOMContentLoaded',boot);
 window.__b24={rnBuild,R,G,gtStats,works};
 })();
+</script>
+<style>#adLang{position:absolute;top:14px;right:16px;z-index:5;font:700 12.5px system-ui,sans-serif;padding:7px 13px;border-radius:999px;border:1.5px solid rgba(255,255,255,.6);background:rgba(255,255,255,.16);color:#fff;cursor:pointer;backdrop-filter:blur(6px)}#adLang:hover{background:rgba(255,255,255,.3)}@media print{#adLang{display:none}}</style>
+<script>/* Antarmuka dwibahasa ID/EN — terjemahan antarmuka; data (judul karya, nama prodi, nomenklatur SISTER) tetap seperti sumbernya */
+const EN={
+"🎓 Analisis Dosen & Nomenklatur Program Studi":"🎓 Lecturer Analysis & Study Program Nomenclature",
+"Rekomendasi Rumpun Ilmu format SISTER + Infografis Rekam Jejak & Footprint SDGs · Terintegrasi Nomenklatur 698 Prodi (SK 163/E/KPT/2022)":"SISTER-format Field of Science (Rumpun Ilmu) recommendation + track-record infographics & SDG footprint · Integrated with the 698 study-program nomenclature (Decree 163/E/KPT/2022)",
+"Isi nama & afiliasi dosen":"Enter lecturer name & affiliation","Pilih profil yang tepat":"Choose the right profile","Pilih kata kunci":"Choose keywords","Baca hasil & peta":"Read results & maps",
+"👨‍🏫 Analisis Dosen":"👨‍🏫 Lecturer Analysis","📚 Nomenklatur Prodi (698)":"📚 Program Nomenclature (698)","📥 Download Dokumen Referensi":"📥 Download Reference Documents",
+"🔍 Cari Dosen (Nama / NIDN)":"🔍 Find Lecturer (Name / NIDN)","Nama Dosen (boleh nama depan/belakang saja)":"Lecturer name (first or last name is fine)",
+"Afiliasi / Perguruan Tinggi (opsional — menaikkan peringkat kandidat senama · boleh lebih dari satu, pisahkan dengan \";\")":"Affiliation / University (optional — ranks same-name candidates higher · more than one allowed, separate with \";\")",
+"🔒 Kunci afiliasi — hanya tampilkan kandidat yang afiliasinya cocok (otomatis dilonggarkan bila hasilnya nihil)":"🔒 Lock affiliation — show only candidates whose affiliation matches (relaxed automatically if nothing is found)",
+"Email (opsional — pencocokan persis via ORCID + foto Gravatar)":"Email (optional — exact match via ORCID + Gravatar photo)",
+"⚙️ Opsi lanjutan":"⚙️ Advanced options","— fokus mengajar, Research Focus/Bohrium, dan pilihan sumber data (boleh dilewati)":"— teaching focus, Research Focus/Bohrium, and data-source choices (can be skipped)",
+"Fokus Mengajar / Mata Kuliah yang Diampu (opsional — bobot tertinggi dalam analisis, 3×)":"Teaching Focus / Courses Taught (optional — highest weight in the analysis, 3×)",
+"— terisi otomatis dari topik OpenAlex; isi manual dari Bohrium menaikkan bobotnya ke 5×":"— filled automatically from OpenAlex topics; manual input from Bohrium raises its weight to 5×",
+"Buka Bohrium Scholar ↗":"Open Bohrium Scholar ↗","Isi manual dari Bohrium (opsional)":"Manual input from Bohrium (optional)","Buka profil peneliti di Bohrium, tekan":"Open the researcher's profile on Bohrium, press",
+", kemudian tempel (":", then paste (",") ke kolom":") into the","di atas — tag akan disaring otomatis dari tempelan itu. Menempelkan tag saja (dipisah koma) juga bisa.":"field above — tags are filtered automatically from the pasted text. Pasting just the tags (comma-separated) also works.",
+"tersedia untuk pemakai lanjutan:":"available for advanced users:","salin kode":"copy code","Kenapa kadang tidak bisa terhubung langsung?":"Why does a direct connection sometimes fail?",
+"SINTA dan Google Scholar memblokir akses lintas-situs dari browser (CORS + anti-bot) — kebijakan mereka, bukan kerusakan tool. Karena itu ada dua mode:":"SINTA and Google Scholar block cross-site browser access (CORS + anti-bot) — their policy, not a fault of this tool. That is why there are two modes:",
+"Mode B selalu berhasil":"Mode B always works","di komputer mana pun.":"on any computer.","🗂️ Sumber Data yang Dipakai":"🗂️ Data Sources Used","semua sumber dipakai":"all sources used",". Centang sumber yang":". Tick the sources you do","tidak":"not",
+"ingin diikutkan dalam analisis, atau klik tombol untuk memakai semua sumber. Berlaku untuk Mode A (Otomatis); Mode B memakai data yang Anda tempel.":"want included in the analysis, or click the button to use all sources. Applies to Mode A (Automatic); Mode B uses the data you paste.",
+"✓ Gunakan Semua Sumber":"✓ Use All Sources","Pilih salah satu cara:":"Choose one method:","mencari otomatis di internet,":"searches the internet automatically,","menyalin isi halaman profil SINTA/Scholar bila Mode A gagal.":"copies the SINTA/Scholar profile page if Mode A fails.",
+"🚀 Mode A — Otomatis":"🚀 Mode A — Automatic","Sistem menelusuri SINTA, Google Scholar, ORCID, OpenAlex, Crossref, PDDikti secara online. Status tiap sumber tampil live; sumber yang gagal dilewati.":"The system searches SINTA, Google Scholar, ORCID, OpenAlex, Crossref and PDDikti online. Each source's status is shown live; failed sources are skipped.",
+"🚀 Cari Otomatis & Analisis":"🚀 Search Automatically & Analyse","📋 Mode B — Salin-Tempel Cerdas":"📋 Mode B — Smart Copy-Paste","Klik tombol database di bawah → buka profil dosen.":"Click a database button below → open the lecturer's profile.","Di halaman profil:":"On the profile page:","Tempel (":"Paste (",
+") di sini — boleh gabungan SINTA + Scholar. Metrik, afiliasi, NIDN & judul":") here — SINTA + Scholar combined is fine. Metrics, affiliation, NIDN & titles","dan":"and","dengan hasil Mode A bila ada.":"with Mode A results if available.",
+"URL Foto Profil (opsional — klik kanan foto di Scholar/SINTA → Copy image address)":"Profile Photo URL (optional — right-click the photo on Scholar/SINTA → Copy image address)","⚡ Ekstrak & Analisis":"⚡ Extract & Analyse","Buka profil dosen di database (tab baru):":"Open the lecturer's profile in a database (new tab):",
+"Garuda — penulis":"Garuda — authors","Garuda — artikel":"Garuda — articles","Neliti — artikel":"Neliti — articles","Bohrium cari nama":"Bohrium name search","Mencari profil dosen di database online…":"Searching online databases for the lecturer's profile…",
+"📋 Hasil Analisis":"📋 Analysis Results","Rumpun Ilmu":"Field of Science","Rekomendasi":"Recommendation","Informasi ini diperlukan untuk pemetaan sumber daya & basis data berbagai layanan di SISTER":"This information is needed for resource mapping & databases of various SISTER services",
+"Pohon Ilmu":"Branch of Science","Kelompok Ilmu":"Science Group","Cabang Ilmu":"Specialisation","Kekuatan Riset per Bidang (dasar rekomendasi)":"Research Strength by Field (basis of recommendation)","Distribusi Sumber Publikasi":"Publication Source Distribution",
+"🌐 Geotag Sebaran & Jaringan Kolaborasi Riset (sumber: metadata authorships OpenAlex)":"🌐 Geotagged Distribution & Research Collaboration Network (source: OpenAlex authorship metadata)",
+"Lingkaran = institusi kolaborator (besar = jumlah artikel bersama); garis = relasi dari institusi asal. Klik penanda untuk detail kota/negara.":"Circle = collaborating institution (size = number of joint articles); line = link from the home institution. Click a marker for city/country details.",
+"Jaringan ego: pusat = dosen; simpul = institusi (warna per negara, tebal garis = intensitas kolaborasi).":"Ego network: centre = lecturer; node = institution (colour per country, line width = collaboration intensity).",
+"Ikon resmi 17 Tujuan SDGs (PBB) — tujuan yang tersentuh riset tampil penuh, sisanya pudar · klik ikon untuk melihat karya terkait":"Official icons of the 17 SDGs (UN) — goals touched by the research are shown in full, the rest faded · click an icon to see related works",
+"Ikon SDGs milik Perserikatan Bangsa-Bangsa, dipakai untuk tujuan informasi sesuai":"The SDG icons belong to the United Nations and are used for informational purposes in accordance with the",
+"Pedoman Penggunaan Logo & 17 Ikon SDG":"Guidelines for the Use of the SDG Logo and 17 Icons",
+". Isi aplikasi ini tidak disetujui oleh PBB dan tidak mencerminkan pandangan PBB, pejabatnya, maupun Negara Anggotanya.":". The content of this application has not been approved by the United Nations and does not reflect the views of the United Nations or its officials or Member States.",
+"Persentase Kontribusi per Tujuan — gabungan klasifikasi resmi OpenAlex per-artikel + deteksi kata kunci judul/abstrak":"Contribution per Goal — OpenAlex per-article classification combined with title/abstract keyword detection",
+"🧭 Peta Jalan Riset (rekonstruksi dari lini masa publikasi)":"🧭 Research Roadmap (reconstructed from the publication timeline)","🎯 Prodi yang Sesuai dari Nomenklatur Resmi (SK 163/E/KPT/2022)":"🎯 Matching Study Programs from the Official Nomenclature (Decree 163/E/KPT/2022)",
+"🔎 Dasar Analisis — Topik & Kata Kunci Terdeteksi":"🔎 Analysis Basis — Detected Topics & Keywords",
+"Rekomendasi dihitung dari frekuensi kata kunci pada judul/topik publikasi (frasa multi-kata berbobot 2×). Alat bantu penyaringan awal — keputusan akhir mengacu telaah pakar & data resmi SISTER/PDDIKTI.":"The recommendation is computed from keyword frequency in publication titles/topics (multi-word phrases weighted 2×). A screening aid — final decisions rest on expert review & official SISTER/PDDIKTI data.",
+"🔗 Verifikasi Manual di 9 Database":"🔗 Manual Verification in 9 Databases","🖨️ Cetak / Simpan PDF Laporan":"🖨️ Print / Save Report as PDF","⬇️ Unduh CSV":"⬇️ Download CSV","⬇️ Unduh Excel (.xls)":"⬇️ Download Excel (.xls)",
+"Sumber: SK Dirjen Diktiristek No. 163/E/KPT/2022 (47 hal.). Halaman 22–47 diekstrak via OCR (badge":"Source: Decree of the Director General of Higher Education No. 163/E/KPT/2022 (47 pp.). Pages 22–47 were extracted by OCR (badge",
+") — bisa mengandung galat pemindaian; tiap entri mencantumkan halaman PDF asli untuk verifikasi. Kolom jenjang (S/M/Dr) tidak ditampilkan karena centang pada scan tidak dapat diekstrak andal.":") — may contain scanning errors; every entry lists its original PDF page for verification. The degree-level columns (S/M/Dr) are not shown because the ticks in the scan cannot be extracted reliably.",
+"Cari (nama prodi, toleran teks OCR)":"Search (program name, OCR-tolerant)","Semua Rumpun":"All Clusters","Bidang":"Field","Semua Bidang":"All Fields","Ilmu Alam":"Natural Sciences","Ilmu Formal":"Formal Sciences","Ilmu Sosial":"Social Sciences","Ilmu Terapan":"Applied Sciences","Ilmu Humaniora":"Humanities","Ilmu Agama":"Religious Studies","Dari OCR":"From OCR",
+"📥 Download Dokumen Referensi — Dasar Acuan":"📥 Download Reference Documents — Legal Basis","Dasar acuan tool ini adalah":"This tool is based on",
+"tentang Nama Program Studi pada Pendidikan Akademik dan Pendidikan Profesi (berlaku 18 Juli 2022, menggantikan No. 232/B/HK/2019). Tersedia dua dokumen:":"on Study Program Names in Academic and Professional Education (effective 18 July 2022, replacing No. 232/B/HK/2019). Documents available:",
+"📄 Referensi Nomenklatur 698 Entri (PDF ringkas — tertanam di web ini)":"📄 698-Entry Nomenclature Reference (compact PDF — embedded in this page)",
+"bisa diunduh dan dipratinjau kapan pun, tanpa internet":"can be downloaded and previewed any time, without internet","persis seperti dokumen sumber":"exactly as the source document","Tertanam utuh di dalam file web ini":"Fully embedded in this web file",
+"Pedoman Penggunaan Kata Kunci SDGs pada Penelitian dan Publikasi Ilmiah":"Guidelines for Using SDG Keywords in Research and Scientific Publications",
+"4.375 istilah dari dokumen ini sudah ditanam sebagai kamus klasifikasi SDGs di tab Analisis":"4,375 terms from this document are embedded as the SDG classification dictionary in the Analysis tab",
+"Verifikasi entri mana pun: buka tab":"Verify any entry: open the","Nomenklatur Prodi (698)":"Program Nomenclature (698)",", catat nomor halamannya, lalu cocokkan ke scan asli pada halaman tersebut.":" tab, note its page number, then compare with the original scan on that page.",
+"Data diproses di browser · Verifikasi akhir mengacu SISTER, PDDIKTI & PDF SK asli":"Data is processed in your browser · Final verification refers to SISTER, PDDIKTI & the original decree PDF","Kembali ke beranda Pindo Tutuko":"Back to the Pindo Tutuko home page",
+"terisi otomatis — atau tempel tag / halaman profil Bohrium di sini":"filled automatically — or paste tags / a Bohrium profile page here","opsional: tempel URL profil Bohrium (https://www.bohrium.com/en/scholar/…)":"optional: paste a Bohrium profile URL (https://www.bohrium.com/en/scholar/…)",
+"Tempel (Ctrl+V) isi halaman profil SINTA / Google Scholar / Bohrium di sini…":"Paste (Ctrl+V) the contents of a SINTA / Google Scholar / Bohrium profile page here…",
+"Konfirmasi dulu (antisipasi nama sama):":"Confirm first (same-name check):","✓ afiliasi cocok":"✓ affiliation matches","✔ Pilih & Analisis":"✔ Select & Analyse","Bukan salah satu di atas":"None of the above","Lanjutkan dengan nama persis seperti diketik, tanpa penguncian kandidat.":"Continue with the name exactly as typed, without locking a candidate.","(ganti kandidat)":"(change candidate)",
+"Klik untuk memilih/membatalkan. 10 teratas sudah terpilih otomatis —":"Click to select/deselect. The top 10 are preselected —","hilangkan yang bukan fokus Anda":"remove those that are not your focus",
+"(mis. topik kolaborasi sampingan), lalu mulai analisis. Kata kunci terpilih menjadi bobot tertinggi (3×) penentu rumpun ilmu.":"(e.g. side-collaboration topics), then start the analysis. Selected keywords carry the highest weight (3×) in determining the field of science.",
+"▶ Mulai Analisis Rumpun Ilmu":"▶ Start Field-of-Science Analysis","🔎 Profil ditemukan ✓":"🔎 Profile found ✓","tambah kata kunci sendiri (pisahkan koma) — opsional":"add your own keywords (comma-separated) — optional","🔁 Analisis Ulang dengan Pilihan Ini":"🔁 Re-analyse with This Selection",
+"kata kunci (frasa ditolak dihapus dari perhitungan). 📊":"keywords (rejected phrases removed from the calculation). 📊",
+"Ringkasan":"Summary","Infografis":"Infographics","Peta sebaran":"Distribution map","Peta riset":"Research map","Jejaring sitasi":"Citation network","Peta jalan":"Roadmap","Prodi sesuai":"Matching programs","Dasar analisis":"Analysis basis","Ekspor":"Export","SDGs":"SDGs","Profil":"Profile",
+"Ringkasan hasil":"Results summary","Profil dosen dan inti seluruh analisis dalam satu layar. Klik kartu di bawah untuk membuka rinciannya.":"The lecturer's profile and the core of the whole analysis on one screen. Click a card below to open its details.",
+"Rumpun Ilmu ›":"Field of Science ›","Infografis ›":"Infographics ›","Peta sebaran ›":"Distribution map ›","SDGs ›":"SDGs ›","Peta riset ›":"Research map ›","Jejaring sitasi ›":"Citation network ›","Peta jalan ›":"Roadmap ›","Prodi sesuai ›":"Matching programs ›","Dasar analisis ›":"Analysis basis ›","Ekspor ›":"Export ›",
+"✎ ganti foto via URL":"✎ change photo via URL","— atau (paling andal) —":"— or (most reliable) —","📁 Unggah Foto dari Komputer":"📁 Upload Photo from Computer",
+"Unggah berkas = foto pasti tampil & ikut tercetak ke PDF. URL: klik kanan foto di Scholar/SINTA → “Salin alamat gambar”.":"Uploading a file = the photo always shows & is included in the PDF. URL: right-click the photo on Scholar/SINTA → “Copy image address”.",
+"Profil SINTA ↗":"SINTA profile ↗","Profil Scholar ↗":"Scholar profile ↗","Artikel GS":"GS articles","Karya ORCID":"ORCID works","Dok. Scopus":"Scopus docs","Dok. WoS":"WoS docs","SINTA Score":"SINTA Score",
+"Ringkasan:":"Summary:","paling sesuai ditempatkan pada":"is best placed in",". Kontribusi SDG terbesar pada":". Largest SDG contribution:",". Berkolaborasi dengan":". Collaborates with","Rumpun ilmu (SISTER)":"Field of science (SISTER)","Topik utama":"Main topics","dari konsep OpenAlex per artikel":"from OpenAlex concepts per article","SDG dominan":"Dominant SDGs","Kolaborasi":"Collaboration","Artikel dianalisis":"Articles analysed","Lihat rincian ›":"View details ›",
+"Rumpun ilmu (format SISTER)":"Field of science (SISTER format)","Rekomendasi penempatan rumpun › pohon › kelompok › cabang ilmu, dihitung dari kata kunci judul dan topik publikasi. Pilihan alternatif tampil di bawahnya.":"Recommended placement cluster › branch › group › specialisation, computed from keywords in publication titles and topics. Alternatives are listed below.",
+"📚 lihat di nomenklatur":"📚 view in nomenclature","— topik dominan yang mewarnai riset (pembeda dari Kelompok Ilmu):":"— dominant topics shaping the research (distinct from the Science Group):","Lainnya":"Others",
+"Sebaran kekuatan riset per bidang (dasar rekomendasi) dan asal data publikasi (ORCID, OpenAlex, Crossref). Klik nama bidang untuk melihat karyanya.":"Research strength by field (basis of the recommendation) and publication data sources (ORCID, OpenAlex, Crossref). Click a field name to see its works.",
+"Peta sebaran kolaborasi":"Collaboration distribution map","Lokasi institusi mitra penulis bersama, dari data afiliasi OpenAlex. Saring per tahun atau negara, lalu klik penanda untuk melihat artikel bersama.":"Locations of co-authors' institutions, from OpenAlex affiliation data. Filter by year or country, then click a marker to see joint articles.",
+"🌐 Peta Sebaran & Jaringan Kolaborasi Riset":"🌐 Research Collaboration Map & Network",
+"Setiap lingkaran = institusi mitra penulisan (besar lingkaran = jumlah artikel bersama, warna = negara). Garis melengkung = kolaborasi dari institusi asal.":"Each circle = a co-authoring institution (size = number of joint articles, colour = country). Curved lines = collaboration from the home institution.",
+"Klik":"Click","lingkaran, nama di daftar, negara, atau batang tahun untuk menyaring — semua bagian saling terhubung dengan submenu Peta riset.":"a circle, a name in the list, a country or a year bar to filter — everything is linked to the Research map submenu.",
+"Institusi ▾":"Institutions ▾","Negara ▾":"Countries ▾","Kota terpetakan ▾":"Mapped cities ▾","Ko-penulis ▾":"Co-authors ▾","Tahun":"Year","Negara":"Country","Semua negara":"All countries","Peta dasar":"Base map","Standar":"Standard","Terang":"Light","Satelit":"Satellite","Garis kolaborasi":"Collaboration lines","↺ Atur ulang":"↺ Reset","⛶ Layar penuh":"⛶ Full screen","🌍 Semua":"🌍 All",
+"Lini masa artikel kolaborasi per tahun (klik batang untuk menyaring)":"Timeline of collaborative articles per year (click a bar to filter)","👥 Ko-penulis teratas (klik untuk menganalisis profilnya):":"👥 Top co-authors (click to analyse their profile):",
+"Kontribusi riset pada 17 Tujuan Pembangunan Berkelanjutan: gabungan klasifikasi SDG OpenAlex per artikel dan deteksi kata kunci judul/abstrak. Klik ikon untuk melihat karya terkait.":"Research contribution to the 17 Sustainable Development Goals: OpenAlex per-article SDG classification combined with title/abstract keyword detection. Click an icon to see related works.",
+"🏷️ Kata kunci SDGs — Pedoman Universitas Airlangga":"🏷️ SDG keywords — Universitas Airlangga Guidelines","kata kunci SDGs pada":"SDG keywords in","SEMUA":"ALL",
+"Peta riset terpadu":"Integrated research map","Jaringan yang menghubungkan artikel, topik, rekan penulis, institusi, dan SDG. Klik simpul untuk menyorot semua yang terhubung dengannya.":"A network linking articles, topics, co-authors, institutions and SDGs. Click a node to highlight everything connected to it.",
+"🕸 Peta Riset Terpadu — artikel, topik, ko-penulis, institusi & SDG":"🕸 Integrated Research Map — articles, topics, co-authors, institutions & SDGs",
+"Semua simpul saling terhubung lewat artikel. Klik simpul untuk menyorot jaringannya; seret untuk menggeser, gulir atau tombol +/− untuk memperbesar.":"All nodes are linked through articles. Click a node to highlight its network; drag to pan, scroll or use +/− to zoom.",
+"Artikel":"Articles","Topik":"Topics","Ko-penulis":"Co-authors","Institusi":"Institutions","⬇ Unduh gambar":"⬇ Download image","Cara membaca peta riset":"How to read the research map","Peta ini menghubungkan":"This map links","dengan":"with",", dan":", and",
+". Topik yang besar dan berada di tengah adalah fokus riset utama; kelompok simpul yang berdekatan menunjukkan tema yang sering muncul bersama.":". Large, central topics are the main research focus; clusters of nearby nodes show themes that often appear together.",
+"Klik simpul mana pun":"Click any node","untuk melihat semua yang terhubung dengannya — lalu klik item di daftar untuk berpindah. Institusi juga disorot di peta sebaran di atas.":"to see everything connected to it — then click an item in the list to jump. Institutions are also highlighted on the distribution map.",
+"Ko-penulis paling sering":"Most frequent co-authors","Topik (OpenAlex)":"Topics (OpenAlex)","Institusi (warna negara)":"Institutions (colour = country)","Artikel (besar = sitasi)":"Articles (size = citations)",
+"Jejaring sitasi & kata kunci":"Citation & keyword network","Seperti Research Rabbit: jejaring dari kata kunci keilmuan di karya dosen dan karya yang mengutipnya, beserta penulisnya. Pilih tampilan":"Like Research Rabbit: a network built from the scientific keywords of the lecturer's works and the works citing them, plus their authors. Choose a view:",
+"Kata kunci":"Keywords","(yang sering muncul bersama),":"(terms that often co-occur),","Linimasa sitasi":"Citation timeline","(karya sebelumnya → karya dosen → karya sesudahnya), atau":"(earlier works → lecturer's works → later works), or","Penulis":"Authors",
+"🐇 Jejaring Sitasi & Kata Kunci":"🐇 Citation & Keyword Network","Dimuat saat submenu ini dibuka.":"Loaded when this submenu is opened.","Mengambil karya pengutip & rujukan dari OpenAlex…":"Fetching citing and referenced works from OpenAlex…",
+"Peta jalan riset":"Research roadmap","Arah perkembangan riset yang direkonstruksi dari lini masa publikasi.":"The direction of the research, reconstructed from the publication timeline.","Artikel terbaru dasar proyeksi":"Latest articles used for the projection","Arah ke depan":"Future direction",
+"sugestif, bukan preskriptif":"suggestive, not prescriptive","\"… artikel\"":"\"… articles\"","tiap fase (atau simpul \"Arah ke depan\") untuk melihat judul artikelnya.":"of each phase (or the \"Future direction\" node) to see the article titles.",
+"Prodi yang sesuai":"Matching study programs","Program studi pada nomenklatur resmi (SK 163/E/KPT/2022) yang paling cocok dengan bidang riset dosen.":"Study programs in the official nomenclature (Decree 163/E/KPT/2022) that best match the lecturer's research field.",
+"Kata kunci yang terdeteksi, daftar publikasi yang dipakai, dan tautan verifikasi manual di 9 database.":"Detected keywords, the publications used, and manual-verification links to 9 databases.",
+"Ekspor laporan":"Export report","Cetak laporan lengkap (semua bagian) ke PDF, atau unduh data dalam CSV/Excel.":"Print the full report (all sections) to PDF, or download the data as CSV/Excel.",
+"Tempel URL foto / URL profil Scholar-SINTA":"Paste a photo URL / Scholar-SINTA profile URL","klik → lihat di Nomenklatur Prodi":"click → view in Program Nomenclature","klik untuk daftar karya":"click for list of works","klik untuk daftar":"click for list","klik untuk rekap karya":"click for works recap","Cari topik / nama / judul…":"Search topic / name / title…",
+"(gaya Research Rabbit · data OpenAlex)":"(Research Rabbit style · OpenAlex data)","Karya dosen":"Lecturer's works","Karya pengutip":"Citing works","Penulis pengutip":"Citing authors","Karya dirujuk":"Referenced works",
+"🔤 Kata kunci":"🔤 Keywords","🕰️ Linimasa sitasi":"🕰️ Citation timeline","👥 Penulis":"👥 Authors","sertakan karya dirujuk":"include referenced works","⬇️ PNG":"⬇️ PNG","Cara membaca":"How to read",
+"Klik lingkaran untuk menyorot hubungannya; klik area kosong untuk kembali.":"Click a circle to highlight its links; click an empty area to go back.","Penulis yang paling sering mengutip":"Authors who cite most often","Kata kunci baru dari pengutip":"New keywords from citing works",
+"Topik yang dipakai pengutip tetapi belum ada di karya dosen: peluang arah riset lanjutan.":"Topics used by citing authors but not yet in the lecturer's works: possible directions for further research.",
+"hanya karya dosen":"lecturer's works only","hanya karya pengutip":"citing works only","hanya karya dirujuk":"referenced works only","keduanya (titik temu)":"both (overlap)","· besar lingkaran = kemunculan · tebal garis = muncul bersama":"· circle size = occurrences · line width = co-occurrence",
+"ko-penulis dosen":"lecturer's co-authors","penulis pengutip":"citing authors","penulis yang dirujuk":"referenced authors","lebih dari satu peran":"more than one role","· besar = jumlah karya · garis = menulis bersama":"· size = number of works · line = co-authorship",
+"karya sebelumnya (dirujuk)":"earlier works (referenced)","karya dosen":"lecturer's works","karya sesudahnya (pengutip)":"later works (citing)","· sumbu mendatar = tahun · besar = jumlah sitasi":"· horizontal axis = year · size = citations",
+"Karya sebelumnya (dirujuk)":"Earlier works (referenced)","Karya sesudahnya (pengutip)":"Later works (citing)",
+"Jejaring kata kunci memakai analisis ko-kata (co-word analysis; Callon dkk., 1983,":"The keyword network uses co-word analysis (Callon et al., 1983,",
+"Kata kunci keilmuan yang sering muncul bersama":"Scientific keywords that often co-occur","Karya sebelumnya → karya dosen → karya sesudahnya":"Earlier works → lecturer's works → later works","Penulis pengutip, penulis dirujuk, dan ko-penulis":"Citing authors, referenced authors and co-authors",
+"Muncul di":"Appears in","Sering muncul bersama":"Often co-occurs with","Sering menulis bersama":"Often co-authors with","Karya":"Works","Kata kunci:":"Keywords:","Penulis:":"Authors:",
+"Karya dosen tidak tersedia dari OpenAlex, sehingga jejaring sitasi belum dapat dibuat.":"The lecturer's works are not available from OpenAlex, so the citation network cannot be built yet.","Coba lagi":"Try again",
+"Gagal membaca berkas.":"Failed to read the file.","Foto otomatis gagal dimuat. Tempel URL foto / URL profil Scholar di bawah 👇":"The photo could not be loaded automatically. Paste a photo URL / Scholar profile URL below 👇","⏳ Menyiapkan foto…":"⏳ Preparing photo…","⏳ Mencari foto…":"⏳ Searching for a photo…","🔍 Cari foto lagi":"🔍 Search photo again","📁 Unggah foto":"📁 Upload photo","atau tempel URL foto":"or paste a photo URL",
+"Mencari kandidat nama & afiliasi (OpenAlex + ORCID)…":"Searching name & affiliation candidates (OpenAlex + ORCID)…","Tidak ada kandidat ditemukan di OpenAlex/ORCID — analisis dilanjutkan dengan nama persis seperti diketik.":"No candidates found in OpenAlex/ORCID — continuing the analysis with the name exactly as typed.",
+"(afiliasi tidak tercantum)":"(affiliation not listed)","⚠️ Semua jalur otomatis gagal.":"⚠️ All automatic routes failed.","⚠️ Gagal menampilkan sebagian hasil:":"⚠️ Some results could not be displayed:","Nama belum ada.":"Name is empty.",
+"Jumlah dokumen tidak ditemukan online.":"Document counts not found online.","— belum tersentuh":"— not yet touched","— belum ada istilah Pedoman yang terdeteksi —":"— no Guideline terms detected yet —","Tidak ada prodi yang cocok langsung — lihat tab Nomenklatur untuk penelusuran manual.":"No direct program match — see the Nomenclature tab for a manual search.",
+"Tidak ada karya terdeteksi.":"No works detected.","Tidak ada kata kunci SDGs terdeteksi.":"No SDG keywords detected.","Tidak ada judul yang cocok pada korpus tersaring.":"No matching titles in the filtered corpus.","Koordinat kota tidak tersedia dari OpenAlex untuk institusi ini.":"City coordinates are not available from OpenAlex for this institution.",
+"Klik nama ko-penulis untuk menganalisis profilnya.":"Click a co-author's name to analyse their profile.","(belum terklasifikasi — data judul/bidang belum cukup)":"(not yet classified — not enough title/field data)","(tidak ada data SDG dari OpenAlex)":"(no SDG data from OpenAlex)","(tidak ada)":"(none)","(tidak ada data kolaborasi dari OpenAlex)":"(no collaboration data from OpenAlex)",
+"⚠️ Analisis kata kunci gagal:":"⚠️ Keyword analysis failed:","Tidak ada institusi pada saringan ini.":"No institutions match this filter.","Terhubung dengan":"Connected to","Tutup":"Close","Panduan":"Guide","Pilih salah satu cara: ":"Choose one method: ",
+"Sorot di Peta Riset":"Highlight in Research Map","🔎 Sorot di Peta Riset":"🔎 Highlight in Research Map","Artikel bersama":"Joint articles","asal":"home","Bukan foto yang benar? Pilih:":"Not the right photo? Choose:","NIDN (opsional)":"NIDN (optional)","selalu berhasil, offline":"always works, offline","lalu":"then","diekstrak otomatis":"extracted automatically","digabung":"merged","di":"in","kata kunci bidang keahlian dosen…":"keywords of the lecturer's expertise…","Lainnya — ":"Others — ","Tempel URL foto / URL profil Scholar-SINTA":"Paste a photo URL / Scholar-SINTA profile URL","· institusi asal":"· home institution","artikel bersama":"joint articles","Malang, Indonesia · asal":"Malang, Indonesia · home","Footprint SDGs":"SDG Footprint","Infografis rekam jejak":"Track-record infographics","Rumpun ilmu (format SISTER)":"Field of science (SISTER format)","Prodi yang sesuai":"Matching study programs","⏳ Menghitung…":"⏳ Calculating…","Lewati":"Skip","📊 Infografis Rekam Jejak":"📊 Track-Record Infographics","🌍 Footprint SDGs":"🌍 SDG Footprint"
+};
+const EN_SDG={"Tanpa Kemiskinan":"No Poverty","Tanpa Kelaparan":"Zero Hunger","Kehidupan Sehat & Sejahtera":"Good Health & Well-being","Kesehatan & Kesejahteraan":"Good Health & Well-being","Pendidikan Berkualitas":"Quality Education","Kesetaraan Gender":"Gender Equality","Air Bersih & Sanitasi":"Clean Water & Sanitation","Energi Bersih & Terjangkau":"Affordable & Clean Energy","Pekerjaan Layak & Pertumbuhan Ekonomi":"Decent Work & Economic Growth","Pekerjaan Layak & Ekonomi":"Decent Work & Economic Growth","Industri, Inovasi & Infrastruktur":"Industry, Innovation & Infrastructure","Industri, Inovasi, Infrastruktur":"Industry, Innovation & Infrastructure","Berkurangnya Kesenjangan":"Reduced Inequalities","Kota & Permukiman Berkelanjutan":"Sustainable Cities & Communities","Konsumsi & Produksi Bertanggung Jawab":"Responsible Consumption & Production","Penanganan Perubahan Iklim":"Climate Action","Ekosistem Lautan":"Life Below Water","Ekosistem Daratan":"Life on Land","Perdamaian, Keadilan & Kelembagaan Tangguh":"Peace, Justice & Strong Institutions","Perdamaian & Kelembagaan":"Peace, Justice & Strong Institutions","Kemitraan untuk Mencapai Tujuan":"Partnerships for the Goals","Kemitraan untuk Tujuan":"Partnerships for the Goals"};
+const EN_RX=[
+ [/^(\d+) artikel( ▾)?$/,'$1 articles$2'],[/^(\d+) (karya|institusi|negara|topik|ko-penulis|sitasi)$/,(m,n,w)=>n+' '+({karya:'works',institusi:'institutions',negara:'countries',topik:'topics','ko-penulis':'co-authors',sitasi:'citations'})[w]],
+ [/^(\d{4}): (\d+) artikel kolaborasi$/,'$1: $2 collaborative articles'],[/^Klik untuk daftar (\d+) artikel fase ini$/,'Click to list the $1 articles of this phase'],
+ [/^contoh: (.*)$/,'e.g. $1'],[/^(.+) paling sesuai ditempatkan pada$/,'$1 is best placed in'],[/^Artikel: /,'Article: '],[/^Topik: /,'Topic: '],[/^Ko-penulis: /,'Co-author: '],[/^Institusi: /,'Institution: '],
+ [/^ditemukan (\d+) kandidat\. Pilih yang benar sebelum dieksekusi:$/,'found $1 candidates. Choose the right one before running:'],
+ [/^Sudah terpakai pada karya \((\d+)\):$/,'Already used in works ($1):'],[/^🔁 Foto lain \((\d+)\)$/,'🔁 Other photos ($1)'],
+ [/^(\d+) institusi · (\d{4})–(\d{4})$/,'$1 institutions · $2–$3'],[/^(\d+) institusi · (\d+) negara$/,'$1 institutions · $2 countries'],
+ [/^\(kesesuaian (\d+)%\)\. Analisis memakai$/,'(match $1%). The analysis uses'],[/^terbitan (\d{4})–(\d{4})\. Topik yang paling menonjol:$/,'published $1–$2. Most prominent topics:'],
+ [/^🔑 Langkah Konfirmasi: pilih kata kunci yang paling mewakili keahlian \((\d+) terdeteksi dari (\d+) judul\)$/,'🔑 Confirmation step: choose the keywords that best represent the expertise ($1 detected from $2 titles)'],
+ [/^📄 (\d+) judul\/topik terkumpul otomatis \(bahan analisis\):$/,'📄 $1 titles/topics collected automatically (analysis input):'],[/^… (\d+) entri lagi — persempit pencarian$/,'… $1 more entries — narrow the search'],
+ [/^karya: (\d+) karya dosen · (\d+) pengutip( · (\d+) dirujuk)?$/,(m,a,b,c,d)=>'works: '+a+' by the lecturer · '+b+' citing'+(d?' · '+d+' referenced':'')],
+ [/^22\(2\), 191–235\)\. Karya pengutip diambil hingga 100 teratas menurut jumlah sitasi; swasitasi (\d+) karya\.$/,'22(2), 191–235). Up to the top 100 citing works by citation count are used; self-citations: $1 works.'],
+ [/^Rentang (\d{4})–(\d{4}) · (\d+) artikel bertahun\. Fase & tema direkonstruksi otomatis dari frekuensi kata kunci judul per periode; "Arah ke depan" adalah proyeksi dari tema (\d+) publikasi terbaru —$/,'Range $1–$2 · $3 dated articles. Phases & themes are reconstructed automatically from title keyword frequency per period; "Future direction" is a projection from the themes of the $4 latest publications —'],
+ [/^\. 👆 Klik angka$/,'. 👆 Click the number'],[/^ℹ️ Sebagian sumber gagal \((\d+)\) — hasil dianalisis dari sumber yang berhasil\. Judul terkumpul:$/,'ℹ️ Some sources failed ($1) — results are analysed from the sources that worked. Titles collected:'],
+ [/^🕒 Dianalisis ulang ([\d.:]+) — terpilih$/,'🕒 Re-analysed $1 — selected'],[/^(.+) ✓ \((\d+) karya\)$/,'$1 ✓ ($2 works)'],[/^(.+) ✓ \((\d+) via ORCID\)$/,'$1 ✓ ($2 via ORCID)'],
+ [/^(.*) \((\d{4}|—), (\d+) sitasi\)$/,'$1 ($2, $3 citations)'],[/^(\d{4}|—) · (\d+) sitasi( · swasitasi)?$/,(m,y,n,s)=>y+' · '+n+' citations'+(s?' · self-citation':'')],
+ [/^(\d+) sumber foto dicoba$/,'$1 photo sources tried'],[/^Terhubung \((\d+)\)$/,'Connected ($1)'],[/^Muncul di (\d+) karya$/,'Appears in $1 works'],
+ [/^SDG (\d+) (.+) — ([\d.]+)%( · klik untuk rekap karya)?$/,(m,n,nm,p,k)=>'SDG '+n+' '+(EN_SDG[nm]||nm)+' — '+p+'%'+(k?' · click for works recap':'')],
+ [/^SDG (\d+) (.+) — belum tersentuh · klik untuk rekap karya$/,(m,n,nm)=>'SDG '+n+' '+(EN_SDG[nm]||nm)+' — not yet touched · click for works recap'],
+ [/^Gagal mengambil data sitasi \((.*)\)\.$/,'Could not fetch citation data ($1).']
+];
+(function(){const KEY='ad-lang';let lang='id';try{lang=(new URLSearchParams(location.search).get('lang'))||localStorage.getItem(KEY)||'id';}catch(e){}
+ const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),SDGRE=new RegExp(Object.keys(EN_SDG).sort((a,b)=>b.length-a.length).map(esc).join('|'),'g');
+ const INL=[[/(\d+) karya\b/g,'$1 works'],[/(\d+) sitasi\b/g,'$1 citations'],[/(\d+) artikel\b/g,'$1 articles'],[/ · sumber: /g,' · source: '],[/klik untuk rekap karya/g,'click for works recap'],[/ · hal\. /g,' · p. '],[/ · asal$/g,' · home'],[/(\d+) institusi\b/g,'$1 institutions'],[/(\d+) negara\b/g,'$1 countries'],[/\bswasitasi\b/g,'self-citation']];
+ function tr(t){const m=t.match(/^(\s*)([\s\S]*?)(\s*)$/),c=m[2];if(!c||!/[A-Za-z]/.test(c))return null;let o=EN[c];
+  if(o==null)for(const [re,rep] of EN_RX){if(re.test(c)){o=c.replace(re,rep);break;}}
+  if(o==null){let x=c.replace(SDGRE,s=>EN_SDG[s]);INL.forEach(([re,rep])=>{x=x.replace(re,rep);});if(x!==c)o=x;}
+  return o==null?null:m[1]+o+m[3];}
+ const ON=new WeakMap(),OA=new WeakMap(),ATTR=['placeholder','title','aria-label'],SKIP=/^(SCRIPT|STYLE|TEXTAREA|NOSCRIPT)$/;let busy=false;
+ function doText(n){const p=n.parentNode;if(!p||SKIP.test(p.nodeName)||(p.closest&&p.closest('[data-noi18n]')))return;let o=ON.get(n);if(o==null||(n.nodeValue!==o.en)){o={id:n.nodeValue};}const e=tr(o.id);if(e!=null&&e!==n.nodeValue){o.en=e;ON.set(n,o);n.nodeValue=e;}else if(e==null){ON.delete(n);}}
+ function doEl(el){if(el.nodeType!==1||/^(SCRIPT|STYLE)$/.test(el.nodeName))return;let s=OA.get(el)||{};ATTR.forEach(a=>{const v=el.getAttribute(a);if(v==null)return;if(s[a]&&v===s[a].en)return;const e=tr(v);if(e!=null&&e!==v){s[a]={id:v,en:e};el.setAttribute(a,e);}});OA.set(el,s);}
+ function walk(root){if(root.nodeType===3){doText(root);return;}if(root.nodeType!==1||SKIP.test(root.nodeName))return;doEl(root);root.querySelectorAll('*').forEach(doEl);const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode())doText(n);}
+ function restore(){const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode()){const o=ON.get(n);if(o&&n.nodeValue===o.en)n.nodeValue=o.id;ON.delete(n);}
+  document.querySelectorAll('*').forEach(el=>{const s=OA.get(el);if(!s)return;ATTR.forEach(a=>{if(s[a]&&el.getAttribute(a)===s[a].en)el.setAttribute(a,s[a].id);});OA.delete(el);});}
+ const mo=new MutationObserver(ms=>{if(busy||lang!=='en')return;busy=true;try{ms.forEach(m=>{if(m.type==='characterData')doText(m.target);else if(m.type==='attributes')doEl(m.target);else m.addedNodes.forEach(walk);});}finally{busy=false;}});
+ const T0=document.title;
+ function apply(){const b=document.getElementById('adLang');if(b)b.textContent=lang==='en'?'🇮🇩 Bahasa Indonesia':'🇬🇧 English';document.documentElement.lang=lang;
+  if(lang==='en'){document.title='Lecturer Analysis & Study Program Nomenclature — SISTER Field of Science + SDG Footprint';busy=true;walk(document.body);busy=false;mo.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:ATTR});}
+  else{mo.disconnect();document.title=T0;restore();}}
+ window.adSetLang=function(l){lang=l==='en'?'en':'id';try{localStorage.setItem(KEY,lang);}catch(e){}apply();try{if(window.__b24p&&window.__gtRedraw)window.__gtRedraw();}catch(e){}};
+ window.adLang=()=>lang;window.adTr=t=>lang==='en'?(tr(t)||t):t;
+ function mount(){const h=document.querySelector('header');if(h&&!document.getElementById('adLang')){h.style.position=h.style.position||'relative';h.insertAdjacentHTML('beforeend','<button id="adLang" type="button" data-noi18n onclick="adSetLang(adLang()===\'en\'?\'id\':\'en\')"></button>');}apply();}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();})();
 </script>
 <script>
 /* versi web: dokumen PDF referensi dimuat terpisah saat diminta (halaman ±0,5 MB, bukan ±29 MB) */
