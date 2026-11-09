@@ -6,7 +6,7 @@
 $KEYFILE = '/home/pindotut/sk-config/openalex.php';
 $CACHE   = '/home/pindotut/sk-cache/openalex';
 $TTL     = 7 * 86400;      // hasil yang sama disimpan 7 hari
-$PER_IP  = 150;            // batas permintaan baru per alamat IP per hari (hasil cache tidak dihitung)
+$PER_IP  = 1000;           // batas permintaan baru per alamat IP per hari (hasil cache tidak dihitung; jaringan kampus berbagi satu IP)
 $ALLOW_ORIGINS = ['https://pindotutuko.id', 'https://www.pindotutuko.id', 'null'];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';

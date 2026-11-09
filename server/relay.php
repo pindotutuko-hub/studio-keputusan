@@ -5,7 +5,7 @@
    Cache: /home/pindotut/sk-cache/relay/ */
 $CACHE  = '/home/pindotut/sk-cache/relay';
 $TTL    = 3 * 86400;   // 3 hari
-$PER_IP = 200;         // permintaan baru per IP per hari
+$PER_IP = 1500;        // permintaan baru per IP per hari (jaringan kampus berbagi satu IP)
 $MAXB   = 3000000;     // batas ukuran respons (byte)
 $ALLOW_ORIGINS = ['https://pindotutuko.id', 'https://www.pindotutuko.id', 'null'];
 $HOSTS = [
