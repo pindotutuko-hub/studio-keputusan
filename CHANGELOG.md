@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.9.0 — 2026-11-09
+- **Kanvas gaya Orange dilengkapi:** PLS (NIPALS), SVM kernel RBF/polinomial (SMO; regresi kernel = kernel ridge), CN2 Rule Induction + CN2 Rule Viewer, Scoring Sheet (poin bilangan bulat, ambang terbaik tiap fitur), Stacking (prediksi validasi silang → model meta), Nomogram (regresi logistik & Scoring Sheet), Paint Data, Datasets luring (Iris, kuartet Anscombe, harga rumah fiktif, 40 kelurahan fiktif), SQL lokal (SELECT/WHERE/GROUP BY/ORDER BY/LIMIT, agregat), Python Script (ekspor skrip pandas/scikit-learn + CSV).
+- **Save Images:** foto yang dibuka pada sesi berjalan disimpan dalam ukuran asli; daftar CSV mencatat asli/pratinjau.
+- Rujukan baru (Clark & Niblett 1989, Wold dkk. 2001, Wolpert 1992, Platt 1998, Možina dkk. 2004, Ustun & Rudin 2016, Anscombe 1973); uji `tests/v39.test.js`.
+
 ## 3.8.0 — 2026-11-09
 - **Akuntansi forensik & lintas bidang:** Hukum Benford (digit pertama/dua digit, χ², z, MAD Nigrini), Altman Z/Z′/Z″, akrual diskresioner model Jones modifikasian, Piotroski F-Score, Difference-in-Differences, rantai Markov (perubahan lahan/pangsa). Pemandu tujuan mengenali fraud triangle/diamond, manajemen laba, financial distress, uji Benford, dampak kebijakan, dan perubahan penggunaan lahan.
 - **Visualisasi & grafik teknik:** peta pikiran (mind map), diagram alir (simbol ISO 5807), rangka batang 2D (gaya batang, reaksi, poligon gaya titik buhul/Cremona), balok (SFD, BMD, lendutan), aliran pipa (Reynolds, Colebrook, Darcy–Weisbach, diagram Moody), diagram hubungan ruang (bubble diagram).
