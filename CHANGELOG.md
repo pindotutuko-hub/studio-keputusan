@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.10.0 — 2026-11-09
+- **Grafik teknik lintas bidang:** diagram Cremona utuh (diagram resiprokal Maxwell–Cremona, notasi Bow, garis beban, cek ketertutupan) pada alat rangka batang; denah skematik dari program ruang (zona publik–privat–servis, sirkulasi); diagram psikrometrik (Magnus–Alduchov & Eskridge, titik embun, rasio kelembapan, entalpi); hidrograf banjir (SCS-CN, hidrograf satuan segitiga NRCS); kurva S proyek (rencana vs realisasi); diagram interaksi kolom beton P–M (Whitney, φ ACI 318-14/SNI 2847:2019).
+- **Kanvas gaya Orange — widget tersisa:** Color (palet, termasuk Okabe–Ito), Apply Domain, Select by Data Index, Create Instance, FreeViz, Pythagorean Forest, Calibrated Learner (sigmoid/Platt, isotonik), Curve Fit (Levenberg–Marquardt; model siap pakai atau rumus sendiri), Save Model / Load Model (.skmodel.json).
+- **Rumpun ilmu:** Lampiran II Kepdirjen Diktiristek 163/E/KPT/2022 bagian I (20 program profesi) dan II (61 program spesialis) ditambahkan; subspesialis (bagian III) belum dimuat.
+- Rujukan baru (Demšar dkk. 2007, Platt 1999, Zadrozny & Elkan 2002, Marquardt 1963, Okabe & Ito 2008, Alduchov & Eskridge 1996, ASHRAE 2017, USDA NRCS 2007, ACI 318-14, SNI 2847:2019); uji `tests/v310.test.js`.
+
 ## 3.9.0 — 2026-11-09
 - **Kanvas gaya Orange dilengkapi:** PLS (NIPALS), SVM kernel RBF/polinomial (SMO; regresi kernel = kernel ridge), CN2 Rule Induction + CN2 Rule Viewer, Scoring Sheet (poin bilangan bulat, ambang terbaik tiap fitur), Stacking (prediksi validasi silang → model meta), Nomogram (regresi logistik & Scoring Sheet), Paint Data, Datasets luring (Iris, kuartet Anscombe, harga rumah fiktif, 40 kelurahan fiktif), SQL lokal (SELECT/WHERE/GROUP BY/ORDER BY/LIMIT, agregat), Python Script (ekspor skrip pandas/scikit-learn + CSV).
 - **Save Images:** foto yang dibuka pada sesi berjalan disimpan dalam ukuran asli; daftar CSV mencatat asli/pratinjau.

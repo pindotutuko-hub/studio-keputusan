@@ -55,7 +55,7 @@ setTimeout(() => {
     for (const nd of O2.nodes) { O2.sel = nd.id; const box = d.querySelector('#v27_ow_canvas') || d.body, b = d.createElement('button'); b.dataset.owpv = '_t'; b.dataset.v = '1'; box.appendChild(b); b.click(); b.remove(); const r = w.__owEval(nd.id); if (nd.t !== 'data') assert(!r.err || /target|belum/i.test(r.err), nd.t + ': ' + r.err); }
     assert(w.__owEval('pf').best && w.__owEval('pp').pv > 0 && w.__owEval('vn').sets[0].size === w.__owEval('vn').sets[1].size && w.__owEval('vn').sets[0].size > 140 && w.__owEval('mg').data.n === 150 && w.__owEval('cc').data.n === 300 && w.__owEval('sil').sil.mean > 0.3); }
   // rumpun ilmu (Kepdirjen Diktiristek 163/E/KPT/2022)
-  const K = w.__kp; assert.strictEqual(K.KP_P.length, 574); assert.strictEqual(K.KP_S.length, 53); assert(K.kpSearch('arsitektur', '').some(p => p[1] === 'Arsitektur'));
+  const K = w.__kp; assert.strictEqual(K.KP_P.filter(p => !p[5]).length, 574); assert.strictEqual(K.KP_S.filter(s => s[0] <= 53).length, 53); assert(K.kpSearch('arsitektur', '').some(p => p[1] === 'Arsitektur'));
   assert.strictEqual(K.kpSearch('', 'Formal').length, K.KP_P.filter(p => [17, 18, 19].includes(p[3])).length); K.kpSet(K.KP_P.find(p => p[1] === 'Rekayasa Sipil')[0]); assert.strictEqual(U.advField('apa saja').k, 'sipil'); K.kpSet(null);
   assert(K.kpKeywords(K.KP_P.find(p => p[1] === 'Farmasi')).some(k => k[0] === 'Pharmacy'));
   // pemandu tujuan
