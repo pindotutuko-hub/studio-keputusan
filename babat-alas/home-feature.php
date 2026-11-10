@@ -31,6 +31,17 @@ function pindotutuko_babat_feature() {
 			<a class="ba-teaser__cta" href="<?php echo $url; ?>" target="_blank" rel="noopener">Main sekarang · Play now →</a>
 		</div>
 	</div>
+	<div class="ba-teaser ba-teaser--2">
+		<video controls preload="none" playsinline poster="<?php echo esc_url( home_url( '/babat-alas/tutorial-v52-poster.jpg' ) ); ?>" aria-label="Video Babat Alas: Metropolitan dan Kota Cerdas">
+			<source src="<?php echo esc_url( home_url( '/babat-alas/tutorial-v52.mp4' ) ); ?>" type="video/mp4">
+		</video>
+		<div class="ba-teaser__txt">
+			<b>▶ Baru: Metropolitan &amp; Kota Cerdas <small>(1:07)</small></b>
+			<span>Dari lahan yang dibuka sampai kota metropolitan: gedung ikonik, kereta layang, mobil listrik, energi bersih, pengelolaan sampah terpadu, krisis kota, dan ekspedisi dagang ke lima benua.</span>
+			<span class="ba-teaser__en" lang="en">New: grow your city into a metropolis and a smart, sustainable city.</span>
+			<a class="ba-teaser__cta" href="<?php echo $url; ?>" target="_blank" rel="noopener">Main sekarang · Play now →</a>
+		</div>
+	</div>
 </section>
 <style>
 .ba-feat{max-width:1200px;margin:28px auto 8px;padding:0 16px}
