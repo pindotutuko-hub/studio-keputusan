@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.15.2 — 2026-11-21
+- Riset Terpadu: kolom isian memakai lebar penuh (label di atas, teks tidak terpotong); judul berupa kotak teks dua baris.
+- Bidang ilmu dipilih bertingkat: rumpun → subrumpun → program studi menurut Kepdirjen Diktiristek No. 163/E/KPT/2022, atau “Lainnya — tulis sendiri”; tombol untuk memakai pilihan Rumpun ilmu dari Beranda.
+
 ## 3.15.1 — 2026-11-21
 - Pintu masuk **Riset Terpadu** dibuat jelas: tombol “📝 Riset Terpadu” di bilah atas (di samping Kanvas) dan kartu “Menyusun penelitian?” di Beranda, di atas kolom tujuan.
 

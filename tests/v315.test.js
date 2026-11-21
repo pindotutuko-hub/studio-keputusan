@@ -29,5 +29,12 @@ setTimeout(() => {
   const d = w.document; d.querySelector('[data-step="home"]') && d.querySelector('[data-step="home"]').click();
   assert(d.querySelector('.modpick [data-modgo="riset"]'), 'tombol bilah atas'); const rb = d.querySelector('.rsbar [data-modgo="riset"]'); assert(rb, 'kartu beranda');
   rb.click(); assert(!d.querySelector('[data-sec="rs-pend"]').hidden, 'membuka langkah Pendahuluan');
+  // judul berupa textarea lebar; bidang ilmu bertingkat menurut Kepdirjen 163/E/KPT/2022
+  assert(d.querySelector('#rsPend textarea.rsjudul'));
+  const fire = (el, v) => { el.value = v; el.dispatchEvent(new w.Event('change', { bubbles: true })); };
+  fire(d.querySelector('#rsPend [data-rskp="r"]'), 'Terapan'); fire(d.querySelector('#rsPend [data-rskp="s"]'), '24');
+  const ps = d.querySelector('#rsPend [data-rskp="p"]'); assert([...ps.options].some(o => o.textContent === 'Arsitektur')); fire(ps, '253');
+  assert(/^Arsitektur/.test(w.__rs.get().bidang), w.__rs.get().bidang); assert.strictEqual(d.querySelector('#rsPend [data-rs="bidang"]').value, w.__rs.get().bidang);
+  fire(d.querySelector('#rsPend [data-rskp="p"]'), 'lain'); assert(d.querySelector('#rsPend [data-rs="bidang"]'));
   assert(!errs.length, errs.join('\n')); console.log('v3.15 OK');
 }, 400);
