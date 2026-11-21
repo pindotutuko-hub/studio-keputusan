@@ -9,7 +9,8 @@
   5. Analisis data: peta teknik univariat/bivariat/multivariat (Hair dkk., 2019), deskriptif + Shapiro–Wilk, validitas & reliabilitas, uji asumsi klasik (Ghozali, 2018), uji hipotesis otomatis (regresi sederhana/berganda, Pearson/Spearman, t/Welch/Mann–Whitney, ANOVA/Welch/Kruskal–Wallis, χ², moderasi MRA, mediasi Sobel), satu/dua sisi menurut hipotesis; analisis kualitatif (Miles dkk., 2014; Braun & Clarke, 2006).
   6. Hasil & pembahasan: hasil gaya APA, keputusan, draf pembahasan + catatan peneliti.
   7. Kesimpulan, saran, keterbatasan, dan **naskah Bab I–V** (salin, .md, .doc).
-- Contoh ilustratif memakai data contoh survei 150 penghuni; 31 rujukan baru di Sumber & Referensi.
+- Kalkulator **Tobin's Q** (nilai perusahaan) di langkah Metodologi: rumus Chung & Pruitt (1994) dan versi praktis (MVE + TL)/TA, tafsiran Q < 1 / ≈ 1 / > 1, serta penghitungan per baris Dataset (kolom TobinsQ_CP, TobinsQ_Simple). Rujukan: Tobin (1969); Chung & Pruitt (1994).
+- Contoh ilustratif memakai data contoh survei 150 penghuni; 33 rujukan baru di Sumber & Referensi.
 - Tes `tests/v313.test.js` (angka dicocokkan dengan SciPy).
 
 ## 3.12.1 — 2026-11-09

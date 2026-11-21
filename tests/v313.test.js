@@ -39,6 +39,17 @@ setTimeout(() => {
   // semua langkah dapat dirender tanpa galat
   ['rs-pend', 'rs-pus', 'rs-met', 'rs-sam', 'rs-an', 'rs-hp', 'rs-ks'].forEach(s => { d.querySelector(`[data-step="${s}"]`).click(); const box = d.querySelector(`[data-sec="${s}"]`); assert(!box.hidden, s); assert(!/NaN|undefined/.test(box.textContent), s + ' NaN'); });
   assert(d.querySelector('#rsPus svg'), 'diagram kerangka'); assert(/Cronbach's α = 0,809/.test(d.querySelector('#rsAn').textContent));
+  // Tobin's Q (Chung & Pruitt, 1994) dan versi praktis
+  { const q = R.tq({ harga: 1000, saham: 1e6, mve: '', ps: 0, cl: 3e8, ca: 4e8, ltd: 2e8, tl: 6e8, ta: 1.5e9 });
+    near(q.mve, 1e9, 1e-6); near(q.cp, 1.1 / 1.5, 1e-12, 'CP'); near(q.simple, 1.6 / 1.5, 1e-12, 'simple');
+    const st = R.get();
+    R.dsText('Firma\tHarga\tSaham\tCL\tCA\tLTD\tTL\tTA\nA\t1000\t1000000\t300000000\t400000000\t200000000\t600000000\t1500000000\nB\t500\t2000000\t100000000\t50000000\t0\t300000000\t1000000000');
+    st.tq.col = { harga: 'Harga', saham: 'Saham', cl: 'CL', ca: 'CA', ltd: 'LTD', tl: 'TL', ta: 'TA' }; R.set(st);
+    const r = R.tqAppend(); assert(r.ok, r.err); const txt = R.dsTextGet(); assert(/TobinsQ_CP\tTobinsQ_Simple/.test(txt.split('\n')[0]));
+    assert.strictEqual(txt.split('\n')[1].split('\t').slice(-2).join('|'), '0.7333|1.0667'); assert.strictEqual(txt.split('\n')[2].split('\t').slice(-2).join('|'), '1.0500|1.3000');
+    R.tqAppend(); assert.strictEqual(R.dsTextGet().split('\n')[0].split('\t').length, 10, 'tidak menggandakan kolom');
+    d.querySelector('[data-step="rs-met"]').click(); assert(/Tobin's Q \(Chung & Pruitt, 1994\)/.test(d.querySelector('#rsMet').textContent));
+    assert(html.includes('Chung, K. H., &amp; Pruitt, S. W. (1994)') && html.includes('Tobin, J. (1969)')); }
   // pendekatan kualitatif: keabsahan & informan
   const Q = R.get(); Q.pend = 'kual'; R.set(Q); d.querySelector('[data-step="rs-met"]').click(); assert(/Lincoln & Guba \(1985\)/.test(d.querySelector('#rsMet').textContent));
   d.querySelector('[data-step="rs-sam"]').click(); assert(/Guest, Bunce, & Johnson, 2006/.test(d.querySelector('#rsSam').textContent));
