@@ -1,5 +1,20 @@
 # Changelog
 
+## 3.14.0 — 2026-11-21
+Perbaikan hasil pemeriksaan bug seluruh modul (4 pemeriksaan paralel):
+- **Umum:** proyek lama/parsial (impor, berkas proyek, penyimpanan lokal) dilengkapi otomatis dengan nilai bawaan sehingga tidak membuat aplikasi macet; angka bergaya Indonesia dengan beberapa titik ribuan (1.500.000; 1.234,5) dan gaya Inggris (1,500,000.5) dibaca benar.
+- **Dataset:** pemisah desimal ditentukan per kolom (kolom teks berisi koma tidak lagi merusak kolom angka); tanda kutip dipahami untuk pemisah koma, titik koma, dan tab, termasuk "" di dalam kutip.
+- **Statistik:** regresi dengan banyak prediktor tidak lagi membeku (VIF tidak lagi dihitung berulang secara rekursif); Kruskal–Wallis membuang kelompok tanpa data.
+- **PLS-SEM:** hasil bootstrap ditandai usang bila isi data berubah, bukan hanya panjangnya.
+- **TOPSIS:** tidak menampilkan peringkat bila alternatif belum dapat dibedakan. **Delphi:** penilaian di atas skala baru dihapus saat skala diperkecil. **DEMATEL/VIKOR:** suntingan α, nama pakar, dan v pada contoh tidak hilang.
+- **Space syntax:** ruang yang terhubung langsung ke semua ruang (RA = 0) bernilai integrasi ∞ dan menjadi yang paling terintegrasi.
+- **CBA:** payback benar bila tahun 0 kosong; angka Rupiah bertitik ribuan dibaca sama saat diketik maupun ditempel. **CPM:** peringatan kode aktivitas ganda. **OTTV:** baris 0° pada sapuan orientasi memakai SF yang sama dengan hasil utama. **BSC:** realisasi 0 dihitung 0 %.
+- **Psikometri:** responden dengan butir kosong tidak dihitung 0 (listwise), α hanya dihitung bila n ≥ 2. **Mikroklimat:** RH atau suhu acuan kosong tidak lagi dianggap 0. **Industri:** μ = 0 berstatus "Tidak stabil".
+- **MIPA:** batas n pada integral (≤ 1 000 000) dan periode kurva S (≤ 1000); Δt hidrograf harus > 0.
+- **Visual 3D:** mesh besar (ratusan ribu titik) tidak lagi galat; indeks negatif OBJ didukung.
+- Rujukan uji eksak Fisher dikoreksi: Fisher (1935), *The design of experiments*; Fisher (1922) untuk derajat kebebasan χ². Salah ketik nama prodi diperbaiki.
+- Tes `tests/v314.test.js`.
+
 ## 3.13.1 — 2026-11-21
 Perbaikan Riset Terpadu hasil pemeriksaan bug:
 - Proyek lama/parsial (impor, berkas proyek, penyimpanan lokal) dinormalisasi sehingga tidak lagi memunculkan galat.
