@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.16.2 — 2026-11-21
+- Naskah Riset Terpadu dapat diekspor rapi ke **Word (.docx)** dan **PDF / cetak A4**: Times New Roman 12, spasi 1,5, margin kiri & atas 4 cm, kanan & bawah 3 cm, halaman judul, BAB di halaman baru, subjudul tebal, paragraf rata kanan-kiri dengan inden, tabel bergaris, nomor halaman (Word), **Gambar 2.x** peta jejaring kata kunci, peta kolaborasi penulis, dan kerangka konseptual, serta **DAFTAR PUSTAKA** (gaya APA dari artikel terpilih: penulis, tahun, judul, jurnal, DOI). DOCX dibuat tanpa pustaka luar (OOXML).
+- Peta jejaring gaya VOSviewer: label tidak lagi bertumpuk (simpul didorong agar lingkaran + label tidak menindih; posisi label dicari bawah/atas/kanan/kiri; label kecil yang tetap bertabrakan disembunyikan seperti VOSviewer, nama tetap muncul saat kursor diarahkan). Berlaku juga di modul Literatur.
+- Peta **penulis (ko-kepengarangan)** selain peta kata kunci; tombol **⬇ PNG** untuk peta dan kerangka konseptual (latar putih); berkas VOSviewer mengikuti mode peta.
+
 ## 3.16.1 — 2026-11-21
 - Cari riset terdahulu: tombol **Centang semua**, **Hapus centang**, dan **10 sitasi teratas**; tata letak hasil diperbaiki (judul tidak lagi turun ke baris baru).
 - **Peta jejaring kata kunci gaya VOSviewer** (klaster atau overlay tahun terbit) dari artikel terpilih atau seluruh hasil, unduh berkas map/network VOSviewer, dan daftar **indikasi celah penelitian** (istilah topik yang belum/jarang dibahas, pasangan istilah yang belum dikaitkan, tema terbaru, istilah pinggiran); indikasi ikut masuk ke draf celah Bab I.

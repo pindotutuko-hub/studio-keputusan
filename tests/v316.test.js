@@ -9,7 +9,7 @@ const RES = [W(1, 'Housing transformation in urban kampung', 'This study examine
   W(2, 'Residential satisfaction and housing quality', 'Housing quality affects residential satisfaction and intention to stay. Structural equation modeling was applied to 312 respondents.', 25),
   W(3, 'Self-built housing extensions', 'Qualitative interviews reveal motives of house extension in informal settlements.', 10)];
 let calls = 0; const errs = []; const vc = new VirtualConsole(); vc.on('jsdomError', e => { if (!/scrollTo/.test(e.message)) errs.push(e.message); });
-const dom = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://localhost/', virtualConsole: vc, beforeParse(w) { w.scrollTo = () => {};
+const dom = new JSDOM(html, { runScripts: 'dangerously', pretendToBeVisual: true, url: 'https://localhost/', virtualConsole: vc, beforeParse(w) { w.scrollTo = () => {}; w.TextEncoder = TextEncoder; w.TextDecoder = TextDecoder;
   w.fetch = async (u) => { calls++; return { ok: true, status: 200, headers: { get: () => null }, json: async () => ({ results: RES, meta: { count: 3 } }) }; }; } });
 const w = dom.window;
 setTimeout(async () => {
@@ -41,5 +41,11 @@ setTimeout(async () => {
   assert(!/NaN|undefined/.test(d.querySelector('#rsPend').textContent));
   // klik kedua kali harus dikonfirmasi (isian sudah ada)
   const before = S.mas; S.mas = 'TULISAN SAYA'; R.set(S); d.querySelector('[data-step="rs-pend"]').click(); d.querySelector('#bRsCariDraft').click(); assert.strictEqual(R.get().mas, 'TULISAN SAYA'); d.querySelector('#bRsCariDraft').click(); assert.notStrictEqual(R.get().mas, 'TULISAN SAYA');
+  // naskah A4: blok, gambar, daftar pustaka, docx
+  const S2 = R.get(); assert(R.refs().length === 2 && /^Santoso, B\., & Wijaya, A\. \(20(19|20)\)/.test(R.refs()[0]), JSON.stringify(R.refs()));
+  const ph = R.printHTML(); assert(/rsp-cover/.test(ph) && /<svg/.test(ph) && /Gambar 2\.1\./.test(ph) && /DAFTAR PUSTAKA/.test(ph) && !/var\(--/.test(ph) && !/color-mix/.test(ph), 'HTML cetak');
+  const z = await R.docx(); assert(z.length > 2000);
+  const PNG = new Uint8Array(require('fs').readFileSync(require('path').join(__dirname, '..', 'build', 'icon.png'))); const z2 = await R.docx({ png: () => PNG }); require('fs').writeFileSync('/tmp/rs-test-img.docx', Buffer.from(z2)); require('fs').writeFileSync('/tmp/rs-test.docx', Buffer.from(z));
+  d.querySelector('[data-step="rs-ks"]').click(); assert(d.querySelector('#rsKs #bRsDocx') && d.querySelector('#rsKs #bRsPdf'));
   assert(!errs.length, errs.join('\n')); console.log('v3.16 cari riset OK');
 }, 400);
