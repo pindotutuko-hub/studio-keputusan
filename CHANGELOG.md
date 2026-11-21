@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.13.0 — 2026-11-21
+- **Modul baru “Riset Terpadu”** (7 langkah) yang menuntun penelitian dari pendahuluan sampai kesimpulan:
+  1. Pendahuluan: fenomena → masalah → celah, rumusan masalah → tujuan otomatis, manfaat, uji kelayakan FINER (Hulley dkk., 2013).
+  2. Pustaka & hipotesis: matriks penelitian terdahulu, landasan teori, variabel (X/Y/mediasi/moderasi/kontrol), hubungan antarvariabel → H₀/Hₐ berarah/tidak berarah, diagram kerangka konseptual SVG; fokus & proposisi untuk kualitatif.
+  3. Metodologi: paradigma (Guba & Lincoln, 1994; Creswell & Creswell, 2018), pendekatan kuantitatif/kualitatif/campuran, jenis penelitian, tujuh strategi Groat & Wang (2013), desain, definisi operasional & skala Stevens, pemetaan ke kolom Dataset, teknik pengumpulan, keabsahan data kualitatif (Lincoln & Guba, 1985; Moleong, 2017).
+  4. Populasi & sampel: Slovin, Krejcie & Morgan (1970), Cochran (1977), Green (1991), daya uji Cohen (1988), teknik probability/non-probability, alokasi proporsional per strata, informan & kejenuhan (Guest dkk., 2006).
+  5. Analisis data: peta teknik univariat/bivariat/multivariat (Hair dkk., 2019), deskriptif + Shapiro–Wilk, validitas & reliabilitas, uji asumsi klasik (Ghozali, 2018), uji hipotesis otomatis (regresi sederhana/berganda, Pearson/Spearman, t/Welch/Mann–Whitney, ANOVA/Welch/Kruskal–Wallis, χ², moderasi MRA, mediasi Sobel), satu/dua sisi menurut hipotesis; analisis kualitatif (Miles dkk., 2014; Braun & Clarke, 2006).
+  6. Hasil & pembahasan: hasil gaya APA, keputusan, draf pembahasan + catatan peneliti.
+  7. Kesimpulan, saran, keterbatasan, dan **naskah Bab I–V** (salin, .md, .doc).
+- Contoh ilustratif memakai data contoh survei 150 penghuni; 31 rujukan baru di Sumber & Referensi.
+- Tes `tests/v313.test.js` (angka dicocokkan dengan SciPy).
+
 ## 3.12.1 — 2026-11-09
 - Kebijakan keamanan konten (CSP) mengizinkan `api.crossref.org` dan perantara `pindotutuko.id/sk-api` (juga untuk versi desktop), sehingga cadangan Crossref benar-benar berjalan.
 
