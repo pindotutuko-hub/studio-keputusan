@@ -50,6 +50,33 @@ setTimeout(() => {
     R.tqAppend(); assert.strictEqual(R.dsTextGet().split('\n')[0].split('\t').length, 10, 'tidak menggandakan kolom');
     d.querySelector('[data-step="rs-met"]').click(); assert(/Tobin's Q \(Chung & Pruitt, 1994\)/.test(d.querySelector('#rsMet').textContent));
     assert(html.includes('Chung, K. H., &amp; Pruitt, S. W. (1994)') && html.includes('Tobin, J. (1969)')); }
+  // perbaikan hasil pemeriksaan bug (v3.13.0)
+  { // RM ↔ hipotesis: RM2 mediasi, RM3 moderasi
+    R.sample(); R.dsSample(); d.querySelector('[data-step="rs-ks"]').click(); const ks = d.querySelector('#rsKs').textContent;
+    assert(/RM2\.[^]*?memediasi[^]*?RM3\./.test(ks), 'RM2 → mediasi'); assert(/RM3\.[^]*?memoderasi[^]*?RM4\./.test(ks), 'RM3 → moderasi');
+    // penomoran tunggal: hubungan tak lengkap di depan → H1 hilang, lainnya tetap H2…
+    const st = R.get(); st.rel.unshift({ id: 'zz', from: '', to: '', kind: 'pengaruh', arah: '+', via: '', basis: '', rm: '' }); R.set(st);
+    const md = R.draft(); assert(!/\| H1:/.test(md) && /\| H2:/.test(md) && /\| H6:/.test(md), 'penomoran');
+    st.rel.shift();
+    // prediktor nominal tidak menggagalkan regresi
+    const th = st.vars.find(v => v.code === 'X2'), nt = st.vars.find(v => v.code === 'Y'); st.rel.push({ id: 'nn', from: th.id, to: nt.id, kind: 'pengaruh', arah: '+', via: '', basis: '', rm: '' }); R.set(st);
+    const t1 = R.test(R.get().rel[0]); assert(t1.ok && /tidak dimasukkan/.test(t1.why), t1.msg || t1.why); assert(!R.test(R.get().rel.at(-1)).ok);
+    // N bergaya Indonesia & strata
+    const s2 = R.get(); s2.rel.pop(); s2.pop.N = '1.200'; s2.samp.e = 5; s2.samp.met = 'slovin'; R.set(s2); assert.strictEqual(R.pick(), 300);
+    // tujuan kustom tidak hilang saat RM dihapus
+    const s3 = R.get(); s3.tj = ['a', 'b', 'c', 'd']; R.set(s3); d.querySelector('[data-step="rs-pend"]').click(); d.querySelector('#rsPend [data-rsdel="rq"]').click();
+    assert.strictEqual(R.get().tj.join(','), 'b,c,d'); assert.strictEqual(R.get().rel.find(r => r.kind === 'beda').rm, '3');
+    // tanda | dalam teks pengguna
+    const s4 = R.get(); s4.vars[0].name = 'A|B'; s4.simp = '| baris'; R.set(s4); const md2 = R.draft();
+    const row = md2.split('\n').find(l => /^\| A\\\|B/.test(l)); assert(row && row.split(/(?<!\\)\|/).length === 6, row);
+    assert(!/^\| baris/m.test(md2)); const h = R.mdHtml(md2); assert(h.includes('<td style="border:1px solid #999;padding:3px 6px">A|B</td>'));
+    // proyek lama/parsial tidak merusak
+    R.set({ judul: 'lama', rq: [{ id: 'q', t: 'Apakah?' }], vars: [], rel: [] }); ['rs-pend', 'rs-pus', 'rs-met', 'rs-sam', 'rs-an', 'rs-hp', 'rs-ks'].forEach(s => d.querySelector(`[data-step="${s}"]`).click()); R.draft();
+    assert(R.norm(null).tq.col && R.norm({ samp: { e: 3 } }).samp.conf === 95);
+    // CSV berkutip & kolom Tobin's Q basi
+    R.dsText('Nama,Harga,Saham,CL,CA,LTD,TL,TA\n"PT A, Tbk",1000,1000,300,400,200,600,1500'); const s5 = R.get(); s5.tq.col = { harga: 'Harga', saham: 'Saham', cl: 'CL', ca: 'CA', ltd: 'LTD', tl: 'TL', ta: 'TA' }; R.set(s5); R.tqAppend();
+    s5.tq.col = { harga: 'Harga', saham: 'Saham', tl: 'TL', ta: 'TA' }; R.set(s5); R.tqAppend(); const L2 = R.dsTextGet().split('\n');
+    assert.strictEqual(L2[0], 'Nama,Harga,Saham,CL,CA,LTD,TL,TA,TobinsQ_Simple'); assert.strictEqual(L2[1], '"PT A, Tbk",1000,1000,300,400,200,600,1500,667.0667'); }
   // pendekatan kualitatif: keabsahan & informan
   const Q = R.get(); Q.pend = 'kual'; R.set(Q); d.querySelector('[data-step="rs-met"]').click(); assert(/Lincoln & Guba \(1985\)/.test(d.querySelector('#rsMet').textContent));
   d.querySelector('[data-step="rs-sam"]').click(); assert(/Guest, Bunce, & Johnson, 2006/.test(d.querySelector('#rsSam').textContent));

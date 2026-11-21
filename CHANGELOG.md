@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.13.1 — 2026-11-21
+Perbaikan Riset Terpadu hasil pemeriksaan bug:
+- Proyek lama/parsial (impor, berkas proyek, penyimpanan lokal) dinormalisasi sehingga tidak lagi memunculkan galat.
+- Setiap hipotesis dapat ditautkan ke rumusan masalah (RM); jawaban RM di langkah 7 kini mengambil hipotesis yang tertaut, bukan menurut urutan.
+- Penomoran hipotesis sama di semua langkah; hubungan yang belum lengkap ditandai dan tidak diuji.
+- Prediktor nominal tidak lagi menggagalkan regresi lain pada Y yang sama (dikeluarkan dari model dengan catatan).
+- Label jenis mediasi memakai α dan arah uji yang sama dengan keputusan.
+- Tobin's Q pada Dataset: CSV berkutip tidak lagi bergeser; kolom lama selalu diganti.
+- N dan Nₕ dengan pemisah ribuan titik (mis. 1.200) dibaca benar; peringatan bila jumlah Nₕ ≠ N.
+- Tanda “|” dalam isian tidak merusak tabel naskah .md/.doc.
+- Menghapus RM tidak lagi menghapus semua tujuan buatan sendiri.
+- Warna keputusan uji memakai token tema (mode gelap).
+
 ## 3.13.0 — 2026-11-21
 - **Modul baru “Riset Terpadu”** (7 langkah) yang menuntun penelitian dari pendahuluan sampai kesimpulan:
   1. Pendahuluan: fenomena → masalah → celah, rumusan masalah → tujuan otomatis, manfaat, uji kelayakan FINER (Hulley dkk., 2013).
