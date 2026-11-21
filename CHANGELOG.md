@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.15.1 — 2026-11-21
+- Pintu masuk **Riset Terpadu** dibuat jelas: tombol “📝 Riset Terpadu” di bilah atas (di samping Kanvas) dan kartu “Menyusun penelitian?” di Beranda, di atas kolom tujuan.
+
 ## 3.15.0 — 2026-11-21
 - **Heat index:** di bawah 80 °F nilai kini mengikuti NWS, yakni rumus sederhana yang dirata-ratakan dengan suhu udara (contoh 20 °C/50 %: 19,68 °C).
 - **Visual 3D:** STL biner kini terbaca (selain STL ASCII).

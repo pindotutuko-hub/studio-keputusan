@@ -1173,7 +1173,7 @@ const PROJ=(()=>{const REG="sk-projects-v1", GLOBAL=new Set([REG,"sk-uimode-v1",
     backup};
   try{window.addEventListener("pagehide",backup); document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")backup();});}catch(e){}
   return api;})();
-const APP_VERSION="3.15.0"; window.__APP_VERSION=APP_VERSION;
+const APP_VERSION="3.15.1"; window.__APP_VERSION=APP_VERSION;
 const LS_KEY="ism-studio-v1";
 const desktop = typeof window.ismDesktop==="object" && window.ismDesktop;
 if(desktop) document.documentElement.classList.add("is-desktop");
@@ -6593,7 +6593,7 @@ const go0=go; go=function(st){if(EMB&&st!=="ow-canvas"){embRestore(); EMB=null;}
 const BR0=buildReport; buildReport=function(){try{renderMcRes(); renderMcSens(); renderDuRes(); renderQdRes();}catch(_){} BR0();};
 const RH0=renderHome; renderHome=function(){RH0(); renderHomeV27();};
 /* ---------- kepala halaman: pintasan baru + menu ringkas di layar kecil ---------- */
-(()=>{const mp=$(".modpick"); if(mp&&!mp.querySelector('[data-modgo="orange"]')){mp.insertAdjacentHTML("beforeend",`<button class="btn" data-modgo="orange" title="Kanvas alur kerja gaya Orange">⇄ Kanvas</button><button class="btn" data-modgo="io">⇅ Ekspor–impor</button><button class="btn" data-modgo="gloss">📖 Glosarium</button><button class="btn" data-modgo="manual">📘 Panduan</button>`);}
+(()=>{const mp=$(".modpick"); if(mp&&!mp.querySelector('[data-modgo="orange"]')){mp.insertAdjacentHTML("beforeend",`<button class="btn rsgo" data-modgo="riset" title="Alur penelitian: pendahuluan, pustaka & hipotesis, metodologi, sampel, analisis, pembahasan, kesimpulan">📝 Riset Terpadu</button><button class="btn" data-modgo="orange" title="Kanvas alur kerja gaya Orange">⇄ Kanvas</button><button class="btn" data-modgo="io">⇅ Ekspor–impor</button><button class="btn" data-modgo="gloss">📖 Glosarium</button><button class="btn" data-modgo="manual">📘 Panduan</button>`);}
   const top=$("header.top"); if(top&&!$("#bTopMenu")){const b=document.createElement("button"); b.id="bTopMenu"; b.className="btn"; b.textContent="☰ Menu"; b.setAttribute("aria-expanded","false"); b.onclick=()=>{const o=top.classList.toggle("open"); b.setAttribute("aria-expanded",String(o));}; top.querySelector(".brand").after(b);}
   document.addEventListener("click",e=>{if(e.target.closest("header.top [data-modgo]")){const t=$("header.top"); t.classList.remove("open");}});})();
 owRegisterMethods();
@@ -7173,7 +7173,7 @@ const GICO=['<circle cx="11" cy="11" r="6"/><path d="M16 16l4 4"/>','<circle cx=
 function skB(){ const sug=`<div id="bRes">${advHTML(bQ)}</div>`;
   const G=WIZ.map((w,i)=>`<button class="bgoal g${i%6} ${bGoal===i?"on":""}" data-bgoal="${i}"><i class="gico"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">${GICO[i]||GICO[0]}</svg></i><b>${esc(w.q)}</b><span>${esc((w.m||(w.sub||[]).flatMap(x=>x.m||[])).filter((k,i,a)=>a.indexOf(k)===i).slice(0,4).map(methName).join(", "))}</span></button>`).join("");
   const sel=bGoal!=null? WIZ[bGoal] : null, ks=sel? (sel.sub? sel.sub.flatMap(s=>s.m||[]):(sel.m||[])).filter((k,i,a)=>a.indexOf(k)===i&&(METHODS.find(m=>m.k===k)||MINFO[k])) : [];
-  return `<div id="skB"><div class="bhero"><div class="bq">${(()=>{try{return kpBar(bQ);}catch(_){return "";}})()}<span class="kick">MULAI DARI TUJUAN, BUKAN DARI RUMUS</span><h2>Apa yang ingin Anda putuskan atau ketahui?</h2>
+  return `<div id="skB"><div class="bhero"><div class="bq">${(()=>{try{return kpBar(bQ);}catch(_){return "";}})()}<div class="kpbar on rsbar"><span class="kpstep">Menyusun penelitian?</span><span>Skripsi, tesis, disertasi, atau artikel: <b>Riset Terpadu</b> menuntun dari pendahuluan, kerangka &amp; hipotesis, metodologi, populasi &amp; sampel (Slovin dll.), analisis data, pembahasan, sampai naskah Bab I–V — kuantitatif, kualitatif, maupun campuran.</span><span class="spacer"></span><button class="btn small primary" data-modgo="riset">📝 Mulai Riset Terpadu →</button></div><span class="kick">MULAI DARI TUJUAN, BUKAN DARI RUMUS</span><h2>Apa yang ingin Anda putuskan atau ketahui?</h2>
       <label for="bQ" class="note">Tulis dengan kalimat biasa — aplikasi menyarankan metode yang cocok</label>
       <div class="row" style="gap:8px;flex-wrap:wrap"><input id="bQ" value="${esc(bQ)}" placeholder="mis. memilih lokasi terbaik dari 4 calon lahan"><button class="btn primary" id="bAsk">Sarankan metode</button><button class="btn" id="bAskLit" title="Sarankan metode sekaligus cari literatur untuk menajamkan latar belakang">📚 Literatur</button></div></div>${sug}</div>
     <div class="bhrow"><h2 class="bh">Atau pilih jenis tujuan</h2><span class="note">${METHODS.filter(m=>m.ready!==false).length} metode · ${(typeof CATS!=="undefined"&&CATS.length)||11} rumpun ilmu</span></div><div class="bgoals">${G}</div>

@@ -25,5 +25,9 @@ setTimeout(() => {
   const X = w.__st.stCrosstab(['10', '2', '1', '2'], ['a', 'b', 'a', 'b']); assert.strictEqual(X.rows.join(','), '1,2,10');
   // RTTV: dua rakitan atap → Σ α·A·U·TDek
   const ot = w.__otRoof; assert(typeof ot === 'function');
+  // pintu masuk Riset Terpadu di beranda dan bilah atas
+  const d = w.document; d.querySelector('[data-step="home"]') && d.querySelector('[data-step="home"]').click();
+  assert(d.querySelector('.modpick [data-modgo="riset"]'), 'tombol bilah atas'); const rb = d.querySelector('.rsbar [data-modgo="riset"]'); assert(rb, 'kartu beranda');
+  rb.click(); assert(!d.querySelector('[data-sec="rs-pend"]').hidden, 'membuka langkah Pendahuluan');
   assert(!errs.length, errs.join('\n')); console.log('v3.15 OK');
 }, 400);
