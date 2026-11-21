@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.15.0 — 2026-11-21
+- **Heat index:** di bawah 80 °F nilai kini mengikuti NWS, yakni rumus sederhana yang dirata-ratakan dengan suhu udara (contoh 20 °C/50 %: 19,68 °C).
+- **Visual 3D:** STL biner kini terbaca (selain STL ASCII).
+- **CBA:** bila arus kas bersih berganti tanda lebih dari sekali, semua IRR ditampilkan beserta peringatan, ditambah **MIRR** (reinvestasi dan pembiayaan pada tingkat diskonto); MIRR juga ada di salinan Excel.
+- **OTTV/RTTV:** konduksi atap dihitung per rakitan, Σ αᵢ·Aᵢ·Uᵢ·TDekᵢ (TDek menurut massa tiap rakitan), bukan perkalian rata-rata α × U.
+- **OTTV:** WWR yang diisi sebagai persen (mis. 40) dibaca 0,40 dengan keterangan; nilai di luar 0–1 dibatasi.
+- **Kanvas:** hasil widget dipakai ulang selama node, sambungan, dan data tidak berubah (memilih node tidak lagi menghitung ulang seluruh alur).
+- **Tabulasi silang:** urutan kategori alami (1, 2, 10).
+- Tes `tests/v315.test.js`.
+
 ## 3.14.0 — 2026-11-21
 Perbaikan hasil pemeriksaan bug seluruh modul (4 pemeriksaan paralel):
 - **Umum:** proyek lama/parsial (impor, berkas proyek, penyimpanan lokal) dilengkapi otomatis dengan nilai bawaan sehingga tidak membuat aplikasi macet; angka bergaya Indonesia dengan beberapa titik ribuan (1.500.000; 1.234,5) dan gaya Inggris (1,500,000.5) dibaca benar.
