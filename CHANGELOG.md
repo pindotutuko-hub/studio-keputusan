@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.16.0 — 2026-11-21
+- Riset Terpadu · Pendahuluan: kartu **Cari riset terdahulu** — pencarian artikel jurnal dari judul, fenomena, atau kata kunci (OpenAlex melalui server pindotutuko.id, cadangan Crossref), dengan penulis, tahun, jurnal, sitasi, abstrak singkat, dan tautan DOI; tautan Google Scholar, Garuda, SINTA, dan Scopus.
+- Artikel yang dicentang dapat dimasukkan ke matriks pustaka (penulis, tahun, judul, metode terdeteksi, temuan) atau dipakai untuk **menyusun draf Bab I sementara**: latar (masalah dan celah dari literatur), rumusan masalah, tujuan, kontribusi, manfaat, serta variabel dan hipotesis awal bila belum ada. Fenomena tulisan pengguna dipertahankan; bagian bertanda [ ] wajib dilengkapi; menimpa isian yang sudah ada memerlukan klik konfirmasi.
+- Tes `tests/v316.test.js` (sumber pustaka tiruan).
+
 ## 3.15.2 — 2026-11-21
 - Riset Terpadu: kolom isian memakai lebar penuh (label di atas, teks tidak terpotong); judul berupa kotak teks dua baris.
 - Bidang ilmu dipilih bertingkat: rumpun → subrumpun → program studi menurut Kepdirjen Diktiristek No. 163/E/KPT/2022, atau “Lainnya — tulis sendiri”; tombol untuk memakai pilihan Rumpun ilmu dari Beranda.

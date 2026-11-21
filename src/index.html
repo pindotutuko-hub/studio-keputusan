@@ -1174,7 +1174,7 @@ const PROJ=(()=>{const REG="sk-projects-v1", GLOBAL=new Set([REG,"sk-uimode-v1",
     backup};
   try{window.addEventListener("pagehide",backup); document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")backup();});}catch(e){}
   return api;})();
-const APP_VERSION="3.15.2"; window.__APP_VERSION=APP_VERSION;
+const APP_VERSION="3.16.0"; window.__APP_VERSION=APP_VERSION;
 const LS_KEY="ism-studio-v1";
 const desktop = typeof window.ismDesktop==="object" && window.ismDesktop;
 if(desktop) document.documentElement.classList.add("is-desktop");
@@ -8884,7 +8884,7 @@ const RS_KEY="sk-riset-v1";
 const rsI=(t="")=>({id:newId(),t});
 const rsVar=(code="",name="",role="X",items="",sk="interval")=>({id:newId(),code,name,role,def:"",op:"",ind:"",sk,items});
 const rsRel=(from="",to="",kind="pengaruh",arah="+",via="",rm="")=>({id:newId(),from,to,kind,arah,via,basis:"",rm});
-const rsBlank=()=>({judul:"",bidang:"",kp:{r:"",s:"",p:""},pend:"kuan",fen:"",mas:"",gap:"",kontrib:"",rq:[rsI()],tj:[],manfT:"",manfP:"",finer:{},
+const rsBlank=()=>({judul:"",bidang:"",kp:{r:"",s:"",p:""},cari:{q:"",from:2015,res:[],sel:{},msg:""},pend:"kuan",fen:"",mas:"",gap:"",kontrib:"",rq:[rsI()],tj:[],manfT:"",manfP:"",finer:{},
   lit:[{id:newId(),a:"",y:"",ttl:"",met:"",tem:"",gap:""}],teori:[{id:newId(),n:"",isi:""}],vars:[],rel:[],fokus:"",prop:[],
   par:"",jen:{tuj:"",manf:"",wkt:"",set:""},strat:"",desain:"",mix:"",kump:{},instr:"",pop:{N:"",des:"",frame:""},
   samp:{tek:"",met:"slovin",e:5,conf:95,p:50,m:2,r:0.3,d:0.5,pw:80},strata:[],kual:{inf:"",krit:"",sat:""},keab:{},alpha:5,tail:"auto",tq:{harga:"",saham:"",mve:"",ps:"0",cl:"",ca:"",ltd:"",tl:"",ta:"",col:{}},
@@ -8908,9 +8908,9 @@ function rsSample(){const v=(c,n,r,it,sk)=>Object.assign(rsVar(c,n,r,it,sk||"int
    pop:{N:"1200",des:"Kepala keluarga penghuni perumahan, rusunawa, dan kampung kota di wilayah studi.",frame:"Daftar penghuni dari kelurahan dan pengelola rusunawa."},samp:{tek:"strata",met:"slovin",e:8,conf:95,p:50,m:3,r:0.3,d:0.5,pw:80},
    strata:[{id:newId(),n:"Perumahan",N:"500"},{id:newId(),n:"Rusunawa",N:"300"},{id:newId(),n:"Kampung kota",N:"400"}]});}
 function rsNorm(o){const b=rsBlank(); if(!o||typeof o!=="object"||Array.isArray(o))return b; const r=Object.assign(b,o), f=rsBlank();
-  ["finer","jen","kump","pop","samp","kual","keab","pemb","tq","kp"].forEach(k=>{r[k]=Object.assign(f[k],o[k]&&typeof o[k]==="object"&&!Array.isArray(o[k])?o[k]:{});}); if(!r.tq.col||typeof r.tq.col!=="object")r.tq.col={};
+  ["finer","jen","kump","pop","samp","kual","keab","pemb","tq","kp","cari"].forEach(k=>{r[k]=Object.assign(f[k],o[k]&&typeof o[k]==="object"&&!Array.isArray(o[k])?o[k]:{});}); if(!r.tq.col||typeof r.tq.col!=="object")r.tq.col={};
   ["rq","tj","lit","teori","vars","rel","prop","strata"].forEach(k=>{if(!Array.isArray(r[k]))r[k]=f[k];}); ["judul","bidang","fen","mas","gap","kontrib","manfT","manfP","fokus","par","strat","desain","mix","instr","simp","saran","batas"].forEach(k=>{if(typeof r[k]!=="string")r[k]=r[k]==null?"":String(r[k]);});
-  if(!RS_PEND_KEYS.includes(r.pend))r.pend="kuan"; return r;}
+  if(!RS_PEND_KEYS.includes(r.pend))r.pend="kuan"; r.cari.busy=false; if(!Array.isArray(r.cari.res))r.cari.res=[]; if(!r.cari.sel||typeof r.cari.sel!=="object")r.cari.sel={}; return r;}
 const RS_PEND_KEYS=["kuan","kual","camp"];
 let RS=rsNorm(mkStore(RS_KEY,rsBlank)); const persistRS=()=>saveK(RS_KEY,RS);
 const RS_STEPS=[["rs-pend","Pendahuluan"],["rs-pus","Pustaka & hipotesis"],["rs-met","Metodologi"],["rs-sam","Populasi & sampel"],["rs-an","Analisis data"],["rs-hp","Hasil & pembahasan"],["rs-ks","Kesimpulan & naskah"]];
@@ -9082,6 +9082,42 @@ const rsBanner=()=>RS.sample?`<div class="banner"><span>Ini <b>contoh ilustratif
 function rsSet(path,val){const p=path.split("."); let o=RS; for(let i=0;i<p.length-1;i++){o=o[p[i]]=o[p[i]]||{};} o[p[p.length-1]]=val;}
 function rsGet(path){return path.split(".").reduce((o,k)=>o==null?o:o[k],RS);}
 /* --- langkah 1: pendahuluan --- */
+/* --- pencarian riset terdahulu (OpenAlex → Crossref) & draf Bab I sementara --- */
+function rsCariQ(){const c=RS.cari; if(c.q.trim())return c.q.trim(); if(RS.judul.trim())return RS.judul.trim().replace(/\(contoh ilustratif\)/,"").trim(); return RS.fen.split(/\s+/).slice(0,14).join(" ");}
+async function rsCariRun(){const c=RS.cari, q=rsCariQ(); if(!q){c.msg="Isi judul, fenomena, atau kata kunci pencarian."; return;} c.q=q; const terms=litDefault(q); if(!terms.length){c.msg="Kata kunci terlalu umum; tambahkan istilah yang lebih khas."; return;}
+  const n=25, from=+c.from||2010, qs="search="+encodeURIComponent(litQOA(terms))+"&filter="+encodeURIComponent("from_publication_date:"+from+"-01-01,type:article")+"&per_page="+n+"&select=id,doi,title,display_name,publication_year,cited_by_count,authorships,primary_location,abstract_inverted_index,keywords,open_access,primary_topic";
+  let out=[], via=""; for(const [u,lab] of [[LIT_PROXY+"?"+qs,"OpenAlex (via server)"],["https://api.openalex.org/works?"+qs,"OpenAlex"]]){ try{const r=await fetch(u); if(!r.ok)continue; const j=await r.json(); if(!j||!Array.isArray(j.results))continue; out=j.results.map(litFromOA); via=lab+" · ±"+((j.meta&&j.meta.count)||out.length)+" artikel"; break;}catch(e){} }
+  if(!out.length){const sv=LIT.from; LIT.from=from; const cr=await litCrossref(terms,n); LIT.from=sv; if(cr.ok){out=cr.P; via="Crossref · ±"+cr.total+" artikel";}}
+  if(!out.length){c.msg="Sumber pustaka tidak terjangkau atau tidak ada hasil. Coba kata kunci lain, atau buka Google Scholar/Garuda di bawah."; c.res=[]; return;}
+  c.res=litMerge(out).filter(p=>p.title).slice(0,n).map((p,i)=>({id:"p"+i+"_"+(p.doi||p.title).replace(/[^a-z0-9]/gi,"").slice(0,24),title:p.title,year:p.year,venue:p.venue,authors:(p.authors||[]).slice(0,6),cited:p.cited||0,doi:p.doi||"",url:p.doi?"https://doi.org/"+p.doi:(p.id||""),abs:String(p.abs||"").slice(0,1500),kw:(p.kw||[]).slice(0,8),src:p.src}));
+  c.sel={}; c.msg=`${c.res.length} artikel teratas untuk “${q}” — ${via}. Centang yang relevan.`;}
+function rsCariPicked(){const c=RS.cari; return c.res.filter(p=>c.sel[p.id]).map(p=>({...p,abs:p.abs||"",kw:p.kw||[],authors:p.authors||[]}));}
+const rsSent1=t=>{const m=String(t||"").replace(/\s+/g," ").match(/^.{20,240}?[.!?](\s|$)/); return m?m[0].trim():String(t||"").slice(0,200);};
+function rsCariToLit(P){let k=0; P.forEach(p=>{ if(RS.lit.some(x=>x.ttl.trim().toLowerCase()===p.title.trim().toLowerCase()))return; const m=litMethods((p.title||"")+". "+(p.abs||"")).slice(0,2).map(x=>x.n).join(", ");
+  const a=p.authors.length?(p.authors.length>2?litSur(p.authors[0])+" dkk.":p.authors.map(litSur).join(" & ")):"Anonim"; RS.lit=RS.lit.filter(x=>x.a.trim()||x.ttl.trim()); RS.lit.push({id:newId(),a,y:p.year?String(p.year):"",ttl:p.title,met:m,tem:rsSent1(p.abs),gap:"",doi:p.doi}); k++;}); return k;}
+function rsCariDraft(P){const topic=rsCariQ(), A=litAgg(P), lim={X:2,Y:1,M:1,W:1,C:2}, cnt={}, V=A.vars.slice(0,40).map(v=>{cnt[v.role]=(cnt[v.role]||0)+1; return {...v,role:cnt[v.role]<=lim[v.role]?v.role:"Z"};});
+  const md=litDraft(RS.pend==="kual"?"qual":"sem",{P,A,V,G:null,q:topic,terms:litDefault(topic)}), sec={}; let cur=""; md.split("\n").forEach(l=>{const h=l.match(/^## (.+)/); if(h){cur=h[1]; sec[cur]=[];} else if(cur&&l.trim())sec[cur].push(l.trim());});
+  const lat=sec["Latar belakang"]||[], num=a=>(a||[]).filter(x=>/^\d+\./.test(x)).map(x=>x.replace(/^\d+\.\s*/,"")), top=P.slice().sort((a,b)=>b.cited-a.cited).slice(0,2).map(litCite).join("; ");
+  return {V,mas:lat.slice(0,-1).join(" "),gap:lat.length>1?lat[lat.length-1]:"",rq:num(sec["Rumusan masalah"]),tj:num(sec["Tujuan penelitian"]),
+    kontrib:`Penelitian ini mengkaji ${topic} pada [konteks/lokasi studi] untuk mengisi celah di atas${top?`, melengkapi temuan ${top}`:""}. [Lengkapi kebaruan: variabel, konteks, atau metode yang belum diteliti.]`,
+    manfT:`Memperkaya kajian ${topic} dengan bukti dari [konteks/lokasi studi]${top?` dan menguji ulang temuan ${top}`:""}.`,
+    manfP:`Masukan bagi [pemangku kepentingan: pemerintah daerah, perancang, pengelola, masyarakat] dalam [keputusan/kebijakan yang dituju]. [Lengkapi.]`};}
+function rsCariApply(P){const D=rsCariDraft(P); if(!RS.fen.trim())RS.fen="[Lengkapi: fenomena empiris di lokasi studi — kondisi yang diamati, data, dan sumbernya.]";
+  RS.mas=D.mas||RS.mas; RS.gap=D.gap||RS.gap; RS.kontrib=D.kontrib; RS.manfT=D.manfT; RS.manfP=D.manfP;
+  const rq=D.rq.filter(x=>!/^\[/.test(x)); if(rq.length){RS.rq=rq.map(t=>rsI(t)); RS.tj=D.tj.slice(0,rq.length);}
+  const added=rsCariToLit(P); let nv=0;
+  if(RS.pend!=="kual"&&!RS.vars.length){const map={X:"X",Y:"Y",M:"M",W:"Z"}, ids={}; let xi=0; D.V.filter(v=>map[v.role]).forEach(v=>{const r=map[v.role]; if(r==="Y"&&RS.vars.some(q=>q.role==="Y"))return; const code=r==="X"?"X"+(++xi):r; const o=rsVar(code,v.v.charAt(0).toUpperCase()+v.v.slice(1),r,""); RS.vars.push(o); ids[v.v]=o; nv++;});
+    const Y=RS.vars.find(v=>v.role==="Y"), M=RS.vars.find(v=>v.role==="M"), Z=RS.vars.find(v=>v.role==="Z"); if(Y){RS.vars.filter(v=>v.role==="X").forEach(x=>{RS.rel.push(rsRel(x.id,Y.id,"pengaruh","+")); if(M)RS.rel.push(rsRel(x.id,Y.id,"mediasi","+",M.id)); if(Z)RS.rel.push(rsRel(x.id,Y.id,"moderasi","+",Z.id));});}}
+  return {added,nv};}
+function rsCariCard(){const c=RS.cari, P=rsCariPicked();
+  return `<div class="card"><div class="row" style="gap:8px;flex-wrap:wrap"><h2>Cari riset terdahulu</h2><span class="note">OpenAlex, cadangan Crossref. Centang artikel yang relevan, lalu susun draf Bab I sementara.</span></div>
+   <div class="row" style="gap:8px;flex-wrap:wrap;align-items:flex-end"><div style="flex:1 1 380px">${rsField("Kata kunci / topik (kosong = dari judul atau fenomena)",rsIN("cari.q",c.q,rsCariQ()||"contoh: perubahan bentuk rumah, transformasi hunian, kampung kota"))}</div>
+    <div style="width:120px">${rsField("Terbit sejak",rsIN("cari.from",c.from,"2015"))}</div><button class="btn primary" id="bRsCari" ${c.busy?"disabled":""}>${c.busy?"Mencari…":"🔎 Cari"}</button></div>
+   ${c.msg?`<p class="note">${esc(c.msg)}</p>`:""}
+   ${c.res.length?`<div class="scroll" style="border:0;max-height:440px;overflow:auto">${c.res.map(p=>`<label class="row" style="gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);cursor:pointer"><input type="checkbox" data-rscs="${esc(p.id)}" ${c.sel[p.id]?"checked":""} style="margin-top:4px"><span><b>${esc(p.title)}</b><br><span class="note">${esc(p.authors.slice(0,3).join(", "))}${p.authors.length>3?" dkk.":""} (${p.year||"t.t."})${p.venue?" · <i>"+esc(p.venue)+"</i>":""} · ${p.cited} sitasi${p.url?` · <a href="${esc(p.url)}" target="_blank" rel="noopener">buka ↗</a>`:""}</span>${p.abs?`<br><span class="note" style="font-size:12.5px">${esc(p.abs.slice(0,260))}${p.abs.length>260?"…":""}</span>`:""}</span></label>`).join("")}</div>
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:10px"><span class="note"><b>${P.length}</b> dipilih</span><span class="spacer"></span><button class="btn small" id="bRsCariLit" ${P.length?"":"disabled"}>+ Masukkan ke matriks pustaka</button><button class="btn small primary" id="bRsCariDraft" ${P.length?"":"disabled"}>📝 Susun draf Bab I dari pilihan</button></div>
+    <p class="note" style="font-size:12px">Draf mengisi latar (masalah &amp; celah), rumusan, tujuan, kontribusi, manfaat, matriks pustaka${RS.pend!=="kual"?", serta variabel &amp; hipotesis awal bila belum ada":""}. Bagian bertanda [ ] wajib dilengkapi; baca artikelnya sebelum memakai klaimnya.</p>`:""}
+   <div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px"><span class="note">Cari juga di:</span>${litExtLinks(litDefault(rsCariQ()||"penelitian"))}</div></div>`;}
 function rsKpPick(){const k=RS.kp||(RS.kp={r:"",s:"",p:""}), subs=KP_S.filter(x=>!k.r||x[3]===k.r), pro=KP_P.filter(x=>k.s?String(x[3])===String(k.s):k.r?KP_S.some(y=>y[0]===x[3]&&y[3]===k.r):false);
   const home=typeof KPSEL!=="undefined"&&KPSEL?kpProdi(KPSEL):null;
   return `<div style="margin-top:6px"><div class="row" style="gap:8px;flex-wrap:wrap"><b>Bidang ilmu</b><span class="note">Rumpun → subrumpun → program studi menurut Kepdirjen Diktiristek No. 163/E/KPT/2022, atau tulis sendiri.</span><span class="spacer"></span>${home?`<button class="btn small" id="bRsKpHome" title="Pakai pilihan Rumpun ilmu di Beranda">🏛 Pakai: ${esc(home[1])}</button>`:""}</div>
@@ -9097,6 +9133,7 @@ function renderRsPend(){const box=$("#rsPend"); keepFocus(box,()=>{box.innerHTML
   <div class="card">${rsField("Judul penelitian",`<textarea class="rsjudul" data-rs="judul" data-fid="rs_judul" rows="2" placeholder="contoh: Pengaruh … terhadap … pada …">${esc(RS.judul||"")}</textarea>`)}${rsKpPick()}
    <div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px"><span class="note">Pendekatan:</span>${Object.entries(RS_PEND).map(([k,[n,d]])=>`<button class="tabx ${RS.pend===k?"on":""}" data-rspend="${k}" title="${esc(d)}">${n}</button>`).join("")}</div>
    <p class="note">${esc((RS_PEND[RS.pend]||["",""])[1])}</p></div>
+  ${rsCariCard()}
   <div class="card"><h2>Latar belakang: fenomena → masalah → celah</h2>
    ${rsField("Fenomena (yang terjadi di lapangan, sertakan data/fakta)",rsTA("fen",RS.fen,"contoh: tingkat hunian rusunawa turun walaupun sudah direnovasi …"))}
    ${rsField("Masalah (kesenjangan harapan dan kenyataan)",rsTA("mas",RS.mas,"contoh: seharusnya … tetapi kenyataannya …"))}
@@ -9302,7 +9339,7 @@ Object.values(RS_BOX).forEach(id=>{const box=$("#"+id); if(!box)return;
     else if(t.dataset.rstj!=null){RS.tj[+t.dataset.rstj]=t.value;}
     else if(t.dataset.rspemb){RS.pemb[t.dataset.rspemb]=t.value;}
     else return; const was=rsMark(); updateStatus(); if(re||was)rsRe();});
-  box.addEventListener("change",e=>{const t=e.target; if(t.dataset.rsfiner){RS.finer[t.dataset.rsfiner]=t.checked?1:0;} else if(t.dataset.rspar){RS.par=t.dataset.rspar;} else if(t.dataset.rsstrat){RS.strat=t.dataset.rsstrat;} else if(t.dataset.rskump){RS.kump[t.dataset.rskump]=t.checked?1:0;} else if(t.dataset.rskeab){RS.keab[t.dataset.rskeab]=t.checked?1:0;} else if(t.dataset.rskp){rsKpSet(t.dataset.rskp,t.value);} else if(t.dataset.rsmet){RS.samp.met=t.dataset.rsmet;} else if(t.dataset.rstqc){RS.tq.col=RS.tq.col||{}; RS.tq.col[t.dataset.rstqc]=t.value;} else if(t.dataset.rstek){RS.samp.tek=t.dataset.rstek;} else if(t.tagName==="SELECT"){return;} else return; rsMark(); updateStatus(); rsRe();});
+  box.addEventListener("change",e=>{const t=e.target; if(t.dataset.rsfiner){RS.finer[t.dataset.rsfiner]=t.checked?1:0;} else if(t.dataset.rspar){RS.par=t.dataset.rspar;} else if(t.dataset.rsstrat){RS.strat=t.dataset.rsstrat;} else if(t.dataset.rskump){RS.kump[t.dataset.rskump]=t.checked?1:0;} else if(t.dataset.rskeab){RS.keab[t.dataset.rskeab]=t.checked?1:0;} else if(t.dataset.rskp){rsKpSet(t.dataset.rskp,t.value);} else if(t.dataset.rscs){RS.cari.sel[t.dataset.rscs]=t.checked;} else if(t.dataset.rsmet){RS.samp.met=t.dataset.rsmet;} else if(t.dataset.rstqc){RS.tq.col=RS.tq.col||{}; RS.tq.col[t.dataset.rstqc]=t.value;} else if(t.dataset.rstek){RS.samp.tek=t.dataset.rstek;} else if(t.tagName==="SELECT"){return;} else return; rsMark(); updateStatus(); rsRe();});
   box.addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return;
     if(b.dataset.rspend){RS.pend=b.dataset.rspend;}
     else if(b.dataset.rsadd){const k=b.dataset.rsadd; ({rq:()=>RS.rq.push(rsI()),lit:()=>RS.lit.push({id:newId(),a:"",y:"",ttl:"",met:"",tem:"",gap:""}),teori:()=>RS.teori.push({id:newId(),n:"",isi:""}),vars:()=>{const nx=RS.vars.filter(v=>v.role==="X").length+1; RS.vars.push(rsVar(RS.vars.some(v=>v.role==="Y")?"X"+nx:"Y","",RS.vars.some(v=>v.role==="Y")?"X":"Y"));},rel:()=>{const y=RS.vars.find(v=>v.role==="Y"), x=RS.vars.find(v=>v.role==="X"); RS.rel.push(rsRel(x?x.id:"",y?y.id:""));},prop:()=>RS.prop.push(rsI()),strata:()=>RS.strata.push({id:newId(),n:"",N:""})}[k]||(()=>{}))();}
@@ -9310,6 +9347,9 @@ Object.values(RS_BOX).forEach(id=>{const box=$("#"+id); if(!box)return;
     else if(b.id==="bRsSample"){ if(!RS.sample&&(RS.judul||RS.vars.length)&&!confirmArm(b,"Klik lagi: ganti isian dengan contoh?","Muat contoh penelitian"))return; RS=rsSample(); persistRS(); if(dsData().empty){dsSample(); DSC={t:null,d:null};} rsRe(); updateStatus(); return toast("Contoh riset dimuat (dataset contoh dipakai bila Dataset kosong)");}
     else if(b.id==="bRsNew"){ if(!confirmArm(b,"Klik lagi: kosongkan seluruh isian riset?","Kosongkan"))return; RS=rsBlank(); persistRS(); rsRe(); updateStatus(); return toast("Isian riset dikosongkan");}
     else if(b.id==="bRsDsSample"){dsSample(); DSC={t:null,d:null}; rsRe(); updateStatus(); return toast("Data contoh dimuat ke Dataset");}
+    else if(b.id==="bRsCari"){RS.cari.busy=true; RS.cari.msg="Mencari…"; rsRe(); rsCariRun().finally(()=>{RS.cari.busy=false; persistRS(); rsRe();}); return;}
+    else if(b.id==="bRsCariLit"){const k=rsCariToLit(rsCariPicked()); rsMark(); rsRe(); return toast(k+" artikel masuk ke matriks pustaka (langkah 2)");}
+    else if(b.id==="bRsCariDraft"){const filled=[RS.mas,RS.gap,RS.kontrib,RS.manfT,RS.manfP,...RS.rq.map(x=>x.t)].some(x=>String(x||"").trim()); if(filled&&!confirmArm(b,"Klik lagi: timpa isian pendahuluan dengan draf?","📝 Susun draf Bab I dari pilihan"))return; const r=rsCariApply(rsCariPicked()); rsMark(); rsRe(); updateStatus(); return toast(`Draf Bab I disusun · ${r.added} artikel ke matriks pustaka${r.nv?` · ${r.nv} variabel awal`:""}`);}
     else if(b.id==="bRsKpHome"){const P=kpProdi(KPSEL); if(P){RS.kp=RS.kp||{}; rsKpSet("p",String(P[0]));}}
     else if(b.id==="bRsTQ"){const r=rsTQappend(); if(r.err)return toast(r.err); rsRe(); updateStatus(); return toast(`Kolom ${r.names.join(" & ")} ditambahkan untuk ${r.n} baris`);}
     else if(b.id==="bRsSvg"){return copyText(rsFrameSVG(),"SVG kerangka disalin");}
@@ -9319,7 +9359,7 @@ Object.values(RS_BOX).forEach(id=>{const box=$("#"+id); if(!box)return;
     else return; rsMark(); updateStatus(); rsRe();});});
 TSVX.riset=()=>{const H=rsHypList().map(x=>({...x,t:rsTest(x.r)})); const d=dsData().empty?[]:rsDesc(); return [["Variabel","n","Rata-rata","SD","Min","Median","Maks"],...d.filter(r=>!r.err&&!r.cat).map(r=>[rsVN(r.v),r.n,fmt(r.d.mean,3),fmt(r.d.sd,3),fmt(r.d.min,3),fmt(r.d.med,3),fmt(r.d.max,3)]),[],["Hipotesis","Uji","Statistik","p","Keputusan"],...H.map(x=>x.t.ok?[x.code+": "+x.h[0],x.t.test,x.t.stat,rsP(x.t.pUse),x.t.dec]:[x.code+": "+x.h[0],"–",x.t.msg,"",""])].map(r=>r.join("\t")).join("\n");};
 function statusR(){const n=RS.vars.length, h=rsRels().length, q=RS.rq.filter(x=>x.t.trim()).length; HS.riset=(RS.judul||q||n)?`${q} rumusan · ${n} variabel · ${h} hipotesis`:"";}
-window.__rs={norm:rsNorm,mdHtml:rsMdHtml,dsText:t=>{DS={text:t,name:"uji",sample:false}; persistDS(); DSC={t:null,d:null};},dsTextGet:()=>DS.text,tq:rsTQ,tqAppend:rsTQappend,dsSample:()=>{dsSample(); DSC={t:null,d:null};},get:()=>RS,set:o=>{RS=rsNorm(o);persistRS();},sample:()=>{RS=rsSample();persistRS();},blank:()=>{RS=rsBlank();persistRS();},size:rsSampleSize,pick:rsPick,alloc:rsAlloc,test:rsTest,hyp:rsHyp,rels:rsRels,draft:rsDraft,desc:rsDesc,instr:rsInstr,assume:rsAssume,concl:rsConcl,goal:rsGoalOf};
+window.__rs={cariRun:rsCariRun,cariApply:rsCariApply,cariDraft:rsCariDraft,norm:rsNorm,mdHtml:rsMdHtml,dsText:t=>{DS={text:t,name:"uji",sample:false}; persistDS(); DSC={t:null,d:null};},dsTextGet:()=>DS.text,tq:rsTQ,tqAppend:rsTQappend,dsSample:()=>{dsSample(); DSC={t:null,d:null};},get:()=>RS,set:o=>{RS=rsNorm(o);persistRS();},sample:()=>{RS=rsSample();persistRS();},blank:()=>{RS=rsBlank();persistRS();},size:rsSampleSize,pick:rsPick,alloc:rsAlloc,test:rsTest,hyp:rsHyp,rels:rsRels,draft:rsDraft,desc:rsDesc,instr:rsInstr,assume:rsAssume,concl:rsConcl,goal:rsGoalOf};
 
 linkBoot(); fillModSel(); syncAll(); go(S.step||"home"); showFirstSetup();
 })();
