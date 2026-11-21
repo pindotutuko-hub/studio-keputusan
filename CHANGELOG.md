@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.16.1 — 2026-11-21
+- Cari riset terdahulu: tombol **Centang semua**, **Hapus centang**, dan **10 sitasi teratas**; tata letak hasil diperbaiki (judul tidak lagi turun ke baris baru).
+- **Peta jejaring kata kunci gaya VOSviewer** (klaster atau overlay tahun terbit) dari artikel terpilih atau seluruh hasil, unduh berkas map/network VOSviewer, dan daftar **indikasi celah penelitian** (istilah topik yang belum/jarang dibahas, pasangan istilah yang belum dikaitkan, tema terbaru, istilah pinggiran); indikasi ikut masuk ke draf celah Bab I.
+- Kartu pencarian juga tersedia di langkah 2 (Pustaka & hipotesis); tombol lama yang berpindah ke Beranda dihapus.
+- Variabel dan hubungan kini disusun dari **judul penelitian** (pola “Pengaruh X (dan X2) terhadap Y dengan M sebagai variabel mediasi/moderasi”, “Hubungan X dengan Y”, “Perbedaan Y berdasarkan X”, “X dan Y”), bukan dari potongan abstrak berbahasa Inggris; tombol **↻ Dari judul** dan usulan istilah dominan dari literatur yang dapat ditambahkan sebagai variabel. Rumusan masalah draf mengikuti variabel tersebut.
+
 ## 3.16.0 — 2026-11-21
 - Riset Terpadu · Pendahuluan: kartu **Cari riset terdahulu** — pencarian artikel jurnal dari judul, fenomena, atau kata kunci (OpenAlex melalui server pindotutuko.id, cadangan Crossref), dengan penulis, tahun, jurnal, sitasi, abstrak singkat, dan tautan DOI; tautan Google Scholar, Garuda, SINTA, dan Scopus.
 - Artikel yang dicentang dapat dimasukkan ke matriks pustaka (penulis, tahun, judul, metode terdeteksi, temuan) atau dipakai untuk **menyusun draf Bab I sementara**: latar (masalah dan celah dari literatur), rumusan masalah, tujuan, kontribusi, manfaat, serta variabel dan hipotesis awal bila belum ada. Fenomena tulisan pengguna dipertahankan; bagian bertanda [ ] wajib dilengkapi; menimpa isian yang sudah ada memerlukan klik konfirmasi.

@@ -1159,7 +1159,7 @@ const PROJ=(()=>{const REG="sk-projects-v1", GLOBAL=new Set([REG,"sk-uimode-v1",
     backup};
   try{window.addEventListener("pagehide",backup); document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")backup();});}catch(e){}
   return api;})();
-const APP_VERSION="3.16.0"; window.__APP_VERSION=APP_VERSION;
+const APP_VERSION="3.16.1"; window.__APP_VERSION=APP_VERSION;
 const LS_KEY="ism-studio-v1";
 const desktop = typeof window.ismDesktop==="object" && window.ismDesktop;
 if(desktop) document.documentElement.classList.add("is-desktop");
@@ -9080,10 +9080,11 @@ function rsCariPicked(){const c=RS.cari; return c.res.filter(p=>c.sel[p.id]).map
 const rsSent1=t=>{const m=String(t||"").replace(/\s+/g," ").match(/^.{20,240}?[.!?](\s|$)/); return m?m[0].trim():String(t||"").slice(0,200);};
 function rsCariToLit(P){let k=0; P.forEach(p=>{ if(RS.lit.some(x=>x.ttl.trim().toLowerCase()===p.title.trim().toLowerCase()))return; const m=litMethods((p.title||"")+". "+(p.abs||"")).slice(0,2).map(x=>x.n).join(", ");
   const a=p.authors.length?(p.authors.length>2?litSur(p.authors[0])+" dkk.":p.authors.map(litSur).join(" & ")):"Anonim"; RS.lit=RS.lit.filter(x=>x.a.trim()||x.ttl.trim()); RS.lit.push({id:newId(),a,y:p.year?String(p.year):"",ttl:p.title,met:m,tem:rsSent1(p.abs),gap:"",doi:p.doi}); k++;}); return k;}
-function rsCariDraft(P){const topic=rsCariQ(), A=litAgg(P), lim={X:2,Y:1,M:1,W:1,C:2}, cnt={}, V=A.vars.slice(0,40).map(v=>{cnt[v.role]=(cnt[v.role]||0)+1; return {...v,role:cnt[v.role]<=lim[v.role]?v.role:"Z"};});
-  const md=litDraft(RS.pend==="kual"?"qual":"sem",{P,A,V,G:null,q:topic,terms:litDefault(topic)}), sec={}; let cur=""; md.split("\n").forEach(l=>{const h=l.match(/^## (.+)/); if(h){cur=h[1]; sec[cur]=[];} else if(cur&&l.trim())sec[cur].push(l.trim());});
+function rsCariDraft(P){const topic=rsCariQ(), A=litAgg(P), TM=rsTMcur(), src=RS.vars.length?RS.vars.map(v=>({name:v.name,role:v.role})):TM.vars, V=src.map(v=>({v:String(v.name).toLowerCase(),role:{X:"X",Y:"Y",M:"M",Z:"W",K:"C"}[v.role]||"Z",n:1,p:[]}));
+  let G=null; try{G=rsCariNet(P);}catch(e){}
+  const md=litDraft(RS.pend==="kual"?"qual":"sem",{P,A,V,G,q:topic,terms:litDefault(topic)}), sec={}; let cur=""; md.split("\n").forEach(l=>{const h=l.match(/^## (.+)/); if(h){cur=h[1]; sec[cur]=[];} else if(cur&&l.trim())sec[cur].push(l.trim());});
   const lat=sec["Latar belakang"]||[], num=a=>(a||[]).filter(x=>/^\d+\./.test(x)).map(x=>x.replace(/^\d+\.\s*/,"")), top=P.slice().sort((a,b)=>b.cited-a.cited).slice(0,2).map(litCite).join("; ");
-  return {V,mas:lat.slice(0,-1).join(" "),gap:lat.length>1?lat[lat.length-1]:"",rq:num(sec["Rumusan masalah"]),tj:num(sec["Tujuan penelitian"]),
+  const gx=rsCariGaps(P,G); return {V,mas:lat.slice(0,-1).join(" "),gap:(lat.length>1?lat[lat.length-1]:"")+(gx.length?" Indikasi dari peta kata kunci: "+gx.slice(0,3).join(" "):""),rq:num(sec["Rumusan masalah"]),tj:num(sec["Tujuan penelitian"]),
     kontrib:`Penelitian ini mengkaji ${topic} pada [konteks/lokasi studi] untuk mengisi celah di atas${top?`, melengkapi temuan ${top}`:""}. [Lengkapi kebaruan: variabel, konteks, atau metode yang belum diteliti.]`,
     manfT:`Memperkaya kajian ${topic} dengan bukti dari [konteks/lokasi studi]${top?` dan menguji ulang temuan ${top}`:""}.`,
     manfP:`Masukan bagi [pemangku kepentingan: pemerintah daerah, perancang, pengelola, masyarakat] dalam [keputusan/kebijakan yang dituju]. [Lengkapi.]`};}
@@ -9091,16 +9092,57 @@ function rsCariApply(P){const D=rsCariDraft(P); if(!RS.fen.trim())RS.fen="[Lengk
   RS.mas=D.mas||RS.mas; RS.gap=D.gap||RS.gap; RS.kontrib=D.kontrib; RS.manfT=D.manfT; RS.manfP=D.manfP;
   const rq=D.rq.filter(x=>!/^\[/.test(x)); if(rq.length){RS.rq=rq.map(t=>rsI(t)); RS.tj=D.tj.slice(0,rq.length);}
   const added=rsCariToLit(P); let nv=0;
-  if(RS.pend!=="kual"&&!RS.vars.length){const map={X:"X",Y:"Y",M:"M",W:"Z"}, ids={}; let xi=0; D.V.filter(v=>map[v.role]).forEach(v=>{const r=map[v.role]; if(r==="Y"&&RS.vars.some(q=>q.role==="Y"))return; const code=r==="X"?"X"+(++xi):r; const o=rsVar(code,v.v.charAt(0).toUpperCase()+v.v.slice(1),r,""); RS.vars.push(o); ids[v.v]=o; nv++;});
-    const Y=RS.vars.find(v=>v.role==="Y"), M=RS.vars.find(v=>v.role==="M"), Z=RS.vars.find(v=>v.role==="Z"); if(Y){RS.vars.filter(v=>v.role==="X").forEach(x=>{RS.rel.push(rsRel(x.id,Y.id,"pengaruh","+")); if(M)RS.rel.push(rsRel(x.id,Y.id,"mediasi","+",M.id)); if(Z)RS.rel.push(rsRel(x.id,Y.id,"moderasi","+",Z.id));});}}
+  if(RS.pend!=="kual"&&!RS.vars.length)nv=rsApplyTitleModel();
   return {added,nv};}
+/* --- variabel dari judul (bahasa Indonesia/Inggris) --- */
+function rsCleanVar(v){v=String(v||"").replace(/\(contoh ilustratif\)/i,"").replace(/[.;:]+$/,"").trim();
+  v=v.replace(/\s+(?:di|pada|dalam konteks|studi kasus|in|at|among)\s+(?!rumah\b|hunian\b).*$/i,"").replace(/^(?:analisis|kajian|studi|tinjauan|the)\s+/i,"").trim(); return v?v.charAt(0).toUpperCase()+v.slice(1):"";}
+function rsTitleModel(title){let t=String(title||"").replace(/\(contoh ilustratif\)/i,"").replace(/\s+/g," ").trim(); const out={vars:[],rels:[]}; if(!t)return out;
+  const add=(name,role)=>{name=rsCleanVar(name); if(!name||name.length<3)return null; let v=out.vars.find(x=>x.name.toLowerCase()===name.toLowerCase()); if(!v){v={name,role}; out.vars.push(v);} return v;};
+  const splitX=s=>String(s).split(/\s*(?:,|\bdan\b|\bserta\b|\band\b)\s*/i).filter(x=>x.trim().length>2);
+  let m=t.match(/^(?:.*?\b)?(?:pengaruh|dampak|efek|peran|kontribusi|effects? of|impacts? of|influence of|role of)\s+(.+?)\s+(?:terhadap|on|towards?)\s+(.+?)(?:\s+(?:dengan|melalui|with|through)\s+(.+?)\s+(?:sebagai|as)\s+(?:variabel\s+|a\s+|an\s+)?(mediasi|intervening|mediator|mediating|moderasi|pemoderasi|moderator|moderating)\b.*)?$/i);
+  if(m){const X=splitX(m[1]).map(x=>add(x,"X")).filter(Boolean), Y=add(m[2],"Y"); let V=null, mod=false; if(m[3]){mod=/moder/i.test(m[4]); V=add(m[3],mod?"Z":"M");}
+    X.forEach(x=>{ if(Y){out.rels.push({kind:"pengaruh",from:x,to:Y}); if(V)out.rels.push({kind:mod?"moderasi":"mediasi",from:x,to:Y,via:V}); if(V&&!mod)out.rels.push({kind:"pengaruh",from:x,to:V});}}); return out;}
+  m=t.match(/^(?:.*?\b)?(?:hubungan|korelasi|keterkaitan|relationship|association)\s+(?:antara\s+|between\s+)?(.+?)\s+(?:dengan|dan|and|with)\s+(.+)$/i);
+  if(m){const X=add(m[1],"X"), Y=add(m[2],"Y"); if(X&&Y)out.rels.push({kind:"hubungan",from:X,to:Y}); return out;}
+  m=t.match(/^(?:.*?\b)?(?:perbedaan|differences? in)\s+(.+?)\s+(?:berdasarkan|menurut|antar(?:a)?|between|by|across)\s+(.+)$/i);
+  if(m){const X=add(m[2],"X"), Y=add(m[1],"Y"); if(X&&Y){X.sk="nominal"; out.rels.push({kind:"beda",from:X,to:Y});} return out;}
+  const parts=t.split(/\s+(?:dan|terhadap|and)\s+/i); if(parts.length===2){const X=add(parts[0],"X"), Y=add(parts[1],"Y"); if(X&&Y)out.rels.push({kind:"hubungan",from:X,to:Y});}
+  else if(parts.length===1&&RS.pend!=="kuan"){add(parts[0],"X");}
+  return out;}
+function rsTMcur(){let M=rsTitleModel(RS.judul); if(!M.vars.length&&RS.cari&&RS.cari.q)M=rsTitleModel(RS.cari.q); return M;}
+function rsApplyTitleModel(){const M=rsTMcur(); if(!M.vars.length)return 0; let xi=0; const ids=new Map(), nX=M.vars.filter(v=>v.role==="X").length;
+  RS.vars=M.vars.map(v=>{const code=v.role==="X"?(nX>1?"X"+(++xi):"X"):v.role; const o=rsVar(code,v.name,v.role,"",v.sk||"interval"); ids.set(v,o); return o;});
+  RS.rel=M.rels.map(r=>rsRel(ids.get(r.from).id,ids.get(r.to).id,r.kind,r.kind==="hubungan"||r.kind==="beda"?"0":"+",r.via?ids.get(r.via).id:"")); return RS.vars.length;}
+function rsVarHint(){const c=RS.cari, P=(c.res||[]).filter(p=>c.sel[p.id]); let G=null; try{G=P.length>=2?rsCariNet(P):null;}catch(e){} const terms=G?G.nodes.slice(0,12).map(n=>n.k):[];
+  const M=rsTMcur();
+  return `<p class="note">${M.vars.length?`Dari judul/topik terbaca: ${M.vars.map(v=>`<b>${esc(v.name)}</b> (${v.role})`).join(", ")}. Klik <b>↻ Dari judul</b> untuk menyusun ulang variabel &amp; hubungannya.`:"Tulis judul dengan pola “Pengaruh X terhadap Y (dengan M sebagai variabel mediasi)”, “Hubungan X dengan Y”, atau “Perbedaan Y berdasarkan X” agar variabel tersusun otomatis."}</p>
+   ${terms.length?`<div class="row" style="gap:6px;flex-wrap:wrap;margin:4px 0 8px"><span class="note">Istilah dominan di literatur terpilih (klik untuk menambah sebagai variabel):</span>${terms.map(k=>`<button class="btn small" data-rsaddv="${esc(k)}">+ ${esc(k)}</button>`).join("")}</div>`:""}`;}
+/* --- peta jejaring kata kunci (gaya VOSviewer) & indikasi celah --- */
+function rsCariNet(P){const full=P.map(p=>({...p,kw:p.kw||[],abs:p.abs||"",authors:p.authors||[]})); let G=litNet(full,{mode:"kw",min:2,max:45}); if(!G||G.nodes.length<6)G=litNet(full,{mode:"kw",min:1,max:45}); return G;}
+function rsCariGaps(P,G){const q=rsCariQ(), terms=litDefault(q).map(t=>t.replace(/[()"]/g,"").split(/\s+OR\s+/)[0].trim().toLowerCase()).filter(Boolean), txt=P.map(p=>(p.title+" "+(p.abs||"")+" "+(p.kw||[]).join(" ")).toLowerCase()), out=[];
+  const has=t=>txt.filter(x=>x.includes(t)).length;
+  terms.forEach(t=>{const n=has(t); if(!n)out.push(`Istilah “${t}” belum muncul pada ${P.length} artikel ini → peluang kebaruan.`); else if(n<=Math.max(1,Math.round(P.length*.15)))out.push(`Istilah “${t}” jarang dibahas (${n} dari ${P.length} artikel).`);});
+  for(let i=0;i<terms.length;i++)for(let j=i+1;j<terms.length;j++){const n=txt.filter(x=>x.includes(terms[i])&&x.includes(terms[j])).length; if(has(terms[i])&&has(terms[j])&&n===0)out.push(`“${terms[i]}” dan “${terms[j]}” sama-sama diteliti tetapi belum dikaitkan dalam satu artikel → celah hubungan.`);}
+  if(G&&G.nodes.length){const Y=G.nodes.filter(n=>n.yr!=null); if(Y.length>4){const new3=Y.slice().sort((a,b)=>b.yr-a.yr).slice(0,3).map(n=>n.k); out.push(`Tema terbaru (rerata tahun terbit tertinggi): ${new3.join(", ")} → topik yang sedang berkembang.`);}
+    const iso=G.nodes.filter(n=>(n.deg||0)<=1).slice(0,4).map(n=>n.k); if(iso.length)out.push(`Istilah di pinggiran jejaring (sedikit tautan): ${iso.join(", ")} → belum terintegrasi dengan tema utama.`);}
+  return out.slice(0,8);}
+function rsCariMap(){const c=RS.cari; if(!c.res.length)return ""; const sel=c.res.filter(p=>c.sel[p.id]), P=sel.length>=3?sel:c.res; let G=null; try{G=rsCariNet(P);}catch(e){} if(!G||G.nodes.length<3)return `<p class="note">Kata kunci belum cukup untuk peta jejaring.</p>`;
+  const view=c.view==="yr"?"yr":"cl", gaps=rsCariGaps(P,G);
+  return `<details open style="margin-top:10px"><summary><b>Peta jejaring kata kunci (gaya VOSviewer)</b> · ${P===sel?`${sel.length} artikel terpilih`:`semua ${P.length} hasil`} · ${G.nodes.length} istilah</summary>
+   <div class="row" style="gap:6px;margin:6px 0"><button class="tabx ${view==="cl"?"on":""}" data-rsview="cl">Klaster</button><button class="tabx ${view==="yr"?"on":""}" data-rsview="yr">Overlay tahun terbit</button><span class="spacer"></span><button class="btn small" id="bRsVos" title="Unduh berkas map & network untuk dibuka di VOSviewer">⬇ Berkas VOSviewer</button></div>
+   <div class="fwdiag" style="border:1px solid var(--line);border-radius:10px">${litNetSVG(G,view)}</div>
+   <p class="note">Ukuran lingkaran = frekuensi istilah; garis = istilah muncul bersama pada satu artikel; warna = ${view==="yr"?"tahun terbit rata-rata (lama → baru)":"klaster tema"}. Bagian yang jarang terhubung antarklaster menandakan topik yang jarang dikaitkan.</p>
+   ${gaps.length?`<div class="card" style="margin:8px 0 0;padding:10px"><b>Indikasi celah penelitian</b><ul class="note" style="margin:6px 0 0 18px">${gaps.map(g=>`<li>${esc(g)}</li>`).join("")}</ul><p class="note" style="font-size:12px">Indikasi otomatis dari judul, abstrak, dan kata kunci; pastikan dengan membaca artikelnya.</p></div>`:""}</details>`;}
 function rsCariCard(){const c=RS.cari, P=rsCariPicked();
   return `<div class="card"><div class="row" style="gap:8px;flex-wrap:wrap"><h2>Cari riset terdahulu</h2><span class="note">OpenAlex, cadangan Crossref. Centang artikel yang relevan, lalu susun draf Bab I sementara.</span></div>
    <div class="row" style="gap:8px;flex-wrap:wrap;align-items:flex-end"><div style="flex:1 1 380px">${rsField("Kata kunci / topik (kosong = dari judul atau fenomena)",rsIN("cari.q",c.q,rsCariQ()||"contoh: perubahan bentuk rumah, transformasi hunian, kampung kota"))}</div>
     <div style="width:120px">${rsField("Terbit sejak",rsIN("cari.from",c.from,"2015"))}</div><button class="btn primary" id="bRsCari" ${c.busy?"disabled":""}>${c.busy?"Mencari…":"🔎 Cari"}</button></div>
    ${c.msg?`<p class="note">${esc(c.msg)}</p>`:""}
-   ${c.res.length?`<div class="scroll" style="border:0;max-height:440px;overflow:auto">${c.res.map(p=>`<label class="row" style="gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);cursor:pointer"><input type="checkbox" data-rscs="${esc(p.id)}" ${c.sel[p.id]?"checked":""} style="margin-top:4px"><span><b>${esc(p.title)}</b><br><span class="note">${esc(p.authors.slice(0,3).join(", "))}${p.authors.length>3?" dkk.":""} (${p.year||"t.t."})${p.venue?" · <i>"+esc(p.venue)+"</i>":""} · ${p.cited} sitasi${p.url?` · <a href="${esc(p.url)}" target="_blank" rel="noopener">buka ↗</a>`:""}</span>${p.abs?`<br><span class="note" style="font-size:12.5px">${esc(p.abs.slice(0,260))}${p.abs.length>260?"…":""}</span>`:""}</span></label>`).join("")}</div>
+   ${c.res.length?`<div class="row" style="gap:6px;flex-wrap:wrap;margin:4px 0"><button class="btn small" id="bRsCsAll">☑ Centang semua</button><button class="btn small" id="bRsCsNone">☐ Hapus centang</button><button class="btn small" id="bRsCsTop" title="Centang 10 artikel dengan sitasi terbanyak">★ 10 sitasi teratas</button></div>
+    <div class="scroll" style="border:0;max-height:440px;overflow:auto">${c.res.map(p=>`<label style="display:flex;flex-wrap:nowrap;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);cursor:pointer"><input type="checkbox" data-rscs="${esc(p.id)}" ${c.sel[p.id]?"checked":""} style="margin-top:4px;flex:0 0 auto"><span style="flex:1 1 auto;min-width:0"><b>${esc(p.title)}</b><br><span class="note">${esc(p.authors.slice(0,3).join(", "))}${p.authors.length>3?" dkk.":""} (${p.year||"t.t."})${p.venue?" · <i>"+esc(p.venue)+"</i>":""} · ${p.cited} sitasi${p.url?` · <a href="${esc(p.url)}" target="_blank" rel="noopener">buka ↗</a>`:""}</span>${p.abs?`<br><span class="note" style="font-size:12.5px">${esc(p.abs.slice(0,260))}${p.abs.length>260?"…":""}</span>`:""}</span></label>`).join("")}</div>
     <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:10px"><span class="note"><b>${P.length}</b> dipilih</span><span class="spacer"></span><button class="btn small" id="bRsCariLit" ${P.length?"":"disabled"}>+ Masukkan ke matriks pustaka</button><button class="btn small primary" id="bRsCariDraft" ${P.length?"":"disabled"}>📝 Susun draf Bab I dari pilihan</button></div>
+    ${rsCariMap()}
     <p class="note" style="font-size:12px">Draf mengisi latar (masalah &amp; celah), rumusan, tujuan, kontribusi, manfaat, matriks pustaka${RS.pend!=="kual"?", serta variabel &amp; hipotesis awal bila belum ada":""}. Bagian bertanda [ ] wajib dilengkapi; baca artikelnya sebelum memakai klaimnya.</p>`:""}
    <div class="row" style="gap:6px;flex-wrap:wrap;margin-top:6px"><span class="note">Cari juga di:</span>${litExtLinks(litDefault(rsCariQ()||"penelitian"))}</div></div>`;}
 function rsKpPick(){const k=RS.kp||(RS.kp={r:"",s:"",p:""}), subs=KP_S.filter(x=>!k.r||x[3]===k.r), pro=KP_P.filter(x=>k.s?String(x[3])===String(k.s):k.r?KP_S.some(y=>y[0]===x[3]&&y[3]===k.r):false);
@@ -9134,14 +9176,14 @@ function renderRsPend(){const box=$("#rsPend"); keepFocus(box,()=>{box.innerHTML
   <div class="row"><button class="btn" id="bRsSample">Muat contoh penelitian</button><button class="btn" id="bRsNew">Kosongkan</button></div>${rsNav("rs-pend")}`;});}
 /* --- langkah 2: pustaka, kerangka, hipotesis --- */
 function renderRsPus(){const box=$("#rsPus"), kuan=RS.pend!=="kual"; keepFocus(box,()=>{box.innerHTML=`<h1>Riset Terpadu · 2 Kajian pustaka, kerangka & hipotesis</h1>${rsStepper("rs-pus")}
-  <p class="lede">Telaah teori dan penelitian terdahulu, tetapkan variabel, gambar kerangka konseptual, lalu rumuskan hipotesis. <b>Satu panah = satu hipotesis</b>; setiap panah perlu alasan teoretis.</p>${rsBanner()}
-  <div class="card"><div class="row"><h2>Matriks penelitian terdahulu</h2><span class="spacer"></span><button class="btn small" data-rsadd="lit">+ Artikel</button><button class="btn small" data-modgo="home" title="Cari literatur di beranda (OpenAlex/Crossref, Google Scholar, Garuda, SINTA)">📚 Cari literatur</button></div>
+  <p class="lede">Telaah teori dan penelitian terdahulu, tetapkan variabel, gambar kerangka konseptual, lalu rumuskan hipotesis. <b>Satu panah = satu hipotesis</b>; setiap panah perlu alasan teoretis.</p>${rsBanner()}${rsCariCard()}
+  <div class="card"><div class="row"><h2>Matriks penelitian terdahulu</h2><span class="spacer"></span><button class="btn small" data-rsadd="lit">+ Artikel</button></div>
    <p class="note">Sintesis per tema lebih kuat daripada ringkasan per artikel. Celah dari matriks ini menjadi bahan latar belakang dan pembahasan.</p>
    <div class="scroll" style="border:0"><table class="plain"><thead><tr><th>Penulis</th><th>Tahun</th><th>Judul / topik</th><th>Metode</th><th>Temuan</th><th>Celah</th><th></th></tr></thead><tbody>
    ${RS.lit.map(x=>`<tr>${["a","y","ttl","met","tem","gap"].map(f=>`<td><input data-rsl="lit" data-id="${x.id}" data-f="${f}" data-fid="lit${x.id}${f}" value="${esc(x[f])}" ${f==="y"?'style="width:60px"':""}></td>`).join("")}<td><button class="icon" data-rsdel="lit" data-id="${x.id}" aria-label="Hapus">✕</button></td></tr>`).join("")}</tbody></table></div></div>
   <div class="card"><div class="row"><h2>Landasan teori</h2><span class="spacer"></span><button class="btn small" data-rsadd="teori">+ Teori</button></div>
    ${RS.teori.map(t=>`<div class="porow" style="grid-template-columns:1fr 2fr 32px"><input data-rsl="teori" data-id="${t.id}" data-f="n" data-fid="te${t.id}" value="${esc(t.n)}" placeholder="nama teori + rujukan"><input data-rsl="teori" data-id="${t.id}" data-f="isi" data-fid="ti${t.id}" value="${esc(t.isi)}" placeholder="inti teori dan kaitannya dengan variabel"><button class="icon" data-rsdel="teori" data-id="${t.id}" aria-label="Hapus">✕</button></div>`).join("")}</div>
-  ${kuan?`<div class="card"><div class="row"><h2>Variabel penelitian</h2><span class="spacer"></span><button class="btn small" data-rsadd="vars">+ Variabel</button></div>
+  ${kuan?`<div class="card"><div class="row" style="gap:6px;flex-wrap:wrap"><h2>Variabel penelitian</h2><span class="spacer"></span><button class="btn small" id="bRsVarJudul" title="Susun ulang variabel & hubungan dari judul penelitian">↻ Dari judul</button><button class="btn small" data-rsadd="vars">+ Variabel</button></div>${rsVarHint()}
    <p class="note">Kode, nama, dan peran variabel. Definisi operasional, skala, dan kolom data diisi di langkah Metodologi.</p>
    ${RS.vars.map(v=>`<div class="porow" style="grid-template-columns:70px 1fr 220px 32px"><input data-rsl="vars" data-id="${v.id}" data-f="code" data-fid="vc${v.id}" value="${esc(v.code)}" placeholder="X1"><input data-rsl="vars" data-id="${v.id}" data-f="name" data-fid="vn${v.id}" value="${esc(v.name)}" placeholder="nama variabel"><select data-rsl="vars" data-id="${v.id}" data-f="role">${Object.entries(RS_ROLE).map(([k,n])=>`<option value="${k}" ${v.role===k?"selected":""}>${n}</option>`).join("")}</select><button class="icon" data-rsdel="vars" data-id="${v.id}" aria-label="Hapus">✕</button></div>`).join("")||`<p class="note">Belum ada variabel.</p>`}</div>
   <div class="card"><div class="row"><h2>Hubungan antarvariabel → hipotesis</h2><span class="spacer"></span><button class="btn small" data-rsadd="rel">+ Hubungan</button></div>
@@ -9333,6 +9375,11 @@ Object.values(RS_BOX).forEach(id=>{const box=$("#"+id); if(!box)return;
     else if(b.id==="bRsNew"){ if(!confirmArm(b,"Klik lagi: kosongkan seluruh isian riset?","Kosongkan"))return; RS=rsBlank(); persistRS(); rsRe(); updateStatus(); return toast("Isian riset dikosongkan");}
     else if(b.id==="bRsDsSample"){dsSample(); DSC={t:null,d:null}; rsRe(); updateStatus(); return toast("Data contoh dimuat ke Dataset");}
     else if(b.id==="bRsCari"){RS.cari.busy=true; RS.cari.msg="Mencari…"; rsRe(); rsCariRun().finally(()=>{RS.cari.busy=false; persistRS(); rsRe();}); return;}
+    else if(b.id==="bRsCsAll"||b.id==="bRsCsNone"||b.id==="bRsCsTop"){const c=RS.cari; c.sel={}; if(b.id==="bRsCsAll")c.res.forEach(p=>c.sel[p.id]=true); if(b.id==="bRsCsTop")c.res.slice().sort((a,b)=>b.cited-a.cited).slice(0,10).forEach(p=>c.sel[p.id]=true); persistRS(); rsRe(); return;}
+    else if(b.dataset.rsview){RS.cari.view=b.dataset.rsview; persistRS(); rsRe(); return;}
+    else if(b.id==="bRsVos"){const c=RS.cari, sel=c.res.filter(p=>c.sel[p.id]), F=litVOS(rsCariNet(sel.length>=3?sel:c.res)); dlFile("vosviewer-map.txt",F.map,"text/plain","txt"); setTimeout(()=>dlFile("vosviewer-network.txt",F.net,"text/plain","txt"),400); return;}
+    else if(b.dataset.rsaddv){const nm=b.dataset.rsaddv; if(!RS.vars.some(v=>v.name.toLowerCase()===nm.toLowerCase())){const nx=RS.vars.filter(v=>v.role==="X").length+1; RS.vars.push(rsVar("X"+nx,nm.charAt(0).toUpperCase()+nm.slice(1),"X",""));}}
+    else if(b.id==="bRsVarJudul"){ if(RS.vars.length&&!confirmArm(b,"Klik lagi: ganti variabel & hubungan dari judul?","↻ Dari judul"))return; const n=rsApplyTitleModel(); if(!n)return toast("Pola judul belum terbaca; lihat contoh pola di kartu Variabel.");}
     else if(b.id==="bRsCariLit"){const k=rsCariToLit(rsCariPicked()); rsMark(); rsRe(); return toast(k+" artikel masuk ke matriks pustaka (langkah 2)");}
     else if(b.id==="bRsCariDraft"){const filled=[RS.mas,RS.gap,RS.kontrib,RS.manfT,RS.manfP,...RS.rq.map(x=>x.t)].some(x=>String(x||"").trim()); if(filled&&!confirmArm(b,"Klik lagi: timpa isian pendahuluan dengan draf?","📝 Susun draf Bab I dari pilihan"))return; const r=rsCariApply(rsCariPicked()); rsMark(); rsRe(); updateStatus(); return toast(`Draf Bab I disusun · ${r.added} artikel ke matriks pustaka${r.nv?` · ${r.nv} variabel awal`:""}`);}
     else if(b.id==="bRsKpHome"){const P=kpProdi(KPSEL); if(P){RS.kp=RS.kp||{}; rsKpSet("p",String(P[0]));}}
@@ -9344,7 +9391,7 @@ Object.values(RS_BOX).forEach(id=>{const box=$("#"+id); if(!box)return;
     else return; rsMark(); updateStatus(); rsRe();});});
 TSVX.riset=()=>{const H=rsHypList().map(x=>({...x,t:rsTest(x.r)})); const d=dsData().empty?[]:rsDesc(); return [["Variabel","n","Rata-rata","SD","Min","Median","Maks"],...d.filter(r=>!r.err&&!r.cat).map(r=>[rsVN(r.v),r.n,fmt(r.d.mean,3),fmt(r.d.sd,3),fmt(r.d.min,3),fmt(r.d.med,3),fmt(r.d.max,3)]),[],["Hipotesis","Uji","Statistik","p","Keputusan"],...H.map(x=>x.t.ok?[x.code+": "+x.h[0],x.t.test,x.t.stat,rsP(x.t.pUse),x.t.dec]:[x.code+": "+x.h[0],"–",x.t.msg,"",""])].map(r=>r.join("\t")).join("\n");};
 function statusR(){const n=RS.vars.length, h=rsRels().length, q=RS.rq.filter(x=>x.t.trim()).length; HS.riset=(RS.judul||q||n)?`${q} rumusan · ${n} variabel · ${h} hipotesis`:"";}
-window.__rs={cariRun:rsCariRun,cariApply:rsCariApply,cariDraft:rsCariDraft,norm:rsNorm,mdHtml:rsMdHtml,dsText:t=>{DS={text:t,name:"uji",sample:false}; persistDS(); DSC={t:null,d:null};},dsTextGet:()=>DS.text,tq:rsTQ,tqAppend:rsTQappend,dsSample:()=>{dsSample(); DSC={t:null,d:null};},get:()=>RS,set:o=>{RS=rsNorm(o);persistRS();},sample:()=>{RS=rsSample();persistRS();},blank:()=>{RS=rsBlank();persistRS();},size:rsSampleSize,pick:rsPick,alloc:rsAlloc,test:rsTest,hyp:rsHyp,rels:rsRels,draft:rsDraft,desc:rsDesc,instr:rsInstr,assume:rsAssume,concl:rsConcl,goal:rsGoalOf};
+window.__rs={titleModel:rsTitleModel,cariNet:rsCariNet,cariGaps:rsCariGaps,cariRun:rsCariRun,cariApply:rsCariApply,cariDraft:rsCariDraft,norm:rsNorm,mdHtml:rsMdHtml,dsText:t=>{DS={text:t,name:"uji",sample:false}; persistDS(); DSC={t:null,d:null};},dsTextGet:()=>DS.text,tq:rsTQ,tqAppend:rsTQappend,dsSample:()=>{dsSample(); DSC={t:null,d:null};},get:()=>RS,set:o=>{RS=rsNorm(o);persistRS();},sample:()=>{RS=rsSample();persistRS();},blank:()=>{RS=rsBlank();persistRS();},size:rsSampleSize,pick:rsPick,alloc:rsAlloc,test:rsTest,hyp:rsHyp,rels:rsRels,draft:rsDraft,desc:rsDesc,instr:rsInstr,assume:rsAssume,concl:rsConcl,goal:rsGoalOf};
 
 linkBoot(); fillModSel(); syncAll(); go(S.step||"home"); showFirstSetup();
 })();
