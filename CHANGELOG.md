@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.17.0 — 2026-11-22
+- Modul baru **Proposal Riset** (📄 di bilah atas, Beranda, dan pilihan metode): enam langkah — pendahuluan, pustaka & hipotesis, metodologi, populasi & sampel (berbagi isian dengan Riset Terpadu), lalu **tim, jadwal & anggaran** dan **naskah proposal**.
+- Langkah tim, jadwal & anggaran: identitas proposal (pengusul, institusi, skema, tahun, durasi), susunan tim, jadwal dengan bagan Gantt, rencana anggaran biaya (jumlah, total, rekap per pos dalam persen), dan luaran. Tombol isian baku tidak pernah mengisi harga satuan.
+- Naskah proposal Bab I–IV + Daftar Pustaka dengan halaman judul “PROPOSAL PENELITIAN”, daftar kelengkapan, dan ekspor Word (.docx), PDF, serta Markdown. Naskah Riset Terpadu tetap Bab I–V.
+- Ekspor metadata artikel ke **BibTeX (.bib)** dan **RIS (.ris)** untuk Zotero, Mendeley, EndNote, dan JabRef: dari hasil *Cari riset terdahulu*, matriks penelitian terdahulu, naskah proposal, dan modul Pustaka. Penulis ditulis “Nama belakang, Nama depan”, DOI dinormalkan, karakter khusus diloloskan, kunci sitasi unik.
+- Rujukan baru di Sumber & Referensi: Punch (2016) dan Locke, Spirduso & Silverman (2014). Panduan mendapat bab “Proposal Riset dan ekspor BibTeX/RIS”.
+
 ## 3.16.5 — 2026-11-22
 - Riset Terpadu: setiap istilah metodologi kini punya tombol **ⓘ** yang membuka balon penjelasan — definisi, kapan dipakai, contoh, dan rujukan — untuk 77 istilah: paradigma, pendekatan, desain metode campuran, jenis penelitian (tujuan, manfaat, dimensi waktu, latar), tujuh strategi Groat & Wang (2013), desain spesifik, teknik pengumpulan data, keabsahan data kualitatif, dan teknik sampling. Tombol ⓘ di samping daftar pilihan menjelaskan semua opsi, opsi terpilih dibuka lebih dulu.
 - Semua rujukan balon tercantum di Sumber & Referensi (diuji otomatis); rujukan baru: Campbell & Stanley (1963) dan Preiser, Rabinowitz & White (1988).
