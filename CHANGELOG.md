@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.16.3 — 2026-11-22
+- Kerangka konseptual Riset Terpadu digambar menurut model jalur yang lazim: **mediasi** — M di atas jalur X → Y dengan panah X → M → Y dan jalur langsung X → Y; **moderasi** — Z di atas dengan panah (oranye) menuju tengah jalur yang dimoderasi; moderasi pada jalur M → Y (moderated mediation) menunjuk ke jalur tersebut; mediasi ganda (M1, M2, M3) disusun atas–bawah; moderator jalur X → Y diletakkan di bawah bila ada mediator; variabel kontrol di bawah. Sebelumnya M dan Z ditempatkan di posisi yang sama sehingga gambar keduanya serupa.
+- Tentang: menambah kontributor **Diyah Sukanti Cahyaningsih**.
+- Versi bahasa Inggris dilengkapi: ±880 teks antarmuka baru diterjemahkan (Riset Terpadu seluruh langkah, Beranda “mulai dari tujuan”, pemilih rumpun ilmu, kalkulator & widget baru, rujukan). Naskah Bab I–V yang disusun aplikasi tetap berbahasa Indonesia.
+
 ## 3.16.2 — 2026-11-21
 - Naskah Riset Terpadu dapat diekspor rapi ke **Word (.docx)** dan **PDF / cetak A4**: Times New Roman 12, spasi 1,5, margin kiri & atas 4 cm, kanan & bawah 3 cm, halaman judul, BAB di halaman baru, subjudul tebal, paragraf rata kanan-kiri dengan inden, tabel bergaris, nomor halaman (Word), **Gambar 2.x** peta jejaring kata kunci, peta kolaborasi penulis, dan kerangka konseptual, serta **DAFTAR PUSTAKA** (gaya APA dari artikel terpilih: penulis, tahun, judul, jurnal, DOI). DOCX dibuat tanpa pustaka luar (OOXML).
 - Peta jejaring gaya VOSviewer: label tidak lagi bertumpuk (simpul didorong agar lingkaran + label tidak menindih; posisi label dicari bawah/atas/kanan/kiri; label kecil yang tetap bertabrakan disembunyikan seperti VOSviewer, nama tetap muncul saat kursor diarahkan). Berlaku juga di modul Literatur.

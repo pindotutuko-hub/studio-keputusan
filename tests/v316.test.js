@@ -41,6 +41,17 @@ setTimeout(async () => {
   assert(!/NaN|undefined/.test(d.querySelector('#rsPend').textContent));
   // klik kedua kali harus dikonfirmasi (isian sudah ada)
   const before = S.mas; S.mas = 'TULISAN SAYA'; R.set(S); d.querySelector('[data-step="rs-pend"]').click(); d.querySelector('#bRsCariDraft').click(); assert.strictEqual(R.get().mas, 'TULISAN SAYA'); d.querySelector('#bRsCariDraft').click(); assert.notStrictEqual(R.get().mas, 'TULISAN SAYA');
+  // kerangka: mediasi (M di atas jalur X→Y) berbeda dari moderasi (panah Z ke tengah jalur)
+  { const V = (c, n, r) => ({ id: c, code: c, name: n, role: r, def: '', op: '', ind: '', sk: 'interval', items: '' }), L = (f, t, k, via) => ({ id: f + t + k, from: f, to: t, kind: k, arah: '+', via: via || '', basis: '', rm: '' });
+    const keep = R.get(); const st2 = JSON.parse(JSON.stringify(keep));
+    st2.vars = [V('X', 'A', 'X'), V('Y', 'B', 'Y'), V('M', 'C', 'M')]; st2.rel = [L('X', 'Y', 'pengaruh'), L('X', 'Y', 'mediasi', 'M')]; R.set(st2); const med = R.frameSVG();
+    st2.vars = [V('X', 'A', 'X'), V('Y', 'B', 'Y'), V('Z', 'C', 'Z')]; st2.rel = [L('X', 'Y', 'pengaruh'), L('X', 'Y', 'moderasi', 'Z')]; R.set(st2); const mod = R.frameSVG();
+    const cy = (s, code) => { const m = s.match(new RegExp('<rect x="[\\d.]+" y="([\\d.]+)"[^>]*/><text[^>]*>' + code + ' ·')); return m ? +m[1] : NaN; };
+    assert((med.match(/marker-end="url\(#rsArr\)"/g) || []).length === 3, 'mediasi: X→M, M→Y, X→Y'); assert(!/rsArrO\)"\/>/.test(med.replace(/<marker[\s\S]*?<\/marker>/g, '')), 'mediasi tanpa panah moderator');
+    assert((mod.match(/marker-end="url\(#rsArrO\)"/g) || []).length === 1 && (mod.match(/marker-end="url\(#rsArr\)"/g) || []).length === 1, 'moderasi: panah Z ke jalur X→Y');
+    assert(cy(med, 'M') < cy(med, 'X') && cy(mod, 'Z') < cy(mod, 'X'), 'M dan Z di atas jalur'); R.set(keep); }
+  // terjemahan EN mencakup Riset Terpadu
+  { const E = w.I18N_EN; ['Jawaban rumusan masalah', 'Kerangka konseptual', 'Cari riset terdahulu', 'Rumusan masalah & tujuan', 'Teknik sampling', 'Pilih tampilan…'].forEach(k => assert(E[k], 'EN: ' + k)); assert(Object.keys(E).length > 6000, 'kamus EN'); }
   // naskah A4: blok, gambar, daftar pustaka, docx
   const S2 = R.get(); assert(R.refs().length === 2 && /^Santoso, B\., & Wijaya, A\. \(20(19|20)\)/.test(R.refs()[0]), JSON.stringify(R.refs()));
   const ph = R.printHTML(); assert(/rsp-cover/.test(ph) && /<svg/.test(ph) && /Gambar 2\.1\./.test(ph) && /DAFTAR PUSTAKA/.test(ph) && !/var\(--/.test(ph) && !/color-mix/.test(ph), 'HTML cetak');
