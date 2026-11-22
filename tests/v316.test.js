@@ -50,6 +50,16 @@ setTimeout(async () => {
     assert((med.match(/marker-end="url\(#rsArr\)"/g) || []).length === 3, 'mediasi: X→M, M→Y, X→Y'); assert(!/rsArrO\)"\/>/.test(med.replace(/<marker[\s\S]*?<\/marker>/g, '')), 'mediasi tanpa panah moderator');
     assert((mod.match(/marker-end="url\(#rsArrO\)"/g) || []).length === 1 && (mod.match(/marker-end="url\(#rsArr\)"/g) || []).length === 1, 'moderasi: panah Z ke jalur X→Y');
     assert(cy(med, 'M') < cy(med, 'X') && cy(mod, 'Z') < cy(mod, 'X'), 'M dan Z di atas jalur'); R.set(keep); }
+  // v3.16.4: moderator tanpa hipotesis → hipotesis moderasi otomatis + panah Z ke jalur X→Y; arah memperkuat/memperlemah/tidak berarah
+  { const V = (c, n, r) => ({ id: c, code: c, name: n, role: r, def: '', op: '', ind: '', sk: 'interval', items: '' }), L = (f, t, k) => ({ id: f + t + k, from: f, to: t, kind: k, arah: '+', via: '', basis: '', rm: '' });
+    const keep = R.get(); const s = JSON.parse(JSON.stringify(keep)); s.pend = 'kuan';
+    s.vars = [V('X1', 'Struktur modal', 'X'), V('X2', 'Profitabilitas', 'X'), V('Y', 'Nilai perusahaan', 'Y'), V('Z', 'Foreign ownership', 'Z')]; s.rel = [L('X1', 'Y', 'pengaruh'), L('X2', 'Y', 'pengaruh')]; R.set(s);
+    assert.strictEqual(R.autoMod(), 2, 'dua hipotesis moderasi dibuat'); assert.strictEqual(R.autoMod(), 0, 'tidak dibuat ulang');
+    const g = R.get(), m = g.rel.filter(r => r.kind === 'moderasi'); assert(m.length === 2 && m.every(r => r.via === 'Z' && r.arah === '0'), 'moderasi tidak berarah');
+    assert.strictEqual(R.hyp(m[0])[0], 'Foreign ownership memoderasi pengaruh Struktur modal terhadap Nilai perusahaan.');
+    assert.strictEqual(R.hyp(Object.assign({}, m[0], { arah: '+' }))[0], 'Foreign ownership memperkuat pengaruh Struktur modal terhadap Nilai perusahaan.');
+    assert.strictEqual(R.hyp(Object.assign({}, m[0], { arah: '-' }))[0], 'Foreign ownership memperlemah pengaruh Struktur modal terhadap Nilai perusahaan.');
+    assert.strictEqual((R.frameSVG().match(/marker-end="url\(#rsArrO\)"/g) || []).length, 2, 'dua panah Z ke jalur X→Y'); R.set(keep); }
   // terjemahan EN mencakup Riset Terpadu
   { const E = w.I18N_EN; ['Jawaban rumusan masalah', 'Kerangka konseptual', 'Cari riset terdahulu', 'Rumusan masalah & tujuan', 'Teknik sampling', 'Pilih tampilan…'].forEach(k => assert(E[k], 'EN: ' + k)); assert(Object.keys(E).length > 6000, 'kamus EN'); }
   // naskah A4: blok, gambar, daftar pustaka, docx

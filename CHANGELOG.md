@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.16.4 — 2026-11-22
+- Riset Terpadu · moderasi: variabel berperan Z yang belum punya hipotesis kini otomatis mendapat hipotesis moderasi untuk setiap jalur pengaruh X → Y (sekali per variabel; hapusan pengguna tidak dibuat ulang), sehingga panah Z ke jalur X → Y selalu tampil di kerangka konseptual.
+- Arah hipotesis moderasi: *memperkuat (+)*, *memperlemah (−)* (uji satu sisi, bila landasan teori/penelitian terdahulu cukup kuat), atau *tidak berarah* — “Z memoderasi pengaruh X terhadap Y” (uji dua sisi). Kalimat Hₐ, label panah, dan kesimpulan mengikuti pilihan ini.
+- Satu moderator pada beberapa jalur: setiap panah Z menuju titik yang berbeda pada jalurnya, tidak lagi saling menimpa.
+
 ## 3.16.3 — 2026-11-22
 - Kerangka konseptual Riset Terpadu digambar menurut model jalur yang lazim: **mediasi** — M di atas jalur X → Y dengan panah X → M → Y dan jalur langsung X → Y; **moderasi** — Z di atas dengan panah (oranye) menuju tengah jalur yang dimoderasi; moderasi pada jalur M → Y (moderated mediation) menunjuk ke jalur tersebut; mediasi ganda (M1, M2, M3) disusun atas–bawah; moderator jalur X → Y diletakkan di bawah bila ada mediator; variabel kontrol di bawah. Sebelumnya M dan Z ditempatkan di posisi yang sama sehingga gambar keduanya serupa.
 - Tentang: menambah kontributor **Diyah Sukanti Cahyaningsih**.
