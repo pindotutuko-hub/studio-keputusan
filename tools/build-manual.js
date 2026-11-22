@@ -12,6 +12,7 @@ const faces = fs.readFileSync(path.join(SRC, 'index.html'), 'utf8').match(/@font
   p.on('pageerror', e => console.error('pageerror', e.message));
   await p.goto('file://' + path.join(SRC, 'index.html')); await p.waitForTimeout(700);
   if (await p.$('[data-setup="full"]')) await p.click('[data-setup="full"]');
+  await p.evaluate(() => { const l = document.getElementById('lookPick'); if (l) l.remove(); });
   const modgo = m => p.evaluate(x => { const b = document.createElement('button'); b.dataset.modgo = x; document.body.appendChild(b); b.click(); b.remove(); }, m);
   const step = s => p.evaluate(x => document.querySelector(`.rail button[data-step="${x}"]`).click(), s);
   const shot = async (name, sel) => { await p.waitForTimeout(400); await p.evaluate(() => { const t = document.getElementById('toast'); if (t) t.hidden = true; window.scrollTo(0, 0); });

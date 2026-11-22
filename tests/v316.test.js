@@ -60,6 +60,13 @@ setTimeout(async () => {
     assert.strictEqual(R.hyp(Object.assign({}, m[0], { arah: '+' }))[0], 'Foreign ownership memperkuat pengaruh Struktur modal terhadap Nilai perusahaan.');
     assert.strictEqual(R.hyp(Object.assign({}, m[0], { arah: '-' }))[0], 'Foreign ownership memperlemah pengaruh Struktur modal terhadap Nilai perusahaan.');
     assert.strictEqual((R.frameSVG().match(/marker-end="url\(#rsArrO\)"/g) || []).length, 2, 'dua panah Z ke jalur X→Y'); R.set(keep); }
+  // v3.16.5: balon ⓘ istilah metodologi; setiap rujukan tercantum di CREDIT.riset
+  { const X = R.info(); const keys = Object.keys(X.I); assert(keys.length >= 75, 'istilah ' + keys.length);
+    keys.forEach(k => { const I = X.I[k]; assert(I.length === 5 && I[1].length > 40 && I[4].length, 'isi ' + k); I[4].forEach(r => { assert(X.R[r], 'ref ' + r); const sur = X.R[r].split(/[ ,&(]/)[0]; assert(X.C.includes(sur), 'rujukan tidak ada di CREDIT: ' + X.R[r]); }); });
+    assert(X.man && /Korelasional|korelasional/.test(X.man.h) && X.man.h.includes('Campbell'), 'bagian panduan');
+    d.querySelector('.rail button[data-step="rs-met"]').click(); const bt = [...d.querySelectorAll('#rsMet .rsi')]; assert(bt.length >= 20, 'tombol ⓘ ' + bt.length);
+    bt.find(x => x.dataset.rsinfo === 'strat:eksperimen').click(); const pop = d.querySelector('#glPop'); assert(!pop.hidden && pop.textContent.includes('Campbell & Stanley (1963)'), 'balon strategi');
+    bt.find(x => x.dataset.rsinfog === 'des').click(); assert(d.querySelectorAll('#glPop details').length === 15, 'balon desain'); pop.hidden = true; }
   // terjemahan EN mencakup Riset Terpadu
   { const E = w.I18N_EN; ['Jawaban rumusan masalah', 'Kerangka konseptual', 'Cari riset terdahulu', 'Rumusan masalah & tujuan', 'Teknik sampling', 'Pilih tampilan…'].forEach(k => assert(E[k], 'EN: ' + k)); assert(Object.keys(E).length > 6000, 'kamus EN'); }
   // naskah A4: blok, gambar, daftar pustaka, docx
