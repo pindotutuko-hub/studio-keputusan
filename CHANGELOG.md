@@ -1,7 +1,7 @@
 # Changelog
 
 ## 3.16.5 — 2026-11-22
-- Riset Terpadu: setiap istilah metodologi kini punya tombol **ⓘ** yang membuka balon penjelasan — definisi, kapan dipakai, contoh, dan rujukan — untuk 79 istilah: paradigma, pendekatan, desain metode campuran, jenis penelitian (tujuan, manfaat, dimensi waktu, latar), tujuh strategi Groat & Wang (2013), desain spesifik, teknik pengumpulan data, keabsahan data kualitatif, dan teknik sampling. Tombol ⓘ di samping daftar pilihan menjelaskan semua opsi, opsi terpilih dibuka lebih dulu.
+- Riset Terpadu: setiap istilah metodologi kini punya tombol **ⓘ** yang membuka balon penjelasan — definisi, kapan dipakai, contoh, dan rujukan — untuk 77 istilah: paradigma, pendekatan, desain metode campuran, jenis penelitian (tujuan, manfaat, dimensi waktu, latar), tujuh strategi Groat & Wang (2013), desain spesifik, teknik pengumpulan data, keabsahan data kualitatif, dan teknik sampling. Tombol ⓘ di samping daftar pilihan menjelaskan semua opsi, opsi terpilih dibuka lebih dulu.
 - Semua rujukan balon tercantum di Sumber & Referensi (diuji otomatis); rujukan baru: Campbell & Stanley (1963) dan Preiser, Rabinowitz & White (1988).
 - Istilah-istilah itu masuk Glosarium dan bab baru Panduan “Riset Terpadu: istilah metodologi”; PDF Panduan dibangun ulang (79 halaman). Tersedia juga dalam versi bahasa Inggris.
 
