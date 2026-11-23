@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.17.2 — 2026-11-23
+- Daftar Pustaka naskah Riset Terpadu dan Proposal Riset kini selalu ada dan memuat: artikel di matriks penelitian terdahulu, artikel yang **dicentang** pada hasil Cari riset terdahulu (format APA, DOI), serta rujukan metode yang benar-benar dikutip di Bab III — paradigma (Guba & Lincoln, 1994; Creswell & Creswell, 2018), strategi (Groat & Wang, 2013), rumus ukuran sampel (Krejcie & Morgan, Cochran, Green, Cohen), dan reliabilitas (Cronbach, 1951). Rujukan yang tidak dikutip tidak dimasukkan.
+- Word (.docx): baris tabel tidak lagi terpotong antarhalaman, lebar kolom menyesuaikan isi (kolom No sempit). PDF: baris tabel juga tidak terbelah.
+
 ## 3.17.1 — 2026-11-23
 - Cari riset terdahulu (Riset Terpadu dan Proposal Riset) kini menargetkan **minimal 40 artikel** (hingga 80): bila kueri lengkap memberi kurang dari 40, pencarian diperluas bertahap — dua kata kunci utama, lalu salah satu kata kunci — dan ditambah Crossref. Hasil yang paling cocok tetap di atas; pesan hasil menyebut sumber perluasan.
 - Modul Pustaka: jumlah hasil minimal 40 (pilihan 40/50/100) dengan perluasan yang sama bila hasil OpenAlex kurang dari 40.
