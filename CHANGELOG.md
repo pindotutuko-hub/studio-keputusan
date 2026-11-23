@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.17.1 — 2026-11-23
+- Cari riset terdahulu (Riset Terpadu dan Proposal Riset) kini menargetkan **minimal 40 artikel** (hingga 80): bila kueri lengkap memberi kurang dari 40, pencarian diperluas bertahap — dua kata kunci utama, lalu salah satu kata kunci — dan ditambah Crossref. Hasil yang paling cocok tetap di atas; pesan hasil menyebut sumber perluasan.
+- Modul Pustaka: jumlah hasil minimal 40 (pilihan 40/50/100) dengan perluasan yang sama bila hasil OpenAlex kurang dari 40.
+
 ## 3.17.0 — 2026-11-22
 - Modul baru **Proposal Riset** (📄 di bilah atas, Beranda, dan pilihan metode): enam langkah — pendahuluan, pustaka & hipotesis, metodologi, populasi & sampel (berbagi isian dengan Riset Terpadu), lalu **tim, jadwal & anggaran** dan **naskah proposal**.
 - Langkah tim, jadwal & anggaran: identitas proposal (pengusul, institusi, skema, tahun, durasi), susunan tim, jadwal dengan bagan Gantt, rencana anggaran biaya (jumlah, total, rekap per pos dalam persen), dan luaran. Tombol isian baku tidak pernah mengisi harga satuan.

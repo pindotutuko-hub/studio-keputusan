@@ -47,7 +47,7 @@ setTimeout(async () => {
     assert(/sk-api\/openalex\.php\?search=/.test(calls[0]) && /api\.openalex\.org/.test(calls[1]) && !/api_key/.test(calls[1]) && /api\.crossref\.org\/works\?query\.bibliographic=site%20office/.test(calls[2]), calls.join(' | '));
     assert.strictEqual(X.LIT.papers.length, 2); assert(/Crossref: 2/.test(X.LIT.msg) && /Kuota OpenAlex habis/.test(X.LIT.msg), X.LIT.msg); assert(!X.LIT.quota);
     calls.length = 0; w.fetch = async u => { calls.push(String(u)); return /sk-api/.test(u) ? resp(200, { meta: { count: 9 }, results: [{ id: 'W1', title: 'T one', publication_year: 2020, authorships: [], cited_by_count: 1 }] }, { 'X-SK-Cache': 'hit' }) : resp(500, {}); };
-    await X.search(); assert.strictEqual(calls.length, 1); assert(/via server, cache/.test(X.LIT.msg), X.LIT.msg); w.fetch = f0;
+    await X.search(); assert(/sk-api/.test(calls[0])); assert(/via server, cache/.test(X.LIT.msg), X.LIT.msg); w.fetch = f0;
     assert.strictEqual(top('mencari tapak yang potensial utk bangunan kantor'), 'tapak');
     const bp = fs.readFileSync(path.join(__dirname, '..', 'build-page.js'), 'utf8'); assert(/connect-src[^;]*https:\/\/api\.crossref\.org/.test(bp) && /connect-src[^;]*https:\/\/pindotutuko\.id/.test(bp)); }
   // jendela rumpun ilmu terpandu: rumpun → kelompok → prodi → pakai
