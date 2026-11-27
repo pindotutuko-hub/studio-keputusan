@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.18.3 — 2026-11-27
+- **Distances**: pilihan baru *Standarkan fitur (z) dulu* untuk metrik Cosine dan Pearson, aktif secara bawaan pada template *Analisis citra*. Fitur Image Embedding di aplikasi ini berbeda skala (persen, entropi, jumlah tepi), sehingga tanpa standarisasi hampir semua foto tampak mirip. Uji pada 20 foto bangunan acak dari Album pindotutuko.id: tanpa standarisasi 16/2/1/1 foto per klaster (k = 4, Ward); Euclidean ter-normalisasi 9/5/4/2. Uji pada 17 foto preseden: 9/4/3/1 menjadi 6/5/4/2. Panduan (subbab Image Analytics – Clustering) diperbarui dan PDF dibangun ulang.
+
 ## 3.18.2 — 2026-11-27
 - Perbaikan **Import Images** (Image Analytics): foto dari perangkat sebelumnya gagal dimuat ("0 foto dimuat") di versi web karena kebijakan keamanan halaman (CSP `img-src 'self' data:`) menolak alamat `blob:`. Foto kini dibaca sebagai data URL, tetap diolah di perangkat tanpa diunggah. Diuji dengan foto JPG nyata di Chromium memakai CSP yang sama.
 - Label tab metode yang disematkan di kanvas (mis. SWOT, AHP) dan daftar "Langkah di aplikasi" tidak lagi tampil sebagai "[object Object]".
