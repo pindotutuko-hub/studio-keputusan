@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.18.1 — 2026-11-27
+- Menu **Tentang** mendapat kartu **❝ Cara mengutip Studio Keputusan**: sitasi APA 7, IEEE, Harvard, kutipan dalam teks, BibTeX, dan RIS (bahasa Indonesia/Inggris, tombol salin, unduh .bib/.ris), lengkap dengan versi yang sedang dipakai dan nomor pencatatan ciptaan DJKI 001594558, contoh kalimat untuk bagian Metode, serta rujukan pendamping (SmartISM untuk ISM/MICMAC, Orange untuk Alur Kerja Data). Tautan ke halaman pindotutuko.id/cara-mengutip untuk semua aplikasi.
+
 ## 3.18.0 — 2026-11-27
 - Kanvas gaya Orange mengikuti alur video *Getting Started with Orange 14: Image Analytics – Clustering*: widget baru **Distances** (Euclidean, Manhattan, Cosine, Pearson; normalisasi z; peta panas matriks jarak). **Hierarchical Clustering** kini menerima matriks jarak dan bisa meneruskan **satu klaster terpilih** (tombol C1, C2, …) ke Image Viewer. Template *Analisis citra* menjadi Import Images → Image Embedding → Distances (cosine) → Hierarchical Clustering → Image Viewer.
 - Kelompok widget baru **Text Mining**: Corpus (tempel teks, berkas .txt, kolom teks dari Data, atau contoh wawancara fiktif), Preprocess Text (stopword Indonesia/Inggris, panjang kata, angka, URL, bigram), Bag of Words (count/biner/log × IDF, normalisasi L2) dan **Word Cloud** (tata letak spiral, ketuk kata untuk melihat kalimat asli, tabel frekuensi, unduh SVG). Template *Teks* sekaligus mengelompokkan dokumen lewat TF-IDF → Distances (cosine) → Hierarchical Clustering.
