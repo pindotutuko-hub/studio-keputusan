@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.18.0 — 2026-11-27
+- Kanvas gaya Orange mengikuti alur video *Getting Started with Orange 14: Image Analytics – Clustering*: widget baru **Distances** (Euclidean, Manhattan, Cosine, Pearson; normalisasi z; peta panas matriks jarak). **Hierarchical Clustering** kini menerima matriks jarak dan bisa meneruskan **satu klaster terpilih** (tombol C1, C2, …) ke Image Viewer. Template *Analisis citra* menjadi Import Images → Image Embedding → Distances (cosine) → Hierarchical Clustering → Image Viewer.
+- Kelompok widget baru **Text Mining**: Corpus (tempel teks, berkas .txt, kolom teks dari Data, atau contoh wawancara fiktif), Preprocess Text (stopword Indonesia/Inggris, panjang kata, angka, URL, bigram), Bag of Words (count/biner/log × IDF, normalisasi L2) dan **Word Cloud** (tata letak spiral, ketuk kata untuk melihat kalimat asli, tabel frekuensi, unduh SVG). Template *Teks* sekaligus mengelompokkan dokumen lewat TF-IDF → Distances (cosine) → Hierarchical Clustering.
+- Angka diuji terhadap SciPy (pdist, linkage) dan scikit-learn (silhouette precomputed, TfidfVectorizer). Rujukan baru: Salton & Buckley (1988), Viégas, Wattenberg & Feinberg (2009). Panduan mendapat subbab alur Image Analytics – Clustering dan Text Mining & Word Cloud (PDF dibangun ulang); terjemahan Inggris ditambahkan.
+
 ## 3.17.2 — 2026-11-23
 - Daftar Pustaka naskah Riset Terpadu dan Proposal Riset kini selalu ada dan memuat: artikel di matriks penelitian terdahulu, artikel yang **dicentang** pada hasil Cari riset terdahulu (format APA, DOI), serta rujukan metode yang benar-benar dikutip di Bab III — paradigma (Guba & Lincoln, 1994; Creswell & Creswell, 2018), strategi (Groat & Wang, 2013), rumus ukuran sampel (Krejcie & Morgan, Cochran, Green, Cohen), dan reliabilitas (Cronbach, 1951). Rujukan yang tidak dikutip tidak dimasukkan.
 - Word (.docx): baris tabel tidak lagi terpotong antarhalaman, lebar kolom menyesuaikan isi (kolom No sempit). PDF: baris tabel juga tidak terbelah.
