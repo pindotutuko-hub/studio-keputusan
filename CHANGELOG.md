@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.18.2 — 2026-11-27
+- Perbaikan **Import Images** (Image Analytics): foto dari perangkat sebelumnya gagal dimuat ("0 foto dimuat") di versi web karena kebijakan keamanan halaman (CSP `img-src 'self' data:`) menolak alamat `blob:`. Foto kini dibaca sebagai data URL, tetap diolah di perangkat tanpa diunggah. Diuji dengan foto JPG nyata di Chromium memakai CSP yang sama.
+- Label tab metode yang disematkan di kanvas (mis. SWOT, AHP) dan daftar "Langkah di aplikasi" tidak lagi tampil sebagai "[object Object]".
+
 ## 3.18.1 — 2026-11-27
 - Menu **Tentang** mendapat kartu **❝ Cara mengutip Studio Keputusan**: sitasi APA 7, IEEE, Harvard, kutipan dalam teks, BibTeX, dan RIS (bahasa Indonesia/Inggris, tombol salin, unduh .bib/.ris), lengkap dengan versi yang sedang dipakai dan nomor pencatatan ciptaan DJKI 001594558, contoh kalimat untuk bagian Metode, serta rujukan pendamping (SmartISM untuk ISM/MICMAC, Orange untuk Alur Kerja Data). Tautan ke halaman pindotutuko.id/cara-mengutip untuk semua aplikasi.
 
